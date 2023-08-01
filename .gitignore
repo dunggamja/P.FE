@@ -1,7 +1,10 @@
 
+fe_client/.vs/
 fe_client/Library/
 fe_client/Logs/
+fe_client/obj/
 fe_client/Temp/
 fe_client/UserSettings/
 fe_client/.vsconfig
 fe_client/fe_client.sln
+fe_client/Assembly-CSharp.csproj
