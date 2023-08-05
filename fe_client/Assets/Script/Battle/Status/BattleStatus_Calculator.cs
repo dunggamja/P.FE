@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BattleStatus
 {
+    
 
     public interface IUnit
     {
@@ -29,26 +30,45 @@ namespace BattleStatus
 
     public interface IBuff
     {
-        BuffValue Filter_Status(EnumBuffStatus _status, params EnumBuffSituation[] _situation);
-        BuffValue Filter_System(EnumBuffStatus _status, params EnumBuffSituation[] _situation);
+        BuffValue Calculate(BattleStatusOwner _owner, EnumBuffStatus _status/*, params EnumBuffBattleSituation[] _situation*/);
+        //BuffValue Buff_System(BattleStatusOwner _owner, EnumBuffStatus _status/*, params EnumBuffBattleSituation[] _situation*/);
+    }
+
+    public interface ICondition
+    {
+        bool IsValid(BattleStatusOwner _owner);
+    }
+
+    public interface IEffect
+    {
+        void Apply(BattleStatusOwner _owner);
+    }
+
+    public interface IBlackBoard
+    {
+        int  GetValue(EnumBattleBlackBoard _type);
+        bool HasValue(EnumBattleBlackBoard _type);
+        void SetValue(EnumBattleBlackBoard _type, int  _value);
+        void SetValue(EnumBattleBlackBoard _type, bool _value);
     }
 
 
     public abstract class BattleStatusOwner
     {
-        public IUnit    Unit    { get; }
-        public IWeapon  Weapon  { get; }
-        public ITerrain Terrain { get; }
-        public IBuff    Buff    { get; }
+        public IUnit       Unit       { get; }
+        public IWeapon     Weapon     { get; }
+        public ITerrain    Terrain    { get; }
+        public IBuff       Buff       { get; }
+        public IBlackBoard BlackBoard { get; }
 
 
-        public int Calc_Might_Physic(EnumBuffSituation _situation)
+        public int Calc_Might_Physic()
         {
             var unit_might   = Unit.GetStatus(EnumBattleUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumBattleWeaponStatus.Might);
 
-            var unit_buff    = Buff.Filter_Status(EnumBuffStatus.Unit_Strength, EnumBuffSituation.None, _situation);
-            var weapon_buff  = Buff.Filter_Status(EnumBuffStatus.Weapon_Might, EnumBuffSituation.None, _situation);
+            var unit_buff    = Buff.Calculate(this, EnumBuffStatus.Unit_Strength);
+            var weapon_buff  = Buff.Calculate(this, EnumBuffStatus.Weapon_Might);
 
             unit_might      = unit_buff.Calculate(unit_might);
             weapon_might    = weapon_buff.Calculate(weapon_might);
@@ -61,8 +81,8 @@ namespace BattleStatus
             var unit_might   = Unit.GetStatus(EnumBattleUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumBattleWeaponStatus.Might);
 
-            var unit_buff    = Buff.Filter_Status(EnumBuffStatus.Unit_Magic, EnumBuffSituation.None);
-            var weapon_buff  = Buff.Filter_Status(EnumBuffStatus.Weapon_Might, EnumBuffSituation.None);
+            var unit_buff    = Buff.Calculate(this, EnumBuffStatus.Unit_Magic);
+            var weapon_buff  = Buff.Calculate(this, EnumBuffStatus.Weapon_Might);
 
             unit_might       = unit_buff.Calculate(unit_might);
             weapon_might     = weapon_buff.Calculate(weapon_might);
@@ -123,7 +143,7 @@ namespace BattleStatus
         public int Calc_Defense()
         {
             var unit_defense = Unit.GetStatus(EnumBattleUnitStatus.Defense);
-            var unit_buff    = Buff.Filter(EnumBuffGroup.Status, EnumBuffSituation.None, EnumBuffTarget.Owner, EnumBuffStatus.Unit_Defense);
+            var unit_buff    = Buff.Calculate(this, EnumBuffStatus.Unit_Defense);
 
             return unit_defense;
         }
@@ -131,14 +151,12 @@ namespace BattleStatus
         public int Calc_Resistance()
         {
             var unit_resistance = Unit.GetStatus(EnumBattleUnitStatus.Resistance);
-            var unit_buff       = Buff.Filter(EnumBuffGroup.Status, EnumBuffSituation.None, EnumBuffTarget.Owner, EnumBuffStatus.Unit_Resistance);
+            var unit_buff       = Buff.Calculate(this, EnumBuffStatus.Unit_Resistance);
 
             unit_resistance     = unit_buff.Calculate(unit_resistance);
 
             return unit_resistance;
         }
-
-
     }
 
 
@@ -154,24 +172,56 @@ namespace BattleStatus
     { 
         public const int DAMAGE_MULTIPLIER_CRITICAL = 3; // 크리티컬 데미지 배율
         public const int DAMAGE_MULTIPLIER_EFFECT   = 2; // 특효 데미지 배율 (ex: 활=>비행)
+        public const int ATTACK_TWICE_SPEED         = 5; // 속도가 X값 이상 차이나면 2번 공격.
 
         public int Calc_Damage(BattleStatusOwner _attacker, BattleStatusOwner _defender)
         {
-            var attacker_might_physics = _attacker.Calc_Might_Physic();
-            var attacker_might_magic   = _attacker.Calc_Might_Magic();
+            var attacker_physics    = _attacker.Calc_Might_Physic();
+            var attacker_magic      = _attacker.Calc_Might_Magic();
 
-            var defender_defense       = _defender.Calc_Defense();
-            var defender_resistance    = _defender.Calc_Resistance();
+            var defender_defense    = _defender.Calc_Defense();
+            var defender_resistance = _defender.Calc_Resistance();
 
 
-            _attacker.Buff.Filter(EnumBuffGroup.Situation, EnumBuffSituation.OnAttack, EnumBuffTarget.Owner, EnumBuffStatus.)
+            var damage_physics = Math.Max(0, attacker_physics - defender_defense);
+            var damage_magic   = Math.Max(0, attacker_magic   - defender_resistance);
 
-            //_defender.
+            // 공격자 버프 계산.
+            damage_physics = _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_Damage_Physic).Calculate(damage_physics);
+            damage_magic   = _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_Damage_Magic).Calculate(damage_magic);
 
-            //_attacker.Buff.Filter_Buff(EnumBuffGroup.Situation)
+            // 방어자 버프 계산.
+            damage_physics = _defender.Buff.Calculate(_defender, EnumBuffStatus.Battle_Damage_Physic).Calculate(damage_physics);
+            damage_magic   = _defender.Buff.Calculate(_defender, EnumBuffStatus.Battle_Damage_Magic).Calculate(damage_magic);
+
+            return damage_physics + damage_magic;
         }
 
 
+
+        public List<EnumBattleTurn> Calc_BattleTurn(BattleStatusOwner _attacker, BattleStatusOwner _defender)
+        {
+            var list_turn = new List<EnumBattleTurn>();
+
+            
+            var attacker_speed = _attacker.Calc_Speed();
+            var defender_speed = _defender.Calc_Speed();
+
+            attacker_speed     = _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_Speed).Calculate(attacker_speed);
+            defender_speed     = _defender.Buff.Calculate(_attacker, EnumBuffStatus.Battle_Speed).Calculate(defender_speed);
+
+
+
+            // 2번 공격 여부.
+            var attacker_attack_twice = (attacker_speed - defender_speed) >= ATTACK_TWICE_SPEED;
+            var defender_attack_twice = (defender_speed - attacker_speed) >= ATTACK_TWICE_SPEED;
+
+
+
+
+
+            return list_turn;
+        }
 
     }
 
@@ -190,16 +240,4 @@ namespace BattleStatus
  * 명중률         = 명중 - 회피
  * 필살 발생 확률  = 필살 - 필살 회피
  */
-
-
-//public interface IBattleCalculator
-//{
-//    int Calc_Might_Physic(IBattleStatusOwner _param);
-//    int Calc_Might_Magic(IBattleStatusOwner _param);
-//    int Calc_Hit(IBattleStatusOwner _param);
-//    int Calc_Critical(IBattleStatusOwner _param);
-//    int Calc_Dodge(IBattleStatusOwner _param);
-//    int Calc_DodgeCritical(IBattleStatusOwner _param);
-//    int Calc_Speed(IBattleStatusOwner _param);
-//}
 

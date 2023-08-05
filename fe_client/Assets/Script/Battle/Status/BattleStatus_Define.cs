@@ -78,4 +78,21 @@ namespace BattleStatus
         None = 0,
     }
 
+
+    public enum EnumBattleTurn
+    {
+        None = 0,
+
+        Attacker,
+        Defender,
+    }
+
+    public enum EnumBattleBlackBoard
+    {
+        None = 0,
+
+        IsAttacker   = 1, // 공격자,피격자 체크.
+        MoveDistance = 2, // 이동 거리.
+    }
+
 }

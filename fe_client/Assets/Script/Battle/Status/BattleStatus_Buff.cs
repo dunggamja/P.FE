@@ -1,37 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace BattleStatus
 {
-    public enum EnumBuffGroup
-    {
-        None,
-
-        Status,    // Status 연산 시
-        System,    // 
-    }
-
-    public enum EnumBuffSituation
-    {
-        None,       // 상황에 관계없이 항시 적용
-
-        OnAttack,   // 공격시 적용
-        OnDefense,  // 방어시 적용
-    }
+    //public enum EnumBuffType
+    //{
+    //    None,
+    //    Status,       // Status 연산 시
+    //    BattleSystem, // 전투 시스템
+    //}
 
     public enum EnumBuffTarget
     {
         None,
 
         Owner,
-        //Target,
+        Target,
     }
 
     public enum EnumBuffStatus
     {
         None,
-
 
         Unit_HP               = 1,   // 유닛, 체력
         Unit_Strength         = 2,   // 유닛, 힘
@@ -55,42 +46,40 @@ namespace BattleStatus
 
         Battle_Damage_Physic  = 201, // 전투, 물리 데미지
         Battle_Damage_Magic   = 202, // 전투, 마법 데미지
-        Battle_Speed          = 203, // 전투, 속도        
+        Battle_Speed          = 203, // 전투, 속도  
     }
 
-    public struct BuffGroupParam : IEqualityComparer<BuffGroupParam>
-    {
-        public EnumBuffGroup     Group;
-        public EnumBuffSituation Situation;
-        public EnumBuffTarget    Target;
-        public EnumBuffStatus    Status;
 
-        public bool Equals(BuffGroupParam x, BuffGroupParam y)
+    public struct BuffTarget : IEqualityComparer<BuffTarget>
+    {
+        //public int Type;
+        //public int Situation;
+        public int Target;
+        public int Status;
+
+        public bool Equals(BuffTarget x, BuffTarget y)
         {
             return
-            x.Group     == y.Group     &&
-            x.Situation == y.Situation &&
+            //x.Type      == y.Type      &&
+            //x.Situation == y.Situation &&
             x.Target    == y.Target    &&
             x.Status    == y.Status;
         }
 
-        public int GetHashCode(BuffGroupParam obj)
+        public int GetHashCode(BuffTarget obj)
         {
-            return 
-                (int)obj.Group     ^
-                (int)obj.Situation ^
-                (int)obj.Target    ^
-                (int)obj.Status;
+            return /*obj.Type ^*/ /*obj.Situation ^*/ obj.Target ^ obj.Status;
         }
 
-        public readonly static BuffGroupParam  Empty = new BuffGroupParam
+        public readonly static BuffTarget  Empty = new BuffTarget
         {
-            Group     = EnumBuffGroup.None,
-            Situation = EnumBuffSituation.None,
-            Target    = EnumBuffTarget.None,
-            Status    = EnumBuffStatus.None
+            //Type      = 0,
+            //Situation = 0,
+            Target    = 0,
+            Status    = 0
         };
     }
+
 
     public struct BuffValue
     {
@@ -104,51 +93,71 @@ namespace BattleStatus
         public static BuffValue operator +(BuffValue a, BuffValue b) => new BuffValue { Multiply = a.Multiply + b.Multiply, Add = a.Add + b.Add };
         public static BuffValue operator -(BuffValue a, BuffValue b) => new BuffValue { Multiply = a.Multiply - b.Multiply, Add = a.Add - b.Add };
 
-        public int Calculate(int _value) => (int)(_value * (Multiply + 1f)) + Add;
+        public int Calculate(int _value)
+        {
+            return (int)(_value * (Multiply + 1f)) + Add;
+        }
     }
 
-    public struct BuffNode
+    public struct Buff
     {
-        public long              ID;
-        public BuffGroupParam    Group;
-        public BuffValue         Value;
+        public long             ID;
+        public BuffTarget       Target;
+        public BuffValue        Value;
+        public List<ICondition> Conditions;
+               
 
-        
-
-        public readonly static BuffNode Empty = new BuffNode
+        public readonly static Buff Empty = new Buff
         {
-            ID    = 0,
-            Group = BuffGroupParam.Empty,
-            Value = BuffValue.Empty
+            ID         = 0,
+            Target     = BuffTarget.Empty,
+            Value      = BuffValue.Empty,
+            Conditions = null
         };
 
-        
+        public bool IsValidCondition(BattleStatusOwner _owner)
+        {
+            if (Conditions != null)
+            {
+                foreach (var e in Conditions)
+                {
+                    if (e != null && !e.IsValid(_owner))
+                        return false;
+                }
+            }
+
+            return true;
+        }
     }
 
-    public class BuffNodeManager
+    public class BuffMananger
     {
-        Dictionary<long, BuffNode>                m_list_buff             = new Dictionary<long, BuffNode>();
-        Dictionary<BuffGroupParam, HashSet<long>> m_list_buff_id_by_group = new Dictionary<BuffGroupParam, HashSet<long>>();
-
-        Dictionary<long, Stack<BuffNode>>         m_stack_buff_on_plan    = new Dictionary<long, Stack<BuffNode>>();
+        Dictionary<long, Buff>                m_list_buff              = new Dictionary<long, Buff>();
+        Dictionary<BuffTarget, HashSet<long>> m_list_buff_id_by_target = new Dictionary<BuffTarget, HashSet<long>>();
 
 
-        public BuffNode  GetBuffNode(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : BuffNode.Empty;
+        public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-        public BuffValue GetBuffValue(BuffGroupParam _group, bool _is_plan)
+        public BuffValue Accumulate_BuffValue(BattleStatusOwner _owner, BuffTarget _target)
         {
-            var buff_value = BuffValue.Empty;
+            var result = BuffValue.Empty;
 
-            if (m_list_buff_id_by_group.TryGetValue(_group, out var list_buff_id))
+            if (m_list_buff_id_by_target.TryGetValue(_target, out var list_buff_id))
             {
                 if (list_buff_id != null)
                 {
                     foreach (var id in list_buff_id)
-                        buff_value += GetBuffNode(id).Value;
+                    {
+                        var buff = GetBuff(id);
+                        if (buff.IsValidCondition(_owner))
+                        {
+                            result += buff.Value;
+                        }
+                    }
                 }
             }
 
-            return buff_value;
+            return result;
         }
     }
 
