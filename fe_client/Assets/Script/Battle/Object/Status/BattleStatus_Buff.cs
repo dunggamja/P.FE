@@ -3,15 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-namespace BattleStatus
+namespace Battle
 {
-    //public enum EnumBuffType
-    //{
-    //    None,
-    //    Status,       // Status 연산 시
-    //    BattleSystem, // 전투 시스템
-    //}
-
     public enum EnumBuffTarget
     {
         None,
@@ -34,7 +27,7 @@ namespace BattleStatus
         Unit_Resistance       = 8,   // 유닛, 마방
         Unit_Movement         = 9,   // 유닛, 이동력
         Unit_Weight           = 10,  // 유닛, 중량(체격)
-
+                              
         Weapon_Might          = 101, // 무기, 위력
         Weapon_Hit            = 102, // 무기, 명중
         Weapon_Critical       = 103, // 무기, 필살
@@ -42,11 +35,18 @@ namespace BattleStatus
         Weapon_Dodge          = 105, // 무기, 회피
         Weapon_Dodge_Critical = 106, // 무기, 필살 회피
         Weapon_Range          = 107, // 무기, 사정
-
-
+                              
+                              
         Battle_Damage_Physic  = 201, // 전투, 물리 데미지
         Battle_Damage_Magic   = 202, // 전투, 마법 데미지
         Battle_Speed          = 203, // 전투, 속도  
+        Battle_Critical_Rate  = 204, // 전투, 필살 확률
+        Battle_Defense        = 205, // 전투, 수비
+        Battle_Resistance     = 206, // 전투, 마방
+        Battle_Dodge          = 207, // 전투, 회피
+        Battle_ActionTurn     = 208, // 전투, 행동 순서 
+        Battle_ActionCount    = 209, // 전투, 행동 횟수 
+        Battle_AttackCount    = 210, // 전투, 공격 횟수 (행동당)
     }
 
 
@@ -115,7 +115,7 @@ namespace BattleStatus
             Conditions = null
         };
 
-        public bool IsValidCondition(BattleStatusOwner _owner)
+        public bool IsValidCondition(BattleStatusManager _owner)
         {
             if (Conditions != null)
             {
@@ -138,7 +138,7 @@ namespace BattleStatus
 
         public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-        public BuffValue Accumulate_BuffValue(BattleStatusOwner _owner, BuffTarget _target)
+        public BuffValue Accumulate_BuffValue(BattleStatusManager _owner, BuffTarget _target)
         {
             var result = BuffValue.Empty;
 

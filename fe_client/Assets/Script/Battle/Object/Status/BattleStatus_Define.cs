@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace BattleStatus
+namespace Battle
 {
 
-    public enum EnumBattleUnitAttribute
+    public enum EnumUnitAttribute
     {
       None = 0,
   
@@ -20,7 +20,7 @@ namespace BattleStatus
     }
 
 
-    public enum EnumBattleWeaponAttribute
+    public enum EnumWeaponAttribute
     {
       None = 0,
   
@@ -38,7 +38,7 @@ namespace BattleStatus
     }
 
 
-    public enum EnumBattleUnitStatus
+    public enum EnumUnitStatus
     {
       None = 0,
 
@@ -54,7 +54,7 @@ namespace BattleStatus
       Weight     = 10, // 중량(체격)
     }
 
-    public enum EnumBattleWeaponStatus
+    public enum EnumWeaponStatus
     {
       None = 0,
   
@@ -68,31 +68,21 @@ namespace BattleStatus
     }
 
 
-    public enum EnumBattleTerrainAttribute
-    {
-        None = 0,
-    }
-
-    public enum EnumBattleTerrainStatus
-    {
-        None = 0,
-    }
-
-
-    public enum EnumBattleTurn
+    public enum EnumTerrainAttribute
     {
         None = 0,
 
-        Attacker,
-        Defender,
+        Ground = 1,
+        Water  = 2,
+
     }
 
-    public enum EnumBattleBlackBoard
-    {
-        None = 0,
+    //public enum EnumTerrainStatus
+    //{
+    //    None = 0,
+    //}
 
-        IsAttacker   = 1, // 공격자,피격자 체크.
-        MoveDistance = 2, // 이동 거리.
-    }
+
+    
 
 }
