@@ -37,16 +37,16 @@ namespace Battle
         Weapon_Range          = 107, // 무기, 사정
                               
                               
-        Battle_Damage_Physic  = 201, // 전투, 물리 데미지
-        Battle_Damage_Magic   = 202, // 전투, 마법 데미지
-        Battle_Speed          = 203, // 전투, 속도  
-        Battle_Critical_Rate  = 204, // 전투, 필살 확률
-        Battle_Defense        = 205, // 전투, 수비
-        Battle_Resistance     = 206, // 전투, 마방
-        Battle_Dodge          = 207, // 전투, 회피
-        Battle_ActionTurn     = 208, // 전투, 행동 순서 
-        Battle_ActionCount    = 209, // 전투, 행동 횟수 
-        Battle_AttackCount    = 210, // 전투, 공격 횟수 (행동당)
+        System_Damage_Physic  = 201, // 시스템, 물리 데미지
+        System_Damage_Magic   = 202, // 시스템, 마법 데미지
+        //Battle_Speed        = 203, // 시스템, 속도  
+        //Battle_Defense      = 204, // 시스템, 수비
+        //Battle_Resistance   = 205, // 시스템, 마방
+        System_Critical_Rate  = 206, // 시스템, 필살 확률
+        System_Dodge_Rate     = 207, // 시스템, 회피 확률
+        System_ActionTurn     = 208, // 시스템, 행동 순서 
+        System_ActionCount    = 209, // 시스템, 행동 횟수 
+        System_AttackCount    = 210, // 시스템, 공격 횟수 (행동당)
     }
 
 

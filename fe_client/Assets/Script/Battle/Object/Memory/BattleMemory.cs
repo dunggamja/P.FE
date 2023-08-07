@@ -24,10 +24,10 @@ namespace Battle
         void SetValue(EnumBlackBoard _type, bool _value);
     }
 
-    public class BlackBoardManager
+    public class BattleMemory
     {
-        public IBlackBoard    BlackBoard    { get; }
-        public IActionCounter ActionCounter { get; }
+        public IBlackBoard BlackBoard { get; }
+        //public IBattleTurn BattleTurn { get; }
     }
 }
 

@@ -140,7 +140,11 @@
    - 공/방어자 순서대로 
    
    
-   
+   공격순서 AttackOrder
+    - AttackOrder_Start
+	- AttackOrder_Count
+	- HitCountPerAttack
+	
   
   
   

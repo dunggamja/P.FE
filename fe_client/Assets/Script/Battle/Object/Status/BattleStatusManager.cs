@@ -112,24 +112,23 @@ namespace Battle
             return unit_resistance;
         }
 
-        /// <summary> 행동 순서, (배율은 의미가 없다. 증감에 의해서만 영향을 받는다.) </summary>
-        public int Calc_ActionTurn(BattleStatusManager _attacker)
-        {
-            // 행동 순서 버프는 
-            return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(0);
-        }
+        ///// <summary> 행동 순서, (배율은 의미가 없다. 증감에 의해서만 영향을 받는다.) </summary>
+        //public int Calc_ActionTurn(BattleStatusManager _attacker)
+        //{
+        //    return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(0);
+        //}
 
-        /// <summary> 행동 횟수 </summary>
-        public int Calc_ActionCount(BattleStatusManager _attacker)
-        {
-            return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(1);
-        }
+        ///// <summary> 행동 횟수 </summary>
+        //public int Calc_ActionCount(BattleStatusManager _attacker)
+        //{
+        //    return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(1);
+        //}
 
-        /// <summary> 공격 횟수 </summary>
-        public int Calc_AttackCount(BattleStatusManager _attacker)
-        {
-            return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(1);
-        }
+        ///// <summary> 공격 횟수 </summary>
+        //public int Calc_AttackCount(BattleStatusManager _attacker)
+        //{
+        //    return _attacker.Buff.Calculate(_attacker, EnumBuffStatus.Battle_ActionTurn).Calculate(1);
+        //}
 
     }
 

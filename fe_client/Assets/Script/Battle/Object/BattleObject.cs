@@ -7,7 +7,7 @@ namespace Battle
     public class BattleObject
     {
         public BattleStatusManager StatusManager { get; }
-        public BlackBoardManager   BlackBoard    { get; }
+        public BattleMemory        Memory    { get; }
     }
 }
 
