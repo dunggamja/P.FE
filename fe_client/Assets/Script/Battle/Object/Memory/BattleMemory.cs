@@ -26,6 +26,7 @@ namespace Battle
 
     public class BattleMemory
     {
+        public Int64       ID         { get; }
         public IBlackBoard BlackBoard { get; }
         //public IBattleTurn BattleTurn { get; }
     }

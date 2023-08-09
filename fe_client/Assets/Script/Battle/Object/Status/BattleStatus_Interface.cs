@@ -6,14 +6,13 @@ using UnityEngine;
 
 namespace Battle
 {
-    
 
     /// <summary>
     /// 버프/스킬 발동 조건
     /// </summary>
     public interface ICondition
     {
-        bool IsValid(BattleStatusManager _owner);
+        bool IsValid(BattleObject _owner);
     }
 
     /// <summary>
@@ -21,7 +20,7 @@ namespace Battle
     /// </summary>
     public interface IEffect
     {
-        void Apply(BattleStatusManager _owner);
+        void Apply(BattleObject _owner);
     }
 
     /// <summary>
@@ -55,7 +54,7 @@ namespace Battle
     /// </summary>
     public interface IBuff
     {
-        BuffValue Calculate(BattleStatusManager _owner, EnumBuffStatus _status);
+        BuffValue Calculate(BattleObject _owner, EnumBuffStatus _status);
     }
 
     

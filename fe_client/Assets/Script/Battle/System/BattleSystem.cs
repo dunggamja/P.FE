@@ -7,7 +7,7 @@ namespace Battle
 {
     public interface IBattleSystemParam { }
 
-    public abstract class BattleSystem
+    public class BattleSystem 
     {
         public enum EnumState
         {
@@ -29,6 +29,7 @@ namespace Battle
         {
             if (State != EnumState.Progress)
             {
+                State = EnumState.None;
                 OnEnter(_param);
                 State = EnumState.Progress;
             }
@@ -43,6 +44,14 @@ namespace Battle
                 OnExit(_param);
             }
         }
+    }
+
+
+
+    public class BattleSystemManager : Singleton<BattleSystemManager>
+    {
+        public BattleSystem_BattleTurn BattleTurnSystem { get; }
+        
     }
 }
 

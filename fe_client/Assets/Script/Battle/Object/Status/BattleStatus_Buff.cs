@@ -28,25 +28,25 @@ namespace Battle
         Unit_Movement         = 9,   // 유닛, 이동력
         Unit_Weight           = 10,  // 유닛, 중량(체격)
                               
-        Weapon_Might          = 101, // 무기, 위력
-        Weapon_Hit            = 102, // 무기, 명중
-        Weapon_Critical       = 103, // 무기, 필살
-        Weapon_Weight         = 104, // 무기, 무게
-        Weapon_Dodge          = 105, // 무기, 회피
-        Weapon_Dodge_Critical = 106, // 무기, 필살 회피
-        Weapon_Range          = 107, // 무기, 사정
+        Weapon_Might          = 1001, // 무기, 위력
+        Weapon_Hit            = 1002, // 무기, 명중
+        Weapon_Critical       = 1003, // 무기, 필살
+        Weapon_Weight         = 1004, // 무기, 무게
+        Weapon_Dodge          = 1005, // 무기, 회피
+        Weapon_Dodge_Critical = 1006, // 무기, 필살 회피
+        Weapon_Range          = 1007, // 무기, 사정
                               
                               
-        System_Damage_Physic  = 201, // 시스템, 물리 데미지
-        System_Damage_Magic   = 202, // 시스템, 마법 데미지
-        //Battle_Speed        = 203, // 시스템, 속도  
-        //Battle_Defense      = 204, // 시스템, 수비
-        //Battle_Resistance   = 205, // 시스템, 마방
-        System_Critical_Rate  = 206, // 시스템, 필살 확률
-        System_Dodge_Rate     = 207, // 시스템, 회피 확률
-        System_ActionTurn     = 208, // 시스템, 행동 순서 
-        System_ActionCount    = 209, // 시스템, 행동 횟수 
-        System_AttackCount    = 210, // 시스템, 공격 횟수 (행동당)
+        System_Damage_Physic  = 2001, // 시스템, 물리 데미지
+        System_Damage_Magic   = 2002, // 시스템, 마법 데미지
+        //Battle_Speed        = 2003, // 시스템, 속도  
+        //Battle_Defense      = 2004, // 시스템, 수비
+        //Battle_Resistance   = 2005, // 시스템, 마방
+        System_Critical_Rate  = 2006, // 시스템, 필살 확률
+        System_Dodge_Rate     = 2007, // 시스템, 회피 확률
+        System_TurnSequence   = 2008, // 시스템, 행동 순서 
+        System_TurnCount      = 2009, // 시스템, 행동 횟수 
+        System_AttackCount    = 2010, // 시스템, 공격 횟수 (행동당)
     }
 
 
@@ -115,7 +115,7 @@ namespace Battle
             Conditions = null
         };
 
-        public bool IsValidCondition(BattleStatusManager _owner)
+        public bool IsValidCondition(BattleObject _owner)
         {
             if (Conditions != null)
             {
@@ -138,7 +138,7 @@ namespace Battle
 
         public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-        public BuffValue Accumulate_BuffValue(BattleStatusManager _owner, BuffTarget _target)
+        public BuffValue Accumulate_BuffValue(BattleObject _owner, BuffTarget _target)
         {
             var result = BuffValue.Empty;
 
