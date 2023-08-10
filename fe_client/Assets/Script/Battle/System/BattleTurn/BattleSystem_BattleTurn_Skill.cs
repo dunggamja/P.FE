@@ -8,89 +8,78 @@ namespace Battle
 {
     public partial class BattleSystem_BattleTurn : BattleSystem
     {
-     
-
-        // 공방 순서 관련된 스킬과 관련된 조건/효과 들도 여기에 작성해보자.
-
-        public class Condition_BattleTurnSystem : ICondition
+        public class Condition_State : ICondition
         {
-            public enum EnumConditionType
-            {
-                None,
-                IsAttacker,
-                IsDefender,
-            }
-
+            BattleSystem.EnumState State { get; set; }
 
             public bool IsValid(BattleObject _owner)
             {
                 var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
-                if (battle_turn_system != null)
-                {
-                    var data = battle_turn_system.GetDataByID(_owner.ID);
-                    if (data != null)
-                    {
-                        data.
-                    }
-                }
+                if (battle_turn_system == null)
+                    return false;
 
-                return false;
+                if (battle_turn_system.State != State)
+                    return false;
+
+                return true;
+            }
+        }
+
+        public class Condition_Engaged : ICondition
+        {
+            bool IsOnlyAttacker { get; set; }
+            bool IsOnlyDefender { get; set; }
+
+            public bool IsValid(BattleObject _owner)
+            {
+                var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
+                if (battle_turn_system == null || battle_turn_system.IsEngaged(_owner.ID))
+                    return false;
+
+                if (IsOnlyAttacker && !battle_turn_system.IsAttacker(_owner.ID))
+                    return false;
+
+                if (IsOnlyDefender && !battle_turn_system.IsDefender(_owner.ID))
+                    return false;
+
+                return true;
             }
         }
 
 
-        public class Effect_BattleTurnSystem : IEffect
+
+        public class Effect_TurnControl : IEffect
         {
             public enum EnumEffectType
             {
-                None,
-                TurnSequence,       // 행동 순서 변경
-                ExtraAttackCount,   // 현재 행동에 추가 공격 발동 
+                TurnSequence,     // 행동 순서
+                ExtraAttackCount, // 추가 공격
             }
 
-            public Int64          TargetID    { get; private set; }
-            public EnumEffectType EffectType  { get; private set; }
-            public int            EffectValue { get; private set; }
+            //public enum EnumTargetType
+            //{
+            //    Owner,  // 나에게 적용
+            //    Target  // 상대방에게 적용.
+            //}
 
+            public EnumEffectType Effect { get; private set; }
+            public int            Value  { get; private set; }
 
             public void Apply(BattleObject _owner)
             {
                 var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
-                if (battle_turn_system != null)
+                if (battle_turn_system == null || !battle_turn_system.IsEngaged(_owner.ID))
+                    return;
+
+                var owner_is_attacker = battle_turn_system.IsAttacker(_owner.ID);
+                var battle_side       = (owner_is_attacker) ? EnumBattleTurnSide.Attacker : EnumBattleTurnSide.Defender; ;
+
+                switch(Effect)
                 {
-                    battle_turn_system.Process_Effect(this);
+                    case EnumEffectType.TurnSequence:     battle_turn_system.AddTurnSequence(battle_side, Value);     break;
+                    case EnumEffectType.ExtraAttackCount: battle_turn_system.AddExtraAttackCount(battle_side, Value); break;
                 }
             }
         }
-
-
-        public void Process_Effect(Effect_BattleTurnSystem _effect)
-        {
-            if (_effect == null)
-                return;
-
-            var data = GetDataByID(_effect.TargetID);
-            if (data == null)
-                return;
-
-            switch((int)_effect.EffectType)
-            {
-                case (int)Effect_BattleTurnSystem.EnumEffectType.TurnSequence:
-                    {
-                        // 행동 순서 변경
-                        data.AddTurnSequence(_effect.EffectValue);
-                    }
-                    break;
-
-                case (int)Effect_BattleTurnSystem.EnumEffectType.ExtraAttackCount:
-                    {
-                        // 추가 공격 적용.
-                        data.AddExtraAttackCount(_effect.EffectValue);
-                    }
-                    break;
-            }
-            
-        }
-
     }
 }

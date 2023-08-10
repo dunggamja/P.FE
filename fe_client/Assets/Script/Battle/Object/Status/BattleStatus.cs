@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Battle
 {
 
-    public class BattleStatus : IConditionParam
+    public class BattleStatus 
     {
         public Int64          ID            { get; }
         public IUnit          Unit          { get; }
@@ -17,10 +17,13 @@ namespace Battle
         //public IActionCounter ActionCounter { get; }
         public BattleObject   OwnerObject   { get; }
 
+        
+
 
         /// <summary> 물리 위력 </summary>
         public int Calc_Might_Physic()
         {
+
             var unit_might   = Unit.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
 

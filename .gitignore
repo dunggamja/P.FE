@@ -8,3 +8,4 @@ fe_client/UserSettings/
 fe_client/.vsconfig
 fe_client/fe_client.sln
 fe_client/Assembly-CSharp.csproj
+fe_client/Unity.Scripting.Python.Samples.PySide.csproj

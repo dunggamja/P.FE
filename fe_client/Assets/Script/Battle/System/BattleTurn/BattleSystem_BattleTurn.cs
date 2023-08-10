@@ -115,13 +115,16 @@ namespace Battle
             }
         }
 
-        public const int ADD_EXTRA_TURN_SPEED = 5; // 스피드 차이가 이 이상나면, 추가 행동이 발생합니다.
+        
 
 
         public  EnumBattleTurnSide CurrentTurn  { get; private set; } = EnumBattleTurnSide.None;
         private Data               AttackerData { get; set; }
         private Data               DefenderData { get; set; }
 
+        public bool IsAttacker(Int64 _id) => AttackerData != null && AttackerData.ID == _id && 0 < _id;
+        public bool IsDefender(Int64 _id) => DefenderData != null && DefenderData.ID == _id && 0 < _id;
+        public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id) ;
 
         Data GetDataByID(Int64 _id)
         {
@@ -156,6 +159,8 @@ namespace Battle
             var defender_turn_sequence = defender_status.Buff.Calculate(defender_status.OwnerObject, EnumBuffStatus.System_TurnSequence).Calculate(0);
 
             // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
+            const int ADD_EXTRA_TURN_SPEED = 5; 
+
             var attacker_speed      = attacker_status.Calc_Speed();
             var defender_speed      = defender_status.Calc_Speed();
             var attacker_turn_count = (attacker_speed - defender_speed) >= ADD_EXTRA_TURN_SPEED ? 2 : 1;
@@ -230,8 +235,40 @@ namespace Battle
 
             AttackerData.Reset();
             DefenderData.Reset();
+        }
 
 
+
+
+
+        public bool AddTurnSequence(EnumBattleTurnSide _side, int _add_value)
+        {
+            Data turn_data = null;
+            if      (_side == EnumBattleTurnSide.Attacker) turn_data = AttackerData;
+            else if (_side == EnumBattleTurnSide.Defender) turn_data = DefenderData;
+
+            if (turn_data != null)
+            {
+                turn_data.AddTurnSequence(_add_value);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool AddExtraAttackCount(EnumBattleTurnSide _side, int _add_value)
+        {
+            Data turn_data = null;
+            if (_side == EnumBattleTurnSide.Attacker) turn_data = AttackerData;
+            else if (_side == EnumBattleTurnSide.Defender) turn_data = DefenderData;
+
+            if (turn_data != null)
+            {
+                turn_data.AddExtraAttackCount(_add_value);
+                return true;
+            }
+
+            return false;
         }
 
     }

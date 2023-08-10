@@ -12,12 +12,14 @@ namespace Battle
         public enum EnumState
         {
             None,
+            Enter,
             Progress,
             Finished,
         }
 
         public EnumState State { get; private set; } = EnumState.None;
 
+        public bool IsEnter    => State == EnumState.Enter;
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
 
@@ -29,8 +31,10 @@ namespace Battle
         {
             if (State != EnumState.Progress)
             {
-                State = EnumState.None;
+                State = EnumState.Enter;
+
                 OnEnter(_param);
+
                 State = EnumState.Progress;
             }
 
