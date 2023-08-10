@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Battle
 {
-    public partial class BattleSystem_BattleTurn : BattleSystem
+    public partial class BattleSystem_Turn : BattleSystem
     {
         public class Condition_State : ICondition
         {
@@ -14,11 +14,11 @@ namespace Battle
 
             public bool IsValid(BattleObject _owner)
             {
-                var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
-                if (battle_turn_system == null)
+                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                if (turn_system == null)
                     return false;
 
-                if (battle_turn_system.State != State)
+                if (turn_system.State != State)
                     return false;
 
                 return true;
@@ -32,14 +32,14 @@ namespace Battle
 
             public bool IsValid(BattleObject _owner)
             {
-                var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
-                if (battle_turn_system == null || battle_turn_system.IsEngaged(_owner.ID))
+                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                if (turn_system == null || turn_system.IsEngaged(_owner.ID))
                     return false;
 
-                if (IsOnlyAttacker && !battle_turn_system.IsAttacker(_owner.ID))
+                if (IsOnlyAttacker && !turn_system.IsAttacker(_owner.ID))
                     return false;
 
-                if (IsOnlyDefender && !battle_turn_system.IsDefender(_owner.ID))
+                if (IsOnlyDefender && !turn_system.IsDefender(_owner.ID))
                     return false;
 
                 return true;
@@ -67,17 +67,17 @@ namespace Battle
 
             public void Apply(BattleObject _owner)
             {
-                var battle_turn_system = BattleSystemManager.Instance.BattleTurnSystem;
-                if (battle_turn_system == null || !battle_turn_system.IsEngaged(_owner.ID))
+                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                if (turn_system == null || !turn_system.IsEngaged(_owner.ID))
                     return;
 
-                var owner_is_attacker = battle_turn_system.IsAttacker(_owner.ID);
-                var battle_side       = (owner_is_attacker) ? EnumBattleTurnSide.Attacker : EnumBattleTurnSide.Defender; ;
+                var owner_is_attacker = turn_system.IsAttacker(_owner.ID);
+                var battle_side       = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender; ;
 
                 switch(Effect)
                 {
-                    case EnumEffectType.TurnSequence:     battle_turn_system.AddTurnSequence(battle_side, Value);     break;
-                    case EnumEffectType.ExtraAttackCount: battle_turn_system.AddExtraAttackCount(battle_side, Value); break;
+                    case EnumEffectType.TurnSequence:     turn_system.AddTurnSequence(battle_side, Value);     break;
+                    case EnumEffectType.ExtraAttackCount: turn_system.AddExtraAttackCount(battle_side, Value); break;
                 }
             }
         }

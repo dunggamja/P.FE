@@ -5,20 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public enum EnumBattleTurnSide
-    {
-        None = 0,
-
-        Attacker,
-        Defender,
-    }
-
-    public class BattleSystemParam_BattleTurn : IBattleSystemParam
-    {
-        public BattleObject attacker { get; set; }
-        public BattleObject defender { get; set; }
-    }
-
+    
 
 
 
@@ -26,8 +13,22 @@ namespace Battle
     /// 전투 공/방 순서
     /// </summary>
 
-    public partial class BattleSystem_BattleTurn : BattleSystem
+    public partial class BattleSystem_Turn : BattleSystem
     {
+        public enum EnumTurnSide
+        {
+            None = 0,
+
+            Attacker,
+            Defender,
+        }
+
+        public class Param : IBattleSystemParam
+        {
+            public BattleObject attacker { get; set; }
+            public BattleObject defender { get; set; }
+        }
+
         class Data
         {
             Int64 m_id;
@@ -115,10 +116,8 @@ namespace Battle
             }
         }
 
-        
 
-
-        public  EnumBattleTurnSide CurrentTurn  { get; private set; } = EnumBattleTurnSide.None;
+        public  EnumTurnSide CurrentTurn  { get; private set; } = EnumTurnSide.None;
         private Data               AttackerData { get; set; }
         private Data               DefenderData { get; set; }
 
@@ -144,7 +143,7 @@ namespace Battle
 
         protected override void OnEnter(IBattleSystemParam _param)
         {
-            var param = _param as BattleSystemParam_BattleTurn;
+            var param = _param as Param;
             if (param == null)
                 return;
 
@@ -191,7 +190,7 @@ namespace Battle
         /// </summary>
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            var param = _param as BattleSystemParam_BattleTurn;
+            var param = _param as Param;
             if (param == null)
                 return true;
 
@@ -207,7 +206,7 @@ namespace Battle
                 {
                     // 공격자 턴
                     AttackerData.ProcessTurn();
-                    CurrentTurn = EnumBattleTurnSide.Attacker;
+                    CurrentTurn = EnumTurnSide.Attacker;
                     return false;
                 }
             }
@@ -217,19 +216,19 @@ namespace Battle
             {
                 // 방어자 턴
                 DefenderData.ProcessTurn();
-                CurrentTurn = EnumBattleTurnSide.Defender;
+                CurrentTurn = EnumTurnSide.Defender;
                 return false;
             }
 
 
             // 아무도 행동 할 수 없는 상태. 턴 종료 처리를 진행합시다.
-            CurrentTurn = EnumBattleTurnSide.None;
+            CurrentTurn = EnumTurnSide.None;
             return true;
         }
 
         protected override void OnExit(IBattleSystemParam _param)
         {
-            var param = _param as BattleSystemParam_BattleTurn;
+            var param = _param as Param;
             if (param == null)
                 return;
 
@@ -241,11 +240,11 @@ namespace Battle
 
 
 
-        public bool AddTurnSequence(EnumBattleTurnSide _side, int _add_value)
+        public bool AddTurnSequence(EnumTurnSide _side, int _add_value)
         {
             Data turn_data = null;
-            if      (_side == EnumBattleTurnSide.Attacker) turn_data = AttackerData;
-            else if (_side == EnumBattleTurnSide.Defender) turn_data = DefenderData;
+            if      (_side == EnumTurnSide.Attacker) turn_data = AttackerData;
+            else if (_side == EnumTurnSide.Defender) turn_data = DefenderData;
 
             if (turn_data != null)
             {
@@ -256,11 +255,11 @@ namespace Battle
             return false;
         }
 
-        public bool AddExtraAttackCount(EnumBattleTurnSide _side, int _add_value)
+        public bool AddExtraAttackCount(EnumTurnSide _side, int _add_value)
         {
             Data turn_data = null;
-            if (_side == EnumBattleTurnSide.Attacker) turn_data = AttackerData;
-            else if (_side == EnumBattleTurnSide.Defender) turn_data = DefenderData;
+            if (_side == EnumTurnSide.Attacker) turn_data = AttackerData;
+            else if (_side == EnumTurnSide.Defender) turn_data = DefenderData;
 
             if (turn_data != null)
             {

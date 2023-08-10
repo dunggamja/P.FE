@@ -54,7 +54,7 @@ namespace Battle
 
     public class BattleSystemManager : Singleton<BattleSystemManager>
     {
-        public BattleSystem_BattleTurn BattleTurnSystem { get; }
+        public BattleSystem_Turn TurnSystem { get; }
         
     }
 }
