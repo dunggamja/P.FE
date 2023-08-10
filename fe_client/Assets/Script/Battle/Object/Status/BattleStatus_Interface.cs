@@ -7,12 +7,18 @@ using UnityEngine;
 namespace Battle
 {
 
+    public interface ISkillOwner
+    {
+        Int64             ID                { get; }
+        BattleSystem_Turn BattleSystem_Turn { get; }
+    }
+
     /// <summary>
     /// 버프/스킬 발동 조건
     /// </summary>
     public interface ICondition
     {
-        bool IsValid(BattleObject _owner);
+        bool IsValid(ISkillOwner _owner);
     }
 
     /// <summary>
@@ -20,7 +26,7 @@ namespace Battle
     /// </summary>
     public interface IEffect
     {
-        void Apply(BattleObject _owner);
+        void Apply(ISkillOwner _owner);
     }
 
     /// <summary>

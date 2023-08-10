@@ -9,8 +9,8 @@ namespace Battle
     {
         None,
 
-        Owner,
-        Target,
+        Owner,  // 소유자에게 버프 적용
+        Target, // 타겟에게 버프 적용
     }
 
     public enum EnumBuffStatus
@@ -105,6 +105,7 @@ namespace Battle
         public BuffTarget       Target;
         public BuffValue        Value;
         public List<ICondition> Conditions;
+
                
 
         public readonly static Buff Empty = new Buff
@@ -115,7 +116,7 @@ namespace Battle
             Conditions = null
         };
 
-        public bool IsValidCondition(BattleObject _owner)
+        public bool IsValidCondition(ISkillOwner _owner)
         {
             if (Conditions != null)
             {
@@ -130,7 +131,7 @@ namespace Battle
         }
     }
 
-    public class BuffMananger
+    public class BuffMananger : IBuff
     {
         Dictionary<long, Buff>                m_list_buff              = new Dictionary<long, Buff>();
         Dictionary<BuffTarget, HashSet<long>> m_list_buff_id_by_target = new Dictionary<BuffTarget, HashSet<long>>();
@@ -159,6 +160,14 @@ namespace Battle
 
             return result;
         }
+
+
+        #region IBuff Interface
+        public BuffValue Calculate(BattleObject _owner, EnumBuffStatus _status) 
+        {
+            return Accumulate_BuffValue(_owner, new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status });
+        }
+        #endregion IBuff Interface
     }
 
 }

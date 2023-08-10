@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Battle
 {
-
+    
     public class BattleSkill
     {
-        public void UseSkill(BattleObject _owner)
+        public void UseSkill(ISkillOwner _owner)
         {
 
         }

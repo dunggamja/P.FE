@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace Battle
 {
-    
-
-
 
     /// <summary>
     /// 전투 공/방 순서
@@ -21,12 +18,6 @@ namespace Battle
 
             Attacker,
             Defender,
-        }
-
-        public class Param : IBattleSystemParam
-        {
-            public BattleObject attacker { get; set; }
-            public BattleObject defender { get; set; }
         }
 
         class Data
@@ -118,8 +109,8 @@ namespace Battle
 
 
         public  EnumTurnSide CurrentTurn  { get; private set; } = EnumTurnSide.None;
-        private Data               AttackerData { get; set; }
-        private Data               DefenderData { get; set; }
+        private Data         AttackerData { get; set; }
+        private Data         DefenderData { get; set; }
 
         public bool IsAttacker(Int64 _id) => AttackerData != null && AttackerData.ID == _id && 0 < _id;
         public bool IsDefender(Int64 _id) => DefenderData != null && DefenderData.ID == _id && 0 < _id;
@@ -143,15 +134,17 @@ namespace Battle
 
         protected override void OnEnter(IBattleSystemParam _param)
         {
-            var param = _param as Param;
-            if (param == null)
+            if (_param == null)
                 return;
 
-            var attacker_status     = param.attacker.Status;
-            var defender_status     = param.defender.Status;
+            Reset();
 
-            var attacker_memory     = param.attacker.Memory;
-            var defender_memory     = param.defender.Memory;
+
+            var attacker_status     = _param.Attacker.Status;
+            var defender_status     = _param.Defender.Status;
+
+            var attacker_memory     = _param.Attacker.Memory;
+            var defender_memory     = _param.Defender.Memory;
 
             // 행동 순서를 계산한다.
             var attacker_turn_sequence = attacker_status.Buff.Calculate(attacker_status.OwnerObject, EnumBuffStatus.System_TurnSequence).Calculate(0);
@@ -173,15 +166,12 @@ namespace Battle
             var attacker_attack_count = attacker_status.Buff.Calculate(attacker_status.OwnerObject, EnumBuffStatus.System_AttackCount).Calculate(1);
             var defender_attack_count = defender_status.Buff.Calculate(defender_status.OwnerObject, EnumBuffStatus.System_AttackCount).Calculate(1);
 
-            AttackerData.Reset();
-            DefenderData.Reset();
-            AttackerData.SetData(param.attacker.ID, _is_attacker:true,  attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
-            DefenderData.SetData(param.defender.ID, _is_attacker:false, defender_turn_sequence, defender_turn_count, defender_attack_count);
+            AttackerData.SetData(_param.Attacker.ID, _is_attacker:true,  attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
+            DefenderData.SetData(_param.Defender.ID, _is_attacker:false, defender_turn_sequence, defender_turn_count, defender_attack_count);
 
-
-            // 
-            param.attacker.Skill.UseSkill(param.attacker);
-            param.defender.Skill.UseSkill(param.defender);
+            // 공/방 돌입전 스킬 사용할 것이 있다면 이곳에서 사용...!
+            _param.Attacker.Skill.UseSkill(_param.Attacker);
+            _param.Defender.Skill.UseSkill(_param.Defender);
 
         }
 
@@ -190,10 +180,6 @@ namespace Battle
         /// </summary>
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            var param = _param as Param;
-            if (param == null)
-                return true;
-
             var attacker_has_remain_turn = AttackerData.IsRemainTurn();
             var defender_has_remain_turn = DefenderData.IsRemainTurn();
 
@@ -228,15 +214,15 @@ namespace Battle
 
         protected override void OnExit(IBattleSystemParam _param)
         {
-            var param = _param as Param;
-            if (param == null)
-                return;
-
-            AttackerData.Reset();
-            DefenderData.Reset();
         }
 
 
+        public void Reset()
+        {
+            CurrentTurn = EnumTurnSide.None;
+            AttackerData.Reset();
+            DefenderData.Reset();
+        }
 
 
 

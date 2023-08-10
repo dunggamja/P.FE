@@ -8,13 +8,15 @@ namespace Battle
 {
     public partial class BattleSystem_Turn : BattleSystem
     {
+
+
         public class Condition_State : ICondition
         {
-            BattleSystem.EnumState State { get; set; }
+            EnumState State { get; set; }
 
-            public bool IsValid(BattleObject _owner)
+            public bool IsValid(ISkillOwner _owner)
             {
-                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                var turn_system = _owner.BattleSystem_Turn; 
                 if (turn_system == null)
                     return false;
 
@@ -30,9 +32,9 @@ namespace Battle
             bool IsOnlyAttacker { get; set; }
             bool IsOnlyDefender { get; set; }
 
-            public bool IsValid(BattleObject _owner)
+            public bool IsValid(ISkillOwner _owner)
             {
-                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                var turn_system = _owner.BattleSystem_Turn;
                 if (turn_system == null || turn_system.IsEngaged(_owner.ID))
                     return false;
 
@@ -65,9 +67,9 @@ namespace Battle
             public EnumEffectType Effect { get; private set; }
             public int            Value  { get; private set; }
 
-            public void Apply(BattleObject _owner)
+            public void Apply(ISkillOwner _owner)
             {
-                var turn_system = BattleSystemManager.Instance.TurnSystem;
+                var turn_system = _owner.BattleSystem_Turn;
                 if (turn_system == null || !turn_system.IsEngaged(_owner.ID))
                     return;
 
