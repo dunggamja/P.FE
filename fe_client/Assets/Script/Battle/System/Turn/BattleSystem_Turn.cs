@@ -143,8 +143,8 @@ namespace Battle
             var attacker_status     = _param.Attacker.Status;
             var defender_status     = _param.Defender.Status;
 
-            var attacker_memory     = _param.Attacker.Memory;
-            var defender_memory     = _param.Defender.Memory;
+            //var attacker_blackboard = _param.Attacker.BlackBoard;
+            //var defender_blackboard = _param.Defender.BlackBoard;
 
             // 행동 순서를 계산한다.
             var attacker_turn_sequence = attacker_status.Buff.Calculate(attacker_status.OwnerObject, EnumBuffStatus.System_TurnSequence).Calculate(0);

@@ -10,11 +10,11 @@ namespace Battle
         public Int64             ID { get; private set; }
         public BattleSystem_Turn BattleSystem_Turn => BattleSystemManager.Instance.TurnSystem;
 
-        public BattleStatus Status { get; }
-        public BattleMemory Memory { get; }
-        public BattleSkill  Skill  { get; }
+        public IBlackBoard  BlackBoard { get; }
+        public BattleStatus Status     { get; }
+        public BattleSkill  Skill      { get; }
 
-        public bool IsDead { get; }
+        //public bool IsDead { get; }
 
     }
 
