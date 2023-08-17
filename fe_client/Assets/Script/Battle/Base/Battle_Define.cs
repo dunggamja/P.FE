@@ -77,12 +77,12 @@ namespace Battle
 
     }
 
-    //public enum EnumTerrainStatus
-    //{
-    //    None = 0,
-    //}
 
-
-    
+    public enum EnumSystem
+    {
+        None,
+        BattleSystem_Turn,
+        BattleSystem_Action,
+    }
 
 }

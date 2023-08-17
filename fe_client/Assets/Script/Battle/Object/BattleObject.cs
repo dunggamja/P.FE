@@ -5,17 +5,15 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class BattleObject : ISkillOwner
+    public class BattleObject : IOwner
     {
         public Int64             ID { get; private set; }
-        public BattleSystem_Turn BattleSystem_Turn => BattleSystemManager.Instance.TurnSystem;
 
         public IBlackBoard  BlackBoard { get; }
         public BattleStatus Status     { get; }
         public BattleSkill  Skill      { get; }
 
         //public bool IsDead { get; }
-
     }
 
     public class BattleObjectManager : Singleton<BattleObjectManager>

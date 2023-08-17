@@ -116,13 +116,13 @@ namespace Battle
             Conditions = null
         };
 
-        public bool IsValidCondition(ISkillOwner _owner)
+        public bool IsValidCondition(ISystem _system, IOwner _owner)
         {
             if (Conditions != null)
             {
                 foreach (var e in Conditions)
                 {
-                    if (e != null && !e.IsValid(_owner))
+                    if (e != null && !e.IsValid(_system, _owner))
                         return false;
                 }
             }
@@ -139,7 +139,7 @@ namespace Battle
 
         public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-        public BuffValue Accumulate_BuffValue(BattleObject _owner, BuffTarget _target)
+        public BuffValue Accumulate_BuffValue(ISystem _system, BattleObject _owner, BuffTarget _target)
         {
             var result = BuffValue.Empty;
 
@@ -150,7 +150,7 @@ namespace Battle
                     foreach (var id in list_buff_id)
                     {
                         var buff = GetBuff(id);
-                        if (buff.IsValidCondition(_owner))
+                        if (buff.IsValidCondition(_system, _owner))
                         {
                             result += buff.Value;
                         }
@@ -163,9 +163,9 @@ namespace Battle
 
 
         #region IBuff Interface
-        public BuffValue Calculate(BattleObject _owner, EnumBuffStatus _status) 
+        public BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status) 
         {
-            return Accumulate_BuffValue(_owner, new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status });
+            return Accumulate_BuffValue(_system, _owner, new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status });
         }
         #endregion IBuff Interface
     }

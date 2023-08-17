@@ -5,10 +5,9 @@ using UnityEngine;
 
 namespace Battle
 {
-    
     public class BattleSkill
     {
-        public void UseSkill(ISkillOwner _owner)
+        public void UseSkill(ISystem _system, IOwner _owner)
         {
 
         }
@@ -16,7 +15,3 @@ namespace Battle
     
 }
 
-//public class BattleSkillPassive
-//{
-
-//}

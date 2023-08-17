@@ -13,9 +13,7 @@ namespace Battle
         MoveDistance = 2,   // 이동 거리.
     }
 
-    /// <summary>
-    /// BlackBoard
-    /// </summary>
+    /// <summary> BlackBoard </summary>
     public interface IBlackBoard
     {
         int  GetValue(EnumBlackBoard _type);

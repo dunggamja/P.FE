@@ -9,45 +9,20 @@ namespace Battle
     public partial class BattleSystem_Turn : BattleSystem
     {
 
-
         public class Condition_State : ICondition
         {
             EnumState State { get; set; }
 
-            public bool IsValid(ISkillOwner _owner)
+            public Condition_State(EnumState _state)
             {
-                var turn_system = _owner.BattleSystem_Turn; 
-                if (turn_system == null)
-                    return false;
+                State = _state;
+            }
 
-                if (turn_system.State != State)
-                    return false;
-
-                return true;
+            public bool IsValid(ISystem _system, IOwner _owner)
+            {
+                return (_system != null && _system.SystemType == EnumSystem.BattleSystem_Turn && _system.State == State);
             }
         }
-
-        public class Condition_Engaged : ICondition
-        {
-            bool IsOnlyAttacker { get; set; }
-            bool IsOnlyDefender { get; set; }
-
-            public bool IsValid(ISkillOwner _owner)
-            {
-                var turn_system = _owner.BattleSystem_Turn;
-                if (turn_system == null || turn_system.IsEngaged(_owner.ID))
-                    return false;
-
-                if (IsOnlyAttacker && !turn_system.IsAttacker(_owner.ID))
-                    return false;
-
-                if (IsOnlyDefender && !turn_system.IsDefender(_owner.ID))
-                    return false;
-
-                return true;
-            }
-        }
-
 
 
         public class Effect_TurnControl : IEffect
@@ -67,14 +42,14 @@ namespace Battle
             public EnumEffectType Effect { get; private set; }
             public int            Value  { get; private set; }
 
-            public void Apply(ISkillOwner _owner)
+            public void Apply(ISystem _system, IOwner _owner)
             {
-                var turn_system = _owner.BattleSystem_Turn;
-                if (turn_system == null || !turn_system.IsEngaged(_owner.ID))
+                var turn_system = _system.SystemManager.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+                if (turn_system == null || !turn_system.IsProgress)
                     return;
 
-                var owner_is_attacker = turn_system.IsAttacker(_owner.ID);
-                var battle_side       = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender; ;
+                var owner_is_attacker = BattleSystemManager.Instance.IsAttacker(_owner.ID);
+                var battle_side       = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender; 
 
                 switch(Effect)
                 {

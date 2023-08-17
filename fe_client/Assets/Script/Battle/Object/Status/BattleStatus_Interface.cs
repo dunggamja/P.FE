@@ -6,11 +6,32 @@ using UnityEngine;
 
 namespace Battle
 {
-
-    public interface ISkillOwner
+    /// <summary>
+    /// 시스템
+    /// </summary>
+    public interface ISystem
     {
-        Int64             ID                { get; }
-        BattleSystem_Turn BattleSystem_Turn { get; }
+        EnumSystem     SystemType    { get; }
+        EnumState      State         { get; }
+        ISystemManager SystemManager { get; }
+    }
+
+
+    public interface ISystemManager
+    {
+        bool    IsProgress { get; }
+        bool    IsFinished { get; }
+
+        ISystem GetSystem(EnumSystem _system_type);
+    }
+
+
+    /// <summary>
+    /// 소유자
+    /// </summary>
+    public interface IOwner
+    {
+        Int64 ID { get; }
     }
 
     /// <summary>
@@ -18,7 +39,7 @@ namespace Battle
     /// </summary>
     public interface ICondition
     {
-        bool IsValid(ISkillOwner _owner);
+        bool IsValid(ISystem _system, IOwner _owner);
     }
 
     /// <summary>
@@ -26,7 +47,7 @@ namespace Battle
     /// </summary>
     public interface IEffect
     {
-        void Apply(ISkillOwner _owner);
+        void Apply(ISystem _system, IOwner _owner);
     }
 
     /// <summary>
@@ -60,8 +81,10 @@ namespace Battle
     /// </summary>
     public interface IBuff
     {
-        BuffValue Calculate(BattleObject _owner, EnumBuffStatus _status);
+        BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status);
     }
+
+    
 
     
 
