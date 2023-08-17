@@ -24,23 +24,3 @@ namespace Battle
 
 }
 
-
-//BattleState  = 3,   // 공방 상태.
-//public enum EnumBattleState
-//{
-//    None = 0,
-
-//    Attack_Start     = 1,
-//    Attack_Hit       = 2,
-//    Attack_Dodged    = 3,
-//    Attack_Blocked   = 4,
-//    Attack_Finished  = 5,
-
-//    Defense_Start    = 11,
-//    Defense_Hit      = 12,
-//    Defense_Dodged   = 13,
-//    Defense_Blocked  = 14,
-//    Defense_Finished = 15,
-//}
-
-

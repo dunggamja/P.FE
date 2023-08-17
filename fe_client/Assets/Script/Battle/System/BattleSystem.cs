@@ -13,9 +13,6 @@ namespace Battle
         Finished,
     }
 
-    
-
-
     public interface IBattleSystemParam
     {
         BattleObject Attacker { get; set; }

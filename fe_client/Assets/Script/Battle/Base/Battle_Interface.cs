@@ -51,6 +51,15 @@ namespace Battle
     }
 
     /// <summary>
+    /// 버프 연산
+    /// </summary>
+    public interface IBuff
+    {
+        BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status);
+    }
+
+
+    /// <summary>
     /// 유닛
     /// </summary>
     public interface IUnit
@@ -76,25 +85,10 @@ namespace Battle
         bool HasAttribute(EnumTerrainAttribute _attribute_type);
     }
 
-    /// <summary>
-    /// 버프 연산
-    /// </summary>
-    public interface IBuff
-    {
-        BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status);
-    }
-
-    
-
-    
-
-    
-
-
-    public interface ICommand
-    {
-        void Do();
-        void Undo();
-    }
+    //public interface ICommand
+    //{
+    //    void Do();
+    //    void Undo();
+    //}
 
 }

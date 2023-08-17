@@ -32,7 +32,7 @@ namespace Battle
             var attacker = _param.Attacker;
             var defender = _param.Defender;
 
-
+            // 공격 전 상태
             ActionState = EnumActionState.Before;
 
             // 공격 전 스킬 사용.
