@@ -25,13 +25,21 @@ namespace Battle
         ISystem GetSystem(EnumSystem _system_type);
     }
 
+    public interface ITarget
+    {
+        int                TargetCount   { get; }
+        IEnumerable<Int64> TargetIDs     { get; }
+        Int64              FirstTargetID { get; }
+    }
+
 
     /// <summary>
     /// 소유자
     /// </summary>
     public interface IOwner
     {
-        Int64 ID { get; }
+        Int64    ID     { get; }
+        ITarget  Target { get; }
     }
 
     /// <summary>
@@ -55,7 +63,7 @@ namespace Battle
     /// </summary>
     public interface IBuff
     {
-        BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status);
+        BuffValue Collect(ISystem _system, BattleObject _owner, EnumBuffStatus _status);
     }
 
 

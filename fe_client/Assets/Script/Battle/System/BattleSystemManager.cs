@@ -22,20 +22,8 @@ namespace Battle
         public BattleSystem_Turn   TurnSystem   => GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
         public BattleSystem_Action ActionSystem => GetSystem(EnumSystem.BattleSystem_Action) as BattleSystem_Action;
 
+
         
-
-        public  ISystem GetSystem(EnumSystem _system_type) => m_repository.TryGetValue((int)_system_type, out var value) ? value : null;
-        private void    UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
-        {
-            var system  = GetSystem(_system_type) as BattleSystem;
-            if (system != null)
-                system.Update(_param);
-        }
-
-
-        public bool    IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
-        public bool    IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
-        public bool    IsDefender(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
 
 
         protected override void Init()
@@ -75,7 +63,7 @@ namespace Battle
             UpdateSystem(EnumSystem.BattleSystem_Action, Param);
 
             // 턴이 모두 종료되면 전투 씬 종료 처리.
-            if (GetSystem(EnumSystem.BattleSystem_Turn).State == EnumState.Finished)
+            if (GetSystemState(EnumSystem.BattleSystem_Turn) == EnumState.Finished)
                 return true;
 
             return false;
@@ -93,9 +81,7 @@ namespace Battle
             {
                 //State = EnumState.Init;
                 State = EnumState.Progress;
-
                 OnEnter();
-
             }
 
             if (OnUpdate())
@@ -109,7 +95,27 @@ namespace Battle
             }
         }
 
+        public  ISystem GetSystem(EnumSystem _system_type) => m_repository.TryGetValue((int)_system_type, out var value) ? value : null;
+        private void    UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
+        {
+            var system  = GetSystem(_system_type) as BattleSystem;
+            if (system != null)
+                system.Update(_param);
+        }
 
+        private EnumState GetSystemState(EnumSystem _system_type)
+        {
+            var system = GetSystem(_system_type);
+            if (system != null)
+                return system.State;
+
+            return EnumState.None;
+        }
+
+
+        public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
+        public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
+        public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
 
     }
 }

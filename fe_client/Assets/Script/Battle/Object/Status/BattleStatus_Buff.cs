@@ -39,14 +39,13 @@ namespace Battle
                               
         System_Damage_Physic  = 2001, // 시스템, 물리 데미지
         System_Damage_Magic   = 2002, // 시스템, 마법 데미지
-        //Battle_Speed        = 2003, // 시스템, 속도  
-        //Battle_Defense      = 2004, // 시스템, 수비
-        //Battle_Resistance   = 2005, // 시스템, 마방
-        System_Critical_Rate  = 2006, // 시스템, 필살 확률
-        System_Dodge_Rate     = 2007, // 시스템, 회피 확률
-        System_TurnSequence   = 2008, // 시스템, 행동 순서 
-        System_TurnCount      = 2009, // 시스템, 행동 횟수 
-        System_AttackCount    = 2010, // 시스템, 공격 횟수 (행동당)
+        System_Critical       = 2006, // 시스템, 필살 확률
+        System_Hit            = 2008, // 시스템, 명중 확률
+
+
+        System_TurnSequence   = 2100, // 시스템, 행동 순서 
+        System_TurnCount      = 2101, // 시스템, 행동 횟수 
+        System_AttackCount    = 2102, // 시스템, 공격 횟수 (행동당)
     }
 
 
@@ -78,6 +77,11 @@ namespace Battle
             Target    = 0,
             Status    = 0
         };
+
+        public static BuffTarget Create(EnumBuffTarget _target, EnumBuffStatus _status)
+        {
+            return new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status };
+        }
     }
 
 
@@ -93,9 +97,14 @@ namespace Battle
         public static BuffValue operator +(BuffValue a, BuffValue b) => new BuffValue { Multiply = a.Multiply + b.Multiply, Add = a.Add + b.Add };
         public static BuffValue operator -(BuffValue a, BuffValue b) => new BuffValue { Multiply = a.Multiply - b.Multiply, Add = a.Add - b.Add };
 
+
+
         public int Calculate(int _value)
         {
-            return (int)(_value * (Multiply + 1f)) + Add;
+            // 음수로 곱해지는 경우는 없다.
+            var multiplier = Math.Max(0f, Multiply + 1f);
+
+            return (int)(_value * multiplier) + Add;
         }
     }
 
@@ -139,7 +148,7 @@ namespace Battle
 
         public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-        public BuffValue Accumulate_BuffValue(ISystem _system, BattleObject _owner, BuffTarget _target)
+        public BuffValue Collect_BuffValue(ISystem _system, BattleObject _owner, BuffTarget _target)
         {
             var result = BuffValue.Empty;
 
@@ -163,9 +172,9 @@ namespace Battle
 
 
         #region IBuff Interface
-        public BuffValue Calculate(ISystem _system, BattleObject _owner, EnumBuffStatus _status) 
+        public BuffValue Collect(ISystem _system, BattleObject _owner, EnumBuffStatus _status) 
         {
-            return Accumulate_BuffValue(_system, _owner, new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status });
+            return Collect_BuffValue(_system, _owner, BuffTarget.Create(EnumBuffTarget.Owner, _status));
         }
         #endregion IBuff Interface
     }

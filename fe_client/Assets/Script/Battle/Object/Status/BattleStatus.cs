@@ -27,8 +27,8 @@ namespace Battle
             var unit_might   = Unit.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
 
-            unit_might       = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
-            weapon_might     = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
+            weapon_might     = Buff.Collect(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
             
             return unit_might + weapon_might;
         }
@@ -39,8 +39,8 @@ namespace Battle
             var unit_might   = Unit.GetStatus(EnumUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
 
-            unit_might       = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
-            weapon_might     = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
+            weapon_might     = Buff.Collect(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
 
             return unit_might + weapon_might;
         }
@@ -102,7 +102,7 @@ namespace Battle
         public int Calc_Defense()
         {
             var unit_defense = Unit.GetStatus(EnumUnitStatus.Defense);
-            var unit_buff    = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Unit_Defense);
+            var unit_buff    = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Defense);
 
             return unit_defense;
         }
@@ -111,7 +111,7 @@ namespace Battle
         public int Calc_Resistance()
         {
             var unit_resistance = Unit.GetStatus(EnumUnitStatus.Resistance);
-            var unit_buff       = Buff.Calculate(null, OwnerObject, EnumBuffStatus.Unit_Resistance);
+            var unit_buff       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Resistance);
 
             unit_resistance     = unit_buff.Calculate(unit_resistance);
 
