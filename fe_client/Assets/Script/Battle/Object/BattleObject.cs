@@ -9,13 +9,13 @@ namespace Battle
     {
         public Int64   ID     { get; private set; }
         public ITarget Target { get; }
+        public bool    IsDead { get; }
 
         public IBlackBoard  BlackBoard { get; }
         public BattleStatus Status     { get; }
         public BattleSkill  Skill      { get; }
 
 
-        //public bool IsDead { get; }
     }
 
     public class BattleObjectManager : Singleton<BattleObjectManager>

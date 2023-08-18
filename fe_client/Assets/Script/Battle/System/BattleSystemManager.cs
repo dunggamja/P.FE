@@ -19,11 +19,6 @@ namespace Battle
 
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
-        public BattleSystem_Turn   TurnSystem   => GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
-        public BattleSystem_Action ActionSystem => GetSystem(EnumSystem.BattleSystem_Action) as BattleSystem_Action;
-
-
-        
 
 
         protected override void Init()
@@ -32,7 +27,7 @@ namespace Battle
 
 
             var turn_sytem   = new BattleSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
-            var action_sytem = new BattleSystem_Action(); m_repository.Add((int)action_sytem.SystemType, action_sytem);
+            var action_sytem = new BattleSystem_Damage(); m_repository.Add((int)action_sytem.SystemType, action_sytem);
         }
 
 
@@ -59,8 +54,10 @@ namespace Battle
             // 공격자/방어자 턴 정하기 
             UpdateSystem(EnumSystem.BattleSystem_Turn, Param);
 
-            // 턴이 정해졌으면 행동을 처리.
-            UpdateSystem(EnumSystem.BattleSystem_Action, Param);
+            // 데미지 계산.
+            UpdateSystem(EnumSystem.BattleSystem_Damage, Param);
+
+            // HP / 효과 등 적용?
 
             // 턴이 모두 종료되면 전투 씬 종료 처리.
             if (GetSystemState(EnumSystem.BattleSystem_Turn) == EnumState.Finished)
@@ -95,7 +92,14 @@ namespace Battle
             }
         }
 
-        public  ISystem GetSystem(EnumSystem _system_type) => m_repository.TryGetValue((int)_system_type, out var value) ? value : null;
+        public ISystem GetSystem(EnumSystem _system_type)
+        {
+            if (m_repository.TryGetValue((int)_system_type, out var system))
+                return system;
+
+            Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
+            return null;
+        }
         private void    UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
         {
             var system  = GetSystem(_system_type) as BattleSystem;

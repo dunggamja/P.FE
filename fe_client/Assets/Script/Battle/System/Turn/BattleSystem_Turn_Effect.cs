@@ -8,23 +8,6 @@ namespace Battle
 {
     public partial class BattleSystem_Turn : BattleSystem
     {
-
-        public class Condition_State : ICondition
-        {
-            EnumState State { get; set; }
-
-            public Condition_State(EnumState _state)
-            {
-                State = _state;
-            }
-
-            public bool IsValid(ISystem _system, IOwner _owner)
-            {
-                return (_system != null && _system.SystemType == EnumSystem.BattleSystem_Turn && _system.State == State);
-            }
-        }
-
-
         public class Effect_TurnControl : IEffect
         {
             public enum EnumEffectType
@@ -40,7 +23,7 @@ namespace Battle
             //}
 
             public EnumEffectType Effect { get; private set; }
-            public int            Value  { get; private set; }
+            public int Value { get; private set; }
 
             public void Apply(ISystem _system, IOwner _owner)
             {
@@ -49,11 +32,11 @@ namespace Battle
                     return;
 
                 var owner_is_attacker = BattleSystemManager.Instance.IsAttacker(_owner.ID);
-                var battle_side       = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender; 
+                var battle_side = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender;
 
-                switch(Effect)
+                switch (Effect)
                 {
-                    case EnumEffectType.TurnSequence:     turn_system.AddTurnSequence(battle_side, Value);     break;
+                    case EnumEffectType.TurnSequence: turn_system.AddTurnSequence(battle_side, Value); break;
                     case EnumEffectType.ExtraAttackCount: turn_system.AddExtraAttackCount(battle_side, Value); break;
                 }
             }

@@ -78,11 +78,5 @@ namespace Battle
     }
 
 
-    public enum EnumSystem
-    {
-        None,
-        BattleSystem_Turn,
-        BattleSystem_Action,
-    }
 
 }

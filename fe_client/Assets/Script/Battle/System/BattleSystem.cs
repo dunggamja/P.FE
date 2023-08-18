@@ -5,18 +5,11 @@ using UnityEngine;
 
 namespace Battle
 {
-    public enum EnumState
-    {
-        None,
-        //Init,
-        Progress,
-        Finished,
-    }
-
     public interface IBattleSystemParam
     {
         BattleObject Attacker { get; set; }
         BattleObject Defender { get; set; }
+        bool         IsPlan   { get; set; }
     }
 
     public abstract class BattleSystem : ISystem

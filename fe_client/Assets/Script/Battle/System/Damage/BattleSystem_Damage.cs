@@ -5,15 +5,14 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class BattleSystem_Action : BattleSystem
+    public partial class BattleSystem_Damage : BattleSystem
     {
-       
-
         public bool IsHit         { get; private set; }
         public bool IsHitCritical { get; private set; }
+        public int  HitDamage     { get; private set; }
 
 
-        public BattleSystem_Action() : base(EnumSystem.BattleSystem_Action)
+        public BattleSystem_Damage() : base(EnumSystem.BattleSystem_Damage)
         { }
 
 
@@ -21,6 +20,7 @@ namespace Battle
         {
             IsHit         = false;
             IsHitCritical = false;
+            HitDamage     = 0;
         }
 
         protected override void OnEnter(IBattleSystemParam _param)
@@ -37,14 +37,14 @@ namespace Battle
 
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            var attacker = _param.Attacker;
-            var defender = _param.Defender;
+            var attacker  = _param.Attacker;
+            var defender  = _param.Defender;
 
             IsHit         = Calculate_Hit(_param);
             IsHitCritical = (IsHit) ? Calculate_HitCritical(_param) : false;
 
-
-
+            HitDamage     = (IsHit) ? Calculate_Damage(_param) : 0;
+            HitDamage    *= (IsHitCritical) ? 3 : 1;
 
             return true;
         }
@@ -73,8 +73,7 @@ namespace Battle
             var buff_value = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_Hit) + defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_Hit);
 
             // 100분율 
-            var calc_rate   = Math.Max(0, hit - dodge);
-            calc_rate       = buff_value.Calculate(calc_rate);
+            var calc_rate   = Math.Max(0, buff_value.Calculate(hit - dodge));
             var random_rate = UnityEngine.Random.Range(0, 100);
 
             return random_rate < calc_rate;
@@ -92,8 +91,7 @@ namespace Battle
             var buff_value = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_Critical) + defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_Critical);
 
             // 100분율 
-            var calc_rate   = Math.Max(0, hit - dodge);
-            calc_rate       = buff_value.Calculate(calc_rate);
+            var calc_rate   = Math.Max(0, buff_value.Calculate(hit - dodge));
             var random_rate = UnityEngine.Random.Range(0, 100);
 
             return random_rate < calc_rate;
@@ -101,17 +99,23 @@ namespace Battle
 
         int Calculate_Damage(IBattleSystemParam _param)
         {
-            // 공격[마공] = 힘[마력] + 무기[마도서] 위력 * (1[1] or 2[2] or 3[3]) +기타[A](스킬 지형효과 등)
+            // 피해량    = (공격[마공] - 수비[마방])
             var attacker = _param.Attacker;
             var defender = _param.Defender;
 
             // 스탯 계산.
-            var might_physic = attacker.Status.Calc_Might_Physic();
-            var might_magic = attacker.Status.Calc_Might_Magic();
+            var might_physic   = attacker.Status.Calc_Might_Physic();
+            var might_magic    = attacker.Status.Calc_Might_Magic();
             var defense_physic = defender.Status.Calc_Defense();
-            var defense_magic = defender.Status.Calc_Resistance();
+            var defense_magic  = defender.Status.Calc_Resistance();
 
-            return 0;
+            var damage_physic  = might_physic - defense_physic;
+            var damage_magic   = might_magic  - defense_magic;
+
+            var buff_value     = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_Damage) + defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_Damage);
+            var damage         = Math.Max(0, buff_value.Calculate(damage_physic + damage_magic));
+
+            return damage;
 
         }
     }
