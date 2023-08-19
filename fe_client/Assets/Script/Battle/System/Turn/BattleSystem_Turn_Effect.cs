@@ -32,7 +32,7 @@ namespace Battle
                     return;
 
                 var owner_is_attacker = BattleSystemManager.Instance.IsAttacker(_owner.ID);
-                var battle_side = (owner_is_attacker) ? EnumTurnSide.Attacker : EnumTurnSide.Defender;
+                var battle_side = (owner_is_attacker) ? EnumTurnPhase.Attacker : EnumTurnPhase.Defender;
 
                 switch (Effect)
                 {

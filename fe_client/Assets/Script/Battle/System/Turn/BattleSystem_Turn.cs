@@ -13,7 +13,7 @@ namespace Battle
     public partial class BattleSystem_Turn : BattleSystem
     {
         
-        public enum EnumTurnSide
+        public enum EnumTurnPhase
         {
             None = 0,
 
@@ -23,23 +23,23 @@ namespace Battle
 
         class TurnData
         {
-            Int64        m_id;
-            EnumTurnSide m_turn_side;
+            Int64         m_id;
+            EnumTurnPhase m_turn_phase;
 
-            int          m_turn_sequence;      // 행동 순서
-            int          m_turn_count;         // 행동 횟수
-            int          m_turn_count_max;     // 최대 행동 횟수
-
-            int          m_attack_count;       // 공격 횟수
-            int          m_attack_count_max;   // 최대 공격 횟수
-            int          m_attack_count_extra; // 추가 공격 횟수
+            int           m_turn_sequence;      // 행동 순서
+            int           m_turn_count;         // 행동 횟수
+            int           m_turn_count_max;     // 최대 행동 횟수
+                         
+            int           m_attack_count;       // 공격 횟수
+            int           m_attack_count_max;   // 최대 공격 횟수
+            int           m_attack_count_extra; // 추가 공격 횟수
 
             
 
-            public void SetData(Int64 _id, EnumTurnSide _turn_side, int _turn_sequence, int _turn_count, int _attack_count)
+            public void SetData(Int64 _id, EnumTurnPhase _turn_phase, int _turn_sequence, int _turn_count, int _attack_count)
             {
                 m_id               = _id;
-                m_turn_side        = _turn_side;
+                m_turn_phase       = _turn_phase;
                 m_turn_sequence    = _turn_sequence;
                 m_turn_count_max   = _turn_count;
                 m_attack_count_max = _attack_count;
@@ -47,8 +47,8 @@ namespace Battle
 
             public Int64 ID           => m_id;
             public int   TurnSequence => m_turn_sequence;   
-            public bool  IsAttacker   => m_turn_side == EnumTurnSide.Attacker;
-            public bool  IsDefender   => m_turn_side == EnumTurnSide.Defender;
+            public bool  IsAttacker   => m_turn_phase == EnumTurnPhase.Attacker;
+            public bool  IsDefender   => m_turn_phase == EnumTurnPhase.Defender;
 
 
             public void  AddTurnSequence(int _value)     => m_turn_sequence      += _value;
@@ -110,14 +110,21 @@ namespace Battle
         }
 
 
-        public  EnumTurnSide TurnSide     { get; private set; } = EnumTurnSide.None;
-        private TurnData     AttackerData { get; set; }
-        private TurnData     DefenderData { get; set; }
+        public  EnumTurnPhase TurnPhase    { get; private set; } = EnumTurnPhase.None;
+        private TurnData      AttackerData { get; set; }
+        private TurnData      DefenderData { get; set; }
 
         public BattleSystem_Turn() : base(EnumSystem.BattleSystem_Turn)
         { }
 
+        public bool IsTurnPhase(Int64 _id)
+        {
+            var turn_data = GetTurnDataBySide(TurnPhase);
+            if (turn_data == null)
+                return false;
 
+            return turn_data.ID == _id;
+        }
 
         TurnData GetTurnDataByID(Int64 _id)
         {
@@ -134,16 +141,18 @@ namespace Battle
             return null;
         }
 
-        TurnData GetTurnDataBySide(EnumTurnSide _side)
+        TurnData GetTurnDataBySide(EnumTurnPhase _side)
         {
             switch (_side)
             {
-                case EnumTurnSide.Attacker: return AttackerData; 
-                case EnumTurnSide.Defender: return DefenderData; 
+                case EnumTurnPhase.Attacker: return AttackerData; 
+                case EnumTurnPhase.Defender: return DefenderData; 
             }
 
             return null;
         }
+
+        
 
 
 
@@ -177,8 +186,8 @@ namespace Battle
             var attacker_attack_count = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_AttackCount).Calculate(1);
             var defender_attack_count = defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_AttackCount).Calculate(1);
 
-            AttackerData.SetData(attacker.ID, EnumTurnSide.Attacker, attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
-            DefenderData.SetData(defender.ID, EnumTurnSide.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
+            AttackerData.SetData(attacker.ID, EnumTurnPhase.Attacker, attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
+            DefenderData.SetData(defender.ID, EnumTurnPhase.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
 
             // 공/방 돌입전 스킬 사용할 것이 있다면 이곳에서 사용...!
             attacker.Skill.UseSkill(this, attacker);
@@ -203,7 +212,7 @@ namespace Battle
                 {
                     // 공격자 턴
                     AttackerData.ProcessTurn();
-                    TurnSide = EnumTurnSide.Attacker;
+                    TurnPhase = EnumTurnPhase.Attacker;
                     return false;
                 }
             }
@@ -213,13 +222,13 @@ namespace Battle
             {
                 // 방어자 턴
                 DefenderData.ProcessTurn();
-                TurnSide = EnumTurnSide.Defender;
+                TurnPhase = EnumTurnPhase.Defender;
                 return false;
             }
 
 
             // 아무도 행동 할 수 없는 상태. 턴 종료 처리를 진행합시다.
-            TurnSide = EnumTurnSide.None;
+            TurnPhase = EnumTurnPhase.None;
             return true;
         }
 
@@ -230,20 +239,20 @@ namespace Battle
 
         public override void Reset()
         {
-            TurnSide = EnumTurnSide.None;
+            TurnPhase = EnumTurnPhase.None;
             AttackerData.Reset();
             DefenderData.Reset();
         }
 
 
 
-        public bool AddTurnSequence(EnumTurnSide _side, int _add_value)
+        public bool AddTurnSequence(EnumTurnPhase _side, int _add_value)
         {
             TurnData turn_data = null;
             switch (_side)
             {
-                case EnumTurnSide.Attacker: turn_data = AttackerData; break;
-                case EnumTurnSide.Defender: turn_data = DefenderData; break;
+                case EnumTurnPhase.Attacker: turn_data = AttackerData; break;
+                case EnumTurnPhase.Defender: turn_data = DefenderData; break;
             }
 
             if (turn_data != null)
@@ -255,13 +264,13 @@ namespace Battle
             return false;
         }
 
-        public bool AddExtraAttackCount(EnumTurnSide _side, int _add_value)
+        public bool AddExtraAttackCount(EnumTurnPhase _side, int _add_value)
         {
             TurnData turn_data = null;
             switch (_side)
             {
-                case EnumTurnSide.Attacker: turn_data = AttackerData; break;
-                case EnumTurnSide.Defender: turn_data = DefenderData; break;
+                case EnumTurnPhase.Attacker: turn_data = AttackerData; break;
+                case EnumTurnPhase.Defender: turn_data = DefenderData; break;
             }
 
             if (turn_data != null)

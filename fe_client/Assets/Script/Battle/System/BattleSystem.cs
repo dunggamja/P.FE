@@ -7,9 +7,9 @@ namespace Battle
 {
     public interface IBattleSystemParam
     {
-        BattleObject Attacker { get; set; }
-        BattleObject Defender { get; set; }
-        bool         IsPlan   { get; set; }
+        BattleObject Attacker { get; }
+        BattleObject Defender { get; }
+        bool         IsPlan   { get; }
     }
 
     public abstract class BattleSystem : ISystem

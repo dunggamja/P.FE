@@ -42,16 +42,16 @@ namespace Battle
     {
       None = 0,
 
-      HP         = 1,  // 체력
-      Strength   = 2,  // 힘
-      Magic      = 3,  // 마력
-      Skill      = 4,  // 기술
-      Speed      = 5,  // 속도
-      Luck       = 6,  // 행운
-      Defense    = 7,  // 수비
-      Resistance = 8,  // 마방
-      Movement   = 9,  // 이동력
-      Weight     = 10, // 중량(체격)
+      HP         ,  // 체력
+      Strength   ,  // 힘
+      Magic      ,  // 마력
+      Skill      ,  // 기술
+      Speed      ,  // 속도
+      Luck       ,  // 행운
+      Defense    ,  // 수비
+      Resistance ,  // 마방
+      Movement   ,  // 이동력
+      Weight     ,  // 중량(체격)
     }
 
     public enum EnumWeaponStatus

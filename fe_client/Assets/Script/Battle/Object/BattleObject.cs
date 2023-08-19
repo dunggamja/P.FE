@@ -15,7 +15,14 @@ namespace Battle
         public BattleStatus Status     { get; }
         public BattleSkill  Skill      { get; }
 
+        public int HP    { get; private set; }
+        public int HPMax { get; private set; }
 
+        public void AddHP(int _value)
+        {
+            // 0 ~ MaxHP 사이로 제한합니다.
+            HP = Mathf.Clamp(HP + _value, 0, HPMax);
+        }
     }
 
     public class BattleObjectManager : Singleton<BattleObjectManager>

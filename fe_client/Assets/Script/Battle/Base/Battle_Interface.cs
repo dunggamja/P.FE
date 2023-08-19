@@ -6,9 +6,6 @@ using UnityEngine;
 
 namespace Battle
 {
-    
-
-
     /// <summary>
     /// 유닛
     /// </summary>
@@ -34,11 +31,4 @@ namespace Battle
     {
         bool HasAttribute(EnumTerrainAttribute _attribute_type);
     }
-
-    //public interface ICommand
-    //{
-    //    void Do();
-    //    void Undo();
-    //}
-
 }

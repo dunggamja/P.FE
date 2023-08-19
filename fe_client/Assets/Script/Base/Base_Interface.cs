@@ -13,7 +13,9 @@ public interface ISystem
     ISystemManager SystemManager { get; }
 }
 
-
+/// <summary>
+/// 시스템 매니저
+/// </summary>
 public interface ISystemManager
 {
     bool IsProgress { get; }
@@ -22,12 +24,7 @@ public interface ISystemManager
     ISystem GetSystem(EnumSystem _system_type);
 }
 
-public interface ITarget
-{
-    int TargetCount { get; }
-    IEnumerable<Int64> TargetIDs { get; }
-    Int64 FirstTargetID { get; }
-}
+
 
 
 /// <summary>
@@ -38,6 +35,16 @@ public interface IOwner
     Int64 ID { get; }
     ITarget Target { get; }
 }
+
+/// <summary>
+/// 타겟 정보
+/// </summary>
+public interface ITarget
+{
+    Int64              MainTargetID   { get; }
+    IEnumerable<Int64> OtherTargetIDs { get; }
+}
+
 
 /// <summary>
 /// 버프/스킬 발동 조건
