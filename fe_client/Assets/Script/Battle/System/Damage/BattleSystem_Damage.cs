@@ -47,8 +47,7 @@ namespace Battle
             HitDamage    *= (IsHitCritical) ? 3 : 1;
 
             // 데미지 적용 여기서 한다.
-
-
+            target.ApplyDamage(HitDamage);
 
             return true;
         }

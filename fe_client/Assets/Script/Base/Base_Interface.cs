@@ -8,8 +8,8 @@ using UnityEngine;
 /// </summary>
 public interface ISystem
 {
-    EnumSystem     SystemType { get; }
-    EnumState      State { get; }
+    EnumSystem     SystemType    { get; }
+    EnumState      State         { get; }
     ISystemManager SystemManager { get; }
 }
 
@@ -32,8 +32,8 @@ public interface ISystemManager
 /// </summary>
 public interface IOwner
 {
-    Int64 ID { get; }
-    ITarget Target { get; }
+    Int64   ID     { get; }
+    ITarget Target { get; }    
 }
 
 /// <summary>
@@ -69,3 +69,4 @@ public interface IBuff
 {
     BuffValue Collect(ISystem _system, IOwner _owner, EnumBuffStatus _status);
 }
+

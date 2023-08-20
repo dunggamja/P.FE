@@ -47,6 +47,16 @@ public enum EnumBuffStatus
 }
 
 
+public enum EnumBuffOption
+{
+    LimitOfUse,  // 횟수 제한
+    LimitOfTurn, // 턴 제한
+    Immutable,   // 변경 불가능
+
+    COUNT
+}
+
+
 public struct BuffTarget : IEqualityComparer<BuffTarget>
 {
     //public int Type;
@@ -106,11 +116,88 @@ public struct BuffValue
     }
 }
 
+
+public struct BuffOption
+{
+    // 
+    int[] Values;
+
+
+    public readonly static BuffOption Empty = new BuffOption
+    {
+        // -1은 사용하지 않는 옵션이라는 뜻.
+        Values = new int[(int)EnumBuffOption.COUNT] { -1, -1, -1 }
+    };
+
+
+    public bool SetValue(EnumBuffOption _option, int _value)
+    {
+        if (Values == null)
+            return false;
+
+        var index = (int)_option;
+        if (index < 0 || Values.Length <= index)
+            return false;
+
+        // 초기화 말고는 음수 셋팅을 막아두자.
+        if (_value < 0)
+            return false;
+
+        Values[index] = _value;
+        return true;
+    }
+
+    public int GetValue(EnumBuffOption _option)
+    {
+        if (Values == null)
+            return 0;
+
+        var index = (int)_option;
+        if (index < 0 || Values.Length <= index)
+            return 0;
+
+        return Values[index];
+    }
+
+    public bool HasValue(EnumBuffOption _option) => 0 < GetValue(_option);
+    public bool HasToVerify(EnumBuffOption _option) => -1 < GetValue(_option);
+
+    public void IncreaseValue(EnumBuffOption _option) => SetValue(_option, GetValue(_option) + 1);
+    public void DecreaseValue(EnumBuffOption _option) => SetValue(_option, GetValue(_option) - 1);
+
+
+    public bool IsExpired()
+    {
+        // 횟수제한 체크.
+        if (HasToVerify(EnumBuffOption.LimitOfUse) && !HasValue(EnumBuffOption.LimitOfUse))
+            return true;
+
+        // 턴 제한 체크
+        if (HasToVerify(EnumBuffOption.LimitOfTurn) && !HasValue(EnumBuffOption.LimitOfTurn))
+            return true;
+
+        return false;
+    }
+
+    
+    public void Process_Use()
+    {
+        DecreaseValue(EnumBuffOption.LimitOfUse);
+    }
+
+    public void Process_Turn()
+    {
+        DecreaseValue(EnumBuffOption.LimitOfTurn);
+    }
+}
+
+
 public struct Buff
 {
     public long             ID;
     public BuffTarget       Target;
     public BuffValue        Value;
+    public BuffOption       Option;
     public List<ICondition> Conditions;
 
            
@@ -120,6 +207,7 @@ public struct Buff
         ID         = 0,
         Target     = BuffTarget.Empty,
         Value      = BuffValue.Empty,
+        Option     = BuffOption.Empty,
         Conditions = null
     };
 
@@ -136,6 +224,11 @@ public struct Buff
 
         return true;
     }
+
+    public bool IsExpired()
+    {
+        return Option.IsExpired();
+    }
 }
 
 public class BuffMananger : IBuff
@@ -143,6 +236,31 @@ public class BuffMananger : IBuff
     Dictionary<long, Buff>                m_list_buff              = new Dictionary<long, Buff>();
     Dictionary<BuffTarget, HashSet<long>> m_list_buff_id_by_target = new Dictionary<BuffTarget, HashSet<long>>();
 
+
+    public bool      AddBuff(Buff _buff)
+    {
+        if (_buff.ID == 0)
+            return false;
+
+        // 겹칠 경우 실패한다고 해두자.
+        if (m_list_buff.ContainsKey(_buff.ID))
+            return false;
+
+
+        // ID에 등록
+        m_list_buff.Add(_buff.ID, _buff);
+
+        // 타겟정보에도 등록
+        if (!m_list_buff_id_by_target.TryGetValue(_buff.Target, out var list_buff_id))
+        {
+            list_buff_id = new HashSet<long>();
+            m_list_buff_id_by_target.Add(_buff.Target, list_buff_id);
+        }
+        list_buff_id.Add(_buff.ID);
+
+
+        return true;
+    }
 
     public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
@@ -157,6 +275,9 @@ public class BuffMananger : IBuff
                 foreach (var id in list_buff_id)
                 {
                     var buff = GetBuff(id);
+                    if (buff.IsExpired())
+                        continue;
+
                     if (buff.IsValidCondition(_system, _owner))
                     {
                         result += buff.Value;
@@ -167,6 +288,9 @@ public class BuffMananger : IBuff
 
         return result;
     }
+
+
+    
 
 
     #region IBuff Interface

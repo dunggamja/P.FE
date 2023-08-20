@@ -11,12 +11,13 @@ namespace Battle
     {
       None = 0,
   
-      Infantry = 1, // 보병
-      Cavalry  = 2, // 기마병
-      Flyer    = 3, // 비행병
-      Undead   = 4, // 좀비류
-      Beast    = 5, // 짐승류
-      Large    = 6, // 대(大)형 
+      Infantry   = 1, // 보병
+      Cavalry    = 2, // 기마병
+      Flyer      = 3, // 비행병
+      Undead     = 4, // 좀비류
+      Beast      = 5, // 짐승류
+      Large      = 6, // 대(大)형 
+      HeavyArmor = 7, // 중갑
     }
 
 
@@ -32,17 +33,20 @@ namespace Battle
       Wand         = 6, // 지팡이
       Grimoire     = 7, // 마법서
       Dagger       = 8, // 단검
-
-
-      IsMagic      = 100,
     }
 
+    public enum EnumUnitPoint
+    {
+        None = 0,
+
+        HP,
+    }
 
     public enum EnumUnitStatus
     {
       None = 0,
 
-      HP         ,  // 체력
+      Health     ,  // 체력
       Strength   ,  // 힘
       Magic      ,  // 마력
       Skill      ,  // 기술
@@ -74,7 +78,6 @@ namespace Battle
 
         Ground = 1,
         Water  = 2,
-
     }
 
 

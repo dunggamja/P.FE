@@ -18,3 +18,4 @@ public enum EnumState
     Progress,
     Finished,
 }
+

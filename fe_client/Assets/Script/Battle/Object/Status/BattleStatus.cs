@@ -8,14 +8,14 @@ namespace Battle
 
     public class BattleStatus 
     {
-        public Int64          ID            { get; }
-        public IUnit          Unit          { get; }
-        public IWeapon        Weapon        { get; }
-        public ITerrain       Terrain       { get; }
-        public IBuff          Buff          { get; }
+        public Int64          ID      { get; }
+        public IUnit          Unit    { get; }
+        public IWeapon        Weapon  { get; }
+        public ITerrain       Terrain { get; }
+        public IBuff          Buff    { get; }
+        public IOwner         Owner   { get; }
         //public IBlackBoard    BlackBoard    { get; }
         //public IActionCounter ActionCounter { get; }
-        public BattleObject   OwnerObject   { get; }
 
         
 
@@ -23,12 +23,11 @@ namespace Battle
         /// <summary> 물리 위력 </summary>
         public int Calc_Might_Physic()
         {
-
             var unit_might   = Unit.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
 
-            unit_might       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
-            weapon_might     = Buff.Collect(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
+            weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
             
             return unit_might + weapon_might;
         }
@@ -39,8 +38,8 @@ namespace Battle
             var unit_might   = Unit.GetStatus(EnumUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
 
-            unit_might       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
-            weapon_might     = Buff.Collect(null, OwnerObject, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
+            weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
 
             return unit_might + weapon_might;
         }
@@ -102,7 +101,7 @@ namespace Battle
         public int Calc_Defense()
         {
             var unit_defense = Unit.GetStatus(EnumUnitStatus.Defense);
-            var unit_buff    = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Defense);
+            var unit_buff    = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Defense);
 
             return unit_defense;
         }
@@ -111,7 +110,7 @@ namespace Battle
         public int Calc_Resistance()
         {
             var unit_resistance = Unit.GetStatus(EnumUnitStatus.Resistance);
-            var unit_buff       = Buff.Collect(null, OwnerObject, EnumBuffStatus.Unit_Resistance);
+            var unit_buff       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Resistance);
 
             unit_resistance     = unit_buff.Calculate(unit_resistance);
 

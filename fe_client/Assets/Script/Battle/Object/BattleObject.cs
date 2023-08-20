@@ -18,10 +18,22 @@ namespace Battle
         public int HP    { get; private set; }
         public int HPMax { get; private set; }
 
-        public void AddHP(int _value)
+        public void ApplyDamage(int _damage)
         {
-            // 0 ~ MaxHP 사이로 제한합니다.
-            HP = Mathf.Clamp(HP + _value, 0, HPMax);
+            if (_damage <= 0)
+                return;
+
+            // 0 미만으로는 내리지 않는다.
+            HP = Math.Max(0, HP - _damage);
+        }
+
+        public void ApplyHeal(int _heal)
+        {
+            if (_heal <= 0)
+                return;
+
+            // HPMax 이상은 제한.
+            HP = Math.Min(HP + _heal, HPMax);
         }
     }
 
