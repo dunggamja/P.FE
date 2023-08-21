@@ -20,21 +20,6 @@ namespace Battle
       HeavyArmor = 7, // 중갑
     }
 
-
-    public enum EnumWeaponAttribute
-    {
-      None = 0,
-  
-      Sword        = 1, // 검
-      Axe          = 2, // 도끼
-      Lance        = 3, // 창
-      MartialArts  = 4, // 격투
-      Bow          = 5, // 활
-      Wand         = 6, // 지팡이
-      Grimoire     = 7, // 마법서
-      Dagger       = 8, // 단검
-    }
-
     public enum EnumUnitPoint
     {
         None = 0,
@@ -58,6 +43,21 @@ namespace Battle
       Weight     ,  // 중량(체격)
     }
 
+    public enum EnumWeaponAttribute
+    {
+      None = 0,
+  
+      Sword        = 1, // 검
+      Axe          = 2, // 도끼
+      Lance        = 3, // 창
+      MartialArts  = 4, // 격투
+      Bow          = 5, // 활
+      Wand         = 6, // 지팡이
+      Grimoire     = 7, // 마법서
+      Dagger       = 8, // 단검
+    }
+
+
     public enum EnumWeaponStatus
     {
       None = 0,
@@ -76,10 +76,24 @@ namespace Battle
     {
         None = 0,
 
-        Ground = 1,
-        Water  = 2,
+        Ground ,
+        Water  ,
+    }
+
+    public enum EnumBlackBoard
+    {
+        None         = 0,
+
+
     }
 
 
+    public enum EnumAdvantageState
+    {
+        None = 0,
+
+        Advantage      ,
+        Disadvantage   ,
+    }
 
 }

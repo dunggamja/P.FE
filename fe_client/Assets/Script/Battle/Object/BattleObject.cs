@@ -15,26 +15,26 @@ namespace Battle
         public BattleStatus Status     { get; }
         public BattleSkill  Skill      { get; }
 
-        public int HP    { get; private set; }
-        public int HPMax { get; private set; }
+        public BaseContainer Points { get; }
 
-        public void ApplyDamage(int _damage)
+
+        public void ApplyDamage(int _damage/*, bool _is_plan = false*/)
         {
             if (_damage <= 0)
                 return;
 
-            // 0 미만으로는 내리지 않는다.
-            HP = Math.Max(0, HP - _damage);
-        }
+            var cur_hp = Points.GetValue((int)EnumUnitPoint.HP/*, _is_plan*/);
+            var new_hp = Math.Max(0, cur_hp - _damage);
 
-        public void ApplyHeal(int _heal)
-        {
-            if (_heal <= 0)
-                return;
+            //if (_is_plan)
+            //    Points.PushPlanValue((int)EnumUnitPoint.HP, new_hp);
+            //else
+            
+            // TODO: 플랜에 대한 처리를 좀 더 깔끔하게 해야하는데....
 
-            // HPMax 이상은 제한.
-            HP = Math.Min(HP + _heal, HPMax);
+            Points.SetValue((int)EnumUnitPoint.HP, new_hp);
         }
+        
     }
 
     public class BattleObjectManager : Singleton<BattleObjectManager>

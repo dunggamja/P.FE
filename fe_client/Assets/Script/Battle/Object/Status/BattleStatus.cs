@@ -53,6 +53,8 @@ namespace Battle
             var unit_hit   = unit_skill * 2 + unit_luck / 2;
             var weapon_hit = Weapon.GetStatus(EnumWeaponStatus.Hit);
 
+
+
             return unit_hit + weapon_hit;
         }
 

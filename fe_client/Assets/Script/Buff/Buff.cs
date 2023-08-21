@@ -38,7 +38,9 @@ public enum EnumBuffStatus
     System_Damage         = 2001, // 시스템, 데미지
     //System_Damage_Magic   = 2002, // 시스템, 마법 데미지
     System_Critical       = 2006, // 시스템, 필살 확률
+    //System_Dodge_Critical = 2007, // 시스템, 필살 회피 확률
     System_Hit            = 2008, // 시스템, 명중 확률
+    //System_Dodge          = 2009, // 시스템, 회피 확률
 
 
     System_TurnSequence   = 2100, // 시스템, 행동 순서 

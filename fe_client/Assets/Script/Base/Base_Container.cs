@@ -45,6 +45,7 @@ public class BaseContainer
 
     public void SetValue(int _key, bool _value) => SetValue(_key, _value ? 1 : 0);
 
+
     public void PushPlanValue(int _key, int _value)
     {
         var original  = 0 < m_stack_for_planning.Count ? m_stack_for_planning.Peek() : m_real_values;

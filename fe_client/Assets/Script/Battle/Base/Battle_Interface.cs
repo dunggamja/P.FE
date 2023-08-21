@@ -11,8 +11,10 @@ namespace Battle
     /// </summary>
     public interface IUnit
     {
+        int  GetPoint(EnumUnitPoint _point_type);
         int  GetStatus(EnumUnitStatus _status_type);
         bool HasAttribute(EnumUnitAttribute _attribute_type);
+
     }
 
     /// <summary>
@@ -22,6 +24,8 @@ namespace Battle
     {
         int  GetStatus(EnumWeaponStatus _status_type);
         bool HasAttribute(EnumWeaponAttribute _attribute_type);
+
+
     }
 
     /// <summary>
@@ -30,5 +34,16 @@ namespace Battle
     public interface ITerrain
     {
         bool HasAttribute(EnumTerrainAttribute _attribute_type);
+    }
+
+    /// <summary> 
+    /// BlackBoard 
+    /// </summary>
+    public interface IBlackBoard
+    {
+        int  GetValue(EnumBlackBoard _type);
+        bool HasValue(EnumBlackBoard _type);
+        void SetValue(EnumBlackBoard _type, int _value);
+        void SetValue(EnumBlackBoard _type, bool _value);
     }
 }
