@@ -7,9 +7,6 @@ namespace Battle
 {
     public partial class Weapon
     {
-        // 상성이 유리할 경우 적용할 값 (명중)
-        public const int ADVANTAGE_HIT = 20;
-
         // 기본 무기 상성표 
         static HashSet<(EnumWeaponAttribute, EnumWeaponAttribute)> s_default_advantage = new HashSet<(EnumWeaponAttribute, EnumWeaponAttribute)>()
         {
@@ -41,7 +38,6 @@ namespace Battle
                 // 불리한 상성인지 체크
                 else if (_source.HasAttribute(disadvantage) && _target.HasAttribute(advantage))
                     return EnumAdvantageState.Disadvantage;
-
             }
 
             return EnumAdvantageState.None;

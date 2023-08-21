@@ -27,7 +27,7 @@ namespace Battle
 
 
             var turn_sytem   = new BattleSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
-            var action_sytem = new BattleSystem_Damage(); m_repository.Add((int)action_sytem.SystemType, action_sytem);
+            var damage_sytem = new BattleSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
         }
 
 
@@ -57,10 +57,9 @@ namespace Battle
             // 데미지 계산.
             UpdateSystem(EnumSystem.BattleSystem_Damage, Param);
 
-            // HP / 효과 등 적용?
 
-            // 턴이 모두 종료되면 전투 씬 종료 처리.
-            if (GetSystemState(EnumSystem.BattleSystem_Turn) == EnumState.Finished)
+            // 전투가 종료되었는지 체크.
+            if (CheckIsFinished())
                 return true;
 
             return false;
@@ -120,6 +119,20 @@ namespace Battle
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
         public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
+
+
+        bool CheckIsFinished()
+        {
+            // 턴이 모두 종료되면 전투 씬 종료 처리.
+            if (GetSystemState(EnumSystem.BattleSystem_Turn) == EnumState.Finished)
+                return true;
+
+            // 둘중 1명이 죽었다면 전투씬 종료 처리.
+            if (Param.Attacker.IsDead || Param.Defender.IsDead)
+                return true;
+
+            return false;
+        }
 
     }
 }

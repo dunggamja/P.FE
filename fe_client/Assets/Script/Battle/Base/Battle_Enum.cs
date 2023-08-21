@@ -55,6 +55,15 @@ namespace Battle
       Wand         = 6, // 지팡이
       Grimoire     = 7, // 마법서
       Dagger       = 8, // 단검
+
+
+      KillInfantry   = 101, // 특효, 보병     
+      KillCavalry    = 102, // 특효, 기마병
+      KillFlyer      = 103, // 특효, 비행병
+      KillUndead     = 104, // 특효, 좀비류
+      KillBeast      = 105, // 특효, 짐승류
+      KillLarge      = 106, // 특효, 대(大)형 
+      KillHeavyArmor = 107, // 특효, 중갑
     }
 
 
