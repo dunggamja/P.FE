@@ -51,15 +51,18 @@ namespace Battle
 
         bool OnUpdate()
         {
-            // 공격자/방어자 턴 정하기 
-            UpdateSystem(EnumSystem.BattleSystem_Turn, Param);
+            // 공격자/방어자 턴 셋팅
+            if (UpdateSystem(EnumSystem.BattleSystem_Turn, Param) == EnumState.Finished)
+            {
+                // 공격자/방어자 턴 셋팅 실패
+                return true;
+            }
 
             // 데미지 계산.
             UpdateSystem(EnumSystem.BattleSystem_Damage, Param);
 
-
-            // 전투가 종료되었는지 체크.
-            if (CheckIsFinished())
+            // 공격자/방어자 중 1명이 죽음.
+            if (Param.Attacker.IsDead || Param.Defender.IsDead)
                 return true;
 
             return false;
@@ -68,10 +71,11 @@ namespace Battle
 
         void OnExit()
         {
+            //Debug.Log("Battle Finished");
         }
 
 
-        void Update()
+        public void Update()
         {
             if (State != EnumState.Progress)
             {
@@ -99,11 +103,13 @@ namespace Battle
             Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
-        private void    UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
+        private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
         {
             var system  = GetSystem(_system_type) as BattleSystem;
             if (system != null)
-                system.Update(_param);
+                return system.Update(_param);
+
+            return EnumState.None;
         }
 
         private EnumState GetSystemState(EnumSystem _system_type)
@@ -115,6 +121,12 @@ namespace Battle
             return EnumState.None;
         }
 
+        private bool IsSystemFinished(EnumSystem _system_type)
+        {
+            return GetSystemState(_system_type) == EnumState.Finished;
+        }
+
+
 
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
@@ -123,15 +135,26 @@ namespace Battle
 
         bool CheckIsFinished()
         {
-            // 턴이 모두 종료되면 전투 씬 종료 처리.
-            if (GetSystemState(EnumSystem.BattleSystem_Turn) == EnumState.Finished)
-                return true;
+            
+
+            
+
+            return false;
+        }
+
+        bool OnUpdate_Verify()
+        {
+            // 널 체크
+            if (Param == null || Param.Attacker == null || Param.Defender == null)
+                return false;
 
             // 둘중 1명이 죽었다면 전투씬 종료 처리.
             if (Param.Attacker.IsDead || Param.Defender.IsDead)
                 return true;
 
-            return false;
+            
+
+            return true;
         }
 
     }

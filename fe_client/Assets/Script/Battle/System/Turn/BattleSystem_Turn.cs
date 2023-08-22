@@ -55,15 +55,14 @@ namespace Battle
             public void  AddMaxTurnCount(int _value)     => m_turn_count_max     += _value;
             public void  AddExtraAttackCount(int _value) => m_attack_count_extra += _value;
 
-
             bool IsRemainAttackCount()
             {
                 return m_attack_count < (m_attack_count_max + m_attack_count_extra);
             }
 
-            bool IsRemainTurnCount()
+            bool HasNextTurn()
             {
-                return m_turn_count < m_turn_count_max;
+                return m_turn_count + 1 < m_turn_count_max;
             }
 
             public void Reset()
@@ -78,41 +77,43 @@ namespace Battle
                 m_attack_count_extra = 0;
             }
 
+
+
             public bool IsRemainTurn()
             {
-                return IsRemainAttackCount() || IsRemainTurnCount();
+                // 공격 횟수가 남아 있음.
+                if (IsRemainAttackCount())
+                    return true;
+
+                // 여유 턴이 있는지 체크.
+                if (HasNextTurn())
+                    return true;
+
+                return false;
             }
 
-            public bool ProcessTurn()
+            public void ProcessTurn()
             {
                 if (!IsRemainAttackCount())
                 {
-                    if (IsRemainTurnCount())
-                    {
-                        // 해당턴의 공격 완료, 다음 턴으로 넘어감
-                        ++m_turn_count;
-                        ++m_turn_sequence;
-                        m_attack_count       = 0;
-                        m_attack_count_extra = 0;
-                    }                    
+                    // 해당턴의 공격 완료, 다음 턴으로 넘어감
+                    ++m_turn_count;
+                    ++m_turn_sequence;
+                    m_attack_count       = 0;
+                    m_attack_count_extra = 0;
                 }
 
                 if (IsRemainAttackCount())
                 {
                     ++m_attack_count;
-                    return true;
                 }
-
-
-                // 완료
-                return false;
             }
         }
 
 
         public  EnumTurnPhase TurnPhase    { get; private set; } = EnumTurnPhase.None;
-        private TurnData      AttackerData { get; set; }
-        private TurnData      DefenderData { get; set; }
+        private TurnData      AttackerData { get; set; }         = new TurnData();
+        private TurnData      DefenderData { get; set; }         = new TurnData();
 
         public BattleSystem_Turn() : base(EnumSystem.BattleSystem_Turn)
         { }
@@ -167,24 +168,24 @@ namespace Battle
             var defender = _param.Defender;
 
             // 행동 순서를 계산한다.
-            var attacker_turn_sequence = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_TurnSequence).Calculate(0);
-            var defender_turn_sequence = defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_TurnSequence).Calculate(0);
+            var attacker_turn_sequence = attacker.StatusManager.Buff.Collect(this, attacker, EnumBuffStatus.System_TurnSequence).Calculate(0);
+            var defender_turn_sequence = defender.StatusManager.Buff.Collect(this, defender, EnumBuffStatus.System_TurnSequence).Calculate(0);
 
             // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
             const int ADD_EXTRA_TURN_SPEED = 5; 
 
-            var attacker_speed      = attacker.Status.Calc_Speed();
-            var defender_speed      = defender.Status.Calc_Speed();
+            var attacker_speed      = attacker.StatusManager.Calc_Speed();
+            var defender_speed      = defender.StatusManager.Calc_Speed();
             var attacker_turn_count = (attacker_speed - defender_speed) >= ADD_EXTRA_TURN_SPEED ? 2 : 1;
             var defender_turn_count = (defender_speed - attacker_speed) >= ADD_EXTRA_TURN_SPEED ? 2 : 1;
 
             // 행동 횟수 관련 버프 적용.
-            attacker_turn_count     = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_TurnCount).Calculate(attacker_turn_count);
-            defender_turn_count     = defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_TurnCount).Calculate(defender_turn_count);
+            attacker_turn_count     = attacker.StatusManager.Buff.Collect(this, attacker, EnumBuffStatus.System_TurnCount).Calculate(attacker_turn_count);
+            defender_turn_count     = defender.StatusManager.Buff.Collect(this, defender, EnumBuffStatus.System_TurnCount).Calculate(defender_turn_count);
 
             // 행동당 공격 횟수를 계산합니다. 
-            var attacker_attack_count = attacker.Status.Buff.Collect(this, attacker, EnumBuffStatus.System_AttackCount).Calculate(1);
-            var defender_attack_count = defender.Status.Buff.Collect(this, defender, EnumBuffStatus.System_AttackCount).Calculate(1);
+            var attacker_attack_count = attacker.StatusManager.Buff.Collect(this, attacker, EnumBuffStatus.System_AttackCount).Calculate(1);
+            var defender_attack_count = defender.StatusManager.Buff.Collect(this, defender, EnumBuffStatus.System_AttackCount).Calculate(1);
 
             AttackerData.SetData(attacker.ID, EnumTurnPhase.Attacker, attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
             DefenderData.SetData(defender.ID, EnumTurnPhase.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
@@ -212,7 +213,7 @@ namespace Battle
                 {
                     // 공격자 턴
                     AttackerData.ProcessTurn();
-                    TurnPhase = EnumTurnPhase.Attacker;
+                    TurnPhase = EnumTurnPhase.Attacker;                    
                     return false;
                 }
             }

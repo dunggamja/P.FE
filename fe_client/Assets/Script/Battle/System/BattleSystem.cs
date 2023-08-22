@@ -33,7 +33,7 @@ namespace Battle
         protected abstract bool OnUpdate(IBattleSystemParam _param);
         protected abstract void OnExit(IBattleSystemParam _param);
 
-        public void Update(IBattleSystemParam _param)
+        public EnumState Update(IBattleSystemParam _param)
         {
             if (State != EnumState.Progress)
             {
@@ -53,6 +53,8 @@ namespace Battle
             {
                 OnExit(_param);
             }
+
+            return State;
         }
     }
 

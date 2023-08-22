@@ -99,9 +99,9 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 스탯  & 버프 계산.
-            var hit        = dealer.Status.Calc_Hit();
-            var dodge      = target.Status.Calc_Dodge();
-            var buff_value = dealer.Status.Buff.Collect(this, dealer, EnumBuffStatus.System_Hit) + target.Status.Buff.Collect(this, target, EnumBuffStatus.System_Hit);
+            var hit        = dealer.StatusManager.Calc_Hit();
+            var dodge      = target.StatusManager.Calc_Dodge();
+            var buff_value = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Hit) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Hit);
 
 
             // 무기 상성 적용.
@@ -124,9 +124,9 @@ namespace Battle
 
 
             // 스탯  & 버프 계산.
-            var hit        = dealer.Status.Calc_Critical();
-            var dodge      = target.Status.Calc_DodgeCritical();
-            var buff_value = dealer.Status.Buff.Collect(this, dealer, EnumBuffStatus.System_Critical) + target.Status.Buff.Collect(this, target, EnumBuffStatus.System_Critical);
+            var hit        = dealer.StatusManager.Calc_Critical();
+            var dodge      = target.StatusManager.Calc_DodgeCritical();
+            var buff_value = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Critical) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Critical);
 
 
 
@@ -141,17 +141,17 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 스탯 계산.
-            var might_physic   = dealer.Status.Calc_Might_Physic();
-            var might_magic    = dealer.Status.Calc_Might_Magic();
-            var defense_physic = target.Status.Calc_Defense();
-            var defense_magic  = target.Status.Calc_Resistance();
+            var might_physic   = dealer.StatusManager.Calc_Might_Physic();
+            var might_magic    = dealer.StatusManager.Calc_Might_Magic();
+            var defense_physic = target.StatusManager.Calc_Defense();
+            var defense_magic  = target.StatusManager.Calc_Resistance();
 
             var damage_physic  = might_physic - defense_physic;
             var damage_magic   = might_magic  - defense_magic;
             var damage_total   = damage_physic + damage_magic;
 
             // 버프 계산.
-            var buff_value     = dealer.Status.Buff.Collect(this, dealer, EnumBuffStatus.System_Damage) + target.Status.Buff.Collect(this, target, EnumBuffStatus.System_Damage);
+            var buff_value     = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Damage) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Damage);
             damage_total       = Math.Max(0, buff_value.Calculate(damage_total));
 
             return damage_total;
@@ -194,7 +194,7 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 무기 상성 체크.
-            var weapon_advantage = Weapon.Calculate_Advantage(dealer.Status.Weapon, target.Status.Weapon);
+            var weapon_advantage = Weapon.Calculate_Advantage(dealer.StatusManager.Weapon, target.StatusManager.Weapon);
 
             // TODO: 버프 체크
 
@@ -208,7 +208,7 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 무기 특효 체크
-            var weapon_effectiveness = Weapon.Calculate_Effectiveness(dealer.Status.Weapon, target.Status.Unit);
+            var weapon_effectiveness = Weapon.Calculate_Effectiveness(dealer.StatusManager.Weapon, target.StatusManager.Status);
 
             // TODO: 버프 체크
 

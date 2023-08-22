@@ -31,7 +31,7 @@ namespace Battle
     {
       None = 0,
 
-      Health     ,  // 체력
+      Level      ,  // 레벨
       Strength   ,  // 힘
       Magic      ,  // 마력
       Skill      ,  // 기술

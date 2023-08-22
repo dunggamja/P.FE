@@ -70,3 +70,12 @@ public interface IBuff
     BuffValue Collect(ISystem _system, IOwner _owner, EnumBuffStatus _status);
 }
 
+
+/// <summary>
+/// 스킬
+/// </summary>
+public interface ISkill
+{
+    bool UseSkill(ISystem _system, IOwner _owner);
+}
+
