@@ -54,14 +54,14 @@ namespace Battle
             // 공격자/방어자 턴 셋팅
             if (UpdateSystem(EnumSystem.BattleSystem_Turn, Param) == EnumState.Finished)
             {
-                // 공격자/방어자 턴 셋팅 실패
+                // 공격자/방어자 턴 셋팅 실패하면 바로 종료 처리.
                 return true;
             }
 
             // 데미지 계산.
             UpdateSystem(EnumSystem.BattleSystem_Damage, Param);
 
-            // 공격자/방어자 중 1명이 죽음.
+            // 공격자/방어자 중 1명이 죽었으면 종료 처리.
             if (Param.Attacker.IsDead || Param.Defender.IsDead)
                 return true;
 

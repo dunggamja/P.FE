@@ -27,7 +27,7 @@ namespace Battle
             SystemType = _system_type;
         }
 
-        public abstract void Reset();
+        public    abstract void Reset();
 
         protected abstract void OnEnter(IBattleSystemParam _param);
         protected abstract bool OnUpdate(IBattleSystemParam _param);

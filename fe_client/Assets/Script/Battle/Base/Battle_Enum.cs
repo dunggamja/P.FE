@@ -81,13 +81,7 @@ namespace Battle
     }
 
 
-    public enum EnumTerrainAttribute
-    {
-        None = 0,
-
-        Ground ,
-        Water  ,
-    }
+    
 
     public enum EnumBlackBoard
     {
@@ -104,5 +98,16 @@ namespace Battle
         Advantage      ,
         Disadvantage   ,
     }
+
+
+
+    public enum EnumTerrainAttribute
+    {
+        None = 0,
+        Ground,
+        Water,
+    }
+
+    
 
 }
