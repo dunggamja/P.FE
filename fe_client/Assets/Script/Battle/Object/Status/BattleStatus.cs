@@ -74,7 +74,12 @@ namespace Battle
         public int Calc_Might_Physic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Strength);
-            var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
+            var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
+            if (weapon_might <= 0)
+            {
+                // 무기에 셋팅된 위력이 0일 경우,
+                return 0;
+            }
 
             unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
             weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
@@ -86,7 +91,13 @@ namespace Battle
         public int Calc_Might_Magic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Magic);
-            var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might);
+            var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
+            if (weapon_might <= 0)
+            {
+                // 무기에 셋팅된 위력이 0일 경우,
+                return 0;
+            }
+
 
             unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
             weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);

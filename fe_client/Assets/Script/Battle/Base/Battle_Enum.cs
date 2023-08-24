@@ -71,13 +71,14 @@ namespace Battle
     {
       None = 0,
   
-      Might          = 1, // 위력
-      Hit            = 2, // 명중
-      Critical       = 3, // 필살
-      Weight         = 4, // 무게
-      Dodge          = 5, // 회피
-      Dodge_Critical = 6, // 필살 회피
-      Range          = 7, // 사정
+      Might_Physics  , // 위력 (물리)
+      Might_Magic    , // 위력 (마법)
+      Hit            , // 명중
+      Critical       , // 필살
+      Weight         , // 무게
+      Dodge          , // 회피
+      Dodge_Critical , // 필살 회피
+      Range          , // 사정
     }
 
 

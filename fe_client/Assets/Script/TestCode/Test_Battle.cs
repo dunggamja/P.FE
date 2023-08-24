@@ -72,13 +72,13 @@ public class Test_Battle : MonoBehaviour
         defender_status.SetStatus(EnumUnitStatus.Weight, 4);
 
 
-        attacker_weapon.SetStatus(EnumWeaponStatus.Might, 3);
+        attacker_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
         attacker_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
         attacker_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
         attacker_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);
         attacker_weapon.SetStatus(EnumWeaponStatus.Range, 1);
 
-        defender_weapon.SetStatus(EnumWeaponStatus.Might, 3);
+        defender_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
         defender_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
         defender_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
         defender_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);

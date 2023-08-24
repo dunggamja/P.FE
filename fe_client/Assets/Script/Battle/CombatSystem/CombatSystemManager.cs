@@ -100,9 +100,10 @@ namespace Battle
             if (m_repository.TryGetValue((int)_system_type, out var system))
                 return system;
 
-            Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
+            Debug.LogError($"Can't Find System, {_system_type.ToString()} in CombatSystemManager[{GetType().ToString()}]");
             return null;
         }
+
         private EnumState UpdateSystem(EnumSystem _system_type, ICombatSystemParam _param)
         {
             var system  = GetSystem(_system_type) as CombatSystem;

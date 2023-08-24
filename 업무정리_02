@@ -14,8 +14,12 @@
 -
 
 
-
-전투씬 기능  - Battle
+전투 - Battle 
+ ㄴ Combat (전투씬)
+ ㄴ BattleTerrain (전투 지형)
+ ㄴ BattleObject (전투 오브젝트)
+ 
+전투씬 기능  - Combat
  -
 
 전투맵 기능  - BattleTerrain
@@ -27,6 +31,11 @@
  - 전투맵/전투씬/월드맵의 연출이 필요할때도 여기에서 제어할 수 있어야 한다.
  - 스크립트 언어를 통해 연출 요소를 제어할 예정. (python)
  
- 
+
 
 월드맵 기능  - WorldMap
+
+
+버프,
+ - 횟수제 버프들 사용처리는 어뜨케 할까?
+ 

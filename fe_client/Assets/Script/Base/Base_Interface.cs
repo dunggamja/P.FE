@@ -11,6 +11,9 @@ public interface ISystem
     EnumSystem     SystemType    { get; }
     EnumState      State         { get; }
     ISystemManager SystemManager { get; }
+
+    bool IsProgress { get; }
+    bool IsFinished { get; }
 }
 
 /// <summary>

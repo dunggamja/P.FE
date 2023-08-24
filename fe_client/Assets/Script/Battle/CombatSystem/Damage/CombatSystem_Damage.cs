@@ -146,9 +146,9 @@ namespace Battle
             var defense_physic = target.StatusManager.Calc_Defense();
             var defense_magic  = target.StatusManager.Calc_Resistance();
 
-            var damage_physic  = might_physic - defense_physic;
-            var damage_magic   = might_magic  - defense_magic;
-            var damage_total   = damage_physic + damage_magic;
+            var damage_physic = (0 < might_physic) ? Math.Max(0, might_physic - defense_physic) : 0;
+            var damage_magic  = (0 < might_magic)  ? Math.Max(0, might_magic  - defense_magic) : 0;
+            var damage_total  = damage_physic + damage_magic;
 
             // 버프 계산.
             var buff_value     = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Damage) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Damage);
