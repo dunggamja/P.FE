@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Battle
 {
-    public partial class BattleSystem_Turn : BattleSystem
+    public partial class CombatSystem_Turn : CombatSystem
     {
         public class Effect_TurnControl : IEffect
         {
@@ -27,17 +27,17 @@ namespace Battle
 
             public void Apply(ISystem _system, IOwner _owner)
             {
-                var turn_system = _system.SystemManager.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+                var turn_system = _system.SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
                 if (turn_system == null || !turn_system.IsProgress)
                     return;
 
-                var owner_is_attacker = BattleSystemManager.Instance.IsAttacker(_owner.ID);
-                var battle_side = (owner_is_attacker) ? EnumTurnPhase.Attacker : EnumTurnPhase.Defender;
+                var owner_is_attacker = CombatSystemManager.Instance.IsAttacker(_owner.ID);
+                var owner_side        = (owner_is_attacker) ? EnumTurnPhase.Attacker : EnumTurnPhase.Defender;
 
                 switch (Effect)
                 {
-                    case EnumEffectType.TurnSequence: turn_system.AddTurnSequence(battle_side, Value); break;
-                    case EnumEffectType.ExtraAttackCount: turn_system.AddExtraAttackCount(battle_side, Value); break;
+                    case EnumEffectType.TurnSequence:     turn_system.AddTurnSequence(owner_side, Value); break;
+                    case EnumEffectType.ExtraAttackCount: turn_system.AddExtraAttackCount(owner_side, Value); break;
                 }
             }
         }

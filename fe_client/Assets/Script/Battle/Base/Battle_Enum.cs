@@ -103,9 +103,11 @@ namespace Battle
 
     public enum EnumTerrainAttribute
     {
-        None = 0,
         Ground,
         Water,
+
+        MAX = 32,
+        // bitflag 로 연산을 할거임...
     }
 
     

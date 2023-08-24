@@ -16,7 +16,7 @@ public class Test_Battle : MonoBehaviour
     //{
     //}
 
-    class TestBattleParam : IBattleSystemParam
+    class TestBattleParam : ICombatSystemParam
     {
         BattleObject m_attacker;
         BattleObject m_defender;
@@ -87,7 +87,7 @@ public class Test_Battle : MonoBehaviour
 
 
         Param = new TestBattleParam(attacker, defender);
-        BattleSystemManager.Instance.SetData(Param);
+        CombatSystemManager.Instance.SetData(Param);
     }
 
 
@@ -95,6 +95,6 @@ public class Test_Battle : MonoBehaviour
     void TickUpdate()
     {
         //IBattleSystemParam
-        BattleSystemManager.Instance.Update();
+        CombatSystemManager.Instance.Update();
     }
 }

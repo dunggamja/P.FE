@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Battle
 {
-    public partial class BattleSystem_Turn : BattleSystem
+    public partial class CombatSystem_Turn : CombatSystem
     {
 
         public class Condition_IsOwnerTurn : ICondition
         {
             public bool IsValid(ISystem _system, IOwner _owner)
             {
-                var turn_system = _system.SystemManager.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+                var turn_system = _system.SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
                 if (turn_system == null)
                     return false;
 

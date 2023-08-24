@@ -9,11 +9,11 @@ namespace Battle
     /// <summary>
     /// 전투 씬을 관리하기 위한 시스템 매니저입니다.
     /// </summary>
-    public class BattleSystemManager : Singleton<BattleSystemManager>, ISystemManager
+    public class CombatSystemManager : Singleton<CombatSystemManager>, ISystemManager
     {
-        Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
+        Dictionary<int, CombatSystem> m_repository = new Dictionary<int, CombatSystem>();
 
-        public IBattleSystemParam  Param      { get; private set; }
+        public ICombatSystemParam  Param      { get; private set; }
         public EnumState           State      { get; private set; }
 
 
@@ -26,8 +26,8 @@ namespace Battle
             base.Init();
 
 
-            var turn_sytem   = new BattleSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
-            var damage_sytem = new BattleSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+            var turn_sytem   = new CombatSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
+            var damage_sytem = new CombatSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
         }
 
 
@@ -40,7 +40,7 @@ namespace Battle
                 e.Reset();
         }
 
-        public void SetData(IBattleSystemParam _param)
+        public void SetData(ICombatSystemParam _param)
         {
             Param = _param;
         }
@@ -52,14 +52,14 @@ namespace Battle
         bool OnUpdate()
         {
             // 공격자/방어자 턴 셋팅
-            if (UpdateSystem(EnumSystem.BattleSystem_Turn, Param) == EnumState.Finished)
+            if (UpdateSystem(EnumSystem.CombatSystem_Turn, Param) == EnumState.Finished)
             {
                 // 공격자/방어자 턴 셋팅 실패하면 바로 종료 처리.
                 return true;
             }
 
             // 데미지 계산.
-            UpdateSystem(EnumSystem.BattleSystem_Damage, Param);
+            UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
 
             // 공격자/방어자 중 1명이 죽었으면 종료 처리.
             if (Param.Attacker.IsDead || Param.Defender.IsDead)
@@ -103,9 +103,9 @@ namespace Battle
             Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
-        private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
+        private EnumState UpdateSystem(EnumSystem _system_type, ICombatSystemParam _param)
         {
-            var system  = GetSystem(_system_type) as BattleSystem;
+            var system  = GetSystem(_system_type) as CombatSystem;
             if (system != null)
                 return system.Update(_param);
 

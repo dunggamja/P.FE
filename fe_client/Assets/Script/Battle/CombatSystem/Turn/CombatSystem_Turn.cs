@@ -10,7 +10,7 @@ namespace Battle
     /// 전투 공/방 순서
     /// </summary>
 
-    public partial class BattleSystem_Turn : BattleSystem
+    public partial class CombatSystem_Turn : CombatSystem
     {
         
         public enum EnumTurnPhase
@@ -115,7 +115,7 @@ namespace Battle
         private TurnData      AttackerData { get; set; }         = new TurnData();
         private TurnData      DefenderData { get; set; }         = new TurnData();
 
-        public BattleSystem_Turn() : base(EnumSystem.BattleSystem_Turn)
+        public CombatSystem_Turn() : base(EnumSystem.CombatSystem_Turn)
         { }
 
         public bool IsTurnPhase(Int64 _id)
@@ -157,7 +157,7 @@ namespace Battle
 
 
 
-        protected override void OnEnter(IBattleSystemParam _param)
+        protected override void OnEnter(ICombatSystemParam _param)
         {
             if (_param == null)
                 return;
@@ -199,7 +199,7 @@ namespace Battle
         /// <summary>
         /// 공/방 공격 순서를 1스텝씩 진행시킨다.
         /// </summary>
-        protected override bool OnUpdate(IBattleSystemParam _param)
+        protected override bool OnUpdate(ICombatSystemParam _param)
         {
             var attacker_has_remain_turn = AttackerData.IsRemainTurn();
             var defender_has_remain_turn = DefenderData.IsRemainTurn();
@@ -233,7 +233,7 @@ namespace Battle
             return true;
         }
 
-        protected override void OnExit(IBattleSystemParam _param)
+        protected override void OnExit(ICombatSystemParam _param)
         {
         }
 

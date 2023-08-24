@@ -7,8 +7,8 @@ using UnityEngine;
 public enum EnumSystem
 {
     None,
-    BattleSystem_Turn,
-    BattleSystem_Damage,
+    CombatSystem_Turn,
+    CombatSystem_Damage,
 }
 
 public enum EnumState

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class BattleSystem_Damage : BattleSystem
+    public partial class CombatSystem_Damage : CombatSystem
     {
         const int ADVANTAGE_HIT               = 20;
         const int CRITICAL_DAMAGE_MULTIPLIER  = 3;
@@ -22,7 +22,7 @@ namespace Battle
         public int  Result_Damage       { get; private set; }
 
 
-        public BattleSystem_Damage() : base(EnumSystem.BattleSystem_Damage)
+        public CombatSystem_Damage() : base(EnumSystem.CombatSystem_Damage)
         { }
 
 
@@ -40,7 +40,7 @@ namespace Battle
             Result_Damage       = 0;
         }
 
-        protected override void OnEnter(IBattleSystemParam _param)
+        protected override void OnEnter(ICombatSystemParam _param)
         {
             Reset();
 
@@ -56,7 +56,7 @@ namespace Battle
             target.Skill.UseSkill(this, target);
         }
 
-        protected override bool OnUpdate(IBattleSystemParam _param)
+        protected override bool OnUpdate(ICombatSystemParam _param)
         {
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
@@ -80,7 +80,7 @@ namespace Battle
             return true;
         }
 
-        protected override void OnExit(IBattleSystemParam _param)
+        protected override void OnExit(ICombatSystemParam _param)
         {
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
@@ -92,7 +92,7 @@ namespace Battle
 
 
 
-        int Calculate_HitRate(IBattleSystemParam _param)
+        int Calculate_HitRate(ICombatSystemParam _param)
         {
             // 명중률 = 명중 - 회피
             var dealer = GetDealer(_param);
@@ -115,7 +115,7 @@ namespace Battle
             return Math.Max(0, buff_value.Calculate(hit - dodge));
         }
 
-        int Calculate_CriticalRate(IBattleSystemParam _param)
+        int Calculate_CriticalRate(ICombatSystemParam _param)
         {
             // 필살 발생 확률 = 필살 - 필살 회피
             var dealer = GetDealer(_param);
@@ -134,7 +134,7 @@ namespace Battle
             return Math.Max(0, buff_value.Calculate(hit - dodge));
         }
 
-        int Calculate_Damage(IBattleSystemParam _param)
+        int Calculate_Damage(ICombatSystemParam _param)
         {
             // 피해량 = (공격[마공] - 수비[마방])
             var dealer = GetDealer(_param);
@@ -157,37 +157,37 @@ namespace Battle
             return damage_total;
         }
 
-        BattleObject GetDealer(IBattleSystemParam _param)
+        BattleObject GetDealer(ICombatSystemParam _param)
         {
-            var turn_system = SystemManager.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+            var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             if (turn_system == null)
                 return null;
 
             switch(turn_system.TurnPhase)
             {
-                case BattleSystem_Turn.EnumTurnPhase.Attacker: return _param.Attacker;
-                case BattleSystem_Turn.EnumTurnPhase.Defender: return _param.Defender;
+                case CombatSystem_Turn.EnumTurnPhase.Attacker: return _param.Attacker;
+                case CombatSystem_Turn.EnumTurnPhase.Defender: return _param.Defender;
             }
 
             return null;
         }
 
-        BattleObject GetTarget(IBattleSystemParam _param)
+        BattleObject GetTarget(ICombatSystemParam _param)
         {
-            var turn_system = SystemManager.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+            var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             if (turn_system == null)
                 return null;
 
             switch (turn_system.TurnPhase)
             {
-                case BattleSystem_Turn.EnumTurnPhase.Attacker: return _param.Defender;
-                case BattleSystem_Turn.EnumTurnPhase.Defender: return _param.Attacker;
+                case CombatSystem_Turn.EnumTurnPhase.Attacker: return _param.Defender;
+                case CombatSystem_Turn.EnumTurnPhase.Defender: return _param.Attacker;
             }
 
             return null;
         }
 
-        EnumAdvantageState Calculate_WeaponAdvantage(IBattleSystemParam _param)
+        EnumAdvantageState Calculate_WeaponAdvantage(ICombatSystemParam _param)
         {
             //
             var dealer = GetDealer(_param);
@@ -201,7 +201,7 @@ namespace Battle
             return weapon_advantage;
         }
 
-        bool Calculate_WeaponEffectiveness(IBattleSystemParam _param)
+        bool Calculate_WeaponEffectiveness(ICombatSystemParam _param)
         {
             //
             var dealer = GetDealer(_param);

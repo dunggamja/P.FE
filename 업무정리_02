@@ -18,8 +18,8 @@
 전투씬 기능  - Battle
  -
 
-전투맵 기능  - Field
- - 
+전투맵 기능  - BattleTerrain
+ - 타일맵. 
  - 에디터 기능도 필요함
 
 스토리 기능  - Story
