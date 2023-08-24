@@ -100,10 +100,9 @@ namespace Battle
             if (m_repository.TryGetValue((int)_system_type, out var system))
                 return system;
 
-            Debug.LogError($"Can't Find System, {_system_type.ToString()} in CombatSystemManager[{GetType().ToString()}]");
+            Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
-
         private EnumState UpdateSystem(EnumSystem _system_type, ICombatSystemParam _param)
         {
             var system  = GetSystem(_system_type) as CombatSystem;
@@ -127,36 +126,9 @@ namespace Battle
             return GetSystemState(_system_type) == EnumState.Finished;
         }
 
-
-
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
         public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
-
-
-        bool CheckIsFinished()
-        {
-            
-
-            
-
-            return false;
-        }
-
-        bool OnUpdate_Verify()
-        {
-            // 널 체크
-            if (Param == null || Param.Attacker == null || Param.Defender == null)
-                return false;
-
-            // 둘중 1명이 죽었다면 전투씬 종료 처리.
-            if (Param.Attacker.IsDead || Param.Defender.IsDead)
-                return true;
-
-            
-
-            return true;
-        }
 
     }
 }

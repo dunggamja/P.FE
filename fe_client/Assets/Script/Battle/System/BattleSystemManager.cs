@@ -9,11 +9,13 @@ namespace Battle
     {
         Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
 
+        public IBattleSystemParam  Param      { get; private set; }
+        public EnumState           State      { get; private set; }
 
-        public EnumState State { get; private set; }
 
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
+
 
         protected override void Init()
         {
@@ -23,18 +25,52 @@ namespace Battle
         }
 
 
+        void OnEnter()
+        {
+        }
+
+        bool OnUpdate()
+        {
+            return false;
+        }
+
+
+        void OnExit()
+        {
+        }
+
+
+        public void Update()
+        {
+            if (State != EnumState.Progress)
+            {
+                //State = EnumState.Init;
+                State = EnumState.Progress;
+                OnEnter();
+            }
+
+            if (OnUpdate())
+            {
+                State = EnumState.Finished;
+            }
+
+            if (State != EnumState.Progress)
+            {
+                OnExit();
+            }
+        }
+
         public ISystem GetSystem(EnumSystem _system_type)
         {
             if (m_repository.TryGetValue((int)_system_type, out var system))
                 return system;
 
-            Debug.LogError($"Can't Find System, {_system_type.ToString()} in BattleSystemManager[{GetType().ToString()}]");
+            Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
-
-        private EnumState UpdateSystem(EnumSystem _system_type, ICombatSystemParam _param)
+        private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
         {
-            var system = GetSystem(_system_type) as CombatSystem;
+            var system = GetSystem(_system_type) as BattleSystem;
             if (system != null)
                 return system.Update(_param);
 
@@ -54,5 +90,7 @@ namespace Battle
         {
             return GetSystemState(_system_type) == EnumState.Finished;
         }
+
+
     }
 }

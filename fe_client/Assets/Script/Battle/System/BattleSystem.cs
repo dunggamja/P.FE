@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public interface IBattleSystemParam
+    public interface IBattleSystemParam : ISystemParam
     {
 
     }

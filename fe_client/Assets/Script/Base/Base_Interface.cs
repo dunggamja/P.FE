@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface ISystemParam
+{
+
+}
+
 /// <summary>
 /// 시스템
 /// </summary>

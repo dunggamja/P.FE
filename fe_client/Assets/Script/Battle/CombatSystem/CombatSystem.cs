@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public interface ICombatSystemParam
+    public interface ICombatSystemParam : ISystemParam
     {
         BattleObject Attacker { get; }
         BattleObject Defender { get; }

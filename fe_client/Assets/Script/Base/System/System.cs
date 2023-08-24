@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class System<T> : ISystem
+public abstract class System<T> : ISystem where T : ISystemParam
 {
     public          EnumSystem     SystemType    { get; private set; } = EnumSystem.None;
     public          EnumState      State         { get; private set; } = EnumState.None;
