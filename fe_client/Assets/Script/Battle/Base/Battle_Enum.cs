@@ -88,7 +88,8 @@ namespace Battle
     {
         None         = 0,
 
-
+        CommandType,
+        FactionType,
     }
 
 
@@ -109,6 +110,13 @@ namespace Battle
 
         MAX = 32,
         // bitflag 로 연산을 할거임...
+    }
+
+    public enum EnumCommandType
+    {
+        None,   // 명령 불가능
+        Player, // 플레이어가 명령.
+        AI,     // AI가 명령.
     }
 
     

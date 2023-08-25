@@ -163,10 +163,10 @@ namespace Battle
             if (turn_system == null)
                 return null;
 
-            switch(turn_system.TurnPhase)
+            switch(turn_system.CombatTurn)
             {
-                case CombatSystem_Turn.EnumTurnPhase.Attacker: return _param.Attacker;
-                case CombatSystem_Turn.EnumTurnPhase.Defender: return _param.Defender;
+                case CombatSystem_Turn.EnumCombatTurn.Attacker: return _param.Attacker;
+                case CombatSystem_Turn.EnumCombatTurn.Defender: return _param.Defender;
             }
 
             return null;
@@ -178,10 +178,10 @@ namespace Battle
             if (turn_system == null)
                 return null;
 
-            switch (turn_system.TurnPhase)
+            switch (turn_system.CombatTurn)
             {
-                case CombatSystem_Turn.EnumTurnPhase.Attacker: return _param.Defender;
-                case CombatSystem_Turn.EnumTurnPhase.Defender: return _param.Attacker;
+                case CombatSystem_Turn.EnumCombatTurn.Attacker: return _param.Defender;
+                case CombatSystem_Turn.EnumCombatTurn.Defender: return _param.Attacker;
             }
 
             return null;

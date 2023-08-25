@@ -5,15 +5,20 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class BattleObject : IOwner
+    public class BattleObject : IOwner, IFaction, ICommand
     {
         public Int64   ID     { get; private set; }
         public ITarget Target { get; }
-        public bool    IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+
 
         public IBlackBoard          BlackBoard    { get; }
         public ISkill               Skill         { get; }
         public BattleStatusManager  StatusManager { get; }
+
+
+
+        public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+
 
         protected BattleObject(Int64 _id)
         {
@@ -47,32 +52,28 @@ namespace Battle
             Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
         }
 
+        public int GetFaction()
+        {
+            return BlackBoard.GetValue(EnumBlackBoard.FactionType);
+        }
+
+        public void SetFaction(int _faction)
+        {
+            BlackBoard.SetValue(EnumBlackBoard.FactionType, _faction);
+        }
+
+        public EnumCommandType GetCommandType()
+        {
+            return (EnumCommandType)BlackBoard.GetValue(EnumBlackBoard.CommandType);
+        }
+
+        public void SetCommandType(EnumCommandType _command_type)
+        {
+            BlackBoard.SetValue(EnumBlackBoard.CommandType, (int)_command_type);
+        }
 
     }
 
-    public class BattleObjectManager : Singleton<BattleObjectManager>
-    {
-        Dictionary<Int64, BattleObject> m_repository_by_id = new Dictionary<long, BattleObject>();
 
-        public BattleObject GetBattleObject(Int64 _id) 
-        {
-            if (m_repository_by_id.TryGetValue(_id, out var battle_object))
-                return battle_object;
-
-            return null;
-        }
-
-        public bool AddBattleObject(BattleObject _object)
-        {
-            if (_object == null)
-                return false;
-
-            if (m_repository_by_id.ContainsKey(_object.ID))
-                return false;
-
-            m_repository_by_id.Add(_object.ID, _object);
-            return true;
-        }
-    }
 }
 

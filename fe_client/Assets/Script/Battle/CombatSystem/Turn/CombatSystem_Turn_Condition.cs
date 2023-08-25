@@ -21,10 +21,10 @@ namespace Battle
                 if (turn_data == null)
                     return false;
 
-                switch (turn_system.TurnPhase)
+                switch (turn_system.CombatTurn)
                 {
-                    case EnumTurnPhase.Attacker: return turn_data.IsAttacker;
-                    case EnumTurnPhase.Defender: return turn_data.IsDefender;
+                    case EnumCombatTurn.Attacker: return turn_data.IsAttacker;
+                    case EnumCombatTurn.Defender: return turn_data.IsDefender;
                 }
 
                 return false;

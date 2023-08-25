@@ -47,4 +47,22 @@ namespace Battle
         void SetValue(EnumBlackBoard _type, int _value);
         void SetValue(EnumBlackBoard _type, bool _value);
     }
+
+    /// <summary>
+    /// 진영 정보.
+    /// </summary>
+    public interface IFaction
+    {
+        int  GetFaction();
+        void SetFaction(int _faction);
+    }
+
+    /// <summary>
+    /// 유닛의 제어권
+    /// </summary>
+    public interface ICommand
+    {
+        EnumCommandType GetCommandType();
+        void            SetCommandType(EnumCommandType _command_type);
+    }
 }

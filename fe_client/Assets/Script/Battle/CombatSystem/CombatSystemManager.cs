@@ -7,7 +7,7 @@ namespace Battle
 {
     
     /// <summary>
-    /// 전투 씬을 관리하기 위한 시스템 매니저입니다.
+    /// 전투 씬 관리용
     /// </summary>
     public class CombatSystemManager : Singleton<CombatSystemManager>, ISystemManager
     {
