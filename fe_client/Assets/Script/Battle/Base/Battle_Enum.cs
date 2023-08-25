@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace Battle
 {
-
+    /// <summary>
+    /// 유닛 특성
+    /// </summary>
     public enum EnumUnitAttribute
     {
       None = 0,
@@ -20,13 +22,20 @@ namespace Battle
       HeavyArmor = 7, // 중갑
     }
 
+    /// <summary>
+    /// 유닛의 포인트 (HP/EXP 등등)
+    /// </summary>
     public enum EnumUnitPoint
     {
         None = 0,
 
         HP,
+        EXP,
     }
 
+    /// <summary>
+    /// 유닛의 스테이터스
+    /// </summary>
     public enum EnumUnitStatus
     {
       None = 0,
@@ -43,6 +52,9 @@ namespace Battle
       Weight     ,  // 중량(체격)
     }
 
+    /// <summary>
+    /// 무기 특성
+    /// </summary>
     public enum EnumWeaponAttribute
     {
       None = 0,
@@ -66,7 +78,9 @@ namespace Battle
       KillHeavyArmor = 107, // 특효, 중갑
     }
 
-
+    /// <summary>
+    /// 무기의 스테이터스
+    /// </summary>
     public enum EnumWeaponStatus
     {
       None = 0,
@@ -82,17 +96,21 @@ namespace Battle
     }
 
 
-    
-
+    /// <summary>
+    /// 블랙보드 
+    /// </summary>
     public enum EnumBlackBoard
     {
         None         = 0,
 
-        CommandType,
-        FactionType,
+        CommandType,  // EnumCommandType
+        CommandState, // 행동 상태
+        Faction,      // 
     }
 
-
+    /// <summary>
+    /// 유리/불리 상성
+    /// </summary>
     public enum EnumAdvantageState
     {
         None = 0,
@@ -102,16 +120,22 @@ namespace Battle
     }
 
 
-
+    /// <summary>
+    /// 지형 특성 (bitflag)
+    /// </summary>
     public enum EnumTerrainAttribute
     {
         Ground,
         Water,
 
         MAX = 32,
-        // bitflag 로 연산을 할거임...
+        // bitflag 로 연산을 할거라서 MAX 값 제한.
     }
 
+
+    /// <summary>
+    /// 유닛의 제어 타입
+    /// </summary>
     public enum EnumCommandType
     {
         None,   // 명령 불가능
@@ -119,6 +143,14 @@ namespace Battle
         AI,     // AI가 명령.
     }
 
-    
+    /// <summary>
+    /// 유닛의 행동 상태
+    /// </summary>
+    public enum EnumCommandState
+    {
+        None,
+        Active, // 행동 가능
+        Wait,   // 행동 완료 후 대기 상태
+    }
 
 }

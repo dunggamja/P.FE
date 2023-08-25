@@ -58,11 +58,14 @@ namespace Battle
     }
 
     /// <summary>
-    /// 유닛의 제어권
+    /// 유닛의 제어
     /// </summary>
     public interface ICommand
     {
-        EnumCommandType GetCommandType();
-        void            SetCommandType(EnumCommandType _command_type);
+        EnumCommandType  GetCommandType();
+        void             SetCommandType(EnumCommandType _command_type);
+
+        EnumCommandState GetCommandState(); 
+        void             SetCommandState(EnumCommandState _command_state); 
     }
 }

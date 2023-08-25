@@ -54,12 +54,12 @@ namespace Battle
 
         public int GetFaction()
         {
-            return BlackBoard.GetValue(EnumBlackBoard.FactionType);
+            return BlackBoard.GetValue(EnumBlackBoard.Faction);
         }
 
         public void SetFaction(int _faction)
         {
-            BlackBoard.SetValue(EnumBlackBoard.FactionType, _faction);
+            BlackBoard.SetValue(EnumBlackBoard.Faction, _faction);
         }
 
         public EnumCommandType GetCommandType()
@@ -72,6 +72,16 @@ namespace Battle
             BlackBoard.SetValue(EnumBlackBoard.CommandType, (int)_command_type);
         }
 
+        public EnumCommandState GetCommandState()
+        {
+            return (EnumCommandState)BlackBoard.GetValue(EnumBlackBoard.CommandState);
+
+        }
+
+        public void SetCommandState(EnumCommandState _command_state)
+        {
+            BlackBoard.SetValue(EnumBlackBoard.CommandState, (int)_command_state);
+        }
     }
 
 
