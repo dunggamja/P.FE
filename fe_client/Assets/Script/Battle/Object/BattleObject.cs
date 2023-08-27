@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class BattleObject : IOwner, IFaction, ICommand
+    public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver
     {
         public Int64   ID     { get; private set; }
         public ITarget Target { get; }
@@ -31,10 +31,22 @@ namespace Battle
 
         public static BattleObject Create()
         {
-            var    battle_object = new BattleObject(Util.GenerateID());
+            var battle_object = new BattleObject(Util.GenerateID());
+            battle_object.Init();
 
             return battle_object;
         }
+
+        public void Init()
+        {
+            EventManager.Instance.AttachReceiver(this);
+        }
+
+        public void Reset()
+        {
+            EventManager.Instance.DetachReceiver(this);
+        }
+
 
 
         public void ApplyDamage(int _damage/*, bool _is_plan = false*/)
@@ -42,14 +54,14 @@ namespace Battle
             if (_damage <= 0)
                 return;
 
-            // TODO: 플랜에 대한 처리를 좀 더 깔끔하게 해보자...
+            // TODO: 플랜에 대한 처리 필요...
 
             var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
             var new_hp = Math.Max(0, cur_hp - _damage);
 
             StatusManager.Status.SetPoint(EnumUnitPoint.HP, new_hp);
 
-            Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
+            // Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
         }
 
         public int GetFaction()
@@ -82,6 +94,8 @@ namespace Battle
         {
             BlackBoard.SetValue(EnumBlackBoard.CommandState, (int)_command_state);
         }
+
+        
     }
 
 

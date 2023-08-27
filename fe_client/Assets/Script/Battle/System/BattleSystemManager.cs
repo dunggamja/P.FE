@@ -22,6 +22,21 @@ namespace Battle
             base.Init();
 
             // TODO: 
+            var turn_system = new BattleSystem_Turn(); m_repository.Add((int)turn_system.SystemType, turn_system);
+        }
+
+        public void Reset()
+        {
+            Param = null;
+            State = EnumState.None;
+
+            foreach (var e in m_repository.Values)
+                e.Reset();
+        }
+
+        public void SetData(IBattleSystemParam _param)
+        {
+            Param = _param;
         }
 
 
@@ -31,6 +46,9 @@ namespace Battle
 
         bool OnUpdate()
         {
+            // 현재 턴/ 현재 행동하는 진영
+            UpdateSystem(EnumSystem.BattleSystem_Turn, Param);
+
             return false;
         }
 
