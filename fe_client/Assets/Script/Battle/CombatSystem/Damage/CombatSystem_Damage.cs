@@ -52,8 +52,7 @@ namespace Battle
             WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
 
             // 공격 전 스킬 사용.
-            dealer.Skill.UseSkill(this, dealer);
-            target.Skill.UseSkill(this, target);
+            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -86,8 +85,10 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            dealer.Skill.UseSkill(this, dealer);
-            target.Skill.UseSkill(this, target);
+            //dealer.Skill.UseSkill(this, dealer);
+            //target.Skill.UseSkill(this, target);
+
+            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
         }
 
 

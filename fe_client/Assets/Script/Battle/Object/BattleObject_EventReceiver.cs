@@ -9,11 +9,10 @@ namespace Battle
     {
         public void OnReceiveEvent(IEventParam _param)
         {
-            if (_param is BattleSystem_Turn.EventParam battle_system_turn)
+            if (_param is SkillUseEvent skill_use_param)
             {
-                // 진영 / 턴 관련 
-
-
+                // 스킬 사용 이벤트.
+                Skill.UseSkill(skill_use_param.System, this);
             }
         }
     }

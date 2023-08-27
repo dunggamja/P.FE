@@ -70,7 +70,8 @@ namespace Battle
 
             UpdateTurnAndFaction(turn, faction);
 
-            EventManager.Instance.DispatchEvent(new EventParam(this));
+            // 스킬 사용 이벤트 발생. (턴/진행 따라서...)
+            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
             return false;
         }
 
