@@ -39,7 +39,7 @@ namespace Battle
             UpdateTurnAndFaction(1, 0);
 
             // 이벤트.
-            EventManager.Instance.DispatchEvent(new EventParam(this));
+            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
         }
 
 

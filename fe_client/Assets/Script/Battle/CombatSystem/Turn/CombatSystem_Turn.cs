@@ -190,10 +190,8 @@ namespace Battle
             AttackerData.SetData(attacker.ID, EnumCombatTurn.Attacker, attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
             DefenderData.SetData(defender.ID, EnumCombatTurn.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
 
-            // 공/방 돌입전 스킬 사용할 것이 있다면 이곳에서 사용...!
-            //attacker.Skill.UseSkill(this, attacker);
-            //defender.Skill.UseSkill(this, defender);
-
+            // 공/방 돌입전 턴 관련 스킬 사용할 것이 있다면 여기서 사용.
+            SkillTiming = EnumSkillTiming.CombatSystem_Turn_Start;
             EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
         }
 

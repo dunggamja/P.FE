@@ -5,9 +5,11 @@ using UnityEngine;
 
 public abstract class System<T> : ISystem where T : ISystemParam
 {
-    public          EnumSystem     SystemType    { get; private set; } = EnumSystem.None;
-    public          EnumState      State         { get; private set; } = EnumState.None;
-    public abstract ISystemManager SystemManager { get; }
+    public EnumSystem      SystemType  { get; private set;   } = EnumSystem.None;
+    public EnumState       State       { get; private set;   } = EnumState.None;
+    public EnumSkillTiming SkillTiming { get; protected set; } = EnumSkillTiming.None; 
+
+    //public abstract ISystemManager SystemManager { get; }
 
     public bool IsProgress => State == EnumState.Progress;
     public bool IsFinished => State == EnumState.Finished;
@@ -27,9 +29,7 @@ public abstract class System<T> : ISystem where T : ISystemParam
     {
         if (State != EnumState.Progress)
         {
-            //State = EnumState.Init;
             State = EnumState.Progress;
-
             OnEnter(_param);
         }
 

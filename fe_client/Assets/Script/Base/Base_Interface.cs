@@ -13,9 +13,10 @@ public interface ISystemParam
 /// </summary>
 public interface ISystem
 {
-    EnumSystem     SystemType    { get; }
-    EnumState      State         { get; }
-    ISystemManager SystemManager { get; }
+    EnumSystem      SystemType  { get; }
+    EnumState       State       { get; }
+    EnumSkillTiming SkillTiming { get; }
+    //ISystemManager SystemManager { get; }
 
     bool IsProgress { get; }
     bool IsFinished { get; }

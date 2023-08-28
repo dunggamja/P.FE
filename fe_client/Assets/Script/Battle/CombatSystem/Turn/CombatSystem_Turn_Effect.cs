@@ -27,7 +27,8 @@ namespace Battle
 
             public void Apply(ISystem _system, IOwner _owner)
             {
-                var turn_system = _system.SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+                //var turn_system = _system.SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+                var turn_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
                 if (turn_system == null || !turn_system.IsProgress)
                     return;
 

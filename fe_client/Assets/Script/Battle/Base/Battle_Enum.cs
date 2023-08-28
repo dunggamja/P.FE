@@ -153,4 +153,6 @@ namespace Battle
         Wait,   // 행동 완료 후 대기 상태
     }
 
+
+    
 }

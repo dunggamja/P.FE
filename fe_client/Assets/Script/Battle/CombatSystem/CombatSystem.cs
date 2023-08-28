@@ -14,7 +14,7 @@ namespace Battle
 
     public abstract class CombatSystem : System<ICombatSystemParam>
     {
-        public override ISystemManager SystemManager => CombatSystemManager.Instance;
+        //public override ISystemManager SystemManager => CombatSystemManager.Instance;
 
         //public bool IsInit    => State == EnumState.Init;
 

@@ -11,6 +11,21 @@ namespace Battle
         const int CRITICAL_DAMAGE_MULTIPLIER  = 3;
         const int EFFECTIVE_DAMAGE_MULTIPLIER = 2;
 
+        public enum EnumSkillTiming
+        {
+            None,
+
+            Attack_Start,
+            Attack_Complete,
+
+            Modify_Advantage,
+            Modify_Hit,
+            Modify_Critical,
+            Modify_Damage,
+            Modify_ApplyDamage,
+        }
+
+
         public EnumAdvantageState WeaponAdvantage     { get; private set; }
         public bool               WeaponEffectiveness { get; private set; }
 
@@ -47,12 +62,11 @@ namespace Battle
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
 
-            // 무기 상성/특효에 대한 값 셋팅.
-            WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
-            WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
-
             // 공격 전 스킬 사용.
+            //SkillTiming = 
             EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
+
+            // TODO: Attack_Start
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -60,11 +74,15 @@ namespace Battle
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
 
+            // 무기 상성/특효에 대한 값 셋팅.
+            WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
+            WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
+
             // 명중 / 필살 / 데미지 계산.
             Result_HitRate       = Calculate_HitRate(_param);
             Result_Hit           = Util.Random100_Result(Result_HitRate);
 
-            Result_CriticalRate  = (Result_Hit) ? Calculate_CriticalRate(_param) : 0;
+            Result_CriticalRate  = Calculate_CriticalRate(_param);
             Result_Critical      = Util.Random100_Result(Result_CriticalRate);
 
             Result_Damage        = (Result_Hit) ? Calculate_Damage(_param) : 0;
@@ -85,9 +103,6 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            //dealer.Skill.UseSkill(this, dealer);
-            //target.Skill.UseSkill(this, target);
-
             EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
         }
 
@@ -160,7 +175,8 @@ namespace Battle
 
         BattleObject GetDealer(ICombatSystemParam _param)
         {
-            var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+            //var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+            var turn_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             if (turn_system == null)
                 return null;
 
@@ -175,7 +191,8 @@ namespace Battle
 
         BattleObject GetTarget(ICombatSystemParam _param)
         {
-            var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+            //var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+            var turn_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             if (turn_system == null)
                 return null;
 
