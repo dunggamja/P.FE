@@ -17,15 +17,16 @@ namespace Battle
 
     public class BattleSkill : ISkill
     {
-        // ½ºÅ³Àº Æ¯Á¤ ½Ã½ºÅÛ¿¡ ÀÇÇØ¼­¸¸ ¹ßµ¿ °¡´ÉÇÏ´Ù ¶ó°í ÀÏ´Ü Á¤ÇØµÎÀÚ.
+        // 
+        // ï¿½ï¿½Å³ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½Ã½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ ï¿½ßµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½.
         EnumSystem m_system_type;
         int        m_system_skill_timing;
 
         public bool UseSkill(ISystem _system, IOwner _owner)
         {
-            if (_system.SystemType != m_system_type || _system.SkillTiming != m_system_skill_timing)
-                return false;
-
+            // if (_system.SystemType != m_system_type || _system.SkillTiming != m_system_skill_timing)
+                // return false;
+            
             return true;
         }
     }

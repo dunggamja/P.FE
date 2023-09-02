@@ -15,6 +15,8 @@ namespace Battle
         //public override ISystemManager SystemManager => BattleSystemManager.Instance;
 
         protected BattleSystem(EnumSystem _system_type) : base(_system_type)
-        { }
+        { 
+            
+        }
     }
 }
