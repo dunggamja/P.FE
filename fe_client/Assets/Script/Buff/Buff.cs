@@ -63,6 +63,7 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>
 {
     //public int Type;
     //public int Situation;
+    public int Situation;
     public int Target;
     public int Status;
 
@@ -70,27 +71,27 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>
     {
         return
         //x.Type      == y.Type      &&
-        //x.Situation == y.Situation &&
+        x.Situation == y.Situation &&
         x.Target    == y.Target    &&
         x.Status    == y.Status;
     }
 
     public int GetHashCode(BuffTarget obj)
     {
-        return /*obj.Type ^*/ /*obj.Situation ^*/ obj.Target ^ obj.Status;
+        return obj.Situation ^ obj.Target ^ obj.Status;
     }
 
     public readonly static BuffTarget  Empty = new BuffTarget
     {
         //Type      = 0,
-        //Situation = 0,
+        Situation = 0,
         Target    = 0,
         Status    = 0
     };
 
-    public static BuffTarget Create(EnumBuffTarget _target, EnumBuffStatus _status)
+    public static BuffTarget Create(EnumSituationType _situation, EnumBuffTarget _target, EnumBuffStatus _status)
     {
-        return new BuffTarget { Target = (int)EnumBuffTarget.Owner, Status = (int)_status };
+        return new BuffTarget { Situation = (int)_situation, Target = (int)EnumBuffTarget.Owner, Status = (int)_status };
     }
 }
 
@@ -111,7 +112,7 @@ public struct BuffValue
 
     public int Calculate(int _value)
     {
-        // 음수로 곱해지는 경우는 없다.
+        // multiplier 값이 0이하로 가는 경우는 없다.
         var multiplier = Math.Max(0f, Multiply + 1f);
 
         return (int)(_value * multiplier) + Add;
@@ -213,13 +214,13 @@ public struct Buff
         Conditions = null
     };
 
-    public bool IsValidCondition(ISystem _system, IOwner _owner)
+    public bool IsValidCondition(IOwner _owner)
     {
         if (Conditions != null)
         {
             foreach (var e in Conditions)
             {
-                if (e != null && !e.IsValid(_system, _owner))
+                if (e != null && !e.IsValid(_owner))
                     return false;
             }
         }
@@ -266,7 +267,7 @@ public class BuffMananger : IBuff
 
     public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-    public BuffValue Collect_BuffValue(ISystem _system, IOwner _owner, BuffTarget _target)
+    public BuffValue Collect_BuffValue(IOwner _owner, BuffTarget _target)
     {
         var result = BuffValue.Empty;
 
@@ -280,7 +281,7 @@ public class BuffMananger : IBuff
                     if (buff.IsExpired())
                         continue;
 
-                    if (buff.IsValidCondition(_system, _owner))
+                    if (buff.IsValidCondition(_owner))
                     {
                         result += buff.Value;
                     }
@@ -296,9 +297,9 @@ public class BuffMananger : IBuff
 
 
     #region IBuff Interface
-    public BuffValue Collect(ISystem _system, IOwner _owner, EnumBuffStatus _status) 
+    public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
     {
-        return Collect_BuffValue(_system, _owner, BuffTarget.Create(EnumBuffTarget.Owner, _status));
+        return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
     }
     #endregion IBuff Interface
 }

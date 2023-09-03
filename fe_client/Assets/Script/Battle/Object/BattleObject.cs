@@ -23,7 +23,7 @@ namespace Battle
         protected BattleObject(Int64 _id)
         {
             ID = _id;
-
+            
             BlackBoard    = new BattleBlackBoard();
             Skill         = new BattleSkill();
             StatusManager = new BattleStatusManager(this);
@@ -54,7 +54,7 @@ namespace Battle
             if (_damage <= 0)
                 return;
 
-            // TODO: ÇÃ·£¿¡ ´ëÇÑ Ã³¸® ÇÊ¿ä...
+            // TODO: ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ê¿ï¿½...
 
             var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
             var new_hp = Math.Max(0, cur_hp - _damage);

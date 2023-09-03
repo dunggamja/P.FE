@@ -70,42 +70,42 @@ namespace Battle
 
 
 
-        /// <summary> ¹°¸® À§·Â </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Might_Physic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
             if (weapon_might <= 0)
             {
-                // ¹«±â¿¡ ¼ÂÆÃµÈ À§·ÂÀÌ 0ÀÏ °æ¿ì,
+                // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½,
                 return 0;
             }
 
-            unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
-            weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
+            weapon_might     = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
             
             return unit_might + weapon_might;
         }
 
-        /// <summary> ¸¶¹ý À§·Â </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Might_Magic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
             if (weapon_might <= 0)
             {
-                // ¹«±â¿¡ ¼ÂÆÃµÈ À§·ÂÀÌ 0ÀÏ °æ¿ì,
+                // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½,
                 return 0;
             }
 
 
-            unit_might       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
-            weapon_might     = Buff.Collect(null, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
+            unit_might       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
+            weapon_might     = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
 
             return unit_might + weapon_might;
         }
 
-        /// <summary> ¸íÁß </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Hit()
         {
             var unit_skill = Status.GetStatus(EnumUnitStatus.Skill);
@@ -119,7 +119,7 @@ namespace Battle
             return unit_hit + weapon_hit;
         }
 
-        /// <summary> ÇÊ»ì </summary>
+        /// <summary> ï¿½Ê»ï¿½ </summary>
         public int Calc_Critical()
         {
             var unit_skill      = Status.GetStatus(EnumUnitStatus.Skill);
@@ -131,7 +131,7 @@ namespace Battle
         }
 
 
-        /// <summary> È¸ÇÇ </summary>
+        /// <summary> È¸ï¿½ï¿½ </summary>
         public int Calc_Dodge()
         {
             var battle_speed = Calc_Speed();
@@ -141,7 +141,7 @@ namespace Battle
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
 
-        /// <summary> ÇÊ»ì È¸ÇÇ </summary>
+        /// <summary> ï¿½Ê»ï¿½ È¸ï¿½ï¿½ </summary>
         public int Calc_DodgeCritical()
         {
             var unit_luck             = Status.GetStatus(EnumUnitStatus.Luck);
@@ -150,7 +150,7 @@ namespace Battle
             return unit_luck + weapon_dodge_critical;
         }
 
-        /// <summary> ¼Óµµ </summary>
+        /// <summary> ï¿½Óµï¿½ </summary>
         public int Calc_Speed()
         {
             var unit_speed   = Status.GetStatus(EnumUnitStatus.Speed);
@@ -160,20 +160,20 @@ namespace Battle
             return unit_speed - Math.Max(0, wepon_weight - unit_weight);
         }
 
-        /// <summary> ¹æ¾î </summary>
+        /// <summary> ï¿½ï¿½ï¿½ </summary>
         public int Calc_Defense()
         {
             var unit_defense = Status.GetStatus(EnumUnitStatus.Defense);
-            var unit_buff    = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Defense);
+            var unit_buff    = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Defense);
 
             return unit_defense;
         }
 
-        /// <summary> ¸¶¹æ </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Resistance()
         {
             var unit_resistance = Status.GetStatus(EnumUnitStatus.Resistance);
-            var unit_buff       = Buff.Collect(null, Owner, EnumBuffStatus.Unit_Resistance);
+            var unit_buff       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Resistance);
 
             unit_resistance     = unit_buff.Calculate(unit_resistance);
 
@@ -184,14 +184,14 @@ namespace Battle
 }
 
 /*
- * °ø°Ý[¸¶°ø]     = Èû[¸¶·Â] + ¹«±â[¸¶µµ¼­] À§·Â*(1[1] or 2[2] or 3[3]) + ±âÅ¸[A](½ºÅ³ ÁöÇüÈ¿°ú µî)
- * ¸íÁß           = ±â¼ú*2 + Çà¿î/2 + ¹«±â[¸¶µµ¼­] ¸íÁß + ±âÅ¸[A](½ºÅ³ ÁöÇüÈ¿°ú µî)
- * ÇÊ»ì           = ±â¼ú/2 + ¹«±â[¸¶µµ¼­] ÇÊ»ì + ±âÅ¸[A]
- * ÇÇÇØ·®         = (°ø°Ý[¸¶°ø] - ¼öºñ[¸¶¹æ])*(1 or 3[7])
- * °ø¼Ó[8]        = ¼Óµµ - (¹«°Ô - Ã¼°Ý)[9]
- * È¸ÇÇ           = °ø¼Ó*2 + Çà¿î/2 + ¹«±â È¸ÇÇ + ±âÅ¸[A]
- * ÇÊ»ì È¸ÇÇ      = Çà¿î + ¹«±â ÇÊ»ì È¸ÇÇ + ±âÅ¸[A]
- * ¸íÁß·ü         = ¸íÁß - È¸ÇÇ
- * ÇÊ»ì ¹ß»ý È®·ü  = ÇÊ»ì - ÇÊ»ì È¸ÇÇ
+ * ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½]     = ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½] + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½*(1[1] or 2[2] or 3[3]) + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
+ * ï¿½ï¿½ï¿½ï¿½           = ï¿½ï¿½ï¿½*2 + ï¿½ï¿½ï¿½/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
+ * ï¿½Ê»ï¿½           = ï¿½ï¿½ï¿½/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½Ê»ï¿½ + ï¿½ï¿½Å¸[A]
+ * ï¿½ï¿½ï¿½Ø·ï¿½         = (ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½] - ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½])*(1 or 3[7])
+ * ï¿½ï¿½ï¿½ï¿½[8]        = ï¿½Óµï¿½ - (ï¿½ï¿½ï¿½ï¿½ - Ã¼ï¿½ï¿½)[9]
+ * È¸ï¿½ï¿½           = ï¿½ï¿½ï¿½ï¿½*2 + ï¿½ï¿½ï¿½/2 + ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
+ * ï¿½Ê»ï¿½ È¸ï¿½ï¿½      = ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ ï¿½Ê»ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
+ * ï¿½ï¿½ï¿½ß·ï¿½         = ï¿½ï¿½ï¿½ï¿½ - È¸ï¿½ï¿½
+ * ï¿½Ê»ï¿½ ï¿½ß»ï¿½ È®ï¿½ï¿½  = ï¿½Ê»ï¿½ - ï¿½Ê»ï¿½ È¸ï¿½ï¿½
  */
 

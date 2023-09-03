@@ -8,8 +8,8 @@ namespace Battle
     public partial class BattleSystem_Turn : BattleSystem
     {
         //
-        int[] m_queue_turn    = new int[2];
-        int[] m_queue_faction = new int[2];
+        int[] m_queue_turn    = new int[2];  //[0] : Prev, [1] : Current
+        int[] m_queue_faction = new int[2];  //[0] : Prev, [1] : Current
 
         // 
         public int  Turn_Prev        => m_queue_turn[0];
@@ -39,7 +39,8 @@ namespace Battle
             UpdateTurnAndFaction(1, 0);
 
             // 이벤트.
-            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
+            
+            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
         }
 
 
@@ -51,6 +52,7 @@ namespace Battle
 
             if (Check_Faction_Complete(faction))
             {
+                
                 (var result, var next_faction) = FindNextFaction(faction);
                 if  (result)
                 {
@@ -65,13 +67,22 @@ namespace Battle
                     // 진영 초기화
                     faction = 0;
                 }
+
+
+                UpdateTurnAndFaction(turn, faction);
+
+                if (Faction_Cur != Faction_Prev) 
+                {
+                    EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
+                }
+
+                if (Turn_Cur != Turn_Prev) 
+                {
+                    EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+                }
             }
 
 
-            UpdateTurnAndFaction(turn, faction);
-
-            // 스킬 사용 이벤트 발생. (턴/진행 따라서...)
-            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
             return false;
         }
 

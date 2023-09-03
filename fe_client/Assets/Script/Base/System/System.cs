@@ -7,7 +7,7 @@ public abstract class System<T> : ISystem where T : ISystemParam
 {
     public EnumSystem      SystemType  { get; private set;   } = EnumSystem.None;
     public EnumState       State       { get; private set;   } = EnumState.None;
-    public EnumSkillTiming SkillTiming { get; protected set; } = EnumSkillTiming.None; 
+    // public EnumSystemTiming SkillTiming { get; protected set; } = EnumSystemTiming.None; 
 
     //public abstract ISystemManager SystemManager { get; }
 

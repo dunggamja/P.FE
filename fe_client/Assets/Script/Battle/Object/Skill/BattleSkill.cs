@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class SkillUseEvent : IEventParam
-    {
-        public ISystem System { get; private set; }
+    // public class SkillUseEvent : IEventParam
+    // {
+    //     public EnumSituationType  Situation { get; private set; }
 
-        public SkillUseEvent(ISystem _system)
-        {
-            System = _system;
-        }
-    }
+    //     public SkillUseEvent(EnumSituationType _situation)
+    //     {
+    //         Situation = _situation;
+    //     }
+    // }
 
     public class BattleSkill : ISkill
     {
@@ -22,7 +22,7 @@ namespace Battle
         EnumSystem m_system_type;
         int        m_system_skill_timing;
 
-        public bool UseSkill(ISystem _system, IOwner _owner)
+        public bool UseSkill(EnumSituationType _system_timing, IOwner _owner)
         {
             // if (_system.SystemType != m_system_type || _system.SkillTiming != m_system_skill_timing)
                 // return false;

@@ -15,9 +15,7 @@ public interface ISystem
 {
     EnumSystem      SystemType  { get; }
     EnumState       State       { get; }
-    EnumSkillTiming SkillTiming { get; }
-    //ISystemManager SystemManager { get; }
-
+    
     bool IsProgress { get; }
     bool IsFinished { get; }
 }
@@ -60,7 +58,7 @@ public interface ITarget
 /// </summary>
 public interface ICondition
 {
-    bool IsValid(ISystem _system, IOwner _owner);
+    bool IsValid(IOwner _owner);
 }
 
 /// <summary>
@@ -68,7 +66,7 @@ public interface ICondition
 /// </summary>
 public interface IEffect
 {
-    void Apply(ISystem _system, IOwner _owner);
+    void Apply(IOwner _owner);
 }
 
 /// <summary>
@@ -76,7 +74,7 @@ public interface IEffect
 /// </summary>
 public interface IBuff
 {
-    BuffValue Collect(ISystem _system, IOwner _owner, EnumBuffStatus _status);
+    BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
 }
 
 
@@ -85,7 +83,7 @@ public interface IBuff
 /// </summary>
 public interface ISkill
 {
-    bool UseSkill(ISystem _system, IOwner _owner);
+    bool UseSkill(EnumSituationType _situation, IOwner _owner);
 }
 
 

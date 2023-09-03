@@ -63,16 +63,15 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 전 스킬 사용.
-            //SkillTiming = 
-            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
-
-            // TODO: Attack_Start
+            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
         {
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
+
+            
 
             // 무기 상성/특효에 대한 값 셋팅.
             WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
@@ -103,7 +102,7 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            EventManager.Instance.DispatchEvent(new SkillUseEvent(this));
+            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
         }
 
 
@@ -117,7 +116,8 @@ namespace Battle
             // 스탯  & 버프 계산.
             var hit        = dealer.StatusManager.Calc_Hit();
             var dodge      = target.StatusManager.Calc_Dodge();
-            var buff_value = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Hit) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Hit);
+            var buff_value = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Hit) 
+                           + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Hit);
 
 
             // 무기 상성 적용.
@@ -142,7 +142,8 @@ namespace Battle
             // 스탯  & 버프 계산.
             var hit        = dealer.StatusManager.Calc_Critical();
             var dodge      = target.StatusManager.Calc_DodgeCritical();
-            var buff_value = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Critical) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Critical);
+            var buff_value = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Critical) 
+                           + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Critical);
 
 
 
@@ -167,7 +168,9 @@ namespace Battle
             var damage_total  = damage_physic + damage_magic;
 
             // 버프 계산.
-            var buff_value     = dealer.StatusManager.Buff.Collect(this, dealer, EnumBuffStatus.System_Damage) + target.StatusManager.Buff.Collect(this, target, EnumBuffStatus.System_Damage);
+            var buff_value     = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Damage) 
+                               + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Damage);
+                               
             damage_total       = Math.Max(0, buff_value.Calculate(damage_total));
 
             return damage_total;
