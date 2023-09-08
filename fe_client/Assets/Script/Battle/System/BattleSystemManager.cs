@@ -49,6 +49,11 @@ namespace Battle
             // 현재 턴/ 현재 행동하는 진영
             UpdateSystem(EnumSystem.BattleSystem_Turn, Param);
 
+            // 유닛들 행동 update
+
+            // TODO : 전투 완료 체크, return true
+            
+
             return false;
         }
 

@@ -102,7 +102,33 @@ BattleSystem
      명령을 내리면 다 연산하고 연출로 보여주면 된다.
 
    - BattleSystem_Command
-     * 유닛의 행동/명령을 처리한다.
+     * 유닛의 행동/명령을 처리한다.?
+     * 이동, 공격, 상호작용 등  뭔가 다양한 동작들이 많은데...
+       이걸 여기에서 모두 처리한다. ? 
+       맞는 거 같기도 하고 아닌거 같기도 하고, 
+       아닌 듯. 
+
+       Command Dispatch만 하고 끝내자.
+    
+
+    - BattleSystem_Move        : 유닛 이동
+    - BattleSystem_Combat      : 유닛 전투
+    - BattleSystem_Interaction : 유닛 상호작용 (보물상자, 대화)
+
+
+   - BattleSystem_
+
+   - Buff 지속 시간 등은 고려해봐야 할 듯 .
+     * 턴 수 제한은 TurnChange 이벤트 디스패치에서 삭감해도 된다. 
+     * 횟 수 제한은 실제 발동되었을 때 삭감 처리. 
+       ㄴ 실제 발동되었다는 Buff.Collect 시 삭감 처리 할 수 밖에 없지 않을까.?
+
+
+   - is_plan 에 대한 처리는 전역변수로 해야할 거 같은데....
+     어딘가 추가를 해보자... .
+
+
+
 
 
     

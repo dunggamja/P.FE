@@ -7,10 +7,14 @@ using UnityEngine;
 public enum EnumSystem
 {
     None,
-    CombatSystem_Turn,   // (전투씬), 공/방 턴 관리
-    CombatSystem_Damage, // (전투씬), 데미지 처리.
-
-    BattleSystem_Turn,   // (전투), 턴 진행    
+    CombatSystem_Turn,        // (전투씬), 공/방 턴 관리
+    CombatSystem_Damage,      // (전투씬), 데미지 처리.
+     
+    BattleSystem_Turn,        // (전투), 턴 진행    
+    BattleSystem_Command,     // (전투), 명령 처리
+    BattleSystem_Move,        // (전투) 유닛 이동
+    BattleSystem_Combat,      // (전투) 유닛 전투
+    BattleSystem_Interaction, // (전투) 유닛 상호작용 (보물상자, 대화)
 }
 
 public enum EnumState

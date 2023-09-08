@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class BattleObject 
+    public partial class BattleObject
     {
         public void OnReceiveEvent(IEventParam _param)
         {

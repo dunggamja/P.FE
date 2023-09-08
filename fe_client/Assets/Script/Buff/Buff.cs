@@ -46,6 +46,9 @@ public enum EnumBuffStatus
     System_TurnSequence   = 2100, // 시스템, 행동 순서 
     System_TurnCount      = 2101, // 시스템, 행동 횟수 
     System_AttackCount    = 2102, // 시스템, 공격 횟수 (행동당)
+
+    System_Invincibility  = 2201, // 시스템, 무적
+    System_Evasion        = 2202, // 시스템, 회피
 }
 
 
@@ -53,7 +56,7 @@ public enum EnumBuffOption
 {
     LimitOfUse,  // 횟수 제한
     LimitOfTurn, // 턴 제한
-    Immutable,   // 변경 불가능
+    Immutable,   // 변경 불가능(해제 불가능)
 
     COUNT
 }
@@ -183,14 +186,22 @@ public struct BuffOption
     }
 
     
-    public void Process_Use()
+    public void Decrease_LimitOfUse()
     {
-        DecreaseValue(EnumBuffOption.LimitOfUse);
+        // 횟 수 제한이 있다면 값을 깍아줍시다.
+        if (HasValue(EnumBuffOption.LimitOfUse))
+        {
+            DecreaseValue(EnumBuffOption.LimitOfUse);
+        }
     }
 
-    public void Process_Turn()
+    public void Decrease_LimitOfTurn()
     {
-        DecreaseValue(EnumBuffOption.LimitOfTurn);
+        // 턴 수 제한이 있다면 값을 깍아줍시다.
+        if (HasValue(EnumBuffOption.LimitOfTurn))
+        {
+            DecreaseValue(EnumBuffOption.LimitOfTurn);
+        }
     }
 }
 
@@ -267,7 +278,7 @@ public class BuffMananger : IBuff
 
     public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-    public BuffValue Collect_BuffValue(IOwner _owner, BuffTarget _target)
+    public BuffValue Collect_BuffValue(IOwner _owner, BuffTarget _target, bool _is_plan = false)
     {
         var result = BuffValue.Empty;
 
@@ -281,9 +292,17 @@ public class BuffMananger : IBuff
                     if (buff.IsExpired())
                         continue;
 
-                    if (buff.IsValidCondition(_owner))
+                    if (!buff.IsValidCondition(_owner))
+                        continue;
+
+                    
+                    result += buff.Value;
+                    
+                    // TODO: is_plan에 대한 처리는 어디선가 전역변수로 해야할 거 같은데... 모든 함수마다 넣기에는 너무 번거로움....
+                    if (!_is_plan)
                     {
-                        result += buff.Value;
+                        // 사용 횟 수 깍기
+                        buff.Option.Decrease_LimitOfUse();                    
                     }
                 }
             }
