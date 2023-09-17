@@ -68,4 +68,7 @@ namespace Battle
         EnumCommandState GetCommandState(); 
         void             SetCommandState(EnumCommandState _command_state); 
     }
+
+
+    
 }

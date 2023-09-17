@@ -103,9 +103,12 @@ namespace Battle
     {
         None         = 0,
 
-        CommandType,  // EnumCommandType
-        CommandState, // �ൿ ����
-        Faction,      // 
+        CommandType,  // 명령 (플레이어/AI)
+        CommandState, // 명령 (가능/완료)
+        Faction,      // 진영 (1:플레이어, 2:적군)
+
+
+        IsMoving,
     }
 
     /// <summary>

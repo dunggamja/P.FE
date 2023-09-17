@@ -104,16 +104,13 @@ BattleSystem
    - BattleSystem_Command
      * 유닛의 행동/명령을 처리한다.?
      * 이동, 공격, 상호작용 등  뭔가 다양한 동작들이 많은데...
-       이걸 여기에서 모두 처리한다. ? 
-       맞는 거 같기도 하고 아닌거 같기도 하고, 
-       아닌 듯. 
+       이걸 여기에서 모두 처리한다. 
 
-       Command Dispatch만 하고 끝내자.
+      * 여기에서는 Command를 내리고, 완료되는 것 까지만 체크한다... 
+      * 세부적인 행동로직은... 어디에 작성할까? 
+      * Navigation에 대한 문제는 
     
 
-    - BattleSystem_Move        : 유닛 이동
-    - BattleSystem_Combat      : 유닛 전투
-    - BattleSystem_Interaction : 유닛 상호작용 (보물상자, 대화)
 
 
    - BattleSystem_

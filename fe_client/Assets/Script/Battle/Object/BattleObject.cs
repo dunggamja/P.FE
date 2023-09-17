@@ -7,13 +7,15 @@ namespace Battle
 {
     public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver
     {
-        public Int64   ID     { get; private set; }
-        public ITarget Target { get; }
+        public Int64          ID       { get; private set; }
+        public ITarget        Target   { get; }
+        public (int x, int y) Cell     { get; private set; }
 
 
         public IBlackBoard          BlackBoard    { get; }
         public ISkill               Skill         { get; }
         public BattleStatusManager  StatusManager { get; }
+
 
 
 
