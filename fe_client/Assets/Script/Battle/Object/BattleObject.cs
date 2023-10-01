@@ -5,18 +5,18 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver
+    public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
     {
         public Int64          ID       { get; private set; }
         public ITarget        Target   { get; }
         public (int x, int y) Cell     { get; private set; }
 
 
-        public IBlackBoard          BlackBoard    { get; }
-        public ISkill               Skill         { get; }
-        public BattleStatusManager  StatusManager { get; }
-
-
+        public IBlackBoard          BlackBoard      { get; }
+        public ISkill               Skill           { get; } 
+        public BattleStatusManager  StatusManager   { get; } 
+        public IPathNodeManager     PathNodeManager { get; } 
+        public PathVehicle          PathVehicle     { get; } 
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -24,11 +24,13 @@ namespace Battle
 
         protected BattleObject(Int64 _id)
         {
-            ID = _id;
+            ID              = _id;
             
-            BlackBoard    = new BattleBlackBoard();
-            Skill         = new BattleSkill();
-            StatusManager = new BattleStatusManager(this);
+            BlackBoard      = new BattleBlackBoard();
+            Skill           = new BattleSkill();
+            StatusManager   = new BattleStatusManager(this);
+            PathNodeManager = new PathNodeManager();
+            PathVehicle     = new PathVehicle_Basic();
         }
 
         public static BattleObject Create()
@@ -47,6 +49,15 @@ namespace Battle
         public void Reset()
         {
             EventManager.Instance.DetachReceiver(this);
+        }
+
+        public void Update(float _delta_time)
+        {
+            if (PathNodeManager != null)
+                PathNodeManager.Update();
+
+            if (PathVehicle != null)
+                PathVehicle.Update(this, _delta_time);
         }
 
 

@@ -125,8 +125,19 @@ BattleSystem
      어딘가 추가를 해보자... .
 
 
+- PathNodeManager
+   - PathNode 도착, 관리
+   - 길찾기로 생성된 Node 들이 여기에 들어있다. 
 
+- PathVehicle
+   - Steering 에 대한 처리
+   - PathNodeManager에서 PathNode를 가져온다. 
+   - 이동방향 / 속도를 처리한다.
 
+PathVehicle을 왜 작성했지??? 기억이 안나네..
+이제 어떤 작업을 하면 되나?
+
+BattleSystem_Navigation 작업을 이제 해주면 될듯.
 
     
 
