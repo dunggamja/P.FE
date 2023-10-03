@@ -12,6 +12,13 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 
     public static PathNode Empty { get; } = new PathNode { m_position_x = 0, m_position_z = 0, m_rotation_y = 0 };
 
+    public PathNode(float _position_x = -1f, float _position_z = -1f, float _rotation_y = -1f)
+    {
+        m_position_x = _position_x;
+        m_position_z = _position_z;
+        m_rotation_y = _rotation_y;
+    }
+
 
     public bool       IsValidPosition() => 0f <= m_position_x && 0f <= m_position_z;
     public bool       IsValidRotation() => 0f <= m_rotation_y;

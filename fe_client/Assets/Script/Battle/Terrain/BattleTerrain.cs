@@ -1,25 +1,35 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+
+
+public struct TerrainCollision
+{
+    int     m_width;
+    int     m_height;
+    bool[,] m_collision;
+
+    public TerrainCollision(int _width, int _height)
+    {
+        m_width     = _width;
+        m_height    = _height;
+
+        m_collision = new bool[_width, _height];
+    }
+
+    public bool IsCollision(int _x, int _y)
+    {
+        if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
+            return false;
+
+        return m_collision[_x, _y];
+    }
+}
 
 namespace Battle
 {
-    public struct TerrainCollision
-    {
-        int     m_width;
-        int     m_height;
-        bool[,] m_collision;
-
-        public TerrainCollision(int _width, int _height)
-        {
-            m_width     = _width;
-            m_height    = _height;
-
-            m_collision = new bool[_width, _height];
-        }
-    }
-
     public struct TerrainAttribute
     {
         int    m_width;
