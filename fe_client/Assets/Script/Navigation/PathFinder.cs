@@ -59,7 +59,7 @@ public static class PathFinder
         close_list.Add(new Node(_from_x, _from_y, _to_x, _to_y, null));
 
         // A* 길찾기
-        var    node  = AStar(_collision, open_list, close_list, _to_x, _to_y);
+        var    node  = AStar(ref _collision, ref open_list, ref close_list, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
