@@ -49,7 +49,7 @@ public static class PathFinder
 
 
 
-    public static List<PathNode> Find(ref TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
+    public static List<PathNode> Find(TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         var result     = new List<PathNode>();
         var open_list  = new SortedSet<Node>();
@@ -59,7 +59,7 @@ public static class PathFinder
         close_list.Add(new Node(_from_x, _from_y, _to_x, _to_y, null));
 
         // A* 길찾기
-        var    node  = AStar(ref _collision, ref open_list, ref close_list, _to_x, _to_y);
+        var    node  = AStar(_collision, ref open_list, ref close_list, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
@@ -73,8 +73,11 @@ public static class PathFinder
     }
 
 
-    static Node AStar(ref TerrainCollision _collision, ref SortedSet<Node> _open_list, ref SortedSet<Node> _close_list, int _to_x, int _to_y)
+    static Node AStar(TerrainCollision _collision, ref SortedSet<Node> _open_list, ref SortedSet<Node> _close_list, int _to_x, int _to_y)
     {
+        if (_collision == null)
+            return null;
+
         while(0 < _close_list.Count)
         {
             var item = _close_list.First();

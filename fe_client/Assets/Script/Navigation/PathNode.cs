@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Battle;
 using UnityEngine;
 
 
@@ -74,6 +75,7 @@ public class PathNodeManager : IPathNodeManager
     Queue<PathNode> m_list_path_node = new Queue<PathNode>();
     PathNode        m_position_prev  = new PathNode();
     PathNode        m_position_cur   = new PathNode();
+    BattleTerrain   m_terrain        = null;
 
     const float     m_arrive_radius  = 0.05f;
     const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
@@ -86,7 +88,10 @@ public class PathNodeManager : IPathNodeManager
         m_position_cur.SetPosition(_position); 
         
         m_position_prev.SetRotation(_rotation_y);
-        m_position_cur.SetRotation(_rotation_y);        
+        m_position_cur.SetRotation(_rotation_y);     
+
+        // TODO: 나중에 개선...
+        m_terrain = BattleTerrainManager.Instance.BattleTerrain;   
     }
 
 
@@ -168,4 +173,21 @@ public class PathNodeManager : IPathNodeManager
 
         return PathNode.Empty;
     }
+
+
+    public bool CreatePath(Vector3 _dest_position, float _dest_angle_degree)
+    {
+        if (m_terrain == null)
+            return false;
+
+        var from_position  = m_position_cur.GetPosition();
+        var list_path_node =  PathFinder.Find(m_terrain.Collision, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        
+        m_list_path_node.Clear();
+        m_list_path_node = new Queue<PathNode>(list_path_node);
+
+        
+        return 0 < m_list_path_node.Count;
+    }
+
 }
