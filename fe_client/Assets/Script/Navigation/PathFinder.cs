@@ -51,6 +51,8 @@ public static class PathFinder
 
     public static List<PathNode> Find(TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
     {
+        
+
         var result     = new List<PathNode>();
         var open_list  = new SortedSet<Node>();
         var close_list = new SortedSet<Node>();

@@ -7,12 +7,12 @@ using UnityEngine;
 public enum EnumSystem
 {
     None,
-    CombatSystem_Turn,        // (전투씬), 공/방 턴 관리
-    CombatSystem_Damage,      // (전투씬), 데미지 처리.
+    CombatSystem_Turn,                // (전투씬), 공/방 턴  관리
+    CombatSystem_Damage,              // (전투씬), 데미지 처리.
      
-    BattleSystem_Turn,        // (전투), 턴 진행    
-    BattleSystem_Command,     // (전투), 유닛들 행동 관리
-    BattleSystem_Navigation,  // (전투), 유닛들 이동 처리
+    BattleSystem_Turn,                // (전투),  턴   진행    
+    BattleSystem_CommandDispatch,     // (전투),  유닛들 명령 dispatch
+    // BattleSystem_Navigation,  // (전투), 유닛들 이동 처리
 }
 
 public enum EnumState
@@ -35,6 +35,7 @@ public enum EnumSituationType
     CombatSystem_Damage_Start,     // (전투씬) 공격 전 스킬 사용
     //CombatSystem_Damage_Calculate, // (전투씬) 공격 데미지 적용 직전 마지막 보정.
     //CombatSystem_Damage_Appy,      // (전투씬) 공격 데미지 적용 후 처리
+    
     CombatSystem_Damage_Finish,    // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
 
     BattleSystem_Turn_Changed,     // (전투) 턴 변경

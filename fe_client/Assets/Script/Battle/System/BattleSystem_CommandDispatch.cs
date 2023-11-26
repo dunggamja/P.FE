@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Battle
 {
-    public partial class BattleSystem_Command : BattleSystem
+    public partial class BattleSystem_CommandDispatch : BattleSystem, IEventReceiver
     {
         // 명령을 처리해보자.
         // public class CommandData
@@ -24,11 +25,18 @@ namespace Battle
         // Queue<CommandData> m_list_command;       
 
 
-        public BattleSystem_Command() : base(EnumSystem.BattleSystem_Command)
+        public BattleSystem_CommandDispatch() : base(EnumSystem.BattleSystem_CommandDispatch)
         {
         }
 
-        public override void Reset()
+
+
+        public override void Init()
+        {
+            
+        }
+
+        public override void Release()
         {
             // m_list_command.Clear();
         }
@@ -61,5 +69,10 @@ namespace Battle
             
         }
 
+
+        public void OnReceiveEvent(IEventParam _param)
+        {
+            // 유닛별로 명령을 완수할 때 마다 event를 쏴줘야 겠다. 
+        }
     }
 }

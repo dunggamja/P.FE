@@ -43,12 +43,12 @@ namespace Battle
 
         public void Init()
         {
-            EventManager.Instance.AttachReceiver(this);
+            EventDispatchManager.Instance.AttachReceiver(this);
         }
 
         public void Reset()
         {
-            EventManager.Instance.DetachReceiver(this);
+            EventDispatchManager.Instance.DetachReceiver(this);
         }
 
         public void Update(float _delta_time)

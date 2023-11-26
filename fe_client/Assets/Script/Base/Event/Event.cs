@@ -8,15 +8,36 @@ public interface IEventParam
 {
 }
 
+
+
+
+[System.AttributeUsage(System.AttributeTargets.Class |
+                       System.AttributeTargets.Struct)]
+public class EventReceiverAttribute : System.Attribute
+{
+    private System.Type[] m_receive_event_types = null;
+
+    EventReceiverAttribute(System.Type[] _receive_event_types)
+    {
+        m_receive_event_types = _receive_event_types;
+    }
+
+    public System.Type[] GetReceiveEventTypes() => m_receive_event_types;
+
+}
+
+
 public interface IEventReceiver
 {
     void OnReceiveEvent(IEventParam _param);
 }
 
 
-public class EventManager : Singleton<EventManager>
+public class EventDispatchManager : Singleton<EventDispatchManager>
 {
-    HashSet<IEventReceiver> m_receivers = new HashSet<IEventReceiver>();
+    HashSet<IEventReceiver>                       m_receivers             = new();
+    Dictionary<System.Type, List<IEventReceiver>> m_receivers_by_type = new();
+    
 
     protected override void Init()
     {
@@ -26,24 +47,73 @@ public class EventManager : Singleton<EventManager>
     public void Reset()
     {
         m_receivers.Clear();
+        m_receivers_by_type.Clear();
     }
 
     public void AttachReceiver(IEventReceiver _receiver)
     {
         m_receivers.Add(_receiver);
+
+        
+        // 뭔가 복잡...
+        foreach(var e in System.Attribute.GetCustomAttributes(_receiver.GetType()))
+        {
+            if (e is EventReceiverAttribute event_receiver_attribute)
+            {
+                if (event_receiver_attribute.GetReceiveEventTypes() != null)
+                {
+                    foreach(var event_type in event_receiver_attribute.GetReceiveEventTypes())
+                    {
+                        if (!m_receivers_by_type.TryGetValue(event_type, out var value))
+                        {
+                            value = new List<IEventReceiver>();
+                            m_receivers_by_type.Add(event_type, value);
+                        }
+
+                        value.Add(_receiver);
+                    }
+                }
+            }
+        }
     }
 
     public void DetachReceiver(IEventReceiver _receiver)
     {
         m_receivers.Remove(_receiver);
+
+        // 뭔가 복잡...
+        foreach(var e in System.Attribute.GetCustomAttributes(_receiver.GetType()))
+        {
+            if (e is EventReceiverAttribute event_receiver_attribute)
+            {
+                if (event_receiver_attribute.GetReceiveEventTypes() != null)
+                {
+                    foreach(var event_type in event_receiver_attribute.GetReceiveEventTypes())
+                    {
+                        if (m_receivers_by_type.TryGetValue(event_type, out var value))
+                        {
+                            value.Remove(_receiver);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public void DispatchEvent(IEventParam _param)
     {
-        foreach(var e in m_receivers)
+        var event_type = _param.GetType();
+
+        if (m_receivers_by_type.TryGetValue(event_type, out var receivers))
         {
-            e.OnReceiveEvent(_param);
+            foreach (var e in receivers)
+            {
+                if (e != null)
+                    e.OnReceiveEvent(_param);
+            }
         }
+
     }
 
 }

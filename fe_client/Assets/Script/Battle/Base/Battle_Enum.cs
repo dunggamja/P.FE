@@ -107,7 +107,6 @@ namespace Battle
         CommandState, // 명령 (가능/완료)
         Faction,      // 진영 (1:플레이어, 2:적군)
 
-
         IsMoving,
     }
 

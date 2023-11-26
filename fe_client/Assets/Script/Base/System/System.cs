@@ -20,7 +20,8 @@ public abstract class System<T> : ISystem where T : ISystemParam
         SystemType = _system_type;
     }
 
-    public    abstract void Reset();
+    public    abstract void Init();
+    public    abstract void Release();
     protected abstract void OnEnter(T _param);
     protected abstract bool OnUpdate(T _param);
     protected abstract void OnExit(T _param);

@@ -25,7 +25,12 @@ namespace Battle
         public BattleSystem_Turn() : base(EnumSystem.BattleSystem_Turn)
         { }
 
-        public override void Reset()
+        public override void Init()
+        {
+            
+        }
+
+        public override void Release()
         {
             Array.Clear(m_queue_turn, 0, m_queue_turn.Length);
             Array.Clear(m_queue_faction, 0, m_queue_faction.Length);
@@ -33,14 +38,14 @@ namespace Battle
 
         protected override void OnEnter(IBattleSystemParam _param)
         {
-            Reset();
+            Release();
 
             // 1턴, 진영은 미정.
             UpdateTurnAndFaction(1, 0);
 
             // 이벤트.
             
-            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
         }
 
 
@@ -73,12 +78,12 @@ namespace Battle
 
                 if (Faction_Cur != Faction_Prev) 
                 {
-                    EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
+                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
                 }
 
                 if (Turn_Cur != Turn_Prev) 
                 {
-                    EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
                 }
             }
 
@@ -136,6 +141,8 @@ namespace Battle
             m_queue_turn[1]    = _turn;
             m_queue_faction[1] = _faction;
         }
+
+        
     }
 
 }

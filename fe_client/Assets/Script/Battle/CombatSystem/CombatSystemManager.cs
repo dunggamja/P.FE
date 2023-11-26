@@ -28,16 +28,19 @@ namespace Battle
 
             var turn_sytem   = new CombatSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
             var damage_sytem = new CombatSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+
+            foreach (var e in m_repository.Values)
+                e.Init();
         }
 
 
-        public void Reset()
+        public void Release()
         {
             Param = null;
             State = EnumState.None;
 
             foreach (var e in m_repository.Values)
-                e.Reset();
+                e.Release();
         }
 
         public void SetData(ICombatSystemParam _param)

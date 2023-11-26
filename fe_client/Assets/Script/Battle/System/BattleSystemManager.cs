@@ -7,7 +7,10 @@ namespace Battle
 {
     public class BattleSystemManager : Singleton<BattleSystemManager>, ISystemManager
     {
-        Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
+        // Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
+
+        List<BattleSystem>      m_update_system = new();
+
 
         public IBattleSystemParam  Param      { get; private set; }
         public EnumState           State      { get; private set; }
@@ -21,17 +24,24 @@ namespace Battle
         {
             base.Init();
 
-            // TODO: 
-            var turn_system = new BattleSystem_Turn(); m_repository.Add((int)turn_system.SystemType, turn_system);
+    
+
+            // 실행할 순서대로 넣어놓는다.
+            m_update_system.Add(new BattleSystem_Turn());       
+            m_update_system.Add(new BattleSystem_CommandDispatch());    
+
+
+            m_update_system.ForEach(e => e.Init());
+            
         }
 
-        public void Reset()
+        public void Release()
         {
             Param = null;
             State = EnumState.None;
 
-            foreach (var e in m_repository.Values)
-                e.Reset();
+            m_update_system.ForEach(e => e.Release());
+            //m_update_index = 0;
         }
 
         public void SetData(IBattleSystemParam _param)
@@ -46,15 +56,9 @@ namespace Battle
 
         bool OnUpdate()
         {
-            // 현재 턴/ 현재 행동하는 진영
-            UpdateSystem(EnumSystem.BattleSystem_Turn, Param);
+            m_update_system.ForEach(e => e.Update(Param));            
 
-            // 유닛들 행동 update (이동, 전투, 상호작용)
-            UpdateSystem(EnumSystem.BattleSystem_Command, Param);
-
-            // 
-            UpdateSystem(EnumSystem.BattleSystem_Navigation, Param);
-
+            // 종료 타이밍은 변수를 따로 둬야할듯.
             return false;
         }
 
@@ -86,8 +90,11 @@ namespace Battle
 
         public ISystem GetSystem(EnumSystem _system_type)
         {
-            if (m_repository.TryGetValue((int)_system_type, out var system))
-                return system;
+            foreach(var e in m_update_system)
+            {
+                if (e.SystemType == _system_type)
+                    return e;
+            }
 
             Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;

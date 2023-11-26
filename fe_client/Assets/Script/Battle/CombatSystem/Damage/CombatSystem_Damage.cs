@@ -40,8 +40,13 @@ namespace Battle
         public CombatSystem_Damage() : base(EnumSystem.CombatSystem_Damage)
         { }
 
+        public override void Init()
+        {
+            
+        }
 
-        public override void Reset()
+
+        public override void Release()
         {
             WeaponAdvantage     = EnumAdvantageState.None;
             WeaponEffectiveness = false;
@@ -57,13 +62,13 @@ namespace Battle
 
         protected override void OnEnter(ICombatSystemParam _param)
         {
-            Reset();
+            Release();
 
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
 
             // 공격 전 스킬 사용.
-            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
+            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -102,7 +107,7 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
+            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
         }
 
 

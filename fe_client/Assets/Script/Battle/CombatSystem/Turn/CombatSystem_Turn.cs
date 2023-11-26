@@ -162,7 +162,7 @@ namespace Battle
             if (_param == null)
                 return;
 
-            Reset();
+            Release();
 
             var attacker = _param.Attacker;
             var defender = _param.Defender;
@@ -193,7 +193,7 @@ namespace Battle
             DefenderData.SetData(defender.ID, EnumCombatTurn.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
 
             // 공/방 돌입전 턴 관련 스킬 사용할 것이 있다면 여기서 사용.
-            EventManager.Instance.DispatchEvent(new SituationUpdatedEvent(situation_type));
+            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(situation_type));
         }
 
         /// <summary>
@@ -238,7 +238,12 @@ namespace Battle
         }
 
 
-        public override void Reset()
+        public override void Init()
+        {
+            
+        }
+
+        public override void Release()
         {
             CombatTurn = EnumCombatTurn.None;
             AttackerData.Reset();
