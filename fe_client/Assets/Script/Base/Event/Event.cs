@@ -17,7 +17,7 @@ public class EventReceiverAttribute : System.Attribute
 {
     private System.Type[] m_receive_event_types = null;
 
-    EventReceiverAttribute(System.Type[] _receive_event_types)
+    public EventReceiverAttribute(params System.Type[] _receive_event_types)
     {
         m_receive_event_types = _receive_event_types;
     }
@@ -35,7 +35,7 @@ public interface IEventReceiver
 
 public class EventDispatchManager : Singleton<EventDispatchManager>
 {
-    HashSet<IEventReceiver>                       m_receivers             = new();
+    HashSet<IEventReceiver>                       m_receivers         = new();
     Dictionary<System.Type, List<IEventReceiver>> m_receivers_by_type = new();
     
 
@@ -81,24 +81,25 @@ public class EventDispatchManager : Singleton<EventDispatchManager>
     {
         m_receivers.Remove(_receiver);
 
-        // 뭔가 복잡...
+        // 
         foreach(var e in System.Attribute.GetCustomAttributes(_receiver.GetType()))
         {
-            if (e is EventReceiverAttribute event_receiver_attribute)
+            var event_receiver_attribute = e as EventReceiverAttribute ;
+            if (event_receiver_attribute == null)
+                continue;
+            
+            var receiver_types = event_receiver_attribute.GetReceiveEventTypes();
+            if (receiver_types == null || receiver_types.Length == 0)
+                continue;
+
+            foreach(var event_type in receiver_types)
             {
-                if (event_receiver_attribute.GetReceiveEventTypes() != null)
+                if (m_receivers_by_type.TryGetValue(event_type, out var value))
                 {
-                    foreach(var event_type in event_receiver_attribute.GetReceiveEventTypes())
-                    {
-                        if (m_receivers_by_type.TryGetValue(event_type, out var value))
-                        {
-                            value.Remove(_receiver);
-                        }
-                    }
+                    value.Remove(_receiver);
                 }
             }
         }
-
     }
 
     public void DispatchEvent(IEventParam _param)

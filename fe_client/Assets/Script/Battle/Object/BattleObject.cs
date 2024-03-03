@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
+    [EventReceiverAttribute(typeof(SituationUpdatedEvent))]
     public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
     {
         public Int64          ID       { get; private set; }

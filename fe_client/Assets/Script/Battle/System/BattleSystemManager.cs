@@ -28,7 +28,7 @@ namespace Battle
 
             // 실행할 순서대로 넣어놓는다.
             m_update_system.Add(new BattleSystem_Turn());       
-            m_update_system.Add(new BattleSystem_CommandDispatch());    
+            m_update_system.Add(new BattleSystem_Command());    
 
 
             m_update_system.ForEach(e => e.Init());

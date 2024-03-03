@@ -7,6 +7,7 @@ namespace Battle
 {
     public partial class BattleSystem_Turn : BattleSystem
     {
+        // 진영별 턴  관리. 
         //
         int[] m_queue_turn    = new int[2];  //[0] : Prev, [1] : Current
         int[] m_queue_faction = new int[2];  //[0] : Prev, [1] : Current

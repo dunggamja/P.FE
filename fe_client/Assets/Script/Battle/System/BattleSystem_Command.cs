@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Battle
 {
-    public partial class BattleSystem_CommandDispatch : BattleSystem, IEventReceiver
+    public partial class BattleSystem_Command : BattleSystem, IEventReceiver
     {
         // 명령을 처리해보자.
         // public class CommandData
@@ -25,7 +25,7 @@ namespace Battle
         // Queue<CommandData> m_list_command;       
 
 
-        public BattleSystem_CommandDispatch() : base(EnumSystem.BattleSystem_CommandDispatch)
+        public BattleSystem_Command() : base(EnumSystem.BattleSystem_CommandDispatch)
         {
         }
 
