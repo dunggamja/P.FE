@@ -18,17 +18,17 @@ public class Test_Battle : MonoBehaviour
 
     class TestBattleParam : ICombatSystemParam
     {
-        BattleObject m_attacker;
-        BattleObject m_defender;
+        Entity m_attacker;
+        Entity m_defender;
 
 
-        public BattleObject Attacker => m_attacker;
+        public Entity Attacker => m_attacker;
 
-        public BattleObject Defender => m_defender;
+        public Entity Defender => m_defender;
 
         public bool IsPlan => false;
 
-        public TestBattleParam(BattleObject _attacker, BattleObject _defender)
+        public TestBattleParam(Entity _attacker, Entity _defender)
         {
             m_attacker = _attacker;
             m_defender = _defender;
@@ -40,8 +40,8 @@ public class Test_Battle : MonoBehaviour
 
     private void Start()
     {
-        var attacker = BattleObject.Create();
-        var defender = BattleObject.Create();
+        var attacker = Entity.Create();
+        var defender = Entity.Create();
 
         // 테스트를 위한 임시 능력치 셋팅.
         var attacker_status = attacker.StatusManager.Status as UnitStatus;

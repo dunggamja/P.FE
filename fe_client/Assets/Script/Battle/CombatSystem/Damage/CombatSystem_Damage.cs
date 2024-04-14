@@ -181,7 +181,7 @@ namespace Battle
             return damage_total;
         }
 
-        BattleObject GetDealer(ICombatSystemParam _param)
+        Entity GetDealer(ICombatSystemParam _param)
         {
             //var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             var turn_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
@@ -197,7 +197,7 @@ namespace Battle
             return null;
         }
 
-        BattleObject GetTarget(ICombatSystemParam _param)
+        Entity GetTarget(ICombatSystemParam _param)
         {
             //var turn_system = SystemManager.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
             var turn_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;

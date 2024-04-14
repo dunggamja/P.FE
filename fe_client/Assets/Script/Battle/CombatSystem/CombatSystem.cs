@@ -7,8 +7,8 @@ namespace Battle
 {
     public interface ICombatSystemParam : ISystemParam
     {
-        BattleObject Attacker { get; }
-        BattleObject Defender { get; }
+        Entity Attacker { get; }
+        Entity Defender { get; }
         bool         IsPlan   { get; }
     }
 

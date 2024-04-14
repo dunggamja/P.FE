@@ -17,7 +17,7 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            var unit_object = BattleObjectManager.Instance.GetBattleObject(UnitID);
+            var unit_object = EntityManager.Instance.GetEntity(UnitID);
             if (unit_object == null)
                 return;
 
@@ -27,7 +27,7 @@ namespace Battle
 
         protected override bool OnUpdate()
         {
-            var unit_object = BattleObjectManager.Instance.GetBattleObject(UnitID);
+            var unit_object = EntityManager.Instance.GetEntity(UnitID);
             if (unit_object == null)
                 return true;
 

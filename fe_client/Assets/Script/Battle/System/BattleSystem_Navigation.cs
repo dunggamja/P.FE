@@ -24,13 +24,13 @@
 
 //         protected override bool OnUpdate(IBattleSystemParam _param)
 //         {
-//             // TODO: ì¼ë‹¨ ëª¨ë“  ìœ ë‹›ë“¤ì˜ ì´ë™ ë¡œì§ì„ ê°±ì‹ í•œë‹¤....
+//             // TODO: 
 //             BattleObjectManager.Instance.Loop((e) =>
 //             {
 //                 if (e == null)
 //                     return;
 
-//                 // TODO: ê¸¸ì°¾ê¸°ê°€ í•„ìš”í•  ê²½ìš° ì—¬ê¸°ì„œ ì…‹íŒ…í•œë‹¤.??
+//                 // TODO: ê¸¸ì°¾ê¸°ê?? ?•„?š”?•  ê²½ìš° ?—¬ê¸°ì„œ ?…‹?Œ…?•œ?‹¤.??
 
 //                 if (e.PathNodeManager != null)
 //                     e.PathNodeManager.Update();
@@ -39,7 +39,7 @@
 //                     e.PathVehicle.Update(e, Time.deltaTime);
 //             });
 
-//             // TODO: NavigationSystem ì¢…ë£Œë¼ëŠ” ê°œë…ì´ í•„ìš”í• ê¹Œ???;;;
+//             // TODO: NavigationSystem ì¢…ë£Œ?¼?Š” ê°œë…?´ ?•„?š”?• ê¹????;;;
 //             return false;
 //         }
         

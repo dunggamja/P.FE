@@ -13,11 +13,11 @@ namespace Battle
         int[] m_queue_faction = new int[2];  //[0] : Prev, [1] : Current
 
         // 
-        public int  Turn_Prev        => m_queue_turn[0];
-        public int  Turn_Cur         => m_queue_turn[1];
+        public int  Turn_Prev { get => m_queue_turn[0]; set => m_queue_turn[0] = value; }
+        public int  Turn_Cur  { get => m_queue_turn[1]; set => m_queue_turn[1] = value; }
                     
-        public int  Faction_Prev     => m_queue_faction[0];
-        public int  Faction_Cur      => m_queue_faction[1];
+        public int  Faction_Prev  { get => m_queue_faction[0]; set => m_queue_faction[0] = value; }
+        public int  Faction_Cur   { get => m_queue_faction[1]; set => m_queue_faction[1] = value; }
 
         public bool IsTurnChanged    => m_queue_turn[0]    != m_queue_turn[1];
         public bool IsFactionChanged => m_queue_faction[0] != m_queue_faction[1];
@@ -105,7 +105,7 @@ namespace Battle
 
             // 다음에 행동할 Faction을 찾습니다.  
             // TODO: 모든 BattleObject 를 순회하도록 해두었슴...;  혹시 성능에 문제가 된다면 나중에 개선....
-            BattleObjectManager.Instance.Loop((e) =>
+            EntityManager.Instance.Loop((e) =>
             {
                 var faction = e.GetFaction();
                 if (faction <= 0)
@@ -125,7 +125,7 @@ namespace Battle
         bool Check_Faction_Complete(int _current_faction)
         {
             // 진영내의 유닛 중 행동을 하지 않은 유닛이 있는지 체크.
-            var active_unit = BattleObjectManager.Instance.Find(e => e.GetFaction() == _current_faction && e.GetCommandState() == EnumCommandState.Active);
+            var active_unit = EntityManager.Instance.Find(e => e.GetFaction() == _current_faction && e.GetCommandState() == EnumCommandState.Active);
             if (active_unit != null)
                 return false;
 
@@ -136,11 +136,11 @@ namespace Battle
 
         void UpdateTurnAndFaction(int _turn, int _faction)
         {
-            m_queue_turn[0]    = m_queue_turn[1];
-            m_queue_faction[0] = m_queue_faction[1];
+            Turn_Prev    = Turn_Cur;
+            Faction_Prev = Faction_Cur;
 
-            m_queue_turn[1]    = _turn;
-            m_queue_faction[1] = _faction;
+            Turn_Cur     = _turn;
+            Faction_Cur  = _faction;            
         }
 
         

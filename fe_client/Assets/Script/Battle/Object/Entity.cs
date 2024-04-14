@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Battle
 {
     [EventReceiverAttribute(typeof(SituationUpdatedEvent))]
-    public partial class BattleObject : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
+    public partial class Entity : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
     {
         public Int64          ID       { get; private set; }
         public ITarget        Target   { get; }
@@ -23,7 +23,7 @@ namespace Battle
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
 
 
-        protected BattleObject(Int64 _id)
+        protected Entity(Int64 _id)
         {
             ID              = _id;
             
@@ -34,9 +34,9 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
         }
 
-        public static BattleObject Create()
+        public static Entity Create()
         {
-            var battle_object = new BattleObject(Util.GenerateID());
+            var battle_object = new Entity(Util.GenerateID());
             battle_object.Init();
 
             return battle_object;
@@ -110,6 +110,15 @@ namespace Battle
         }
 
         
+
+
+        public void OnReceiveEvent(IEventParam _param)
+        {
+            if (_param is SituationUpdatedEvent situation_updated)
+            {
+                Skill.UseSkill(situation_updated.Situation, this);
+            }
+        }
     }
 
 

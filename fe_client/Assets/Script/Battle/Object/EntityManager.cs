@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class BattleObjectManager : Singleton<BattleObjectManager>
+    public class EntityManager : Singleton<EntityManager>
     {
-        Dictionary<Int64, BattleObject> m_repository_by_id = new Dictionary<long, BattleObject>();
+        Dictionary<Int64, Entity> m_repository_by_id = new Dictionary<long, Entity>();
 
-        public BattleObject GetBattleObject(Int64 _id)
+        public Entity GetEntity(Int64 _id)
         {
             if (m_repository_by_id.TryGetValue(_id, out var battle_object))
                 return battle_object;
@@ -17,7 +17,7 @@ namespace Battle
             return null;
         }
 
-        public bool AddBattleObject(BattleObject _object)
+        public bool AddEntity(Entity _object)
         {
             if (_object == null)
                 return false;
@@ -30,7 +30,7 @@ namespace Battle
         }
 
 
-        public void Loop(Action<BattleObject> _callback)
+        public void Loop(Action<Entity> _callback)
         {
             if (_callback == null)
                 return;
@@ -41,7 +41,7 @@ namespace Battle
             }
         }
 
-        public BattleObject Find(Func<BattleObject, bool> _callback)
+        public Entity Find(Func<Entity, bool> _callback)
         {
             if (_callback == null)
                 return null;
