@@ -22,7 +22,7 @@ public class TerrainCollision
     public bool IsCollision(int _x, int _y)
     {
         if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
-            return false;
+            return true;
 
         return m_collision[_x, _y];
     }

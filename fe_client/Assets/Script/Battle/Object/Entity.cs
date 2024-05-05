@@ -68,8 +68,7 @@ namespace Battle
             if (_damage <= 0)
                 return;
 
-            // TODO: �÷��� ���� ó�� �ʿ�...
-
+            
             var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
             var new_hp = Math.Max(0, cur_hp - _damage);
 

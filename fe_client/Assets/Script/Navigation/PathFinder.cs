@@ -12,7 +12,9 @@ public static class PathFinder
         return Mathf.Sqrt((_from_x - _to_x) * (_from_x - _to_x) + (_from_y - _to_y) * (_from_y - _to_y));
     }
 
-    class Node : IComparer<Node>, IEqualityComparer<Node>
+
+
+    class Node 
     {     
         public int   x         { get; private set; } = 0;
         public int   y         { get; private set; } = 0;
@@ -31,20 +33,6 @@ public static class PathFinder
             parent    = _parent;            
         }
 
-        public int Compare(Node a, Node b)
-        {
-            return a.TotalCost.CompareTo(b.TotalCost);
-        }
-
-        public bool Equals(Node a, Node b)
-        {
-            return a.x == b.x && a.y == b.y;
-        }
-
-        public int GetHashCode(Node _o)
-        {
-            return _o.x ^ _o.y;
-        }
     }
 
 
@@ -53,82 +41,107 @@ public static class PathFinder
     {
         
 
-        var result     = new List<PathNode>();
-        var open_list  = new SortedSet<Node>();
-        var close_list = new SortedSet<Node>();
+        var result     = new List<PathNode>(20);
+        
 
-        // ì‹œì‘ ì§€ì  ì…‹íŒ….
-        close_list.Add(new Node(_from_x, _from_y, _to_x, _to_y, null));
-
-        // A* ê¸¸ì°¾ê¸°
-        var    node  = AStar(_collision, ref open_list, ref close_list, _to_x, _to_y);
+        // A* ê¸¸ì°¾ê¸?
+        var    node  = AStar(_collision, _from_x, _from_y, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
             node = node.parent;
         }
 
-        // ìˆœì„œ ë³€ê²½.
+        // ?ˆœ?„œ ë³?ê²?.
         result.Reverse();
 
         return result;
     }
 
 
-    static Node AStar(TerrainCollision _collision, ref SortedSet<Node> _open_list, ref SortedSet<Node> _close_list, int _to_x, int _to_y)
+    static Node AStar(TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         if (_collision == null)
             return null;
 
-        while(0 < _close_list.Count)
-        {
-            var item = _close_list.First();
+        var open_list  = new List<Node>(20);
+        var close_list = new List<Node>(20);
 
-            // ëª©ì ì§€ ë„ì°©.
+        // ½ÃÀÛ ÁöÁ¡À» ³Ö½À´Ï´Ù.
+        open_list.Add(new Node(_from_x, _from_y, _to_x, _to_y, null));
+
+        // ³²Àº °Å¸®°¡ °¡Àå ÀûÀº ³ëµå¸¦ Ã£¾Æº¾½Ã´Ù.
+        Node func_find_minimum_heuristic(List<Node> _list_node)
+        {
+            Node minimum = null;
+            if (_list_node != null)
+            {
+                foreach (var e in _list_node)
+                {
+                    if ((minimum == null) || (e != null && e.heuristic < minimum.heuristic))
+                    {
+                        minimum = e;
+                    }
+                }
+            }
+
+            return minimum;
+        }
+        
+
+        while(0 < open_list.Count)
+        {
+            // ³²Àº °Å¸®°¡ °¡Àå °¡±î¿î ³ëµå¸¦ °¡Á®¿Â´Ù.
+            var item = func_find_minimum_heuristic(open_list);
+
+            // »ç¿ëÇÑ ³ëµå´Â open_list¿¡¼­ Á¦°Å ÈÄ close_list¿¡ Ãß°¡.
+            open_list.Remove(item);
+            close_list.Add(item);
+
+            // ¸ñÇ¥ ÁöÁ¡¿¡ µµ´Ş.
             if (item.x == _to_x && item.y == _to_y)
                 return item;
 
-            // ì•„ì´í…œì— ì¸ì ‘í•œ ë…¸ë“œë“¤ì„ openlistì— ë„£ëŠ”ë‹¤.
+            // ÁÖº¯ ³ëµå Å½»ö.
             for(int i = -1; i <= 1; ++i)
             {
                 for(int k = -1; k <= 1; ++k)
                 {
-                    var x        = item.x + i;
-                    var y        = item.y + k;
+                    var y        = item.y + i;
+                    var x        = item.x + k;
                     var new_item = new Node(x, y, _to_x, _to_y, item);
 
-                    // ì´ë¯¸ ì²˜ë¦¬í•œ ë…¸ë“œ
-                    if (_close_list.Contains(new_item))
-                        continue;
-
-                    // ê°ˆ ìˆ˜ ì—†ëŠ” ì§€í˜•.
+                    // Ãæµ¹ ÁöÁ¡Àº °Å¸¥´Ù.
                     if (_collision.IsCollision(x, y))
                         continue;
 
-                    // open_listì— ì´ë¯¸ ìˆë‹¤ë©´ cost ë¹„êµ 
-                    if (_open_list.TryGetValue(new_item, out var old_item))
+                    // ´ë°¢¼± ¹æÇâÀÏ °æ¿ì ¾çÂÊ Á÷¼±¹æÇâÀÌ ¿­·ÁÀÖ´ÂÁö Ã¼Å©ÇØ¾ß ÇÔ.
+                    var is_diagonal = (i != 0) && (k != 0);
+                    if (is_diagonal)
                     {
-                        if (old_item.TotalCost <= new_item.TotalCost)
-                        {
-                            // ê¸°ì¡´ Costê°€ ë” ì‘ë‹¤ë©´ ì¶”ê°€í•˜ì§€ ì•ŠëŠ”ë‹¤.
+                        if (_collision.IsCollision(item.x + k, item.y) || _collision.IsCollision(item.x, item.y + i))
                             continue;
-                        }
-
-                        // ê¸°ì¡´ ì•„ì´í…œ ì œê±°.
-                        _open_list.Remove(old_item);
                     }
 
-                    // openlistì— ì¶”ê°€.
-                    _open_list.Add(new_item);
-                }
-            }
+                    // ÀÌ¹Ì °Ë»çÇÑ ÁöÁ¡µµ °Å¸¥´Ù.
+                    if (close_list.Contains(new_item))
+                        continue;
 
-            // openlist í•­ëª©ì¤‘ ê°€ì¥ TotalCostê°€ ì‘ì€ ê²ƒì„ closelistì— ë„£ëŠ”ë‹¤.
-            if (0 < _open_list.Count)
-            {
-                var move_item = _open_list.First();
-                _close_list.Add(move_item);
-                _open_list.Remove(move_item);
+                    
+
+                    // °°Àº ÁÂÇ¥¿¡ ¼ÓÇÏ´Â ³ëµå°¡ ÀÖÀ» °æ¿ì ºñ±³ ÈÄ º¯°æ.
+                    var old_item = open_list.Find((e) => e.x == new_item.x && e.y == new_item.y);
+                    if (old_item != null)
+                    {
+                        if (old_item.cost < new_item.cost)
+                            continue;
+
+                        open_list.Remove(old_item);
+                    }
+
+                    // 
+                    open_list.Add(new_item);
+                }
             }
         }        
 

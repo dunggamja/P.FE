@@ -98,6 +98,7 @@ namespace Battle
             // 데미지 적용 여기서 한다.
             target.ApplyDamage(Result_Damage);
 
+            
             return true;
         }
 

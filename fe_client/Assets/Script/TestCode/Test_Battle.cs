@@ -97,4 +97,19 @@ public class Test_Battle : MonoBehaviour
         //IBattleSystemParam
         CombatSystemManager.Instance.Update();
     }
+
+
+    public Vector2Int pos_from = Vector2Int.zero;
+    public Vector2Int pos_to   = Vector2Int.zero;
+    [ContextMenu("PathFind")]
+    void PathFind()
+    {
+        BattleTerrainManager.Instance.Initialize();
+        var battle_terrain = BattleTerrainManager.Instance.BattleTerrain;
+        var list_path      = PathFinder.Find(battle_terrain.Collision, pos_from.x, pos_from.y, pos_to.x, pos_to.y);
+        foreach(var e in list_path)
+        {
+            Debug.LogWarning(e.GetPosition().ToString());
+        }
+    }
 }
