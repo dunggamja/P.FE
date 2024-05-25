@@ -112,4 +112,10 @@ public class Test_Battle : MonoBehaviour
             Debug.LogWarning(e.GetPosition().ToString());
         }
     }
+
+    [ContextMenu("AddressableTest")]
+    void Test_Addressable()
+    {
+        ActorManager.Instance.Create(0);
+    }
 }
