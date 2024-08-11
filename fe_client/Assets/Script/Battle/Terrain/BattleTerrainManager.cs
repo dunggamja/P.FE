@@ -13,7 +13,7 @@ namespace Battle
 
         public void Initialize()
         {
-            // 일단 하드코딩.  
+            // 
             BattleTerrain = new BattleTerrain();
             BattleTerrain.Initialize(100, 100);
         }

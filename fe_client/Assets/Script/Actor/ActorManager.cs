@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -11,21 +12,38 @@ public class ActorManager : SingletonMono<ActorManager>
 
     public Actor Seek(Int64 _id) => m_repository.TryGetValue(_id, out var result) ? result : null;
 
-    public void Create(Int64 _id)
+    public async void Create(Int64 _id)
     {
         
         var load_asset_address = "test";
-        var load_asset_handle  = Addressables.LoadAssetAsync<GameObject>(load_asset_address);
-        load_asset_handle.Completed += (operation) => 
+        var async_instantiate  = Addressables.InstantiateAsync(load_asset_address);
+
+        await async_instantiate.Task;
+
+        var new_object = async_instantiate.Result;
+        if (new_object)
         {
-            if (operation.Status == AsyncOperationStatus.Succeeded)
-            {
-            }
-            else
-            {
-                Debug.LogError($"load async failed, {load_asset_address}");
-            }
-        };
+            new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
+        }
+        else
+        {
+            Debug.Log($"InstantiateAsync Failed, {async_instantiate.Status}");
+        }
+
+        
+        
+        // var load_asset_handle  = Addressables.LoadAssetAsync<GameObject>(load_asset_address);
+        // load_asset_handle.Completed += (operation) => 
+        // {
+        //     if (operation.Status == AsyncOperationStatus.Succeeded)
+        //     {
+        //         operation.
+        //     }
+        //     else
+        //     {
+        //         Debug.LogError($"load async failed, {load_asset_address}");
+        //     }
+        // };
 
         // var key = "prefab";
 
@@ -55,7 +73,7 @@ public class ActorManager : SingletonMono<ActorManager>
     //     new_object.transform.SetParent(transform, false);
 
     //     //
-//Assets/ResourcesPrivate/unit/test.prefab
+    //Assets/ResourcesPrivate/unit/test.prefab
 
 
     //     return (false, null);
