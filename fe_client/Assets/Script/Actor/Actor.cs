@@ -8,6 +8,10 @@ public class Actor : MonoBehaviour
 
     public Int64 ID => m_id;
 
+    public void Initialize(Int64 _id)
+    {
+        m_id = _id;
+    }
 
     
 }

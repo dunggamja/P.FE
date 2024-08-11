@@ -10,11 +10,12 @@ public class ActorManager : SingletonMono<ActorManager>
 {
     Dictionary<Int64, Actor> m_repository = new();
 
-    public Actor Seek(Int64 _id) => m_repository.TryGetValue(_id, out var result) ? result : null;
-
+    public Actor Seek(Int64 _id)      => m_repository.TryGetValue(_id, out var result) ? result : null;
+    public bool  Remove(Int64 _id)    => m_repository.Remove(_id);
+    public bool  Insert(Actor _actor) => (_actor) ? m_repository.TryAdd(_actor.ID, _actor) : false;
+    
     public async void Create(Int64 _id)
-    {
-        
+    {        
         var load_asset_address = "test";
         var async_instantiate  = Addressables.InstantiateAsync(load_asset_address);
 
@@ -24,10 +25,15 @@ public class ActorManager : SingletonMono<ActorManager>
         if (new_object)
         {
             new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
+            var new_actor   = new_object.TryAddComponent<Actor>();
+
+            new_actor.Initialize(_id);
+
+            Insert(new_actor);
         }
         else
         {
-            Debug.Log($"InstantiateAsync Failed, {async_instantiate.Status}");
+            Debug.Log($"InstantiateAsync Failed, {async_instantiate.Status}");            
         }
 
         
