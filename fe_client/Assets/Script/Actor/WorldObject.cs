@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-public class Actor : MonoBehaviour
+public class WorldObject : MonoBehaviour
 {
     Int64 m_id = 0;
 

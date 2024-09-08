@@ -6,13 +6,13 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 
-public class ActorManager : SingletonMono<ActorManager>
+public class WorldObjectManager : SingletonMono<WorldObjectManager>
 {
-    Dictionary<Int64, Actor> m_repository = new();
+    Dictionary<Int64, WorldObject> m_repository = new(); 
 
-    public Actor Seek(Int64 _id)      => m_repository.TryGetValue(_id, out var result) ? result : null;
-    public bool  Remove(Int64 _id)    => m_repository.Remove(_id);
-    public bool  Insert(Actor _actor) => (_actor) ? m_repository.TryAdd(_actor.ID, _actor) : false;
+    public WorldObject Seek(Int64 _id) => m_repository.TryGetValue(_id, out var result) ? result : null;
+    public bool  Remove(Int64 _id)     => m_repository.Remove(_id);
+    public bool  Insert(WorldObject _actor) => (_actor) ? m_repository.TryAdd(_actor.ID, _actor) : false;
     
     public async void Create(Int64 _id)
     {        
@@ -25,7 +25,7 @@ public class ActorManager : SingletonMono<ActorManager>
         if (new_object)
         {
             new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
-            var new_actor   = new_object.TryAddComponent<Actor>();
+            var new_actor   = new_object.TryAddComponent<WorldObject>();
 
             new_actor.Initialize(_id);
 

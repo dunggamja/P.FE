@@ -116,6 +116,6 @@ public class Test_Battle : MonoBehaviour
     [ContextMenu("AddressableTest")]
     void Test_Addressable()
     {
-        ActorManager.Instance.Create(Util.GenerateID());
+        WorldObjectManager.Instance.Create(Util.GenerateID());
     }
 }
