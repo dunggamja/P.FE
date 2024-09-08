@@ -18,7 +18,7 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
     {   
 
         var load_asset_address = "test";
-        Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");            
+        //Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");            
 
         AssetManager.Instance.InstantiateAsync(load_asset_address, (_object)=>
         {
@@ -37,7 +37,7 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
 
                 Insert(new_actor);
 
-                Debug.Log($"InstantiateAsync Success, {load_asset_address}");            
+                //Debug.Log($"InstantiateAsync Success, {load_asset_address}");            
             }
             else
             {
@@ -45,7 +45,7 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
             }
         });
 
-        Debug.Log($"InstantiateAsync Try-2, {load_asset_address}");            
+        //Debug.Log($"InstantiateAsync Try-2, {load_asset_address}");            
 
         // var new_object = async_instantiate.Result;
         // if (new_object)
