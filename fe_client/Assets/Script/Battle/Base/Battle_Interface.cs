@@ -65,8 +65,8 @@ namespace Battle
         EnumCommandType  GetCommandType();
         void             SetCommandType(EnumCommandType _command_type);
 
-        EnumCommandState GetCommandState(); 
-        void             SetCommandState(EnumCommandState _command_state); 
+        int              GetCommandCount(); 
+        void             SetCommandCount(int _count); 
     }
 
 

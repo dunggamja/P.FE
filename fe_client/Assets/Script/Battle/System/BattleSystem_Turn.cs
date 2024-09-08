@@ -125,7 +125,12 @@ namespace Battle
         bool Check_Faction_Complete(int _current_faction)
         {
             // 진영내의 유닛 중 행동을 하지 않은 유닛이 있는지 체크.
-            var active_unit = EntityManager.Instance.Find(e => e.GetFaction() == _current_faction && e.GetCommandState() == EnumCommandState.Active);
+            var active_unit = EntityManager.Instance.Find(e => 
+                (e.GetFaction()     == _current_faction && 
+                 e.GetCommandType() == EnumCommandType.Player &&
+                 e.GetCommandCount() >  0)            
+            );
+
             if (active_unit != null)
                 return false;
 

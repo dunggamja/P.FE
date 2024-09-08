@@ -16,14 +16,14 @@ namespace Battle
       Infantry   = 1, // ï¿½ï¿½ï¿½ï¿½
       Cavalry    = 2, // ï¿½â¸¶ï¿½ï¿½
       Flyer      = 3, // ï¿½ï¿½ï¿½àº´
-      Undead     = 4, // ï¿½ï¿½ï¿½ï¿½ï¿½
+      Undead     = 4, // ï¿½ï¿½ï¿½ï¿½ï¿?
       Beast      = 5, // ï¿½ï¿½ï¿½Â·ï¿½
       Large      = 6, // ï¿½ï¿½(ï¿½ï¿½)ï¿½ï¿½ 
       HeavyArmor = 7, // ï¿½ß°ï¿½
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (HP/EXP ï¿½ï¿½ï¿½)
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (HP/EXP ï¿½ï¿½ï¿?)
     /// </summary>
     public enum EnumUnitPoint
     {
@@ -43,9 +43,9 @@ namespace Battle
       Level      ,  // ï¿½ï¿½ï¿½ï¿½
       Strength   ,  // ï¿½ï¿½
       Magic      ,  // ï¿½ï¿½ï¿½ï¿½
-      Skill      ,  // ï¿½ï¿½ï¿½
+      Skill      ,  // ï¿½ï¿½ï¿?
       Speed      ,  // ï¿½Óµï¿½
-      Luck       ,  // ï¿½ï¿½ï¿½
+      Luck       ,  // ï¿½ï¿½ï¿?
       Defense    ,  // ï¿½ï¿½ï¿½ï¿½
       Resistance ,  // ï¿½ï¿½ï¿½ï¿½
       Movement   ,  // ï¿½Ìµï¿½ï¿½ï¿½
@@ -72,7 +72,7 @@ namespace Battle
       KillInfantry   = 101, // Æ¯È¿, ï¿½ï¿½ï¿½ï¿½     
       KillCavalry    = 102, // Æ¯È¿, ï¿½â¸¶ï¿½ï¿½
       KillFlyer      = 103, // Æ¯È¿, ï¿½ï¿½ï¿½àº´
-      KillUndead     = 104, // Æ¯È¿, ï¿½ï¿½ï¿½ï¿½ï¿½
+      KillUndead     = 104, // Æ¯È¿, ï¿½ï¿½ï¿½ï¿½ï¿?
       KillBeast      = 105, // Æ¯È¿, ï¿½ï¿½ï¿½Â·ï¿½
       KillLarge      = 106, // Æ¯È¿, ï¿½ï¿½(ï¿½ï¿½)ï¿½ï¿½ 
       KillHeavyArmor = 107, // Æ¯È¿, ï¿½ß°ï¿½
@@ -103,9 +103,9 @@ namespace Battle
     {
         None         = 0,
 
-        CommandType,  // ëª…ë ¹ (í”Œë ˆì´ì–´/AI)
-        CommandState, // ëª…ë ¹ (ê°€ëŠ¥/ì™„ë£Œ)
-        Faction,      // ì§„ì˜ (1:í”Œë ˆì´ì–´, 2:ì êµ°)
+        CommandType,  // ëª…ë ¹ (?”Œ? ˆ?´?–´/AI)
+        CommandState, // ëª…ë ¹ (ê°??Š¥/?™„ë£?)
+        Faction,      // ì§„ì˜ (1:?”Œ? ˆ?´?–´, 2:? êµ?)
 
         IsMoving,
     }
@@ -131,29 +131,29 @@ namespace Battle
         Water,
 
         MAX = 32,
-        // bitflag ë¡œ ì œì–´í•˜ê¸° ë•Œë¬¸ì— Maxê°’ í•„ìš”, 32 bit or 64 bit ?
+        // bitflag ë¡? ? œ?–´?•˜ê¸? ?•Œë¬¸ì— Maxê°? ?•„?š”, 32 bit or 64 bit ?
     }
 
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
+    /// 
     /// </summary>
     public enum EnumCommandType
     {
-        None,   // ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½
-        Player, // í”Œë ˆì´ì–´ê°€ ëª…ë ¹ì„ ë‚´ë ¤ì•¼ í•¨
-        AI,     // AIê°€ ì œì–´ 
+        None,   // ¸í·É ¾È ¹ŞÀ½.
+        Player, // ÇÃ·¹ÀÌ¾î°¡ ¸í·É
+        AI,     // AI ¸í·É
     }
 
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½
-    /// </summary>
-    public enum EnumCommandState
-    {
-        None,
-        Active, // í–‰ë™ì´ ê°€ëŠ¥í•œ ìƒíƒœ
-        Wait,   // í–‰ë™ ì™„ë£Œ í›„ ëŒ€ê¸° ìƒíƒœ
-    }
+    // /// <summary>
+    // /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½
+    // /// </summary>
+    // public enum EnumCommandState
+    // {
+    //     None,
+    //     Enable,   // ?–‰?™?´ ê°??Š¥?•œ ?ƒ?ƒœ
+    //     Complete, // Çàµ¿ ¿Ï·á.
+    // }
 
 
     
