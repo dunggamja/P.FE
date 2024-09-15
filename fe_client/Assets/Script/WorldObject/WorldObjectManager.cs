@@ -14,7 +14,7 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
     public bool  Remove(Int64 _id)                 => m_repository.Remove(_id);
     public bool  Insert(WorldObject _world_object) => (_world_object) ? m_repository.TryAdd(_world_object.ID, _world_object) : false;
     
-    public void Create(Int64 _id)
+    public void Create(Int64 _id, Action<bool, Int64> _on_result = null)
     {   
 
         var load_asset_address = "test";
@@ -22,12 +22,6 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
 
         AssetManager.Instance.InstantiateAsync(load_asset_address, (_object)=>
         {
-            if (_object == null)
-            {
-                Debug.Log($"load failed: {load_asset_address}");
-                return;
-            }
-
             if (_object)
             {
                 _object.name  = $"{_id.ToString("D10")}_{load_asset_address}";
@@ -37,11 +31,15 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
 
                 Insert(new_actor);
 
+                _on_result?.Invoke(true, _id);
+
                 //Debug.Log($"InstantiateAsync Success, {load_asset_address}");            
             }
             else
             {
-                Debug.Log($"InstantiateAsync Failed, {load_asset_address}");            
+                Debug.LogError($"InstantiateAsync Failed, {load_asset_address}");   
+
+                _on_result?.Invoke(false, _id);         
             }
         });
 

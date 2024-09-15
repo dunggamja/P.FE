@@ -34,12 +34,12 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
         }
 
-        public static Entity Create()
+        public static Entity Create(Int64 _id)
         {
-            var battle_object = new Entity(Util.GenerateID());
-            battle_object.Init();
+            var new_entity = new Entity(_id);
+            new_entity.Init();
 
-            return battle_object;
+            return new_entity;
         }
 
         public void Init()

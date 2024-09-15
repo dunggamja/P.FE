@@ -70,14 +70,14 @@ namespace Battle
 
 
 
-        /// <summary> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ </summary>
+        /// <summary> ¹°¸® µ©  °è»ê. </summary>
         public int Calc_Might_Physic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
             if (weapon_might <= 0)
             {
-                // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿?,
+                // ¹«±â°¡ ¾øÀ¸¸é µ¥¹ÌÁöµµ ¾ø´Ù.
                 return 0;
             }
 
@@ -87,14 +87,14 @@ namespace Battle
             return unit_might + weapon_might;
         }
 
-        /// <summary> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ </summary>
+        /// <summary> ¸¶¹ý µ©  °è»ê. </summary>
         public int Calc_Might_Magic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
             if (weapon_might <= 0)
             {
-                // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿?,
+                // ¹«±â°¡ ¾øÀ¸¸é µ¥¹ÌÁöµµ ¾ø´Ù.
                 return 0;
             }
 
@@ -105,7 +105,7 @@ namespace Battle
             return unit_might + weapon_might;
         }
 
-        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
+        /// <summary> ¸íÁß </summary>
         public int Calc_Hit()
         {
             var unit_skill = Status.GetStatus(EnumUnitStatus.Skill);
@@ -119,7 +119,7 @@ namespace Battle
             return unit_hit + weapon_hit;
         }
 
-        /// <summary> ï¿½Ê»ï¿½ </summary>
+        /// <summary> Ä¡¸íÅ¸ </summary>
         public int Calc_Critical()
         {
             var unit_skill      = Status.GetStatus(EnumUnitStatus.Skill);

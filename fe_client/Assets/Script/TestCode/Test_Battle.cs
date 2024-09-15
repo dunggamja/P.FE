@@ -40,8 +40,8 @@ public class Test_Battle : MonoBehaviour
 
     private void Start()
     {
-        var attacker = Entity.Create();
-        var defender = Entity.Create();
+        var attacker = Entity.Create(Util.GenerateID());
+        var defender = Entity.Create(Util.GenerateID());
 
         // 테스트를 위한 임시 능력치 셋팅.
         var attacker_status = attacker.StatusManager.Status as UnitStatus;
@@ -116,6 +116,7 @@ public class Test_Battle : MonoBehaviour
     [ContextMenu("AddressableTest")]
     void Test_Addressable()
     {
-        WorldObjectManager.Instance.Create(Util.GenerateID());
+        Battle.EntityHelper.CreateBattleEntityAndObject();
+        //WorldObjectManager.Instance.Create(Util.GenerateID());
     }
 }

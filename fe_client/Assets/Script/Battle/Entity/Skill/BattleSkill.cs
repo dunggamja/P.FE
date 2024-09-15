@@ -18,7 +18,7 @@ namespace Battle
     public class BattleSkill : ISkill
     {
         // 
-        // ï¿½ï¿½Å³ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½Ã½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ ï¿½ßµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½.
+        // Å¸ÀÌ¹ÖÀÌ ¸ÂÀ» ¶§  ¹ßµ¿.
         EnumSystem m_system_type;
         int        m_system_skill_timing;
 
