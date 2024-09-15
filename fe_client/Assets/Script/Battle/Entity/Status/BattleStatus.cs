@@ -70,7 +70,7 @@ namespace Battle
 
 
 
-        /// <summary> ¹°¸® µ©  °è»ê. </summary>
+        /// <summary> °ø°Ý·Â. </summary>
         public int Calc_Might_Physic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Strength);
@@ -87,7 +87,7 @@ namespace Battle
             return unit_might + weapon_might;
         }
 
-        /// <summary> ¸¶¹ý µ©  °è»ê. </summary>
+        /// <summary> ¸¶¹ý°ø°Ý·Â. </summary>
         public int Calc_Might_Magic()
         {
             var unit_might   = Status.GetStatus(EnumUnitStatus.Magic);
@@ -119,7 +119,7 @@ namespace Battle
             return unit_hit + weapon_hit;
         }
 
-        /// <summary> Ä¡¸íÅ¸ </summary>
+        /// <summary> Ä¡¸í </summary>
         public int Calc_Critical()
         {
             var unit_skill      = Status.GetStatus(EnumUnitStatus.Skill);
@@ -131,7 +131,7 @@ namespace Battle
         }
 
 
-        /// <summary> È¸ï¿½ï¿½ </summary>
+        /// <summary> È¸ÇÇ </summary>
         public int Calc_Dodge()
         {
             var battle_speed = Calc_Speed();
@@ -141,7 +141,7 @@ namespace Battle
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
 
-        /// <summary> ï¿½Ê»ï¿½ È¸ï¿½ï¿½ </summary>
+        /// <summary> Ä¡¸í È¸ÇÇ </summary>
         public int Calc_DodgeCritical()
         {
             var unit_luck             = Status.GetStatus(EnumUnitStatus.Luck);
@@ -150,7 +150,7 @@ namespace Battle
             return unit_luck + weapon_dodge_critical;
         }
 
-        /// <summary> ï¿½Óµï¿½ </summary>
+        /// <summary> ¼Óµµ </summary>
         public int Calc_Speed()
         {
             var unit_speed   = Status.GetStatus(EnumUnitStatus.Speed);
@@ -160,7 +160,7 @@ namespace Battle
             return unit_speed - Math.Max(0, wepon_weight - unit_weight);
         }
 
-        /// <summary> ï¿½ï¿½ï¿? </summary>
+        /// <summary> ¹æ¾î·Â </summary>
         public int Calc_Defense()
         {
             var unit_defense = Status.GetStatus(EnumUnitStatus.Defense);
@@ -169,7 +169,7 @@ namespace Battle
             return unit_defense;
         }
 
-        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
+        /// <summary> ¸¶¹ý¹æ¾î·Â </summary>
         public int Calc_Resistance()
         {
             var unit_resistance = Status.GetStatus(EnumUnitStatus.Resistance);
