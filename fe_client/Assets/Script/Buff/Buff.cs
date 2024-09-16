@@ -95,7 +95,7 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>
 
     public static BuffTarget Create(EnumSituationType _situation, EnumBuffTarget _target, EnumBuffStatus _status)
     {
-        return new BuffTarget { Situation = (int)_situation, Target = (int)EnumBuffTarget.Owner, Status = (int)_status };
+        return new BuffTarget { Situation = (int)_situation, Target = (int)_target, Status = (int)_status };
     }
 }
 
@@ -320,6 +320,11 @@ public class BuffMananger : IBuff
     public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
     {
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
+    }
+
+    public BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
+    {
+        return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Target, _status));
     }
     #endregion IBuff Interface
 }

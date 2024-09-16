@@ -16,7 +16,10 @@ namespace Battle
             if (owner_entity == null || owner_entity.StatusManager == null)
                 return;
 
+            // 이동 거리.
             var move_distance = owner_entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+
+            
         }
     }
 }

@@ -54,7 +54,7 @@ public interface ITarget
 
 
 /// <summary>
-/// 버프/스킬 발동 조건
+/// 버프/스킬/아이템 발동 조건
 /// </summary>
 public interface ICondition
 {
@@ -62,7 +62,7 @@ public interface ICondition
 }
 
 /// <summary>
-/// 버프/스킬 효과
+/// 버프/스킬/아이템 효과
 /// </summary>
 public interface IEffect
 {
@@ -75,6 +75,7 @@ public interface IEffect
 public interface IBuff
 {
     BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
+    BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
 }
 
 
@@ -102,4 +103,14 @@ public interface IPathOwner
 {
     IPathNodeManager PathNodeManager { get; }
     PathVehicle      PathVehicle     { get; }
+}
+
+public interface IItem
+{
+    Int64 ID       { get; }
+    Int32 CurCount { get; }
+    Int32 MaxCount { get; }
+
+    bool  IsDisposable { get; }
+
 }
