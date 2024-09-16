@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Battle;
 
 
 public class Inventory
@@ -31,6 +32,16 @@ public class Inventory
     public bool RemoveItem(Int64 _id)
     {
         return m_repository.Remove(_id);
+    }
+
+    
+    public bool UseItem(Int64 _id)
+    {
+        var owner_entity  = EntityManager.Instance.GetEntity(OwnerID);
+        if (owner_entity == null)
+            return false;
+        
+        return true;
     }
 
 }

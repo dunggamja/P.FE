@@ -42,3 +42,59 @@ public enum EnumSituationType
     BattleSystem_Faction_Changed,  // (전투) 진영 변경
 }
 
+
+public enum EnumItemType
+{
+    None,
+
+    Weapon,     // 무기
+    Consumable, // 소모품
+    Accessary,  // 액세서리
+    Treasure,   // 보물
+}
+
+public enum EnumItemActionAttribute
+{
+    None,
+
+    Equip,   // 장비
+    Consume, // 사용 
+    Dispose, // 버리기/매각
+}
+
+
+public enum EnumConditionAttribute
+{
+    None,
+}
+
+public enum EnumEffectAttribute
+{
+    None,
+    
+    //Damage      = 1, // 데미지
+    Recovery    = 2, // 회복
+    Buff        = 3, // 버프
+    Skill       = 4, // 스킬
+
+
+    // 스킬    
+    SkillGet    = 1001, // 스킬 획득    
+    ClassUp     = 1002, // 클래스 업
+    ClassChange = 1003, // 클래스 체인지
+}
+
+public enum EnumEffectTargetAttribute
+{
+    None,
+
+    Owner       = 1,   // 소유자 대상
+    Ally        = 2,   // 아군 대상인가
+    Enemy       = 3,   // 적 대상인가
+
+    AreaEffect  = 4, // 범위 효과인가.
+    FocusOwner  = 5, // 소유자를 타겟팅
+    FocusGround = 6, // 위치를 중점으로
+}
+
+

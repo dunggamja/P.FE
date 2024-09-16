@@ -107,10 +107,10 @@ public interface IPathOwner
 
 public interface IItem
 {
-    Int64 ID       { get; }
-    Int32 CurCount { get; }
-    Int32 MaxCount { get; }
-
-    bool  IsDisposable { get; }
-
+    Int64        ID           { get; }
+    Int32        Kind         { get; }
+    EnumItemType ItemType     { get; }
+    Int32        CurCount     { get; }
+    Int32        MaxCount     { get; }
+    bool         IsDisposable { get; }
 }
