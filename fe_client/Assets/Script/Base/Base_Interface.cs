@@ -86,6 +86,12 @@ public interface ISkill
     bool UseSkill(EnumSituationType _situation, IOwner _owner);
 }
 
+
+public interface ISensor 
+{
+    void Update(IOwner _owner);
+}
+
 public interface IPathNodeManager
 {
     PathNode Peek();
@@ -95,4 +101,5 @@ public interface IPathNodeManager
 public interface IPathOwner
 {
     IPathNodeManager PathNodeManager { get; }
+    PathVehicle      PathVehicle     { get; }
 }

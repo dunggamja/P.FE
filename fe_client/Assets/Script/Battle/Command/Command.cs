@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Battle
 {
     /// <summary>
-    /// 명령 처리에 대한 로직을 작성해봅시다.
+    /// �̵� ����.
     /// </summary>
     public abstract class Command
     {

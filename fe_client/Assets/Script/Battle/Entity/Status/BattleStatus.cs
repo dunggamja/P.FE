@@ -5,43 +5,8 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class UnitStatus : IStatus
-    {
-        BaseContainer m_point_repository     = new BaseContainer();
-        BaseContainer m_status_repository    = new BaseContainer();
-        BaseContainer m_attribute_repository = new BaseContainer();
-
-        public int GetPoint(EnumUnitPoint _point_type)
-        {
-            return m_point_repository.GetValue((int)_point_type);
-        }
-
-        public int GetStatus(EnumUnitStatus _status_type)
-        {
-            return m_status_repository.GetValue((int)_status_type);
-        }
-
-        public bool HasAttribute(EnumUnitAttribute _attribute_type)
-        {
-            return m_attribute_repository.HasValue((int)_attribute_type);
-        }
-
-        public void SetPoint(EnumUnitPoint _point_type, int _value)
-        {
-            m_point_repository.SetValue((int)_point_type, _value);
-        }
-
-        public void SetStatus(EnumUnitStatus _status_type, int _value)
-        {
-            m_status_repository.SetValue((int)_status_type, _value);
-        }
-
-        public void SetAttribute(EnumUnitAttribute _attribute_type, bool _value)
-        {
-            m_attribute_repository.SetValue((int)_attribute_type, _value);
-        }
-
-    }
+    
+    
 
 
     public class BattleStatusManager 
@@ -67,13 +32,38 @@ namespace Battle
             Terrain = null;
         }
 
+        public int GetBuffedUnitStatus(EnumUnitStatus _unit_status, EnumSituationType _situation_type = EnumSituationType.None)
+        {
+            var status     = Status.GetStatus(_unit_status);
+
+            var buff_value = BuffValue.Empty;
+            foreach(var e in BuffHelper.CollectBuff_UnitStatus(_unit_status))
+            {
+                buff_value += Buff.Collect(_situation_type, Owner, e);
+            }
+
+            return buff_value.Calculate(status);
+        }
+
+        public int GetBuffedWeaponStatus(EnumWeaponStatus _weapon_status, EnumSituationType _situation_type = EnumSituationType.None)
+        {
+            var status     = Weapon.GetStatus(_weapon_status);
+
+            var buff_value = BuffValue.Empty;
+            foreach(var e in BuffHelper.CollectBuff_WeaponStatus(_weapon_status))
+            {
+                buff_value += Buff.Collect(_situation_type, Owner, e);
+            }
+
+            return buff_value.Calculate(status);    
+        }
+
 
 
 
         /// <summary> °ø°Ý·Â. </summary>
         public int Calc_Might_Physic()
         {
-            var unit_might   = Status.GetStatus(EnumUnitStatus.Strength);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
             if (weapon_might <= 0)
             {
@@ -81,16 +71,15 @@ namespace Battle
                 return 0;
             }
 
-            unit_might       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Strength).Calculate(unit_might);
-            weapon_might     = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
-            
-            return unit_might + weapon_might;
+            var status_unit   = GetBuffedUnitStatus(EnumUnitStatus.Strength);
+            var status_weapon = GetBuffedWeaponStatus(EnumWeaponStatus.Might_Physics);
+           
+            return status_unit + status_weapon;
         }
 
         /// <summary> ¸¶¹ý°ø°Ý·Â. </summary>
         public int Calc_Might_Magic()
         {
-            var unit_might   = Status.GetStatus(EnumUnitStatus.Magic);
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
             if (weapon_might <= 0)
             {
@@ -98,23 +87,20 @@ namespace Battle
                 return 0;
             }
 
+            var status_unit   = GetBuffedUnitStatus(EnumUnitStatus.Magic);
+            var status_weapon = GetBuffedWeaponStatus(EnumWeaponStatus.Might_Magic);
 
-            unit_might       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Magic).Calculate(unit_might);
-            weapon_might     = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Weapon_Might).Calculate(weapon_might);
-
-            return unit_might + weapon_might;
+            return status_unit + status_weapon;
         }
 
         /// <summary> ¸íÁß </summary>
         public int Calc_Hit()
         {
-            var unit_skill = Status.GetStatus(EnumUnitStatus.Skill);
-            var unit_luck  = Status.GetStatus(EnumUnitStatus.Luck);
+            var unit_skill = GetBuffedUnitStatus(EnumUnitStatus.Skill);
+            var unit_luck  = GetBuffedUnitStatus(EnumUnitStatus.Luck);
             
             var unit_hit   = unit_skill * 2 + unit_luck / 2;
-            var weapon_hit = Weapon.GetStatus(EnumWeaponStatus.Hit);
-
-
+            var weapon_hit = GetBuffedWeaponStatus(EnumWeaponStatus.Hit);
 
             return unit_hit + weapon_hit;
         }
@@ -122,10 +108,10 @@ namespace Battle
         /// <summary> Ä¡¸í </summary>
         public int Calc_Critical()
         {
-            var unit_skill      = Status.GetStatus(EnumUnitStatus.Skill);
+            var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
 
             var unit_critical   = unit_skill / 2;
-            var weapon_critical = Weapon.GetStatus(EnumWeaponStatus.Critical);
+            var weapon_critical = GetBuffedWeaponStatus(EnumWeaponStatus.Critical);
 
             return unit_critical + weapon_critical;
         }
@@ -135,8 +121,8 @@ namespace Battle
         public int Calc_Dodge()
         {
             var battle_speed = Calc_Speed();
-            var unit_luck    = Status.GetStatus(EnumUnitStatus.Luck);
-            var weapon_dodge = Weapon.GetStatus(EnumWeaponStatus.Dodge);
+            var unit_luck    = GetBuffedUnitStatus(EnumUnitStatus.Luck);
+            var weapon_dodge = GetBuffedWeaponStatus(EnumWeaponStatus.Dodge);
 
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
@@ -144,8 +130,8 @@ namespace Battle
         /// <summary> Ä¡¸í È¸ÇÇ </summary>
         public int Calc_DodgeCritical()
         {
-            var unit_luck             = Status.GetStatus(EnumUnitStatus.Luck);
-            var weapon_dodge_critical = Weapon.GetStatus(EnumWeaponStatus.Dodge_Critical);
+            var unit_luck             = GetBuffedUnitStatus(EnumUnitStatus.Luck);
+            var weapon_dodge_critical = GetBuffedWeaponStatus(EnumWeaponStatus.Dodge_Critical);
 
             return unit_luck + weapon_dodge_critical;
         }
@@ -153,9 +139,9 @@ namespace Battle
         /// <summary> ¼Óµµ </summary>
         public int Calc_Speed()
         {
-            var unit_speed   = Status.GetStatus(EnumUnitStatus.Speed);
-            var unit_weight  = Status.GetStatus(EnumUnitStatus.Weight);
-            var wepon_weight = Weapon.GetStatus(EnumWeaponStatus.Weight);
+            var unit_speed   = GetBuffedUnitStatus(EnumUnitStatus.Speed);
+            var unit_weight  = GetBuffedUnitStatus(EnumUnitStatus.Weight);
+            var wepon_weight = GetBuffedWeaponStatus(EnumWeaponStatus.Weight);
 
             return unit_speed - Math.Max(0, wepon_weight - unit_weight);
         }
@@ -163,27 +149,20 @@ namespace Battle
         /// <summary> ¹æ¾î·Â </summary>
         public int Calc_Defense()
         {
-            var unit_defense = Status.GetStatus(EnumUnitStatus.Defense);
-            var unit_buff    = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Defense);
-
-            return unit_defense;
+            return GetBuffedUnitStatus(EnumUnitStatus.Defense);
         }
 
         /// <summary> ¸¶¹ý¹æ¾î·Â </summary>
         public int Calc_Resistance()
         {
-            var unit_resistance = Status.GetStatus(EnumUnitStatus.Resistance);
-            var unit_buff       = Buff.Collect(EnumSituationType.None, Owner, EnumBuffStatus.Unit_Resistance);
-
-            unit_resistance     = unit_buff.Calculate(unit_resistance);
-
-            return unit_resistance;
+            return GetBuffedUnitStatus(EnumUnitStatus.Resistance);
         }
     }
 
 }
 
 /*
+ ÆÄ¿¥ if ³ª¹«À§Å°º¸°í ´É·ÂÄ¡ °ø½Ä ±Ü¾î¿Âµí... ÀÎÄÚµùÀÌ ƒÆÁ®¹ö·È³×...
  * ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½]     = ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½] + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½*(1[1] or 2[2] or 3[3]) + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
  * ï¿½ï¿½ï¿½ï¿½           = ï¿½ï¿½ï¿?*2 + ï¿½ï¿½ï¿?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
  * ï¿½Ê»ï¿½           = ï¿½ï¿½ï¿?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½Ê»ï¿½ + ï¿½ï¿½Å¸[A]

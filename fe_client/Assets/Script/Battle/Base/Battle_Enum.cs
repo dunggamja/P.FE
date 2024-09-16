@@ -7,23 +7,23 @@ using UnityEngine;
 namespace Battle
 {
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½
+    /// À¯´Ö ¼Ó¼º
     /// </summary>
     public enum EnumUnitAttribute
     {
       None = 0,
   
-      Infantry   = 1, // ï¿½ï¿½ï¿½ï¿½
-      Cavalry    = 2, // ï¿½â¸¶ï¿½ï¿½
-      Flyer      = 3, // ï¿½ï¿½ï¿½àº´
-      Undead     = 4, // ï¿½ï¿½ï¿½ï¿½ï¿?
-      Beast      = 5, // ï¿½ï¿½ï¿½Â·ï¿½
-      Large      = 6, // ï¿½ï¿½(ï¿½ï¿½)ï¿½ï¿½ 
-      HeavyArmor = 7, // ï¿½ß°ï¿½
+      Infantry   = 1, // º¸º´
+      Cavalry    = 2, // ±âº´
+      Flyer      = 3, // ºñº´
+      Undead     = 4, // Á»ºñ
+      Beast      = 5, // ¸Í¼ö
+      Large      = 6, // °Å´ë
+      HeavyArmor = 7, // Áß°©
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® (HP/EXP ï¿½ï¿½ï¿?)
+    /// À¯´Ö Æ÷ÀÎÆ®. (cur / max) ÇüÅÂÀÇ ±¸Á¶.
     /// </summary>
     public enum EnumUnitPoint
     {
@@ -34,84 +34,85 @@ namespace Battle
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í½ï¿½
+    /// À¯´Ö ´É·ÂÄ¡
     /// </summary>
     public enum EnumUnitStatus
     {
       None = 0,
 
-      Level      ,  // ï¿½ï¿½ï¿½ï¿½
-      Strength   ,  // ï¿½ï¿½
-      Magic      ,  // ï¿½ï¿½ï¿½ï¿½
-      Skill      ,  // ï¿½ï¿½ï¿?
-      Speed      ,  // ï¿½Óµï¿½
-      Luck       ,  // ï¿½ï¿½ï¿?
-      Defense    ,  // ï¿½ï¿½ï¿½ï¿½
-      Resistance ,  // ï¿½ï¿½ï¿½ï¿½
-      Movement   ,  // ï¿½Ìµï¿½ï¿½ï¿½
-      Weight     ,  // ï¿½ß·ï¿½(Ã¼ï¿½ï¿½)
+      Level      ,  // ·¹º§
+      Strength   ,  // Èû
+      Magic      ,  // ¸¶·Â
+      Skill      ,  // ±â¼ú
+      Speed      ,  // ¼Óµµ
+      Luck       ,  // Çà¿î
+      Defense    ,  // ¼öºñ·Â
+      Resistance ,  // ¸¶¹æ·Â
+      Movement   ,  // ÀÌµ¿·Â
+      Weight     ,  // ¹«°Ô. <= »ç¿ë¾ÈÇÒµí.
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½
+    /// ¹«±â ¼Ó¼º.
     /// </summary>
     public enum EnumWeaponAttribute
     {
       None = 0,
   
-      Sword        = 1, // ï¿½ï¿½
-      Axe          = 2, // ï¿½ï¿½ï¿½ï¿½
+      Sword        = 1, // °Ë
+      Axe          = 2, // µµ³¢
       Lance        = 3, // Ã¢
-      MartialArts  = 4, // ï¿½ï¿½ï¿½ï¿½
+      MartialArts  = 4, // °İÅõ
       Bow          = 5, // È°
-      Wand         = 6, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-      Grimoire     = 7, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-      Dagger       = 8, // ï¿½Ü°ï¿½
+      Wand         = 6, // ÁöÆÎÀÌ
+      Grimoire     = 7, // ¸¶¹ı¼­
+      Dagger       = 8, // ´Ü°Ë
 
 
-      KillInfantry   = 101, // Æ¯È¿, ï¿½ï¿½ï¿½ï¿½     
-      KillCavalry    = 102, // Æ¯È¿, ï¿½â¸¶ï¿½ï¿½
-      KillFlyer      = 103, // Æ¯È¿, ï¿½ï¿½ï¿½àº´
-      KillUndead     = 104, // Æ¯È¿, ï¿½ï¿½ï¿½ï¿½ï¿?
-      KillBeast      = 105, // Æ¯È¿, ï¿½ï¿½ï¿½Â·ï¿½
-      KillLarge      = 106, // Æ¯È¿, ï¿½ï¿½(ï¿½ï¿½)ï¿½ï¿½ 
-      KillHeavyArmor = 107, // Æ¯È¿, ï¿½ß°ï¿½
+      KillInfantry   = 101, // Æ¯È¿, º¸º´
+      KillCavalry    = 102, // Æ¯È¿, ±âº´
+      KillFlyer      = 103, // Æ¯È¿, ºñº´
+      KillUndead     = 104, // Æ¯È¿, Á»ºñ
+      KillBeast      = 105, // Æ¯È¿, ¸Í¼ö
+      KillLarge      = 106, // Æ¯È¿, °Å´ë
+      KillHeavyArmor = 107, // Æ¯È¿, Áß°©
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í½ï¿½
+    /// ¹«±â ´É·ÂÄ¡
     /// </summary>
     public enum EnumWeaponStatus
     {
       None = 0,
   
-      Might_Physics  , // ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
-      Might_Magic    , // ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
-      Hit            , // ï¿½ï¿½ï¿½ï¿½
-      Critical       , // ï¿½Ê»ï¿½
-      Weight         , // ï¿½ï¿½ï¿½ï¿½
-      Dodge          , // È¸ï¿½ï¿½
-      Dodge_Critical , // ï¿½Ê»ï¿½ È¸ï¿½ï¿½
-      Range          , // ï¿½ï¿½ï¿½ï¿½
+      Might_Physics  , // Èû
+      Might_Magic    , // ¸¶·Â
+      Hit            , // ¸íÁß
+      Critical       , // Ä¡¸í
+      Weight         , // ¹«°Ô
+      Dodge          , // È¸ÇÇ
+      Dodge_Critical , // ÇÊ»ìÈ¸ÇÇ
+      Range          , // »ç°Å¸®
+      Range_Min      , // »ç°Å¸®. (ÃÖ¼Ò)
     }
 
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    /// ºí·¢º¸µå
     /// </summary>
     public enum EnumBlackBoard
     {
         None         = 0,
 
-        CommandType,  // ëª…ë ¹ (?”Œ? ˆ?´?–´/AI)
-        CommandState, // ëª…ë ¹ (ê°??Š¥/?™„ë£?)
-        Faction,      // ì§„ì˜ (1:?”Œ? ˆ?´?–´, 2:? êµ?)
+        CommandType,  // ¸í·É Å¸ÀÔ
+        CommandState, // ¸í·É »óÅÂ
+        Faction,      // Áø¿µ
 
         IsMoving,
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½/ï¿½Ò¸ï¿½ ï¿½ï¿½
+    /// À¯¸®/ºÒ¸® ¸íÁß·ü¿¡ ¿µÇâ.
     /// </summary>
     public enum EnumAdvantageState
     {
@@ -123,7 +124,7 @@ namespace Battle
 
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ (bitflag)
+    /// ÁöÇü ¼Ó¼º. bitflag·Î »ı°¢Áß. 32bit?
     /// </summary>
     public enum EnumTerrainAttribute
     {

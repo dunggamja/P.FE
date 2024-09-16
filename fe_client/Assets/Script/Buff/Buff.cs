@@ -32,7 +32,8 @@ public enum EnumBuffStatus
     Weapon_Weight         = 1004, // 무기, 무게
     Weapon_Dodge          = 1005, // 무기, 회피
     Weapon_Dodge_Critical = 1006, // 무기, 필살 회피
-    Weapon_Range          = 1007, // 무기, 사정
+    Weapon_Range          = 1007, // 무기, 사거리
+    Weapon_Range_Min      = 1008, // 무기, 사거리 (최소)
                           
                           
     System_Damage         = 2001, // 시스템, 데미지

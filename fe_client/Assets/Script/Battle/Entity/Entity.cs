@@ -8,11 +8,10 @@ namespace Battle
     [EventReceiverAttribute(typeof(SituationUpdatedEvent))]
     public partial class Entity : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
     {
-        public Int64          ID       { get; private set; }
-        public ITarget        Target   { get; }
-        public (int x, int y) Cell     { get; private set; }
+        public Int64                ID              { get; private set; }
 
-
+        public (int x, int y)       Cell            { get; private set; }
+        public ITarget              Target          { get; }
         public IBlackBoard          BlackBoard      { get; }
         public ISkill               Skill           { get; } 
         public BattleStatusManager  StatusManager   { get; } 
@@ -26,7 +25,9 @@ namespace Battle
         protected Entity(Int64 _id)
         {
             ID              = _id;
-            
+            Target          = null;
+            Cell            = (0, 0);
+                 
             BlackBoard      = new BattleBlackBoard();
             Skill           = new BattleSkill();
             StatusManager   = new BattleStatusManager(this);

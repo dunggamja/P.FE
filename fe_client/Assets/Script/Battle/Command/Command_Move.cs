@@ -12,8 +12,6 @@ namespace Battle
         // List<(int x, int y)>  m_path_node       = new List<(int x, int y)>();
         // int                   m_path_node_index = 0;
         
-        
-
 
         protected override void OnEnter()
         {
@@ -21,7 +19,7 @@ namespace Battle
             if (unit_object == null)
                 return;
 
-            // ì‹œì‘ ìœ„ì¹˜
+            // ½ÃÀÛ À§Ä¡.
             m_cell_from = unit_object.Cell;
         }
 
@@ -37,7 +35,7 @@ namespace Battle
             //     var diff_x    = Math.Clamp(path_node.x - unit_object.Cell.x, -1, 1);
             //     var diff_y    = Math.Clamp(path_node.y - unit_object.Cell.y, -1, 1);
 
-            //     // TODO: ì¼ë‹¨ Update í•œë²ˆì— 1ì¹¸ì”© ì›€ì§ì´ê²Œ í•´ë‘”ë‹¤. ë‚˜ì¤‘ì— ìˆ˜ì •.
+            //     // TODO: ?¼?‹¨ Update ?•œë²ˆì— 1ì¹¸ì”© ???ì§ì´ê²? ?•´?‘”?‹¤. ?‚˜ì¤‘ì— ?ˆ˜? •.
             //     // if (diff_x != 0)
                     
 

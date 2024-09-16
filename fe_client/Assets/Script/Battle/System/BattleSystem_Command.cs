@@ -8,7 +8,7 @@ namespace Battle
 {
     public partial class BattleSystem_Command : BattleSystem, IEventReceiver
     {
-        // ëª…ë ¹ì„ ì²˜ë¦¬í•´ë³´ì.
+        // ëª…ë ¹?„ ì²˜ë¦¬?•´ë³´ì.
         // public class CommandData
         // {
         //     public Int64     UnitID     { get; private set; }
@@ -21,7 +21,7 @@ namespace Battle
         //     }
         // }
 
-        // ì²˜ë¦¬í•  ëª…ë ¹ ë°ì´í„°. ìˆœì°¨ì ìœ¼ë¡œ ì²˜ë¦¬í•œë‹¤.
+        // ì²˜ë¦¬?•  ëª…ë ¹ ?°?´?„°. ?ˆœì°¨ì ?œ¼ë¡? ì²˜ë¦¬?•œ?‹¤.
         // Queue<CommandData> m_list_command;       
 
 
@@ -72,7 +72,7 @@ namespace Battle
 
         public void OnReceiveEvent(IEventParam _param)
         {
-            // ìœ ë‹›ë³„ë¡œ ëª…ë ¹ì„ ì™„ìˆ˜í•  ë•Œ ë§ˆë‹¤ eventë¥¼ ì´ì¤˜ì•¼ ê² ë‹¤. 
+           // EventReceiver¸¦ ±»ÀÌ ¹«½¼ ÀÌÀ¯·Î Ãß°¡ÇßÀ»±î???
         }
     }
 }

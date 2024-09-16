@@ -28,9 +28,14 @@ namespace Battle
         {
             foreach ((var weapon_attribute, var target_attribute) in s_default_effectiveness)
             {
+                // TODO: 무효 상성 체크?
+
+
                 // 특효 상성 체크
-                if (_source.HasAttribute(weapon_attribute) && _target.HasAttribute(target_attribute))
-                    return true;
+                if (!_source.HasAttribute(weapon_attribute) || !_target.HasAttribute(target_attribute))
+                    return false;
+
+                return true;
             }
 
             return false;

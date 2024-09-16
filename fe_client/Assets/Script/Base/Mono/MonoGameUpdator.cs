@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class MonoGameUpdator : SingletonMono<MonoGameUpdator>
 {
+
+
     // Start is called before the first frame update
     protected override void Start()
     {

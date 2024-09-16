@@ -26,7 +26,7 @@ namespace Battle
         }
 
 
-        public EnumAdvantageState WeaponAdvantage     { get; private set; }
+        // public EnumAdvantageState WeaponAdvantage     { get; private set; }
         public bool               WeaponEffectiveness { get; private set; }
 
         public bool Result_Hit          { get; private set; }
@@ -48,7 +48,7 @@ namespace Battle
 
         public override void Release()
         {
-            WeaponAdvantage     = EnumAdvantageState.None;
+            // WeaponAdvantage     = EnumAdvantageState.None;
             WeaponEffectiveness = false;
 
 
@@ -77,9 +77,9 @@ namespace Battle
             var target = GetTarget(_param);
 
             
-
-            // 무기 상성/특효에 대한 값 셋팅.
-            WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
+            // 무기 상성에 따른 명중률 보정은 일단 제거.
+            // WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
+            // 무기 특효에 대한 값 셋팅.
             WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
 
             // 명중 / 필살 / 데미지 계산.
@@ -126,12 +126,12 @@ namespace Battle
                            + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Hit);
 
 
-            // 무기 상성 적용.
-            switch(WeaponAdvantage)
-            {
-                case EnumAdvantageState.Advantage:    hit += ADVANTAGE_HIT; break;
-                case EnumAdvantageState.Disadvantage: hit -= ADVANTAGE_HIT; break;
-            }
+            // // 무기 상성 적용.
+            // switch(WeaponAdvantage)
+            // {
+            //     case EnumAdvantageState.Advantage:    hit += ADVANTAGE_HIT; break;
+            //     case EnumAdvantageState.Disadvantage: hit -= ADVANTAGE_HIT; break;
+            // }
 
             // 100분율 
             return Math.Max(0, buff_value.Calculate(hit - dodge));
@@ -214,19 +214,19 @@ namespace Battle
             return null;
         }
 
-        EnumAdvantageState Calculate_WeaponAdvantage(ICombatSystemParam _param)
-        {
-            //
-            var dealer = GetDealer(_param);
-            var target = GetTarget(_param);
+        // EnumAdvantageState Calculate_WeaponAdvantage(ICombatSystemParam _param)
+        // {
+        //     //
+        //     var dealer = GetDealer(_param);
+        //     var target = GetTarget(_param);
 
-            // 무기 상성 체크.
-            var weapon_advantage = Weapon.Calculate_Advantage(dealer.StatusManager.Weapon, target.StatusManager.Weapon);
+        //     // 무기 상성 체크.
+        //     var weapon_advantage = Weapon.Calculate_Advantage(dealer.StatusManager.Weapon, target.StatusManager.Weapon);
 
-            // TODO: 버프 체크
+        //     // TODO: 버프 체크
 
-            return weapon_advantage;
-        }
+        //     return weapon_advantage;
+        // }
 
         bool Calculate_WeaponEffectiveness(ICombatSystemParam _param)
         {
