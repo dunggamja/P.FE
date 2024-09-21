@@ -22,9 +22,10 @@ namespace Battle
             }
         }
 
-        public Weapon(Int64 _owner_id)
+        public Weapon(Int64 _owner_id, Int64 _item_id)
         {
             OwnerID = _owner_id;
+            ItemID  = _item_id;
         }
 
         public void Equip(Int64 _item_id)

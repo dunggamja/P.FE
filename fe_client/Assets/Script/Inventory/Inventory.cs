@@ -45,6 +45,29 @@ public class Inventory
         return false;
     }
 
+    public List<Item> CollectItem(Func<Item, bool> _func_condition)
+    {
+        var list_result = new List<Item>(10);
+
+        if (_func_condition != null)
+        {
+            foreach(var e in m_repository_list)
+            {
+                if (_func_condition(e))
+                    list_result.Add(e);
+            }
+        }
+
+        return list_result;
+    }
+
+    public List<Item> CollectItemByType(EnumItemType _item_type)
+    {
+        return CollectItem((e) => e.ItemType == _item_type);
+    }
+
+
+
     
     public bool ProcessAction(Int64 _id, EnumItemActionType _action_type)
     {

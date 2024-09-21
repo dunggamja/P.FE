@@ -28,7 +28,7 @@ namespace Battle
             Owner   = _owner;
             Status  = new UnitStatus();
             Buff    = new BuffMananger();
-            Weapon  = new Weapon(_owner.ID);
+            Weapon  = new Weapon(_owner.ID, 0);
             Terrain = null;
         }
 
@@ -45,9 +45,9 @@ namespace Battle
             return buff_value.Calculate(status);
         }
 
-        public int GetBuffedWeaponStatus(EnumWeaponStatus _weapon_status, EnumSituationType _situation_type = EnumSituationType.None)
+        public int GetBuffedWeaponStatus(IWeapon _weapon, EnumWeaponStatus _weapon_status, EnumSituationType _situation_type = EnumSituationType.None)
         {
-            var status     = Weapon.GetStatus(_weapon_status);
+            var status     = _weapon.GetStatus(_weapon_status);
 
             var buff_value = BuffValue.Empty;
             foreach(var e in BuffHelper.CollectBuff_WeaponStatus(_weapon_status))
@@ -72,7 +72,7 @@ namespace Battle
             }
 
             var status_unit   = GetBuffedUnitStatus(EnumUnitStatus.Strength);
-            var status_weapon = GetBuffedWeaponStatus(EnumWeaponStatus.Might_Physics);
+            var status_weapon = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Might_Physics);
            
             return status_unit + status_weapon;
         }
@@ -88,7 +88,7 @@ namespace Battle
             }
 
             var status_unit   = GetBuffedUnitStatus(EnumUnitStatus.Magic);
-            var status_weapon = GetBuffedWeaponStatus(EnumWeaponStatus.Might_Magic);
+            var status_weapon = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Might_Magic);
 
             return status_unit + status_weapon;
         }
@@ -100,7 +100,7 @@ namespace Battle
             var unit_luck  = GetBuffedUnitStatus(EnumUnitStatus.Luck);
             
             var unit_hit   = unit_skill * 2 + unit_luck / 2;
-            var weapon_hit = GetBuffedWeaponStatus(EnumWeaponStatus.Hit);
+            var weapon_hit = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Hit);
 
             return unit_hit + weapon_hit;
         }
@@ -111,7 +111,7 @@ namespace Battle
             var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
 
             var unit_critical   = unit_skill / 2;
-            var weapon_critical = GetBuffedWeaponStatus(EnumWeaponStatus.Critical);
+            var weapon_critical = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Critical);
 
             return unit_critical + weapon_critical;
         }
@@ -122,7 +122,7 @@ namespace Battle
         {
             var battle_speed = Calc_Speed();
             var unit_luck    = GetBuffedUnitStatus(EnumUnitStatus.Luck);
-            var weapon_dodge = GetBuffedWeaponStatus(EnumWeaponStatus.Dodge);
+            var weapon_dodge = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Dodge);
 
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
@@ -131,7 +131,7 @@ namespace Battle
         public int Calc_DodgeCritical()
         {
             var unit_luck             = GetBuffedUnitStatus(EnumUnitStatus.Luck);
-            var weapon_dodge_critical = GetBuffedWeaponStatus(EnumWeaponStatus.Dodge_Critical);
+            var weapon_dodge_critical = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Dodge_Critical);
 
             return unit_luck + weapon_dodge_critical;
         }
@@ -141,7 +141,7 @@ namespace Battle
         {
             var unit_speed   = GetBuffedUnitStatus(EnumUnitStatus.Speed);
             var unit_weight  = GetBuffedUnitStatus(EnumUnitStatus.Weight);
-            var wepon_weight = GetBuffedWeaponStatus(EnumWeaponStatus.Weight);
+            var wepon_weight = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Weight);
 
             return unit_speed - Math.Max(0, wepon_weight - unit_weight);
         }

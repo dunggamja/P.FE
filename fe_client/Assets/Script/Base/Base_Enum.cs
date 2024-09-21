@@ -59,7 +59,7 @@ public enum EnumItemActionType
 
     Equip,   // 장비
     Unequip, // 장비 해제
-    Consume, // 사용 
+    Consume, // 사용 (무기는 내구도 감소...)
     Dispose, // 버리기/매각
 }
 
