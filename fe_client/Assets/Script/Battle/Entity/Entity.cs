@@ -17,6 +17,7 @@ namespace Battle
         public BattleStatusManager  StatusManager   { get; } 
         public IPathNodeManager     PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
+        public Inventory            Inventory       { get; }
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -33,6 +34,7 @@ namespace Battle
             StatusManager   = new BattleStatusManager(this);
             PathNodeManager = new PathNodeManager();
             PathVehicle     = new PathVehicle_Basic();
+            Inventory       = new Inventory();
         }
 
         public static Entity Create(Int64 _id)

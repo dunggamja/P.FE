@@ -16,8 +16,8 @@ namespace Battle
         public Int64          ID      => m_id;
         public IOwner         Owner   { get; private set; }
         public IStatus        Status  { get; private set; }
-        public IWeapon        Weapon  { get; private set; }
         public IBuff          Buff    { get; private set; }
+        public IWeapon        Weapon  { get; private set; }
         public ITerrain       Terrain { get; private set; }
         //public IBlackBoard    BlackBoard    { get; }
         //public IActionCounter ActionCounter { get; }
@@ -27,8 +27,8 @@ namespace Battle
             m_id    = _owner.ID;
             Owner   = _owner;
             Status  = new UnitStatus();
-            Weapon  = new Weapon();
             Buff    = new BuffMananger();
+            Weapon  = new Weapon(_owner.ID);
             Terrain = null;
         }
 

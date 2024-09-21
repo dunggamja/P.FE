@@ -53,11 +53,12 @@ public enum EnumItemType
     Treasure,   // 보물
 }
 
-public enum EnumItemActionAttribute
+public enum EnumItemActionType
 {
     None,
 
     Equip,   // 장비
+    Unequip, // 장비 해제
     Consume, // 사용 
     Dispose, // 버리기/매각
 }

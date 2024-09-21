@@ -9,10 +9,11 @@ public class Inventory
 {
     public Int64 OwnerID { get; private set; }
 
-    Dictionary<Int64, IItem> m_repository = new (10);
+    Dictionary<Int64, Item> m_repository      = new (10);
+    List<Item>              m_repository_list = new (10);
 
 
-    public bool AddItem(IItem _item)
+    public bool AddItem(Item _item)
     {
         if (_item == null)
             return false;
@@ -21,26 +22,45 @@ public class Inventory
             return false;
 
         m_repository.Add(_item.ID, _item);
+        m_repository_list.Add(_item);
         return true;
     }
 
-    public IItem GetItem(Int64 _id)
+    public Item GetItem(Int64 _id)
     {
         return m_repository.TryGetValue(_id, out var item) ? item : null;
     }
 
     public bool RemoveItem(Int64 _id)
     {
-        return m_repository.Remove(_id);
+        if (m_repository.Remove(_id))
+        {
+            var index = m_repository_list.FindIndex(e => e.ID == _id);
+            if (0 <= index && index < m_repository_list.Count)
+                m_repository_list.RemoveAt(index);
+
+            return true;
+        }
+
+        return false;
     }
 
     
-    public bool UseItem(Int64 _id)
+    public bool ProcessAction(Int64 _id, EnumItemActionType _action_type)
     {
         var owner_entity  = EntityManager.Instance.GetEntity(OwnerID);
         if (owner_entity == null)
             return false;
         
+        var item = GetItem(_id);
+        if (item == null)
+            return false;
+
+        if (!item.ProcessAction(owner_entity, _action_type))
+            return false;
+
+        // TODO: 아이템 감소.
+
         return true;
     }
 

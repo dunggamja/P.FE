@@ -105,12 +105,12 @@ public interface IPathOwner
     PathVehicle      PathVehicle     { get; }
 }
 
-public interface IItem
-{
-    Int64        ID           { get; }
-    Int32        Kind         { get; }
-    EnumItemType ItemType     { get; }
-    Int32        CurCount     { get; }
-    Int32        MaxCount     { get; }
-    bool         IsDisposable { get; }
-}
+// public interface IItem
+// {
+//     Int64        ID           { get; }
+//     Int32        Kind         { get; }
+//     EnumItemType ItemType     { get; }
+//     Int32        CurCount     { get; }
+//     Int32        MaxCount     { get; }
+//     bool         IsDisposable { get; }
+// }

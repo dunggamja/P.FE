@@ -23,6 +23,8 @@ namespace Battle
     /// </summary>
     public interface IWeapon
     {
+        Int64 OwnerID { get; }
+        Int64 ItemID  { get; }
         int  GetStatus(EnumWeaponStatus _status_type);
         bool HasAttribute(EnumWeaponAttribute _attribute_type);
     }

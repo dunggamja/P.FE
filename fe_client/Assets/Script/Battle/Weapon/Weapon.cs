@@ -7,22 +7,57 @@ namespace Battle
 {
     public partial class Weapon : IWeapon
     {
-        BaseContainer m_status    = new BaseContainer();
-        BaseContainer m_attribute = new BaseContainer();
+        public Int64 OwnerID { get; private set; } = 0;
+        public Int64 ItemID  { get; private set; } = 0;
 
-        public int  GetStatus(EnumWeaponStatus _status_type) => m_status.GetValue((int)_status_type);
-        public bool HasAttribute(EnumWeaponAttribute _attribute_type) => m_attribute.HasValue((int)_attribute_type);
-
-
-        public void SetStatus(EnumWeaponStatus _status_type, int _value)
+        public Item  ItemObject
         {
-            m_status.SetValue((int)_status_type, _value);
+            get
+            {
+                var owner  = EntityManager.Instance.GetEntity(OwnerID);
+                if (owner == null)
+                    return null;
+
+                return owner.Inventory.GetItem(ItemID);
+            }
         }
 
-        public void SetAttribute(EnumWeaponAttribute _attribute_type, bool _value)
+        public Weapon(Int64 _owner_id)
         {
-            m_attribute.SetValue((int)_attribute_type, _value);
+            OwnerID = _owner_id;
         }
+
+        public void Equip(Int64 _item_id)
+        {
+            ItemID = _item_id;
+        }
+
+        public void Unequip()
+        {
+            ItemID = 0;
+        }
+
+
+        public int  GetStatus(EnumWeaponStatus _status_type)
+        {
+            var item_object  = ItemObject;
+            if (item_object == null)
+                return 0;
+
+            return item_object.GetWeaponStatus(_status_type);
+        }
+
+        public bool HasAttribute(EnumWeaponAttribute _attribute_type)
+        {
+            var item_object  = ItemObject;
+            if (item_object == null)
+                return false;
+
+            return item_object.HasWeaponAttribute(_attribute_type);
+        }
+
+        
+
     }
 }
 

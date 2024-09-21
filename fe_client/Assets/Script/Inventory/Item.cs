@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using Battle;
 
-public class Item : IItem
+public partial class Item 
 {
     private Int64 m_id        = 0;
     private Int32 m_kind      = 0;
@@ -25,24 +25,31 @@ public class Item : IItem
     public int          MaxCount     => m_count_max;       
     public bool         IsDisposable => true;
 
-
-    public bool IsEnableAction(EnumItemActionAttribute _action)
+    public bool IsEnableAction(IOwner owner, EnumItemActionType _action)
     {
-        return true;
+        //var is_system_action = (owner == null);
+
+        switch(_action)
+        {
+            case EnumItemActionType.Equip:  return IsEnableAction_Weapon_Equip(owner);
+            case EnumItemActionType.Unequip:return IsEnableAction_Weapon_Unequip(owner);            
+        }
+
+        return false;
     }
 
-    public bool ProcessAction(EnumItemActionAttribute _action)
+    public bool ProcessAction(IOwner owner, EnumItemActionType _action)
     {
-        
+        if (!IsEnableAction(owner, _action))
+            return false;
 
         switch (_action)
         {
-            case EnumItemActionAttribute.Equip:
-            break;
+            case EnumItemActionType.Equip:   return ProcessAction_Weapon_Equip(owner);
+            case EnumItemActionType.Unequip: return ProcessAction_Weapon_Unequip(owner);
         }
 
-
-        return true;
+        return false;
     }
 
 
