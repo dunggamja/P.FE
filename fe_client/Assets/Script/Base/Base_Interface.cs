@@ -103,6 +103,7 @@ public interface IPathOwner
 {
     IPathNodeManager PathNodeManager { get; }
     PathVehicle      PathVehicle     { get; }
+    int              PathAttribute   { get; }
 }
 
 // public interface IItem

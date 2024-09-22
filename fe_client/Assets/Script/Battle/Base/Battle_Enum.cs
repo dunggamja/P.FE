@@ -140,14 +140,14 @@ namespace Battle
         // bitflag.. 32 bit or 64 bit ?
     }
 
-    public enum EnumTerrainMoveAttribute
+    public enum EnumPathOwnerAttribute
     {
       Ground, // 지상 이동 가능
       Flyer, // 비행 이동 가능
       Water, // 물 이동 가능
       Slope, // (산) 비탈, 경사면 이동가능
 
-      
+
 
       
       MAX = 32,

@@ -78,7 +78,7 @@ public class PathNodeManager : IPathNodeManager
     TerrainMap      m_terrain        = null;
 
     const float     m_arrive_radius  = 0.05f;
-    const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
+    // const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
 
 
 
@@ -132,9 +132,8 @@ public class PathNodeManager : IPathNodeManager
         if (!_target.IsValidPosition())
             return true;
 
-        // ???Í≤? Í±∞Î¶¨ = ???Í≤? ?úÑÏπ? - ?ù¥?†Ñ ?úÑÏπ?
-        var position_from_prev = _target.GetPosition() - _prev.GetPosition();
-        // ???Í≤? Í±∞Î¶¨ = ???Í≤? ?úÑÏπ? - ?òÑ?û¨ ?úÑÏπ? 
+        
+        var position_from_prev = _target.GetPosition() - _prev.GetPosition();        
         var target_from_cur    = _target.GetPosition() - _current.GetPosition();
 
         // µµ¬¯ ∞≈∏Æ √º≈©.
@@ -190,7 +189,7 @@ public class PathNodeManager : IPathNodeManager
         var move_attribute = 0;
 
         var from_position  = m_position_cur.GetPosition();
-        var list_path_node =  PathFinder.Find(m_terrain, move_attribute, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        var list_path_node =  PathAlgorithm.Find(m_terrain, move_attribute, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
         
         m_list_path_node.Clear();
         m_list_path_node = new Queue<PathNode>(list_path_node);

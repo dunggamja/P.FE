@@ -6,7 +6,7 @@ using Battle;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
-public static class PathFinder
+public static class PathAlgorithm
 {
     static float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
     {
@@ -42,7 +42,7 @@ public static class PathFinder
 
 
 
-    public static List<PathNode> Find(TerrainMap _terrain_map, int _move_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
+    public static List<PathNode> Find(TerrainMap _terrain_map, int _path_owner_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         
 
@@ -50,7 +50,7 @@ public static class PathFinder
         
 
         // A* 
-        var    node  = AStar(_terrain_map, _move_attribute, _from_x, _from_y, _to_x, _to_y);
+        var    node  = AStar(_terrain_map, _path_owner_attribute, _from_x, _from_y, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
@@ -64,7 +64,7 @@ public static class PathFinder
     }
 
 
-    static Node AStar(TerrainMap _terrain_map, int _move_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
+    static Node AStar(TerrainMap _terrain_map, int _path_owner_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         if (_terrain_map == null)
             return null;
@@ -123,8 +123,8 @@ public static class PathFinder
                         continue;
 
                         // 대각선 방향일 경우 양쪽 직선방향이 모두 열려있는지 체크해야 함.?
-                        // var move_cost_diagonal_1 = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(x, item.y));
-                        // var move_cost_diagonal_2 = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(item.x, y));
+                        // var move_cost_diagonal_1 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, item.y));
+                        // var move_cost_diagonal_2 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(item.x, y));
                         // if (_terrain_map.IsCollision(item.x + k, item.y) || _terrain_map.IsCollision(item.x, item.y + i))
                         //     continue;
                     }
@@ -134,7 +134,7 @@ public static class PathFinder
                         continue;
 
                     // 이동 Cost 계산.
-                    var move_cost = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(x, y));
+                    var move_cost = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
 
                     // 충돌 지점은 거른다.
                     if (move_cost <= 0)

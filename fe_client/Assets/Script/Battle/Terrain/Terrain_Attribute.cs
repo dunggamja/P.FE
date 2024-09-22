@@ -5,7 +5,7 @@ using UnityEngine;
 
 public partial class TerrainAttribute
 {
-    public static int Calculate_MoveCost(int _move_attribute, int _terrain_attribute)
+    public static int Calculate_MoveCost(int _path_owner_attribute, int _terrain_attribute)
     {
         // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯?
         // move_cost == 0, 이동 불가
@@ -19,7 +19,7 @@ public partial class TerrainAttribute
         else if ((_terrain_attribute & (int)EnumTerrainAttribute.FlyerOnly) != 0)
         {
             // 비행 유닛만 가능.
-            if ((_move_attribute & (int)EnumTerrainMoveAttribute.Flyer) == 0)
+            if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) == 0)
                 return 0;
 
             // 이동 Cost
@@ -29,8 +29,8 @@ public partial class TerrainAttribute
         else if ((_terrain_attribute & (int)EnumTerrainAttribute.Water) != 0)
         {
             // 물 지형
-            if (((_move_attribute & (int)EnumTerrainMoveAttribute.Flyer) == 0)
-            &&  ((_move_attribute & (int)EnumTerrainMoveAttribute.Water) == 0))
+            if (((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) == 0)
+            &&  ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Water) == 0))
                 return 0;
             
             // 물 지형 이동 Cost
@@ -40,9 +40,9 @@ public partial class TerrainAttribute
         else if ((_terrain_attribute & (int)EnumTerrainAttribute.WaterSide) != 0)
         {
             // 물가
-             if (((_move_attribute & (int)EnumTerrainMoveAttribute.Flyer)  == 0)
-            &&   ((_move_attribute & (int)EnumTerrainMoveAttribute.Water)  == 0)
-            &&   ((_move_attribute & (int)EnumTerrainMoveAttribute.Ground) == 0))
+             if (((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer)  == 0)
+            &&   ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Water)  == 0)
+            &&   ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Ground) == 0))
                 return 0;
 
             // 물가 지형 이동 Cost
@@ -56,11 +56,11 @@ public partial class TerrainAttribute
             
             {
                 // 비병은 지형 Cost 1로 통과가능.
-                if ((_move_attribute & (int)EnumTerrainMoveAttribute.Flyer) != 0)
+                if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) != 0)
                     return 1;
 
                 // 땅 이동이 가능한 지 체크.
-                if ((_move_attribute & (int)EnumTerrainMoveAttribute.Ground) == 0)
+                if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Ground) == 0)
                     return 0;
             }
 
@@ -69,7 +69,7 @@ public partial class TerrainAttribute
                 if ((_terrain_attribute & (int)EnumTerrainAttribute.Slope) != 0)
                 {
                     // 경사면 이동 가능한지 체크.
-                    if ((_move_attribute & (int)EnumTerrainMoveAttribute.Slope) == 0)
+                    if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Slope) == 0)
                         return 0;
 
                     // 경사면 이동 Cost

@@ -15,9 +15,10 @@ namespace Battle
         public IBlackBoard          BlackBoard      { get; }
         public ISkill               Skill           { get; } 
         public BattleStatusManager  StatusManager   { get; } 
+        public Inventory            Inventory       { get; }
         public IPathNodeManager     PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
-        public Inventory            Inventory       { get; }
+        public int                  PathAttribute   { get; private set;}
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
