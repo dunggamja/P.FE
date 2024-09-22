@@ -80,17 +80,23 @@ public static partial class PathAlgorithm
                     var x         = item.x + k;
                     var new_item  = new Node(x, y, _to_x, _to_y, item);
 
-                    var is_diagonal = (i != 0) && (k != 0);
-                    if (is_diagonal)
-                    {
-                        // 대각선 이동은 없음.
-                        continue;
+                    // var is_diagonal = (i != 0) && (k != 0);
+                    // if (is_diagonal)
+                    // {
+                    //     // 대각선 이동은 없음.
+                    //     continue;
 
-                        // 대각선 방향일 경우 양쪽 직선방향이 모두 열려있는지 체크해야 함.?
-                        // var move_cost_diagonal_1 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, item.y));
-                        // var move_cost_diagonal_2 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(item.x, y));
-                        // if (_terrain_map.IsCollision(item.x + k, item.y) || _terrain_map.IsCollision(item.x, item.y + i))
-                        //     continue;
+                    //     // 대각선 방향일 경우 양쪽 직선방향이 모두 열려있는지 체크해야 함.?
+                    //     // var move_cost_diagonal_1 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, item.y));
+                    //     // var move_cost_diagonal_2 = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(item.x, y));
+                    //     // if (_terrain_map.IsCollision(item.x + k, item.y) || _terrain_map.IsCollision(item.x, item.y + i))
+                    //     //     continue;
+                    // }
+
+                    // 가로, 세로 1칸씩만 이동가능.
+                    if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
+                    {
+                        continue;
                     }
 
                     // 이미 검사한 지점은 거른다.
