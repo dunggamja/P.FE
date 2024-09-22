@@ -6,7 +6,7 @@ using Battle;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
-public static class PathAlgorithm
+public static partial class PathAlgorithm
 {
     static float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
     {
