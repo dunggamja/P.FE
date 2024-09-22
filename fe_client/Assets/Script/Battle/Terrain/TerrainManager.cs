@@ -7,21 +7,21 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class BattleTerrainManager : Singleton<BattleTerrainManager>
+    public class TerrainMapManager : Singleton<TerrainMapManager>
     {
-        public BattleTerrain BattleTerrain {get; private set; } = null;
+        public TerrainMap TerrainMap {get; private set; } = null;
 
         public void Initialize()
         {
             // 
-            BattleTerrain = new BattleTerrain();
-            BattleTerrain.Initialize(100, 100);
+            TerrainMap = new TerrainMap();
+            TerrainMap.Initialize(100, 100);
         }
 
 
         public void Reset()
         {
-            BattleTerrain = null;
+            TerrainMap = null;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Battle;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
@@ -9,7 +10,11 @@ public static class PathFinder
 {
     static float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
     {
-        return Mathf.Sqrt((_from_x - _to_x) * (_from_x - _to_x) + (_from_y - _to_y) * (_from_y - _to_y));
+        // 1. 4방향 이동만 존재할 경우.
+        return Math.Abs(_from_x - _to_x) + Math.Abs(_from_y - _to_y);
+
+        // 2. 대각선 이동이 존재할 경우
+        // return Mathf.Sqrt((_from_x - _to_x) * (_from_x - _to_x) + (_from_y - _to_y) * (_from_y - _to_y));
     }
 
 
@@ -37,31 +42,31 @@ public static class PathFinder
 
 
 
-    public static List<PathNode> Find(TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
+    public static List<PathNode> Find(TerrainMap _terrain_map, int _move_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         
 
         var result     = new List<PathNode>(20);
         
 
-        // A* 湲몄갼湲?
-        var    node  = AStar(_collision, _from_x, _from_y, _to_x, _to_y);
+        // A* 
+        var    node  = AStar(_terrain_map, _move_attribute, _from_x, _from_y, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
             node = node.parent;
         }
 
-        // ?닚?꽌 蹂?寃?.
+        // 
         result.Reverse();
 
         return result;
     }
 
 
-    static Node AStar(TerrainCollision _collision, int _from_x, int _from_y, int _to_x, int _to_y)
+    static Node AStar(TerrainMap _terrain_map, int _move_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
     {
-        if (_collision == null)
+        if (_terrain_map == null)
             return null;
 
         var open_list  = new List<Node>(20);
@@ -107,26 +112,33 @@ public static class PathFinder
             {
                 for(int k = -1; k <= 1; ++k)
                 {
-                    var y        = item.y + i;
-                    var x        = item.x + k;
-                    var new_item = new Node(x, y, _to_x, _to_y, item);
+                    var y         = item.y + i;
+                    var x         = item.x + k;
+                    var new_item  = new Node(x, y, _to_x, _to_y, item);
 
-                    // 충돌 지점은 거른다.
-                    if (_collision.IsCollision(x, y))
-                        continue;
-
-                    // 대각선 방향일 경우 양쪽 직선방향이 열려있는지 체크해야 함.
                     var is_diagonal = (i != 0) && (k != 0);
                     if (is_diagonal)
                     {
-                        if (_collision.IsCollision(item.x + k, item.y) || _collision.IsCollision(item.x, item.y + i))
-                            continue;
+                        // 대각선 이동은 없음.
+                        continue;
+
+                        // 대각선 방향일 경우 양쪽 직선방향이 모두 열려있는지 체크해야 함.?
+                        // var move_cost_diagonal_1 = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(x, item.y));
+                        // var move_cost_diagonal_2 = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(item.x, y));
+                        // if (_terrain_map.IsCollision(item.x + k, item.y) || _terrain_map.IsCollision(item.x, item.y + i))
+                        //     continue;
                     }
 
-                    // 이미 검사한 지점도 거른다.
+                    // 이미 검사한 지점은 거른다.
                     if (close_list.Contains(new_item))
                         continue;
 
+                    // 이동 Cost 계산.
+                    var move_cost = TerrainAttribute.Calculate_MoveCost(_move_attribute, _terrain_map.Attribute.GetAttribute(x, y));
+
+                    // 충돌 지점은 거른다.
+                    if (move_cost <= 0)
+                        continue;
                     
 
                     // 같은 좌표에 속하는 노드가 있을 경우 비교 후 변경.

@@ -128,11 +128,30 @@ namespace Battle
     /// </summary>
     public enum EnumTerrainAttribute
     {
-        Ground,
-        Water,
+        Invalid  = 0, // 이동 불가
+        FlyerOnly, // 비행 유닛만 가능.
+        Water,     // 물 지형
+        WaterSide, // 물가,
+        Ground,    // 땅        
+        Forest,   // 숲 지형        
+        Slope,    // (산)비탈, 경사면
 
         MAX = 32,
-        // bitflag 濡? ?젣?뼱?븯湲? ?븣臾몄뿉 Max媛? ?븘?슂, 32 bit or 64 bit ?
+        // bitflag.. 32 bit or 64 bit ?
+    }
+
+    public enum EnumTerrainMoveAttribute
+    {
+      Ground, // 지상 이동 가능
+      Flyer, // 비행 이동 가능
+      Water, // 물 이동 가능
+      Slope, // (산) 비탈, 경사면 이동가능
+
+      
+
+      
+      MAX = 32,
+      // bitflag.. 32 bit or 64 bit ?
     }
 
 

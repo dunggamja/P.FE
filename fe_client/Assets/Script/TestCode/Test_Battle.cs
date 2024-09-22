@@ -72,17 +72,17 @@ public class Test_Battle : MonoBehaviour
         defender_status.SetStatus(EnumUnitStatus.Weight, 4);
 
 
-        attacker_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
-        attacker_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
-        attacker_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
-        attacker_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);
-        attacker_weapon.SetStatus(EnumWeaponStatus.Range, 1);
+        // attacker_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
+        // attacker_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
+        // attacker_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
+        // attacker_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);
+        // attacker_weapon.SetStatus(EnumWeaponStatus.Range, 1);
 
-        defender_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
-        defender_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
-        defender_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
-        defender_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);
-        defender_weapon.SetStatus(EnumWeaponStatus.Range, 1);
+        // defender_weapon.SetStatus(EnumWeaponStatus.Might_Physics, 3);
+        // defender_weapon.SetStatus(EnumWeaponStatus.Hit, 100);
+        // defender_weapon.SetStatus(EnumWeaponStatus.Weight, 2);
+        // defender_weapon.SetStatus(EnumWeaponStatus.Dodge_Critical, 30);
+        // defender_weapon.SetStatus(EnumWeaponStatus.Range, 1);
 
 
 
@@ -104,13 +104,13 @@ public class Test_Battle : MonoBehaviour
     [ContextMenu("PathFind")]
     void PathFind()
     {
-        BattleTerrainManager.Instance.Initialize();
-        var battle_terrain = BattleTerrainManager.Instance.BattleTerrain;
-        var list_path      = PathFinder.Find(battle_terrain.Collision, pos_from.x, pos_from.y, pos_to.x, pos_to.y);
-        foreach(var e in list_path)
-        {
-            Debug.LogWarning(e.GetPosition().ToString());
-        }
+        TerrainMapManager.Instance.Initialize();
+        var battle_terrain = TerrainMapManager.Instance.TerrainMap;
+        //var list_path      = PathFinder.Find(battle_terrain, pos_from.x, pos_from.y, pos_to.x, pos_to.y);
+        //foreach(var e in list_path)
+        //{
+        //    Debug.LogWarning(e.GetPosition().ToString());
+        //}
     }
 
     [ContextMenu("AddressableTest")]
