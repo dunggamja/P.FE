@@ -189,7 +189,7 @@ public class PathNodeManager : IPathNodeManager
         var move_attribute = 0;
 
         var from_position  = m_position_cur.GetPosition();
-        var list_path_node =  PathAlgorithm.Find(m_terrain, move_attribute, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        var list_path_node =  PathAlgorithm.PathFind(m_terrain, move_attribute, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
         
         m_list_path_node.Clear();
         m_list_path_node = new Queue<PathNode>(list_path_node);

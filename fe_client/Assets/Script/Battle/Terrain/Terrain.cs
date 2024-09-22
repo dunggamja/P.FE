@@ -83,7 +83,7 @@ public struct TerrainBlock
     int            m_block_x;
     int            m_block_y;
     int            m_block_size;
-    HashSet<Int64> m_entities;
+    Dictionary<Int64, (int x, int y)> m_entities;
 
     public TerrainBlock(int _x, int _y, int _size)
     {
@@ -93,14 +93,25 @@ public struct TerrainBlock
         m_entities   = new(10);
     }
 
-    public void SetEntity(Int64 _id)
+    public void SetEntity(Int64 _id, int _x, int _y)
     {
-        m_entities.Add(_id);
+        m_entities[_id] = (_x, _y);
     }
 
     public void RemoveEntity(Int64 _id)
     {
         m_entities.Remove(_id);
+    }
+
+    public Int64 FindEntity(int _x, int _y)
+    {
+        foreach((var id, var position) in m_entities)
+        {
+            if (position.x == _x && position.y == _y)
+                return id;
+        }
+
+        return 0;
     }
 }
 
@@ -122,6 +133,26 @@ public class TerrainBlockManager
         var block_count = (tile_size / m_block_size) + ((0 < (tile_size % m_block_size)) ? 1: 0);
 
         m_blocks        = new TerrainBlock[block_count, block_count];
+    }
+
+    (int block_x, int block_y) FindBlockIndex(int _x, int _y)
+    {
+        if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
+            return (-1, -1);
+
+        var block_x = _x / m_block_size;
+        var block_y = _y / m_block_size;
+
+        return (block_x, block_y);
+    }
+
+    public Int64 FindEntity(int _x, int _y)
+    {
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
+        if (block_x < 0 || block_y < 0)
+            return 0;
+
+        return m_blocks[block_x, block_y].FindEntity(_x, _y);
     }
 
 }
@@ -146,7 +177,7 @@ namespace Battle
             Attribute    = new TerrainAttribute(_width, _height);
             BlockManager = new TerrainBlockManager(_width, _height, 16);
         }
-        
+
         // TODO: SAVE/LOAD
 
     }
