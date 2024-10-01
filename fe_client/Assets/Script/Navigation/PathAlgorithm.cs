@@ -8,7 +8,7 @@ using UnityEngine.Assertions.Comparers;
 
 public static partial class PathAlgorithm
 {
-    static float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
+    static public float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
     {
         // 1. 4방향 이동만 존재할 경우.
         return Math.Abs(_from_x - _to_x) + Math.Abs(_from_y - _to_y);

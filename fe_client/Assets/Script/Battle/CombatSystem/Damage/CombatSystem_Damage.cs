@@ -68,7 +68,8 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 전 스킬 사용.
-            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
+            if (!_param.IsPlan)
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -84,19 +85,30 @@ namespace Battle
 
             // 명중 / 필살 / 데미지 계산.
             Result_HitRate       = Calculate_HitRate(_param);
-            Result_Hit           = Util.Random100_Result(Result_HitRate);
-
             Result_CriticalRate  = Calculate_CriticalRate(_param);
-            Result_Critical      = Util.Random100_Result(Result_CriticalRate);
 
-            Result_Damage        = (Result_Hit) ? Calculate_Damage(_param) : 0;
+
+            if (_param.IsPlan)
+            {
+                Result_Hit           = true;                
+                Result_Critical      = false;
+                Result_Damage        = Calculate_Damage(_param);
+            }
+            else
+            {
+                
+                Result_Hit           = Util.Random100_Result(Result_HitRate);                
+                Result_Critical      = Util.Random100_Result(Result_CriticalRate);
+                Result_Damage        = (Result_Hit) ? Calculate_Damage(_param) : 0;
+            }
 
             // 크리티컬 & 특효 적용
             Result_Damage       *= (WeaponEffectiveness) ? EFFECTIVE_DAMAGE_MULTIPLIER : 1;
             Result_Damage       *= (Result_Critical)     ? CRITICAL_DAMAGE_MULTIPLIER  : 1;
 
             // 데미지 적용 여기서 한다.
-            target.ApplyDamage(Result_Damage);
+            if (!_param.IsPlan)
+                target.ApplyDamage(Result_Damage);
 
             
             return true;
@@ -108,7 +120,8 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
+            if (!_param.IsPlan)
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
         }
 
 
@@ -241,6 +254,8 @@ namespace Battle
 
             return weapon_effectiveness;
         }
+
+
 
        
 

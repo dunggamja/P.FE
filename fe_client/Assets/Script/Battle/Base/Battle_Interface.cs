@@ -26,6 +26,8 @@ namespace Battle
         Int64 ItemID  { get; }
         int  GetStatus(EnumWeaponStatus _status_type);
         bool HasAttribute(EnumWeaponAttribute _attribute_type);
+        void Equip(Int64 _item_id);
+        void Unequip();
     }
 
     /// <summary>

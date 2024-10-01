@@ -87,7 +87,7 @@ public class Test_Battle : MonoBehaviour
 
 
         Param = new TestBattleParam(attacker, defender);
-        CombatSystemManager.Instance.SetData(Param);
+        CombatSystemManager.Instance.Setup(Param);
     }
 
 

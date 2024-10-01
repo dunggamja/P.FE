@@ -43,9 +43,10 @@ namespace Battle
                 e.Release();
         }
 
-        public void SetData(ICombatSystemParam _param)
+        public void Setup(ICombatSystemParam _param)
         {
             Param = _param;
+            State = EnumState.None;
         }
 
         void OnEnter()
@@ -64,9 +65,15 @@ namespace Battle
             // 데미지 계산.
             UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
 
-            // 공격자/방어자 중 1명이 죽었으면 종료 처리.
-            if (Param.Attacker.IsDead || Param.Defender.IsDead)
-                return true;
+            // 계획때는 
+            if (!Param.IsPlan)
+            {
+                // 공격자/방어자 중 1명이 죽었으면 종료 처리.
+                if (Param.Attacker.IsDead || Param.Defender.IsDead)
+                    return true;
+            }
+
+            
 
             return false;
         }
