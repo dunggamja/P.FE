@@ -27,14 +27,14 @@ namespace Battle
 
 
         // public EnumAdvantageState WeaponAdvantage     { get; private set; }
-        public bool               WeaponEffectiveness { get; private set; }
+        public bool   WeaponEffectiveness { get; private set; }
 
-        public bool Result_Hit          { get; private set; }
-        public bool Result_Critical     { get; private set; }
+        public bool   Result_Hit          { get; private set; }
+        public bool   Result_Critical     { get; private set; }
 
-        public int  Result_HitRate      { get; private set; }
-        public int  Result_CriticalRate { get; private set; }
-        public int  Result_Damage       { get; private set; }
+        public float  Result_HitRate      { get; private set; }
+        public float  Result_CriticalRate { get; private set; }
+        public int    Result_Damage       { get; private set; }        
 
 
         public CombatSystem_Damage() : base(EnumSystem.CombatSystem_Damage)
@@ -55,8 +55,8 @@ namespace Battle
             Result_Hit          = false;
             Result_Critical     = false;
 
-            Result_HitRate      = 0;
-            Result_CriticalRate = 0;
+            Result_HitRate      = 0f;
+            Result_CriticalRate = 0f;
             Result_Damage       = 0;
         }
 
@@ -97,8 +97,8 @@ namespace Battle
             else
             {
                 
-                Result_Hit           = Util.Random100_Result(Result_HitRate);                
-                Result_Critical      = Util.Random100_Result(Result_CriticalRate);
+                Result_Hit           = Util.Random01_Result(Result_HitRate);                
+                Result_Critical      = Util.Random01_Result(Result_CriticalRate);
                 Result_Damage        = (Result_Hit) ? Calculate_Damage(_param) : 0;
             }
 
@@ -126,7 +126,7 @@ namespace Battle
 
 
 
-        int Calculate_HitRate(ICombatSystemParam _param)
+        float Calculate_HitRate(ICombatSystemParam _param)
         {
             // 명중률 = 명중 - 회피
             var dealer = GetDealer(_param);
@@ -147,10 +147,10 @@ namespace Battle
             // }
 
             // 100분율 
-            return Math.Max(0, buff_value.Calculate(hit - dodge));
+            return Math.Max(0, buff_value.Calculate(hit - dodge)) * 0.01f;
         }
 
-        int Calculate_CriticalRate(ICombatSystemParam _param)
+        float Calculate_CriticalRate(ICombatSystemParam _param)
         {
             // 필살 발생 확률 = 필살 - 필살 회피
             var dealer = GetDealer(_param);
@@ -165,9 +165,8 @@ namespace Battle
                            + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Critical);
 
 
-
             // 100분율 
-            return Math.Max(0, buff_value.Calculate(hit - dodge));
+            return Math.Max(0, buff_value.Calculate(hit - dodge)) * 0.01f;
         }
 
         int Calculate_Damage(ICombatSystemParam _param)

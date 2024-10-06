@@ -11,9 +11,11 @@ public static class Util
     public static long GenerateID() => ++s_last_generated_id;
 
 
-    public static void SetRandomSeed(int _seed)            => UnityEngine.Random.InitState(_seed);
-    public static int  Random100()                         => UnityEngine.Random.Range(0, 100);
-    public static bool Random100_Result(int _success_rate) => Random100() < _success_rate;
+    public static void  SetRandomSeed(int _seed)             => UnityEngine.Random.InitState(_seed);
+    public static float Random01()                           => UnityEngine.Random.Range(0f, 1f);
+    public static int   Random100()                          => UnityEngine.Random.Range(0, 100);
+    public static bool  Random100_Result(int _success_rate)  => Random100() <  _success_rate;
+    public static bool  Random01_Result(float _success_rate) => Random01()  <= _success_rate;
 
 
     public static T TryAddComponent<T>(this GameObject _object) where T : Component
