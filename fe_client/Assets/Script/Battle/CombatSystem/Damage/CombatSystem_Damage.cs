@@ -11,19 +11,21 @@ namespace Battle
         const int CRITICAL_DAMAGE_MULTIPLIER  = 3;
         const int EFFECTIVE_DAMAGE_MULTIPLIER = 2;
 
-        public enum EnumSkillTiming
-        {
-            None,
 
-            Attack_Start,
-            Attack_Complete,
+        // // 요건 사용 안 할 거 같은...?
+        // public enum EnumSkillTiming
+        // {
+        //     None,
 
-            Modify_Advantage,
-            Modify_Hit,
-            Modify_Critical,
-            Modify_Damage,
-            Modify_ApplyDamage,
-        }
+        //     Attack_Start,
+        //     Attack_Complete,
+
+        //     Modify_Advantage,
+        //     Modify_Hit,
+        //     Modify_Critical,
+        //     Modify_Damage,
+        //     Modify_ApplyDamage,
+        // }
 
 
         // public EnumAdvantageState WeaponAdvantage     { get; private set; }
@@ -69,7 +71,7 @@ namespace Battle
 
             // 공격 전 스킬 사용.
             if (!_param.IsPlan)
-                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start, _param));
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -110,7 +112,8 @@ namespace Battle
             if (!_param.IsPlan)
                 target.ApplyDamage(Result_Damage);
 
-            
+
+            // 1 Tick에 완료 처리.
             return true;
         }
 
@@ -121,7 +124,7 @@ namespace Battle
 
             // 공격 후 스킬 사용.
             if (!_param.IsPlan)
-                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish, _param));
         }
 
 
@@ -155,7 +158,6 @@ namespace Battle
             // 필살 발생 확률 = 필살 - 필살 회피
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
-
 
 
             // 스탯  & 버프 계산.

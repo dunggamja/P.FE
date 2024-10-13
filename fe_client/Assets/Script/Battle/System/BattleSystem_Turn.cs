@@ -28,7 +28,7 @@ namespace Battle
 
         public override void Init()
         {
-            
+            Release();
         }
 
         public override void Release()
@@ -39,14 +39,7 @@ namespace Battle
 
         protected override void OnEnter(IBattleSystemParam _param)
         {
-            Release();
-
-            // 1턴, 진영은 미정.
-            UpdateTurnAndFaction(1, 0);
-
-            // 이벤트.
-            
-            EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+           EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
         }
 
 
@@ -57,8 +50,7 @@ namespace Battle
             var faction = Faction_Cur;
 
             if (Check_Faction_Complete(faction))
-            {
-                
+            {                
                 (var result, var next_faction) = FindNextFaction(faction);
                 if  (result)
                 {
@@ -79,17 +71,17 @@ namespace Battle
 
                 if (Faction_Cur != Faction_Prev) 
                 {
-                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
+                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed, _param));
                 }
 
                 if (Turn_Cur != Turn_Prev) 
                 {
-                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
                 }
             }
 
 
-            return false;
+            return true;
         }
 
         protected override void OnExit(IBattleSystemParam _param)
@@ -104,7 +96,7 @@ namespace Battle
             var next_faction = int.MaxValue;
 
             // 다음에 행동할 Faction을 찾습니다.  
-            // TODO: 모든 BattleObject 를 순회하도록 해두었슴...;  혹시 성능에 문제가 된다면 나중에 개선....
+            // TODO: 일단 모든 Entity 순회... ㅠㅠ
             EntityManager.Instance.Loop((e) =>
             {
                 var faction = e.GetFaction();
@@ -125,12 +117,8 @@ namespace Battle
         bool Check_Faction_Complete(int _current_faction)
         {
             // 진영내의 유닛 중 행동을 하지 않은 유닛이 있는지 체크.
-            var active_unit = EntityManager.Instance.Find(e => 
-                (e.GetFaction()     == _current_faction && 
-                 e.GetCommandType() == EnumCommandType.Player &&
-                 e.GetCommandCount() >  0)            
-            );
-
+            // TODO: 일단 모든 Entity 순회... ㅠㅠ
+            var active_unit = EntityManager.Instance.Find(e => e.IsEnableCommandProgress(_current_faction));
             if (active_unit != null)
                 return false;
 

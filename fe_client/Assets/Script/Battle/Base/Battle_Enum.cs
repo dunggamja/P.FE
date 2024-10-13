@@ -105,7 +105,7 @@ namespace Battle
         None         = 0,
 
         CommandType,  // 명령 타입
-        CommandState, // 명령 상태
+        CommandFlag, // 명령 상태 (0 : 대기, 1 : 행동 완료)
         Faction,      // 진영
 
         IsMoving,
@@ -163,6 +163,23 @@ namespace Battle
         None,   // 명령 안 받음.
         Player, // 플레이어가 명령
         AI,     // AI 명령
+    }
+
+    public enum EnumCommandFlag : byte
+    {
+        None,
+        Move,     // 이동
+        Action,   // 아이템 사용, 공격 등.
+        Exchange, // 아이템 교환, ... 요건 Action이 가능하면 냅둘 예정?
+        Done,     // 행동 종료에 대한 플래그.
+    }
+
+    public enum EnumCommandProgressState 
+    {
+        None,
+        Progress,
+        Done,
+        Invalid,
     }
 
     // /// <summary>

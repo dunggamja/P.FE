@@ -11,7 +11,8 @@ public enum EnumSystem
     CombatSystem_Damage,              // (전투씬), 데미지 처리.
      
     BattleSystem_Turn,                // (전투필드),  턴   진행    
-    BattleSystem_CommandDispatch,     // (전투필드),  유닛들 명령 dispatch
+    BattleSystem_Command_Dispatch,     // (전투필드),  유닛들 명령 dispatch
+    BattleSystem_Command_Progress,     // (전투필드),  유닛들 명령 dispatch
     // BattleSystem_Navigation,  // (전투필드), 유닛들 이동 처리
 }
 

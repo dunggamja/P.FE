@@ -65,7 +65,7 @@ namespace Battle
             // 데미지 계산.
             UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
 
-            // 계획때는 
+            // 계획은 턴이 종료될 때 까지 보여준다.
             if (!Param.IsPlan)
             {
                 // 공격자/방어자 중 1명이 죽었으면 종료 처리.

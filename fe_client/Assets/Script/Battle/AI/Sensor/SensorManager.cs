@@ -7,6 +7,21 @@ namespace Battle
 {
     public class SensorManager
     {
+        WeakReference<IOwner> m_owner = new(null);
+
+        public bool Initialize(IOwner _owner)
+        {
+            if (_owner == null)
+                return false;
+
+            m_owner.SetTarget(_owner);
+
+            AddSensor(new Sensor_Target_Score());
+
+            return true;
+        }
+
+
         private List<(System.Type _type, ISensor _sensor)> m_repository = new(10);
 
         public bool AddSensor(ISensor _sensor)
@@ -41,6 +56,29 @@ namespace Battle
 
             m_repository.RemoveAt(find_index);
             return true;
+        }
+
+        public T TryAddSensor<T>() where T : class, ISensor, new()
+        {
+            var sensor = GetSensor<T>();
+            if (sensor == null)
+            {
+                if(!AddSensor(new T()))
+                    return null;
+
+                sensor = GetSensor<T>();
+            }
+
+            return sensor;            
+        }
+
+
+        public void Update()
+        {
+            foreach((var type, var sensor) in m_repository)
+            {
+                sensor.Update(m_owner.TryGetTarget(out var target) ? target : null);
+            }
         }
     }
 }

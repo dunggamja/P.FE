@@ -11,6 +11,11 @@ namespace Battle
         (int x, int y)        m_cell_to         = (0, 0); 
         // List<(int x, int y)>  m_path_node       = new List<(int x, int y)>();
         // int                   m_path_node_index = 0;
+
+        public Command_Move(Int64 _unit_id) : base(_unit_id)
+        {
+            
+        }
         
 
         protected override void OnEnter()

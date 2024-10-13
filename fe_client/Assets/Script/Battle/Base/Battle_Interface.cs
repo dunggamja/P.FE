@@ -49,6 +49,9 @@ namespace Battle
         bool HasValue(EnumBlackBoard _type);
         void SetValue(EnumBlackBoard _type, int _value);
         void SetValue(EnumBlackBoard _type, bool _value);
+        void SetBitFlag(EnumBlackBoard _type, byte _bit_index);
+        void ResetBitFlag(EnumBlackBoard _type, byte _bit_index);
+        bool HasBitFlag(EnumBlackBoard _type, byte _bit_index);
     }
 
     /// <summary>
@@ -68,8 +71,8 @@ namespace Battle
         EnumCommandType  GetCommandType();
         void             SetCommandType(EnumCommandType _command_type);
 
-        int              GetCommandCount(); 
-        void             SetCommandCount(int _count); 
+        // bool             HasCommandFlag(); 
+        // void             SetCommandEnable(bool _enable); 
     }
 
 

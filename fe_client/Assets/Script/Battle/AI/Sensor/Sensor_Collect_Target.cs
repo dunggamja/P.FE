@@ -92,7 +92,7 @@ namespace Battle
             }
         }
 
-        ScoreResult best_score = new();
+        public ScoreResult BestScore { get; private set; } = new();
 
 
         public void Update(IOwner _owner)
@@ -109,7 +109,7 @@ namespace Battle
             var equiped_weapon_id = weapon.ItemID;
 
             // 결과값은 가장 높은 것 1개만 저장해봅세...
-            best_score.Reset();
+            BestScore.Reset();
 
 
             // 소유 중인 무기들로 테스트 전투를 돌립니다.
@@ -146,9 +146,9 @@ namespace Battle
                     var current_score = Score_Calculate(owner_entity, target_entity);
 
                     // 결과 값 변경.
-                    if (best_score.Calculate_Total_Score() <= current_score.Calculate_Total_Score())
+                    if (BestScore.Calculate_Total_Score() <= current_score.Calculate_Total_Score())
                     {
-                        best_score = current_score;
+                        BestScore = current_score;
                     }
                 }
             }
@@ -246,107 +246,113 @@ namespace Battle
             int        _weapon_range_max)
         {
 
-                if (_terrain_map == null)
-                    return new();
+            if (_terrain_map == null)
+                return new();
 
-                var list_target       = new List<Int64>();
+            var list_target       = new List<Int64>();
 
-                var open_list_move    = new List<(int x, int y, int move_cost)>(10);
-                var close_list_move   = new List<(int x, int y)>(10);
-                var close_list_weapon = new List<(int x, int y)>(10);
-                
+            var open_list_move    = new List<(int x, int y, int move_cost)>(10);
+            var close_list_move   = new List<(int x, int y)>(10);
+            var close_list_weapon = new List<(int x, int y)>(10);
+            
 
-                // 시작 지점.
-                open_list_move.Add((_x, _y, 0));
+            // 시작 지점.
+            open_list_move.Add((_x, _y, 0));
 
-                while(open_list_move.Count > 0)
+            while(open_list_move.Count > 0)
+            {
+                // cost가 가장 적은 아이템을 가져옵니다.            
+                var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
+
+                // open/close list 셋팅
+                open_list_move.Remove(item);
+                close_list_move.Add((item.x, item.y));
+
+
+                // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
+                for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
                 {
-                    // cost가 가장 적은 아이템을 가져옵니다.            
-                    var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
-
-                    // open/close list 셋팅
-                    open_list_move.Remove(item);
-                    close_list_move.Add((item.x, item.y));
-
-
-                    // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
-                    for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
+                    for(int k = -_weapon_range_max; k <= _weapon_range_max; ++k)
                     {
-                        for(int k = -_weapon_range_max; k <= _weapon_range_max; ++k)
+                        var y = item.y + i;
+                        var x = item.x + k;
+
+                        // 무기 사거리 체크
+                        var distance = PathAlgorithm.Distance(item.x, item.y, x, y);
+                        if (distance <= 0)
                         {
-                            var y = item.y + i;
-                            var x = item.x + k;
-
-                            // 무기 사거리 체크
-                            var distance = PathAlgorithm.Distance(item.x, item.y, x, y);
-                            if (distance < _weapon_range_min || _weapon_range_max < distance)
-                            {
-                                continue;
-                            }
-
-                            // 이미 검사한 위치.
-                            if (close_list_weapon.Contains((x, y)))
-                            {
-                                continue;
-                            }
-
-                            // 검사 기록에 추가.
-                            close_list_weapon.Add((x, y));
-
-                            // 타겟 목록에 추가.
-                            var entity_id = _terrain_map.BlockManager.FindEntity(x, y);
-                            if (entity_id > 0)
-                            {
-                                list_target.Add(entity_id);
-                            }
+                            // 위치가 겹치는 경우는 없다.
+                            continue;
                         }
-                    }
 
-
-
-                    // 이동 가능 지역 탐색. (FloodFill)
-                    for(int i = -1; i <= 1; ++i)
-                    {
-                        for(int k = -1; k <= 1; ++k)
+                        if (distance < _weapon_range_min || _weapon_range_max < distance)
                         {
-                            var y = item.y + i;
-                            var x = item.x + k;
+                            continue;
+                        }
 
-                            // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
-                            if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
-                            {
-                                continue;
-                            }
-                            
-                            // 이동 불가능 지역은 거른다.
-                            var move_cost  = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
-                            if (move_cost <= 0)
-                            {
-                                continue;
-                            }
+                        // 이미 검사한 위치.
+                        if (close_list_weapon.Contains((x, y)))
+                        {
+                            continue;
+                        }
 
-                            // 이동 범위 초과.
-                            var total_cost = item.move_cost + move_cost;
-                            if (total_cost > _move_distance)
-                            {
-                                continue;
-                            }
+                        // 검사 기록에 추가.
+                        close_list_weapon.Add((x, y));
 
-                            // 이미 체크하였음.
-                            if (close_list_move.Contains((x, y)))
-                            {
-                                continue;
-                            }
-
-                            // open_list 에 추가.
-                            open_list_move.Add((x, y, total_cost));
+                        // 타겟 목록에 추가.
+                        var entity_id = _terrain_map.BlockManager.FindEntity(x, y);
+                        if (entity_id > 0)
+                        {
+                            list_target.Add(entity_id);
                         }
                     }
                 }
-                
-                // TODO: 최소 범위 따로 체크해서 불가능한 지역에 위치
 
-                return list_target;
+
+
+                // 이동 가능 지역 탐색. (FloodFill)
+                for(int i = -1; i <= 1; ++i)
+                {
+                    for(int k = -1; k <= 1; ++k)
+                    {
+                        var y = item.y + i;
+                        var x = item.x + k;
+
+                        // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
+                        if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
+                        {
+                            continue;
+                        }
+                        
+                        // 이동 불가능 지역은 거른다.
+                        var move_cost  = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
+                        if (move_cost <= 0)
+                        {
+                            continue;
+                        }
+
+                        // 이동 범위 초과.
+                        var total_cost = item.move_cost + move_cost;
+                        if (total_cost > _move_distance)
+                        {
+                            continue;
+                        }
+
+                        // 이미 체크하였음.
+                        if (close_list_move.Contains((x, y)))
+                        {
+                            continue;
+                        }
+
+                        // open_list 에 추가.
+                        open_list_move.Add((x, y, total_cost));
+                    }
+                }
+            }
+            
+            
+
+            return list_target;
         }
 
     }    

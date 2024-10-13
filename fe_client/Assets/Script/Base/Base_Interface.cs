@@ -40,7 +40,7 @@ public interface ISystemManager
 public interface IOwner
 {
     Int64   ID     { get; }
-    ITarget Target { get; }    
+    // ITarget Target { get; }    
 }
 
 /// <summary>

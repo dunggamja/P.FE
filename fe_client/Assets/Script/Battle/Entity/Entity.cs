@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Battle
@@ -11,14 +12,15 @@ namespace Battle
         public Int64                ID              { get; private set; }
 
         public (int x, int y)       Cell            { get; private set; }
-        public ITarget              Target          { get; }
+        // public ITarget              Target          { get; }
         public IBlackBoard          BlackBoard      { get; }
         public ISkill               Skill           { get; } 
         public BattleStatusManager  StatusManager   { get; } 
         public Inventory            Inventory       { get; }
         public IPathNodeManager     PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
-        public int                  PathAttribute   { get; private set;}
+        public int                  PathAttribute   { get; private set; }
+        public SensorManager        SensorManager   { get; private set; }
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -27,7 +29,7 @@ namespace Battle
         protected Entity(Int64 _id)
         {
             ID              = _id;
-            Target          = null;
+            // Target          = null;
             Cell            = (0, 0);
                  
             BlackBoard      = new BattleBlackBoard();
@@ -36,6 +38,7 @@ namespace Battle
             PathNodeManager = new PathNodeManager();
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
+            SensorManager   = new SensorManager();
         }
 
         public static Entity Create(Int64 _id)
@@ -48,6 +51,9 @@ namespace Battle
 
         public void Init()
         {
+            SensorManager.Initialize(this);
+
+
             EventDispatchManager.Instance.AttachReceiver(this);
         }
 
@@ -101,15 +107,43 @@ namespace Battle
             BlackBoard.SetValue(EnumBlackBoard.CommandType, (int)_command_type);
         }
 
-        public int GetCommandCount()
+        public bool HasCommandFlag(EnumCommandFlag _command_flag)
         {
-            return BlackBoard.GetValue(EnumBlackBoard.CommandState);
-
+            return BlackBoard.HasBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
-        public void SetCommandCount(int _count)
+        public void SetCommandFlag(EnumCommandFlag _command_flag, bool _set_flag)
         {
-            BlackBoard.SetValue(EnumBlackBoard.CommandState, _count);
+            if (_set_flag) BlackBoard.SetBitFlag(EnumBlackBoard.CommandFlag,   (byte)_command_flag);
+            else           BlackBoard.ResetBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
+        }
+
+        public EnumCommandProgressState GetCommandProgressState(int _faction)
+        {
+            // 진영이 다르면 행동 불가능.
+            if (GetFaction() != _faction)
+                return EnumCommandProgressState.Invalid;
+
+            // 행동 완료 상태.
+            if (HasCommandFlag(EnumCommandFlag.Done))
+                return EnumCommandProgressState.Done;
+
+            // 그 외 값이 있으면 진행중인 행동이 있음.
+            if (BlackBoard.HasValue(EnumBlackBoard.CommandFlag))            
+                return EnumCommandProgressState.Progress;
+
+            // 대기 상태.
+            return EnumCommandProgressState.None;
+        }
+
+        public bool IsEnableCommandProgress(int _faction)
+        {
+            var progress_state = GetCommandProgressState(_faction);
+            if (progress_state == EnumCommandProgressState.None
+            ||  progress_state == EnumCommandProgressState.Progress)
+                return true;
+
+            return false;
         }
 
         

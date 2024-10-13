@@ -26,9 +26,24 @@ namespace Battle
 
         public void SetValue(EnumBlackBoard _type, bool _value)
         {
-            m_repository.SetValue((int)_type, _value);
-            
+            m_repository.SetValue((int)_type, _value);            
         }
+
+        public void SetBitFlag(EnumBlackBoard _type, byte _bit_index)
+        {
+            SetValue(_type, GetValue(_type) | (1 << _bit_index));
+        }
+
+        public void ResetBitFlag(EnumBlackBoard _type, byte _bit_index)
+        {
+            SetValue(_type, GetValue(_type) & ~(1 << _bit_index));
+        }
+
+        public bool HasBitFlag(EnumBlackBoard _type, byte _bit_index)
+        {
+            return 0 != (GetValue(_type) & (1 << _bit_index));
+        }
+
     }
 }
 

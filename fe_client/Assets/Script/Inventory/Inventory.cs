@@ -12,6 +12,16 @@ public class Inventory
     Dictionary<Int64, Item> m_repository      = new (10);
     List<Item>              m_repository_list = new (10);
 
+    public bool Initialize(IOwner _owner)
+    {
+        if (_owner == null)
+            return false;
+
+        OwnerID = _owner.ID;
+
+        return true;
+    }
+
 
     public bool AddItem(Item _item)
     {

@@ -19,6 +19,8 @@ namespace Battle
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
 
+        private int m_system_index = 0;
+
 
         protected override void Init()
         {
@@ -27,8 +29,11 @@ namespace Battle
     
 
             // 실행할 순서대로 넣어놓는다.
+
+            // 턴 진행
             m_update_system.Add(new BattleSystem_Turn());       
-            m_update_system.Add(new BattleSystem_Command());    
+            // 유닛 커맨드 처리.
+            m_update_system.Add(new BattleSystem_Command_Dispatch());    
 
 
             m_update_system.ForEach(e => e.Init());
@@ -52,11 +57,25 @@ namespace Battle
 
         void OnEnter()
         {
+            m_system_index = 0;
         }
 
         bool OnUpdate()
         {
-            m_update_system.ForEach(e => e.Update(Param));            
+            // 시스템을 순차적으로 실행해야 한다.
+            for(; m_system_index < m_update_system.Count; ++m_system_index)
+            {
+                // 진해중인 시스템이 있다면 다음 프레임에 이어서..
+                if (m_update_system[m_system_index].Update(Param) == EnumState.Progress)
+                    break;
+            }
+
+            // 다시 처음부터.
+            if (m_system_index >= m_update_system.Count)
+            {
+                m_system_index  = 0;
+            }
+
 
             // 종료 타이밍은 변수를 따로 둬야할듯.
             return false;
