@@ -7,14 +7,15 @@ namespace Battle
 {
     public class SensorManager
     {
-        WeakReference<IOwner> m_owner = new(null);
+        Int64 m_owner_id = 0;
+
 
         public bool Initialize(IOwner _owner)
         {
             if (_owner == null)
                 return false;
 
-            m_owner.SetTarget(_owner);
+            m_owner_id = _owner.ID;
 
             AddSensor(new Sensor_Target_Score());
 
@@ -75,9 +76,13 @@ namespace Battle
 
         public void Update()
         {
+            var entity = EntityManager.Instance.GetEntity(m_owner_id);
+            if (entity == null)
+                return;
+
             foreach((var type, var sensor) in m_repository)
             {
-                sensor.Update(m_owner.TryGetTarget(out var target) ? target : null);
+                sensor.Update(entity);
             }
         }
     }

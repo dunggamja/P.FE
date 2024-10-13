@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class Command_Attack_Target : ITarget
+    public class Target_Command_Attack : ITarget
     {
         public Int64              MainTargetID { get; private set; } = 0;
 
@@ -13,7 +13,7 @@ namespace Battle
 
 
 
-        public Command_Attack_Target(Int64 _target_id)
+        public Target_Command_Attack(Int64 _target_id)
         {
             MainTargetID = _target_id;
         }
@@ -30,7 +30,7 @@ namespace Battle
             : base(_unit_id)
         {
             WeaponID = _weapon_id;
-            Target   = new Command_Attack_Target(_target_id);
+            Target   = new Target_Command_Attack(_target_id);
         }
 
 

@@ -114,8 +114,11 @@ namespace Battle
                 if (entity == null)
                     return true;
 
-                
-
+                // 공격 명령 셋팅.
+                entity.CommandManager.PushCommand(new Command_Attack(
+                    entity.ID, 
+                    best_score.ScoreResult.TargetID, 
+                    best_score.ScoreResult.WeaponID));
                 
 
                 return true;

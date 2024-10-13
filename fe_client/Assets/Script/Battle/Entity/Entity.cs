@@ -21,6 +21,7 @@ namespace Battle
         public PathVehicle          PathVehicle     { get; } 
         public int                  PathAttribute   { get; private set; }
         public SensorManager        SensorManager   { get; private set; }
+        public CommandManager       CommandManager  { get; private set; }    
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -39,19 +40,22 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
             SensorManager   = new SensorManager();
+            CommandManager  = new CommandManager();
         }
 
         public static Entity Create(Int64 _id)
         {
             var new_entity = new Entity(_id);
-            new_entity.Init();
+            new_entity.Initialize();
 
             return new_entity;
         }
 
-        public void Init()
+        public void Initialize()
         {
+            Inventory.Initialize(this);
             SensorManager.Initialize(this);
+            CommandManager.Initialize(this);
 
 
             EventDispatchManager.Instance.AttachReceiver(this);

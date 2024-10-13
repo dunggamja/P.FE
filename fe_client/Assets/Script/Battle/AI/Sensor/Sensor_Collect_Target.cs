@@ -37,20 +37,20 @@ namespace Battle
 
             };
 
-            public  Int64   EntityID { get; private set; } = 0;
+            public  Int64   TargetID { get; private set; } = 0;
             public  Int64   WeaponID { get; private set; } = 0;
             private float[] score     = new float[(int)EnumScoreType.MAX] ;
 
             public ScoreResult Setup(Int64 _entity_id, Int64 _weapon_id)
             {
-                EntityID = _entity_id;
+                TargetID = _entity_id;
                 WeaponID = _weapon_id;
                 return this;
             }
 
             public ScoreResult Reset()
             {
-                EntityID = 0;
+                TargetID = 0;
                 WeaponID = 0;
                 Array.Clear(score, 0, score.Length);
 
