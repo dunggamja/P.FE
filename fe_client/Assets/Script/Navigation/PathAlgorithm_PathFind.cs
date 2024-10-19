@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Battle;
 using UnityEngine;
@@ -9,12 +10,12 @@ using UnityEngine.Assertions.Comparers;
 public static partial class PathAlgorithm
 {
     
-    public static List<PathNode> PathFind(TerrainMap _terrain_map, int _path_owner_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
+    public static List<PathNode> PathFind(TerrainMap _terrain_map, IPathOwner _path_owner, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         var result     = new List<PathNode>(20);
 
         // A* 
-        var    node  = AStar(_terrain_map, _path_owner_attribute, _from_x, _from_y, _to_x, _to_y);
+        var    node  = AStar(_terrain_map, _path_owner, _from_x, _from_y, _to_x, _to_y);
         while (node != null)
         {
             result.Add(new PathNode(node.x, node.y));
@@ -28,10 +29,14 @@ public static partial class PathAlgorithm
     }
 
 
-    static Node AStar(TerrainMap _terrain_map, int _path_owner_attribute, int _from_x, int _from_y, int _to_x, int _to_y)
+    static Node AStar(TerrainMap _terrain_map, IPathOwner _path_owner, int _from_x, int _from_y, int _to_x, int _to_y)
     {
         if (_terrain_map == null)
             return null;
+
+         // 목표 지점에 이동 가능한 지 체크.
+        if (!Verify_Moveable(_terrain_map, _path_owner, _to_x, _to_y, _is_goal:true))
+            return null;                    
 
         var open_list  = new List<Node>(20);
         var close_list = new List<Node>(20);
@@ -56,6 +61,7 @@ public static partial class PathAlgorithm
 
             return minimum;
         }
+
         
 
         while(0 < open_list.Count)
@@ -69,7 +75,9 @@ public static partial class PathAlgorithm
 
             // 목표 지점에 도달.
             if (item.x == _to_x && item.y == _to_y)
+            {
                 return item;
+            }
 
             // 주변 노드 탐색.
             for(int i = -1; i <= 1; ++i)
@@ -79,7 +87,6 @@ public static partial class PathAlgorithm
                     var y         = item.y + i;
                     var x         = item.x + k;
                     var new_item  = new Node(x, y, _to_x, _to_y, item);
-
                     
 
                     // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
@@ -92,11 +99,8 @@ public static partial class PathAlgorithm
                     if (close_list.Contains(new_item))
                         continue;
 
-                    // 이동 Cost 계산.
-                    var move_cost = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
-
-                    // 충돌 지점은 거른다.
-                    if (move_cost <= 0)
+                    // 이동 가능한 지 체크.
+                    if (!Verify_Moveable(_terrain_map, _path_owner, x, y, _is_goal:false))
                         continue;
                     
 
@@ -119,6 +123,23 @@ public static partial class PathAlgorithm
         return null;
     }
 
+
+    static bool Verify_Moveable(TerrainMap _terrain_map, IPathOwner _path_owner, int _x, int _y, bool _is_goal)
+    {
+        if (_terrain_map == null || _path_owner == null)
+            return false;
+  
+        // ZOC에 막히는지 체크합니다.
+        if (_terrain_map.ZOC.IsBlockedZOC(_x, _y, (_is_goal) ? 0 : _path_owner.PathZOCFaction))
+            return false;
+
+        // 이동 Cost 계산.
+        var move_cost = Terrain_Attribute.Calculate_MoveCost(_path_owner.PathAttribute, _terrain_map.Attribute.GetAttribute(_x, _y));
+        if (move_cost <= 0)
+            return false;
+
+        return true;      
+    }
 
 
 }

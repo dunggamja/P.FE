@@ -5,36 +5,13 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 
-// public class TerrainCollision
-// {
-//     int     m_width;
-//     int     m_height;
-//     bool[,] m_collision;
-
-//     public TerrainCollision(int _width, int _height)
-//     {
-//         m_width     = _width;
-//         m_height    = _height;
-
-//         m_collision = new bool[_width, _height];
-//     }
-
-//     public bool IsCollision(int _x, int _y)
-//     {
-//         if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
-//             return true;
-
-//         return m_collision[_x, _y];
-//     }
-// }
-
-public partial class TerrainAttribute
+public abstract class Terrain
 {
     int    m_width;
     int    m_height;
     int[,] m_attribute;
 
-    public TerrainAttribute(int _width, int _height)
+    protected Terrain(int _width, int _height)
     {
         m_width     = _width;
         m_height    = _height;
@@ -47,19 +24,19 @@ public partial class TerrainAttribute
         return m_attribute[_x, _y];
     }
 
-    public bool HasAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    protected bool HasAttribute(int _x, int _y, int _attribute_type)
     {
-        return (m_attribute[_x, _y] & (1 << (int)_attribute_type)) != 0;
+        return (m_attribute[_x, _y] & (1 << _attribute_type)) != 0;
     }
 
-    public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    protected void SetAttribute(int _x, int _y, int _attribute_type)
     {
-        m_attribute[_x, _y] |= (1 << (int)_attribute_type);
+        m_attribute[_x, _y] |= (1 << _attribute_type);
     }
 
-    public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    protected void RemoveAttribute(int _x, int _y, int _attribute_type)
     {
-        m_attribute[_x, _y] &= ~(1 << (int)_attribute_type);
+        m_attribute[_x, _y] &= ~(1 << _attribute_type);
     }
 
     public void OverwriteAttribute(int _x, int _y, int _attribute)
@@ -77,6 +54,7 @@ public partial class TerrainAttribute
         Array.Clear(m_attribute, 0, m_attribute.Length);
     }
 }
+
 
 public struct TerrainBlock
 {
@@ -146,13 +124,35 @@ public class TerrainBlockManager
         return (block_x, block_y);
     }
 
-    public Int64 FindEntity(int _x, int _y)
+    public Int64 FindEntityID(int _x, int _y)
     {
         (var block_x, var block_y) = FindBlockIndex(_x, _y);
         if (block_x < 0 || block_y < 0)
             return 0;
 
         return m_blocks[block_x, block_y].FindEntity(_x, _y);
+    }
+
+    public void RefreshEntity(Int64 _entity_id, int _from_x, int _from_y, int _to_x, int _to_y)
+    {
+        (var block_from_x, var block_from_y) = FindBlockIndex(_from_x, _from_y);
+        (var block_to_x,   var block_to_y)   = FindBlockIndex(_to_x, _to_y);
+
+        // 블록이 변경되었으면 이전 블록에서 제거.
+        if (block_from_x != block_to_x && block_from_y != block_to_y)
+        {
+            if (0 <= block_from_x && 0 <= block_from_y)
+            {
+                m_blocks[block_from_x, block_from_y].RemoveEntity(_entity_id);
+            }
+        }
+
+        
+        // 블록 위치 갱신.
+        if (0 <= block_to_x && 0 <= block_to_y)
+        {
+            m_blocks[block_to_x, block_to_y].SetEntity(_entity_id, _to_x, _to_y);
+        }
     }
 
 }
@@ -165,7 +165,8 @@ namespace Battle
         public int Height { get; private set; }
 
         // public TerrainCollision    Collision    { get; private set; }
-        public TerrainAttribute    Attribute    { get; private set; }
+        public Terrain_ZOC         ZOC          { get; private set; }
+        public Terrain_Attribute   Attribute    { get; private set; }
         public TerrainBlockManager BlockManager { get; private set; }
 
         public void Initialize(int _width, int _height)
@@ -174,11 +175,14 @@ namespace Battle
             Height       = _height;
 
             // Collision    = new TerrainCollision(_width, _height);
-            Attribute    = new TerrainAttribute(_width, _height);
+            ZOC          = new Terrain_ZOC(_width, _height);
+            Attribute    = new Terrain_Attribute(_width, _height);
             BlockManager = new TerrainBlockManager(_width, _height, 16);
         }
 
         // TODO: SAVE/LOAD
+
+
 
     }
 

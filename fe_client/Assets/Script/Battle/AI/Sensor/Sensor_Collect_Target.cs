@@ -37,9 +37,11 @@ namespace Battle
 
             };
 
-            public  Int64   TargetID { get; private set; } = 0;
-            public  Int64   WeaponID { get; private set; } = 0;
-            private float[] score     = new float[(int)EnumScoreType.MAX] ;
+            public  Int64          TargetID { get; private set; } = 0;
+            public  Int64          WeaponID { get; private set; } = 0;
+            public  (int x, int y) Position { get; private set; } = (0, 0);
+
+            private float[]        score = new float[(int)EnumScoreType.MAX] ;
 
             public ScoreResult Setup(Int64 _entity_id, Int64 _weapon_id)
             {
@@ -300,7 +302,7 @@ namespace Battle
                         close_list_weapon.Add((x, y));
 
                         // 타겟 목록에 추가.
-                        var entity_id = _terrain_map.BlockManager.FindEntity(x, y);
+                        var entity_id = _terrain_map.BlockManager.FindEntityID(x, y);
                         if (entity_id > 0)
                         {
                             list_target.Add(entity_id);
@@ -318,6 +320,12 @@ namespace Battle
                         var y = item.y + i;
                         var x = item.x + k;
 
+                        // 이미 체크하였음.
+                        if (close_list_move.Contains((x, y)))
+                        {
+                            continue;
+                        }
+
                         // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
                         if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
                         {
@@ -325,7 +333,7 @@ namespace Battle
                         }
                         
                         // 이동 불가능 지역은 거른다.
-                        var move_cost  = TerrainAttribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
+                        var move_cost  = Terrain_Attribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
                         if (move_cost <= 0)
                         {
                             continue;
@@ -334,12 +342,6 @@ namespace Battle
                         // 이동 범위 초과.
                         var total_cost = item.move_cost + move_cost;
                         if (total_cost > _move_distance)
-                        {
-                            continue;
-                        }
-
-                        // 이미 체크하였음.
-                        if (close_list_move.Contains((x, y)))
                         {
                             continue;
                         }

@@ -93,17 +93,18 @@ public interface ISensor
     void Update(IOwner _owner);
 }
 
-public interface IPathNodeManager
-{
-    PathNode Peek();
-    void     Update();
-}
+// public interface IPathNodeManager
+// {
+//     PathNode Peek();
+//     void     Update();
+// }
 
 public interface IPathOwner
 {
-    IPathNodeManager PathNodeManager { get; }
+    PathNodeManager  PathNodeManager { get; }
     PathVehicle      PathVehicle     { get; }
     int              PathAttribute   { get; }
+    int              PathZOCFaction  { get; }
 }
 
 // public interface IItem

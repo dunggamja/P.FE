@@ -10,12 +10,12 @@ namespace Battle
     /// </summary>
     public abstract class Command
     {
-        public Int64     UnitID { get; private set; }
-        public EnumState State  { get; private set; }
+        public Int64     OwnerID { get; private set; }
+        public EnumState State   { get; private set; }
 
-        protected Command(Int64 _unit_id)
+        protected Command(Int64 _owner_id)
         {
-            UnitID = _unit_id;
+            OwnerID = _owner_id;
         }
 
 

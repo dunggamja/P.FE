@@ -12,7 +12,7 @@ namespace Battle
         // List<(int x, int y)>  m_path_node       = new List<(int x, int y)>();
         // int                   m_path_node_index = 0;
 
-        public Command_Move(Int64 _unit_id) : base(_unit_id)
+        public Command_Move(Int64 _owner_id) : base(_owner_id)
         {
             
         }
@@ -20,7 +20,7 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            var unit_object = EntityManager.Instance.GetEntity(UnitID);
+            var unit_object = EntityManager.Instance.GetEntity(OwnerID);
             if (unit_object == null)
                 return;
 
@@ -30,7 +30,7 @@ namespace Battle
 
         protected override bool OnUpdate()
         {
-            var unit_object = EntityManager.Instance.GetEntity(UnitID);
+            var unit_object = EntityManager.Instance.GetEntity(OwnerID);
             if (unit_object == null)
                 return true;
 

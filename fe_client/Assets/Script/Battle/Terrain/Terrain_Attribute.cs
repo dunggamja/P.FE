@@ -3,8 +3,29 @@ using System.Collections.Generic;
 using Battle;
 using UnityEngine;
 
-public partial class TerrainAttribute
+
+public class Terrain_Attribute : Terrain
 {
+    public Terrain_Attribute(int _width, int _height)
+    : base(_width, _height)
+    {
+    }
+
+    public bool HasAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    {
+        return HasAttribute(_x, _y, (int)_attribute_type);
+    }
+
+    public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    {
+        SetAttribute(_x, _y, (int)_attribute_type);
+    }
+
+    public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    {
+        RemoveAttribute(_x, _y, (int)_attribute_type);
+    }
+
     public static int Calculate_MoveCost(int _path_owner_attribute, int _terrain_attribute)
     {
         // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯?

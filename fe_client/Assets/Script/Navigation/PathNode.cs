@@ -70,28 +70,26 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 }
 
 
-public class PathNodeManager : IPathNodeManager
+public class PathNodeManager //: IPathNodeManager
 {
     Queue<PathNode> m_list_path_node = new Queue<PathNode>();
     PathNode        m_position_prev  = new PathNode();
     PathNode        m_position_cur   = new PathNode();
-    TerrainMap      m_terrain        = null;
 
+    public TerrainMap TerrainMap => TerrainMapManager.Instance.TerrainMap;
+    
     const float     m_arrive_radius  = 0.05f;
     // const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
 
 
 
-    public void Initialize(Vector3 _position, float _rotation_y)
+    public void Setup(Vector3 _position, float _rotation_y)
     {
         m_position_prev.SetPosition(_position);
         m_position_cur.SetPosition(_position); 
         
         m_position_prev.SetRotation(_rotation_y);
         m_position_cur.SetRotation(_rotation_y);     
-
-        // TODO: 임시... 코드인듯...
-        m_terrain = TerrainMapManager.Instance.TerrainMap;   
     }
 
 
@@ -179,17 +177,14 @@ public class PathNodeManager : IPathNodeManager
     }
 
 
-    public bool CreatePath(Vector3 _dest_position, float _dest_angle_degree)
+    public bool CreatePath(Vector3 _dest_position, float _dest_angle_degree, IPathOwner _path_owner)
     {
-        if (m_terrain == null)
+        if (TerrainMap == null)
             return false;
 
 
-        // todo:... move_attribute 할당해보자.
-        var move_attribute = 0;
-
         var from_position  = m_position_cur.GetPosition();
-        var list_path_node =  PathAlgorithm.PathFind(m_terrain, move_attribute, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
         
         m_list_path_node.Clear();
         m_list_path_node = new Queue<PathNode>(list_path_node);

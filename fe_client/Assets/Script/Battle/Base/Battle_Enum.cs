@@ -133,8 +133,8 @@ namespace Battle
         Water,     // 물 지형
         WaterSide, // 물가,
         Ground,    // 땅        
-        Forest,   // 숲 지형        
-        Slope,    // (산)비탈, 경사면
+        Forest,    // 숲 지형        
+        Slope,     // (산)비탈, 경사면
 
         MAX = 32,
         // bitflag.. 32 bit or 64 bit ?
@@ -146,9 +146,6 @@ namespace Battle
       Flyer, // 비행 이동 가능
       Water, // 물 이동 가능
       Slope, // (산) 비탈, 경사면 이동가능
-
-
-
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?

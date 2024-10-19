@@ -17,14 +17,17 @@ namespace Battle
         public ISkill               Skill           { get; } 
         public BattleStatusManager  StatusManager   { get; } 
         public Inventory            Inventory       { get; }
-        public IPathNodeManager     PathNodeManager { get; } 
+        public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
         public int                  PathAttribute   { get; private set; }
+        public int                  PathZOCFaction  => GetFaction();
         public SensorManager        SensorManager   { get; private set; }
         public CommandManager       CommandManager  { get; private set; }    
 
 
         public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+
+        public Vector3 CellPosition() => new Vector3(Cell.x, 0f, Cell.y);
 
 
         protected Entity(Int64 _id)
@@ -56,8 +59,8 @@ namespace Battle
             Inventory.Initialize(this);
             SensorManager.Initialize(this);
             CommandManager.Initialize(this);
-
-
+            PathNodeManager.Setup(CellPosition(), 0f);
+            
             EventDispatchManager.Instance.AttachReceiver(this);
         }
 

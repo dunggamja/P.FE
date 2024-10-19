@@ -55,6 +55,7 @@ namespace Battle
             if (turn_system == null)
                 return false;
 
+            // 현재 행동 진영.
             var faction    = turn_system.Faction_Cur;
 
 
@@ -87,6 +88,7 @@ namespace Battle
             else if(list_commandable.TryGetValue(EnumCommandProgressState.None, out var list_none))
             {
                 // sensor 갱신.
+                // TODO: Sensor도 상황별로 나눠놓는게 좋겠군.
                 list_none.ForEach(e => e.SensorManager.Update());
 
                 // 
