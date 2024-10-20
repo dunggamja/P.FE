@@ -28,7 +28,7 @@ public class Terrain_Attribute : Terrain
 
     public static int Calculate_MoveCost(int _path_owner_attribute, int _terrain_attribute)
     {
-        // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯?
+        // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯? ScriptableObject...
         // move_cost == 0, 이동 불가
 
         if ((_terrain_attribute & (int)EnumTerrainAttribute.Invalid) != 0)

@@ -15,12 +15,16 @@ public class PathVehicle_Basic : PathVehicle
         var target_position   = path_node.GetPosition();
         // var target_rotation   = path_node.GetRotation();
 
-        // ?씠?룞?냽?룄 & ?쉶?쟾?쓣 ?뀑?똿?빀?땲?떎.
-        var steering_velocity = (path_node.IsValidPosition()) ? target_position - m_position : Vector3.zero;
-        // var steering_torque   = (path_node.IsValidRotation()) ? target_rotation * Quaternion.Inverse(m_rotation) : Quaternion.identity;
 
-        // 湲곗〈?뿉 ?엳?뜕 ?냽?룄 媛믪?? ?젣嫄고빀?땲?떎.
-        steering_velocity -= m_velocity;
+        var steering_velocity = Vector3.zero;
+
+        if(path_node.IsValidPosition())        
+        {
+            steering_velocity = target_position - m_position;
+            steering_velocity = steering_velocity.normalized * m_max_speed;
+        }
+
+        // var steering_torque   = (path_node.IsValidRotation()) ? target_rotation * Quaternion.Inverse(m_rotation) : Quaternion.identity;
         // steering_torque   *= Quaternion.Inverse(m_torque);
 
         // 회전은 일단 신경쓰지 않는다.

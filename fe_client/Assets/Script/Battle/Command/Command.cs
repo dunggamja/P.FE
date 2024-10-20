@@ -18,6 +18,8 @@ namespace Battle
             OwnerID = _owner_id;
         }
 
+        public Entity Owner => EntityManager.Instance.GetEntity(OwnerID);
+
 
         protected abstract void OnEnter();
         protected abstract bool OnUpdate();

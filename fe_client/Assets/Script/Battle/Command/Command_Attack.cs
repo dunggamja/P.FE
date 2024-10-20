@@ -36,17 +36,11 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            var owner_entity  = EntityManager.Instance.GetEntity(OwnerID);
-            var target_entity = Target.MainTargetID;
-
-            
+            // 타겟을 때릴 수 있는 위치를 검색해봅세.
         }
 
         protected override bool OnUpdate()
         {
-            var owner_entity  = EntityManager.Instance.GetEntity(OwnerID);
-            var target_entity = Target.MainTargetID;
-
             
             
 
@@ -54,7 +48,10 @@ namespace Battle
         }
         protected override void OnExit()
         {
-            
+            if (Owner != null)
+            {
+                Owner.SetCommandFlag(EnumCommandFlag.Action, true);
+            }
         }
 
     }

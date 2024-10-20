@@ -7,54 +7,52 @@ namespace Battle
 {
    public class Command_Move : Command
     {
-        (int x, int y)        m_cell_from       = (0, 0);
+        
         (int x, int y)        m_cell_to         = (0, 0); 
-        // List<(int x, int y)>  m_path_node       = new List<(int x, int y)>();
-        // int                   m_path_node_index = 0;
+        List<PathNode>  m_path_node       = new ();
+        int             m_path_node_index = 0;
 
-        public Command_Move(Int64 _owner_id) : base(_owner_id)
+        public Command_Move(Int64 _owner_id, (int x, int y) _cell_to) : base(_owner_id)
         {
-            
+            m_cell_to = _cell_to;
         }
         
 
         protected override void OnEnter()
         {
-            var unit_object = EntityManager.Instance.GetEntity(OwnerID);
-            if (unit_object == null)
+            if (Owner == null)
                 return;
 
-            // 시작 위치.
-            m_cell_from = unit_object.Cell;
+            // 경로 생성. 길찾기
+            Owner.PathNodeManager.CreatePath(
+                Owner.Cell.CellToPosition(),
+                m_cell_to.CellToPosition(),
+                Owner);
+
         }
 
         protected override bool OnUpdate()
         {
-            var unit_object = EntityManager.Instance.GetEntity(OwnerID);
-            if (unit_object == null)
+            if (Owner == null)
                 return true;
 
-            // for(; m_path_node_index < m_path_node.Count; ++m_path_node_index)
-            // {
-            //     var path_node = m_path_node[m_path_node_index];
-            //     var diff_x    = Math.Clamp(path_node.x - unit_object.Cell.x, -1, 1);
-            //     var diff_y    = Math.Clamp(path_node.y - unit_object.Cell.y, -1, 1);
+            // 유닛 이동 처리.
+            Owner.UpdatePathBehavior();
 
-            //     // TODO: ?씪?떒 Update ?븳踰덉뿉 1移몄뵫 ???吏곸씠寃? ?빐?몦?떎. ?굹以묒뿉 ?닔?젙.
-            //     // if (diff_x != 0)
-                    
-
-            //     //if (diff_x != 0)
-            //     //    unit_object
-
-            // }
-
-            return true;
+            // 이동이 완료되었으면 완료처리.
+            return Owner.PathNodeManager.IsEmpty();
         }
 
         protected override void OnExit()
         {
-            
+            if (Owner != null)
+            {
+                // 좌표 이동 처리.
+                Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, true);
+
+                // 행동 플래그 
+                Owner.SetCommandFlag(EnumCommandFlag.Move, true);
+            }
         }
 
     } 

@@ -27,6 +27,9 @@ public class Terrain_ZOC
     {
         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
             return;
+        
+        if (_faction == 0)
+            return;
 
         if (!m_faction_zoc.TryGetValue(_faction, out var data))
         {
@@ -42,6 +45,9 @@ public class Terrain_ZOC
         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
             return;
 
+        if (_faction == 0)
+            return;
+
         if (m_faction_zoc.TryGetValue(_faction, out var data))
         {
             if (data[_x, _y] > 0)
@@ -54,8 +60,10 @@ public class Terrain_ZOC
         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
             return false;
 
+
         foreach((var faction, var data) in m_faction_zoc)
         {
+            // 같은 팩션의 zoc는 무시합니다.
             if (_faction_ignore.Contains(faction))
                 continue;
 

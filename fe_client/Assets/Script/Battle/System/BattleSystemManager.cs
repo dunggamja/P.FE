@@ -32,8 +32,11 @@ namespace Battle
 
             // 턴 진행
             m_update_system.Add(new BattleSystem_Turn());       
-            // 유닛 커맨드 처리.
+            // 명령 생성
             m_update_system.Add(new BattleSystem_Command_Dispatch());    
+            // 명령 처리
+            m_update_system.Add(new BattleSystem_Command_Progress());
+
 
 
             m_update_system.ForEach(e => e.Init());

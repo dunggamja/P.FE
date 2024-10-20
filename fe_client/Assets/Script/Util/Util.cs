@@ -30,4 +30,7 @@ public static class Util
 
         return result;
     }
+
+
+    public static Vector3 CellToPosition(this (int x, int y) _cell) => new Vector3(_cell.x, 0f, _cell.y);
 }

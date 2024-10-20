@@ -69,6 +69,11 @@ namespace Battle
                 score[index] = Mathf.Clamp01(_score_value);                
             }
 
+            public void SetPosition(int _x, int _y)
+            {
+                Position = (_x, _y);
+            }
+
 
             // public float GetScore(EnumScoreType _score_type)
             // {
@@ -130,7 +135,7 @@ namespace Battle
                 // Target Collect
                 var list_target_id = CollectTarget(
                     TerrainMapManager.Instance.TerrainMap,
-                    owner_entity.PathAttribute,
+                    owner_entity,
                     owner_entity.Cell.x,
                     owner_entity.Cell.y,
                     move_distance,
@@ -220,6 +225,8 @@ namespace Battle
             // 공격자/타겟 HP
             var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
             var target_hp = Math.Max(1, _target.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
+
+            current_score.SetPosition()
             
             // 데미지 점수 셋팅. 
             current_score.SetScore(ScoreResult.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
@@ -240,7 +247,7 @@ namespace Battle
 
         static List<Int64> CollectTarget(
             TerrainMap _terrain_map, 
-            int        _path_owner_attribute, 
+            IPathOwner _path_owner, 
             int        _x, 
             int        _y, 
             int        _move_distance, 
@@ -248,7 +255,7 @@ namespace Battle
             int        _weapon_range_max)
         {
 
-            if (_terrain_map == null)
+            if (_terrain_map == null || _path_owner == null)
                 return new();
 
             var list_target       = new List<Int64>();
@@ -269,6 +276,10 @@ namespace Battle
                 // open/close list 셋팅
                 open_list_move.Remove(item);
                 close_list_move.Add((item.x, item.y));
+
+                // ZOC에 막히는지 체크합니다. (완전히 비어있어야 함.)
+                if (_terrain_map.ZOC.IsBlockedZOC(item.x, item.y))
+                    continue;
 
 
                 // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
@@ -331,9 +342,13 @@ namespace Battle
                         {
                             continue;
                         }
+
+                        // ZOC에 막히는지 체크합니다. 
+                        if (_terrain_map.ZOC.IsBlockedZOC(x, y, _path_owner.PathZOCFaction))
+                            continue;
                         
                         // 이동 불가능 지역은 거른다.
-                        var move_cost  = Terrain_Attribute.Calculate_MoveCost(_path_owner_attribute, _terrain_map.Attribute.GetAttribute(x, y));
+                        var move_cost  = Terrain_Attribute.Calculate_MoveCost(_path_owner.PathAttribute, _terrain_map.Attribute.GetAttribute(x, y));
                         if (move_cost <= 0)
                         {
                             continue;

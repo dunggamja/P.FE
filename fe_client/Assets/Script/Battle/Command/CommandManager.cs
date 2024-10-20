@@ -5,19 +5,15 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class CommandManager
+    public class CommandManager : Singleton<CommandManager>
     {
         // SRPG는 턴제라서... 명령이 들어오면 모두 처리한다고 보면 될 거 같음.
-        Int64          m_owner_id      = 0;
+        // Int64          m_owner_id      = 0;
         Queue<Command> m_command_queue = new (10);
 
-        public bool Initialize(IOwner _owner)
+        protected override void Init()
         {
-            if (_owner == null)
-                return false;
-
-            m_owner_id = _owner.ID;
-            return true;
+            base.Init();
         }
 
         public bool PushCommand(Command _command)
@@ -32,6 +28,14 @@ namespace Battle
                 return null;
 
             return m_command_queue.Dequeue();
+        }
+
+        public Command PeekCommand()
+        {
+            if (m_command_queue.Count == 0)
+                return null;
+
+            return m_command_queue.Peek();
         }
     }
 }

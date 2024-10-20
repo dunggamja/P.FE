@@ -29,11 +29,11 @@ public static partial class PathAlgorithm
         
         public float TotalCost => cost + heuristic;
 
-        public Node(int _x, int _y, int _to_x, int _to_y, Node _parent)
+        public Node(int _x, int _y, int _to_x, int _to_y, int _cost, Node _parent)
         {
             x         = _x;
             y         = _y;
-            cost      = (_parent != null) ? _parent.cost + Distance(_parent.x, _parent.y, _x, _y) : 0;
+            cost      = (_parent != null) ? _parent.cost + _cost : 0;
             heuristic = Distance(_x, _y, _to_x, _to_y);
             parent    = _parent;            
         }

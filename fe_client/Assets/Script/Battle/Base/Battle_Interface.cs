@@ -68,8 +68,8 @@ namespace Battle
     /// </summary>
     public interface ICommand
     {
-        EnumCommandType  GetCommandType();
-        void             SetCommandType(EnumCommandType _command_type);
+        EnumCommandOwner  GetCommandOwner();
+        void              SetCommandOwner(EnumCommandOwner _command_owner);
 
         // bool             HasCommandFlag(); 
         // void             SetCommandEnable(bool _enable); 

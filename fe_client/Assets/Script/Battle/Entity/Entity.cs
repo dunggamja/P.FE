@@ -22,12 +22,11 @@ namespace Battle
         public int                  PathAttribute   { get; private set; }
         public int                  PathZOCFaction  => GetFaction();
         public SensorManager        SensorManager   { get; private set; }
-        public CommandManager       CommandManager  { get; private set; }    
+        // public CommandManager       CommandManager  { get; private set; }    
 
 
-        public bool IsDead => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+        public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
 
-        public Vector3 CellPosition() => new Vector3(Cell.x, 0f, Cell.y);
 
 
         protected Entity(Int64 _id)
@@ -43,7 +42,7 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
             SensorManager   = new SensorManager();
-            CommandManager  = new CommandManager();
+            // CommandManager  = new CommandManager();
         }
 
         public static Entity Create(Int64 _id)
@@ -58,8 +57,9 @@ namespace Battle
         {
             Inventory.Initialize(this);
             SensorManager.Initialize(this);
-            CommandManager.Initialize(this);
-            PathNodeManager.Setup(CellPosition(), 0f);
+            // CommandManager.Initialize(this);
+            // PathNodeManager.Setup(CellPosition);
+            PathVehicle.Setup(Cell.CellToPosition());
             
             EventDispatchManager.Instance.AttachReceiver(this);
         }
@@ -71,11 +71,6 @@ namespace Battle
 
         public void Update(float _delta_time)
         {
-            if (PathNodeManager != null)
-                PathNodeManager.Update();
-
-            if (PathVehicle != null)
-                PathVehicle.Update(this, _delta_time);
         }
 
 
@@ -104,64 +99,41 @@ namespace Battle
             BlackBoard.SetValue(EnumBlackBoard.Faction, _faction);
         }
 
-        public EnumCommandType GetCommandType()
-        {
-            return (EnumCommandType)BlackBoard.GetValue(EnumBlackBoard.CommandType);
-        }
-
-        public void SetCommandType(EnumCommandType _command_type)
-        {
-            BlackBoard.SetValue(EnumBlackBoard.CommandType, (int)_command_type);
-        }
-
-        public bool HasCommandFlag(EnumCommandFlag _command_flag)
-        {
-            return BlackBoard.HasBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
-        }
-
-        public void SetCommandFlag(EnumCommandFlag _command_flag, bool _set_flag)
-        {
-            if (_set_flag) BlackBoard.SetBitFlag(EnumBlackBoard.CommandFlag,   (byte)_command_flag);
-            else           BlackBoard.ResetBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
-        }
-
-        public EnumCommandProgressState GetCommandProgressState(int _faction)
-        {
-            // 진영이 다르면 행동 불가능.
-            if (GetFaction() != _faction)
-                return EnumCommandProgressState.Invalid;
-
-            // 행동 완료 상태.
-            if (HasCommandFlag(EnumCommandFlag.Done))
-                return EnumCommandProgressState.Done;
-
-            // 그 외 값이 있으면 진행중인 행동이 있음.
-            if (BlackBoard.HasValue(EnumBlackBoard.CommandFlag))            
-                return EnumCommandProgressState.Progress;
-
-            // 대기 상태.
-            return EnumCommandProgressState.None;
-        }
-
-        public bool IsEnableCommandProgress(int _faction)
-        {
-            var progress_state = GetCommandProgressState(_faction);
-            if (progress_state == EnumCommandProgressState.None
-            ||  progress_state == EnumCommandProgressState.Progress)
-                return true;
-
-            return false;
-        }
-
-        
-
 
         public void OnReceiveEvent(IEventParam _param)
         {
             if (_param is SituationUpdatedEvent situation_updated)
             {
+                switch(situation_updated.Situation)
+                {
+                    case EnumSituationType.BattleSystem_Faction_Changed: OnReceiveEvent_Faction_Changed(situation_updated); break;
+                }
+
+
+                // situation 변경시 스킬 사용.
                 Skill.UseSkill(situation_updated.Situation, this);
+
+
             }
+        }
+
+
+        void OnReceiveEvent_Faction_Changed(SituationUpdatedEvent _param)
+        {
+            // _param.SystemParam as Battlesys
+            var system = BattleSystemManager.Instance.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+            if (system == null)
+                return;
+
+            // 턴이 변경되었을 때.
+            if (system.Turn_Prev != system.Turn_Cur)
+            {
+                // 행동 완료 처리 reset 
+                ResetCommandProgressState();
+            }
+            
+
+
         }
     }
 

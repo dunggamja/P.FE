@@ -118,7 +118,7 @@ namespace Battle
         {
             // 진영내의 유닛 중 행동을 하지 않은 유닛이 있는지 체크.
             // TODO: 일단 모든 Entity 순회... ㅠㅠ
-            var active_unit = EntityManager.Instance.Find(e => e.IsEnableCommandProgress(_current_faction));
+            var active_unit  = EntityManager.Instance.Find(e => e.IsEnableCommandProgress(_current_faction));
             if (active_unit != null)
                 return false;
 

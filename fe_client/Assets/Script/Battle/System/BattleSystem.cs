@@ -7,7 +7,7 @@ namespace Battle
 {
     public interface IBattleSystemParam : ISystemParam
     {
-
+        float DeltaTime { get; }
     }
 
     public abstract class BattleSystem : System<IBattleSystemParam>

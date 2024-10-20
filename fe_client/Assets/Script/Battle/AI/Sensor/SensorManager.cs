@@ -7,6 +7,9 @@ namespace Battle
 {
     public class SensorManager
     {
+        // TODO: sensor system에 대해서 정리 필요함...;;;;;
+        // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
+
         Int64 m_owner_id = 0;
 
 

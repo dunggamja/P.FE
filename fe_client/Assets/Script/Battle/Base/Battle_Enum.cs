@@ -104,7 +104,7 @@ namespace Battle
     {
         None         = 0,
 
-        CommandType,  // ¸í·É Å¸ÀÔ
+        CommandOwner,  // ¸í·É Å¸ÀÔ
         CommandFlag, // ¸í·É »óÅÂ (0 : ´ë±â, 1 : Çàµ¿ ¿Ï·á)
         Faction,      // Áø¿µ
 
@@ -155,7 +155,7 @@ namespace Battle
     /// <summary>
     /// 
     /// </summary>
-    public enum EnumCommandType
+    public enum EnumCommandOwner
     {
         None,   // ¸í·É ¾È ¹ŞÀ½.
         Player, // ÇÃ·¹ÀÌ¾î°¡ ¸í·É
@@ -178,17 +178,4 @@ namespace Battle
         Done,
         Invalid,
     }
-
-    // /// <summary>
-    // /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½
-    // /// </summary>
-    // public enum EnumCommandState
-    // {
-    //     None,
-    //     Enable,   // ?–‰?™?´ ê°??Š¥?•œ ?ƒ?ƒœ
-    //     Complete, // Çàµ¿ ¿Ï·á.
-    // }
-
-
-    
 }

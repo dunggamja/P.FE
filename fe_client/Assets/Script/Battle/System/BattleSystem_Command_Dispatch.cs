@@ -1,37 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SocialPlatforms.Impl;
 
 namespace Battle
 {
-    public partial class BattleSystem_Command_Dispatch : BattleSystem, IEventReceiver
+    public partial class BattleSystem_Command_Dispatch : BattleSystem//, IEventReceiver
     {
-        // 紐낅졊?쓣 泥섎━?빐蹂댁옄.
-        // public class CommandData
-        // {
-        //     public Int64     UnitID     { get; private set; }
-        //     public EnumState State      { get; private set; } 
-
-        //     public void Reset()
-        //     {
-        //         UnitID = 0;
-        //         State  = EnumState.None;
-        //     }
-        // }
-
-        // 泥섎━?븷 紐낅졊 ?뜲?씠?꽣. ?닚李⑥쟻?쑝濡? 泥섎━?븳?떎.
-        // Queue<CommandData> m_list_command;       
-
-
         public BattleSystem_Command_Dispatch() : base(EnumSystem.BattleSystem_Command_Dispatch)
         {
         }
-
-
 
         public override void Init()
         {
@@ -49,16 +27,13 @@ namespace Battle
         }
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            // TODO: 나중에 유저 입력 받는거 처리하고...
-            // 일단은 AI 명령 내리는 코드를 작성해봅세.
+            // turn 정보가 없으면 뭘 할수가 없음.
             var turn_system = BattleSystemManager.Instance.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
             if (turn_system == null)
-                return false;
+                return true;
 
             // 현재 행동 진영.
-            var faction    = turn_system.Faction_Cur;
-
-
+            var faction = turn_system.Faction_Cur;
 
             // 일단은 행동 가능한 유닛들을 모아봅니다.
             var list_commandable = new Dictionary<EnumCommandProgressState, List<Entity>>(2);
@@ -77,18 +52,23 @@ namespace Battle
                 }                    
             });
 
+            // TODO: 유저가 명령을 내려야 하는 경우에 대한 처리 필요.
+
 
 
             // TODO: 행동중인 유닛이 있다면 그것을 우선처리 해야함.
             if (list_commandable.TryGetValue(EnumCommandProgressState.Progress, out var list_progress))
             {
-                // TODO: 뭔가 행동할게 있을지 탐색해야 겠지?
+                // TODO: 뭔가 명령을 내려야 겠지...?
                 return true;
             }
             else if(list_commandable.TryGetValue(EnumCommandProgressState.None, out var list_none))
             {
+                // 
+
                 // sensor 갱신.
-                // TODO: Sensor도 상황별로 나눠놓는게 좋겠군.
+                // TODO: sensor system에 대해서 정리 필요함...;;;;;
+                // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
                 list_none.ForEach(e => e.SensorManager.Update());
 
                 // 
@@ -108,20 +88,18 @@ namespace Battle
                     }
                 }
 
-                // 명령을 내릴 유닛이 없음.
-                if (best_score.EntityID == 0)
-                    return true;
-                
-                var entity = EntityManager.Instance.GetEntity(best_score.EntityID);
-                if (entity == null)
-                    return true;
-
                 // 공격 명령 셋팅.
-                entity.CommandManager.PushCommand(new Command_Attack(
-                    entity.ID, 
-                    best_score.ScoreResult.TargetID, 
-                    best_score.ScoreResult.WeaponID));
-                
+                if (best_score.EntityID > 0)
+                {                    
+                    CommandManager.Instance.PushCommand(
+                        new Command_Attack
+                        (
+                            best_score.EntityID,
+                            best_score.ScoreResult.TargetID,
+                            best_score.ScoreResult.WeaponID
+                        )
+                    );
+                }
 
                 return true;
             }
@@ -137,10 +115,5 @@ namespace Battle
             
         }
 
-
-        public void OnReceiveEvent(IEventParam _param)
-        {
-           // EventReceiver를 굳이 무슨 이유로 추가했을까???
-        }
     }
 }

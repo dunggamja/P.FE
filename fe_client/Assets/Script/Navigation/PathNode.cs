@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
+using Unity.Profiling;
 using UnityEngine;
 
 
@@ -73,34 +74,23 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 public class PathNodeManager //: IPathNodeManager
 {
     Queue<PathNode> m_list_path_node = new Queue<PathNode>();
-    PathNode        m_position_prev  = new PathNode();
-    PathNode        m_position_cur   = new PathNode();
+    // PathNode        m_position_prev  = new PathNode();
+    // PathNode        m_position_cur   = new PathNode();
 
     public TerrainMap TerrainMap => TerrainMapManager.Instance.TerrainMap;
     
     const float     m_arrive_radius  = 0.05f;
     // const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
 
+    public bool IsEmpty() => m_list_path_node.Count == 0;
 
-
-    public void Setup(Vector3 _position, float _rotation_y)
+    public void Update(IPathOwner _owner)
     {
-        m_position_prev.SetPosition(_position);
-        m_position_cur.SetPosition(_position); 
-        
-        m_position_prev.SetRotation(_rotation_y);
-        m_position_cur.SetRotation(_rotation_y);     
-    }
-
-
-    public void Update()
-    {
-        // 
-        if (m_list_path_node.Count == 0)
+        if (_owner == null)
             return;
 
         // 
-        if (m_position_prev.Equals(m_position_cur))
+        if (m_list_path_node.Count == 0)
             return;
 
         while(m_list_path_node.Count > 0)
@@ -109,7 +99,7 @@ public class PathNodeManager //: IPathNodeManager
 
             // && Check_Arrive_Rotation(node, m_position_prev, m_position_cur)
 
-            if (Check_Arrive_Position(node, m_position_prev, m_position_cur))             
+            if (Check_Arrive_Position(node, _owner))             
             {
                 // 
                 m_list_path_node.Dequeue();
@@ -124,15 +114,19 @@ public class PathNodeManager //: IPathNodeManager
 
     }
 
-    bool Check_Arrive_Position(PathNode _target, PathNode _prev, PathNode _current)
+    bool Check_Arrive_Position(PathNode _target, IPathOwner _owner)
     {
         // 타겟 위치가 이상.
         if (!_target.IsValidPosition())
             return true;
 
+
+        var position_prev = _owner.PathVehicle.PositionPrev;
+        var position      = _owner.PathVehicle.Position;
+
         
-        var position_from_prev = _target.GetPosition() - _prev.GetPosition();        
-        var target_from_cur    = _target.GetPosition() - _current.GetPosition();
+        var position_from_prev = _target.GetPosition() - position_prev;        
+        var target_from_cur    = _target.GetPosition() - position;
 
         // 도착 거리 체크.
         if (target_from_cur.magnitude <= m_arrive_radius)
@@ -177,14 +171,12 @@ public class PathNodeManager //: IPathNodeManager
     }
 
 
-    public bool CreatePath(Vector3 _dest_position, float _dest_angle_degree, IPathOwner _path_owner)
+    public bool CreatePath(Vector3 _from_position, Vector3 _dest_position, IPathOwner _path_owner)
     {
         if (TerrainMap == null)
             return false;
 
-
-        var from_position  = m_position_cur.GetPosition();
-        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)from_position.x, (int)from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);
         
         m_list_path_node.Clear();
         m_list_path_node = new Queue<PathNode>(list_path_node);
