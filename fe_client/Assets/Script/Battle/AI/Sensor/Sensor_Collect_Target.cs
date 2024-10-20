@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
 namespace Battle
 {
-    public class Sensor_Target_Score : ISensor
+    public class Sensor_DamageScore : ISensor
     {
         public class ScoreResult
         {
@@ -69,7 +70,7 @@ namespace Battle
                 score[index] = Mathf.Clamp01(_score_value);                
             }
 
-            public void SetPosition(int _x, int _y)
+            public void SetAttackPosition(int _x, int _y)
             {
                 Position = (_x, _y);
             }
@@ -143,14 +144,22 @@ namespace Battle
                     range_min);
 
 
-                foreach(var target_id in list_target_id)
+                foreach((var target_id, var attack_position_x, var attack_position_y) in list_target_id)
                 {
                     var target_entity = EntityManager.Instance.GetEntity(target_id);
                     if (target_entity == null)
                         continue;          
 
+
+                    // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.// 혼돈같은 상태이상도 있을수 있고... NPC인데 아군도 있을 수 있고...
+                    if (target_entity.GetFaction() == owner_entity.GetFaction())
+                        continue;
+
                     // 점수 계산.
                     var current_score = Score_Calculate(owner_entity, target_entity);
+
+                    // 위치 셋팅.
+                    current_score.SetAttackPosition(attack_position_x, attack_position_y);
 
                     // 결과 값 변경.
                     if (BestScore.Calculate_Total_Score() <= current_score.Calculate_Total_Score())
@@ -226,7 +235,6 @@ namespace Battle
             var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
             var target_hp = Math.Max(1, _target.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
 
-            current_score.SetPosition()
             
             // 데미지 점수 셋팅. 
             current_score.SetScore(ScoreResult.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
@@ -245,7 +253,8 @@ namespace Battle
         }
 
 
-        static List<Int64> CollectTarget(
+        static List<(Int64 target_id, int attack_position_x, int atatck_position_y)> 
+            CollectTarget(
             TerrainMap _terrain_map, 
             IPathOwner _path_owner, 
             int        _x, 
@@ -258,118 +267,53 @@ namespace Battle
             if (_terrain_map == null || _path_owner == null)
                 return new();
 
-            var list_target       = new List<Int64>();
+            var list_attack       = new List<(Int64 target_id, int attack_position_x, int atatck_position_y)>();
+            var close_list_attack = new List<(int x, int y)>(10);
 
-            var open_list_move    = new List<(int x, int y, int move_cost)>(10);
-            var close_list_move   = new List<(int x, int y)>(10);
-            var close_list_weapon = new List<(int x, int y)>(10);
-            
 
-            // 시작 지점.
-            open_list_move.Add((_x, _y, 0));
-
-            while(open_list_move.Count > 0)
+            PathAlgorithm.FloodFill(_terrain_map, _path_owner, (_x, _y), _move_distance,
+            ((int x, int y) _cell) =>
             {
-                // cost가 가장 적은 아이템을 가져옵니다.            
-                var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
+                // 공격위치가 완전히 비어있는지 체크합니다. 
+                if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y))
+                    return;
 
-                // open/close list 셋팅
-                open_list_move.Remove(item);
-                close_list_move.Add((item.x, item.y));
-
-                // ZOC에 막히는지 체크합니다. (완전히 비어있어야 함.)
-                if (_terrain_map.ZOC.IsBlockedZOC(item.x, item.y))
-                    continue;
-
-
+                
                 // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
                 for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
                 {
                     for(int k = -_weapon_range_max; k <= _weapon_range_max; ++k)
                     {
-                        var y = item.y + i;
-                        var x = item.x + k;
+                        var x = _cell.x + i;
+                        var y = _cell.y + k;
 
                         // 무기 사거리 체크
-                        var distance = PathAlgorithm.Distance(item.x, item.y, x, y);
-                        if (distance <= 0)
-                        {
-                            // 위치가 겹치는 경우는 없다.
-                            continue;
-                        }
-
+                        var distance = PathAlgorithm.Distance(_cell.x, _cell.y, x, y);
                         if (distance < _weapon_range_min || _weapon_range_max < distance)
                         {
                             continue;
                         }
 
-                        // 이미 검사한 위치.
-                        if (close_list_weapon.Contains((x, y)))
+                        // 이미 검사한 위치를 매번 검사하면 부하가 있을 것 같아서... 예외처리.
+                        if (close_list_attack.Contains((x, y)))
                         {
                             continue;
                         }
 
                         // 검사 기록에 추가.
-                        close_list_weapon.Add((x, y));
-
-                        // 타겟 목록에 추가.
+                        close_list_attack.Add((x, y));
+                        
+                        // 타겟 추가. (대상 id, 공격 위치 x, 공격 위치 y)
                         var entity_id = _terrain_map.BlockManager.FindEntityID(x, y);
                         if (entity_id > 0)
                         {
-                            list_target.Add(entity_id);
+                            list_attack.Add((entity_id, _cell.x, _cell.y));
                         }
                     }
                 }
+            });
 
-
-
-                // 이동 가능 지역 탐색. (FloodFill)
-                for(int i = -1; i <= 1; ++i)
-                {
-                    for(int k = -1; k <= 1; ++k)
-                    {
-                        var y = item.y + i;
-                        var x = item.x + k;
-
-                        // 이미 체크하였음.
-                        if (close_list_move.Contains((x, y)))
-                        {
-                            continue;
-                        }
-
-                        // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
-                        if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
-                        {
-                            continue;
-                        }
-
-                        // ZOC에 막히는지 체크합니다. 
-                        if (_terrain_map.ZOC.IsBlockedZOC(x, y, _path_owner.PathZOCFaction))
-                            continue;
-                        
-                        // 이동 불가능 지역은 거른다.
-                        var move_cost  = Terrain_Attribute.Calculate_MoveCost(_path_owner.PathAttribute, _terrain_map.Attribute.GetAttribute(x, y));
-                        if (move_cost <= 0)
-                        {
-                            continue;
-                        }
-
-                        // 이동 범위 초과.
-                        var total_cost = item.move_cost + move_cost;
-                        if (total_cost > _move_distance)
-                        {
-                            continue;
-                        }
-
-                        // open_list 에 추가.
-                        open_list_move.Add((x, y, total_cost));
-                    }
-                }
-            }
-            
-            
-
-            return list_target;
+            return list_attack;
         }
 
     }    

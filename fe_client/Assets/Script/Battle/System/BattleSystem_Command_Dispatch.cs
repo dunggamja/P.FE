@@ -72,12 +72,12 @@ namespace Battle
                 list_none.ForEach(e => e.SensorManager.Update());
 
                 // 
-                var best_score = (EntityID:(Int64)0, ScoreResult:(Sensor_Target_Score.ScoreResult)new());
+                var best_score = (EntityID:(Int64)0, ScoreResult:(Sensor_DamageScore.ScoreResult)new());
 
                 // 가장 점수가 높은 행동을 할 수 있는 유닛을 1명 고릅시다.
                 foreach(var e in list_none)
                 {
-                    var sensor_score = e.SensorManager.GetSensor<Sensor_Target_Score>();
+                    var sensor_score = e.SensorManager.GetSensor<Sensor_DamageScore>();
                     if (sensor_score == null)
                         continue;
 
@@ -96,7 +96,8 @@ namespace Battle
                         (
                             best_score.EntityID,
                             best_score.ScoreResult.TargetID,
-                            best_score.ScoreResult.WeaponID
+                            best_score.ScoreResult.WeaponID,
+                            best_score.ScoreResult.Position
                         )
                     );
                 }

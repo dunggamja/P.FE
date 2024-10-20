@@ -20,7 +20,7 @@ namespace Battle
 
             m_owner_id = _owner.ID;
 
-            AddSensor(new Sensor_Target_Score());
+            AddSensor(new Sensor_DamageScore());
 
             return true;
         }

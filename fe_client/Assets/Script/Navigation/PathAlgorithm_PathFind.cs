@@ -125,7 +125,7 @@ public static partial class PathAlgorithm
 
 
 
-    static void FloodFill(
+    public static void FloodFill(
         TerrainMap        _terrain_map,
         IPathOwner        _path_owner,
         (int x, int y)    _position,

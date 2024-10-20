@@ -22,21 +22,28 @@ namespace Battle
 
     public class Command_Attack : Command
     {
-        public Int64   WeaponID { get; private set; } = 0;
-        public ITarget Target   { get; private set; }
+        public ITarget        Target   { get; private set; }
+        public Int64          WeaponID { get; private set; } 
+        public (int x, int y) Position { get; private set; } 
 
 
-        public Command_Attack(Int64 _owner_id, Int64 _target_id, Int64 _weapon_id)
+        public Command_Attack(Int64 _owner_id, Int64 _target_id, Int64 _weapon_id, (int x, int y) _position)
             : base(_owner_id)
         {
-            WeaponID = _weapon_id;
             Target   = new Target_Command_Attack(_target_id);
+            WeaponID = _weapon_id;
+            Position = _position;
         }
 
 
         protected override void OnEnter()
         {
-            // 타겟을 때릴 수 있는 위치를 검색해봅세.
+            if (Owner != null)
+            {
+                // 무기 장착.
+                Owner.StatusManager.Weapon.Equip(WeaponID);
+            }
+            
         }
 
         protected override bool OnUpdate()
