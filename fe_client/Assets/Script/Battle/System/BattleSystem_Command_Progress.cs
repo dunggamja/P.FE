@@ -30,6 +30,7 @@ namespace Battle
         protected override void OnEnter(IBattleSystemParam _param)
         {
            
+        
         }
 
         protected override bool OnUpdate(IBattleSystemParam _param)

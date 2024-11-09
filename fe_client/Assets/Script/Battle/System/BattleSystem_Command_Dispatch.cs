@@ -71,7 +71,8 @@ namespace Battle
                 // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
                 list_none.ForEach(e => e.SensorManager.Update());
 
-                // 
+                // TODO: 지금은 공격 스코어가 가장 높은 타겟을 고르고 있는데...
+                //       추후에 다른 스코어를 추가할 수 있도록 변경 필요.   (전술적 목표에 따라서.)
                 var best_score = (EntityID:(Int64)0, ScoreResult:(Sensor_DamageScore.ScoreResult)new());
 
                 // 가장 점수가 높은 행동을 할 수 있는 유닛을 1명 고릅시다.
@@ -81,26 +82,19 @@ namespace Battle
                     if (sensor_score == null)
                         continue;
 
-                    if (best_score.EntityID == 0
-                     || best_score.ScoreResult.Calculate_Total_Score() < sensor_score.BestScore.Calculate_Total_Score())
+                    if (best_score.ScoreResult.Calculate_Total_Score() < sensor_score.BestScore.Calculate_Total_Score())
                     {
                         best_score = (e.ID, sensor_score.BestScore);
                     }
                 }
 
-                // 공격 명령 셋팅.
+                // 가장 점수가 높은 행동을 할 수 있는 유닛이 있으면 명령을 내립니다.    
                 if (best_score.EntityID > 0)
-                {                    
-                    CommandManager.Instance.PushCommand(
-                        new Command_Attack
-                        (
-                            best_score.EntityID,
-                            best_score.ScoreResult.TargetID,
-                            best_score.ScoreResult.WeaponID,
-                            best_score.ScoreResult.Position
-                        )
-                    );
+                {   
+                    Command_By_DamageScore(best_score.EntityID, best_score.ScoreResult);
                 }
+
+                
 
                 return true;
             }
@@ -114,6 +108,31 @@ namespace Battle
         protected override void OnExit(IBattleSystemParam _param)
         {
             
+        }
+
+        void Command_By_DamageScore(Int64 _entity_id, Sensor_DamageScore.ScoreResult _damage_score)
+        {
+            // 공격 명령 셋팅.                
+            CommandManager.Instance.PushCommand(
+                new Command[]
+                {
+                    // 이동 명령
+                    new Command_Move
+                    (
+                        _entity_id,
+                        _damage_score.Position
+                    ),
+
+                    // 공격 명령
+                    new Command_Attack
+                    (
+                        _entity_id,
+                        _damage_score.TargetID,
+                        _damage_score.WeaponID,
+                        _damage_score.Position
+                    )
+                }
+            );
         }
 
     }

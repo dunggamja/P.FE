@@ -38,27 +38,35 @@ namespace Battle
 
         protected override void OnEnter()
         {
+            // TODO : 무기 장착은 나중에 Command_Equip 으로 변경.?
             if (Owner != null)
             {
                 // 무기 장착.
                 Owner.StatusManager.Weapon.Equip(WeaponID);
             }
+
+            // 전투 시스템 셋팅.
+            CombatParam.Cache.Reset();
+            CombatParam.Cache.Set(Owner, EntityManager.Instance.GetEntity(Target.MainTargetID));
             
+            CombatSystemManager.Instance.Setup(CombatParam.Cache);
         }
 
         protected override bool OnUpdate()
         {
-            
-            
+            CombatSystemManager.Instance.Update();
 
-            return true;   
+            return CombatSystemManager.Instance.State == EnumState.Finished;
         }
+
         protected override void OnExit()
         {
             if (Owner != null)
             {
                 Owner.SetCommandFlag(EnumCommandFlag.Action, true);
             }
+
+            CombatParam.Cache.Reset();
         }
 
     }

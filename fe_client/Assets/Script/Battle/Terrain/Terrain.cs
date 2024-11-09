@@ -16,36 +16,54 @@ public abstract class Terrain
         m_width     = _width;
         m_height    = _height;
 
-        m_attribute = new int[_width, _height];
+        m_attribute = new int[_width, _height];       
     }
 
     public int  GetAttribute(int _x, int _y)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return 0;
+
         return m_attribute[_x, _y];
     }
 
     protected bool HasAttribute(int _x, int _y, int _attribute_type)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return false;
+
         return (m_attribute[_x, _y] & (1 << _attribute_type)) != 0;
     }
 
     protected void SetAttribute(int _x, int _y, int _attribute_type)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return;
+
         m_attribute[_x, _y] |= (1 << _attribute_type);
     }
 
     protected void RemoveAttribute(int _x, int _y, int _attribute_type)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return;
+
         m_attribute[_x, _y] &= ~(1 << _attribute_type);
     }
 
     public void OverwriteAttribute(int _x, int _y, int _attribute)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return;
+
         m_attribute[_x, _y] = _attribute;
     }
 
     public void ClearAttribute(int _x, int _y)
     {
+        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+            return;
+
         m_attribute[_x, _y] = 0;
     }
 
@@ -73,7 +91,10 @@ public struct TerrainBlock
 
     public void SetEntity(Int64 _id, int _x, int _y)
     {
-        m_entities[_id] = (_x, _y);
+        if (m_entities.ContainsKey(_id))    
+            m_entities[_id] = (_x, _y);
+        else
+            m_entities.Add(_id, (_x, _y));
     }
 
     public void RemoveEntity(Int64 _id)
@@ -111,6 +132,13 @@ public class TerrainBlockManager
         var block_count = (tile_size / m_block_size) + ((0 < (tile_size % m_block_size)) ? 1: 0);
 
         m_blocks        = new TerrainBlock[block_count, block_count];
+        for(int y = 0; y < block_count; ++y)
+        {
+            for(int x = 0; x < block_count; ++x)
+            {
+                m_blocks[x, y] = new TerrainBlock(x * m_block_size, y * m_block_size, m_block_size);
+            }
+        }
     }
 
     (int block_x, int block_y) FindBlockIndex(int _x, int _y)

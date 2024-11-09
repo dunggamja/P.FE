@@ -22,6 +22,14 @@ namespace Battle
             return true;
         }
 
+        public bool PushCommand(IEnumerable<Command> _commands)
+        {
+            foreach (var command in _commands)
+                PushCommand(command);
+
+            return true;
+        }
+
         public Command PopCommand()
         {
             if (m_command_queue.Count == 0)

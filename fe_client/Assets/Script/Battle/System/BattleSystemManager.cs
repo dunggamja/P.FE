@@ -71,7 +71,7 @@ namespace Battle
                 // 진해중인 시스템이 있다면 다음 프레임에 이어서..
                 if (m_update_system[m_system_index].Update(Param) == EnumState.Progress)
                     break;
-            }
+           } 
 
             // 다시 처음부터.
             if (m_system_index >= m_update_system.Count)

@@ -22,6 +22,19 @@ public partial class Item
         return m_weapon_attribute.HasValue((int)_attribute_type);
     }
 
+    public void SetWeaponStatus(EnumWeaponStatus _status_type, int _value)
+    {
+        // 테스트용 코드... 실제로 사용할 일은 없을 듯?
+        m_weapon_status.SetValue((int)_status_type, _value);
+    }
+
+    public void SetWeaponAttribute(EnumWeaponAttribute _attribute_type, bool _value)
+    {
+        // 테스트용 코드... 실제로 사용할 일은 없을 듯?
+        m_weapon_attribute.SetValue((int)_attribute_type, _value);
+    }   
+
+
     bool IsEnableAction_Weapon_Equip(IOwner owner)
     {
         if (owner == null)

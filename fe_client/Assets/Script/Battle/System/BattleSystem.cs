@@ -10,7 +10,12 @@ namespace Battle
         float DeltaTime { get; }
     }
 
-    public abstract class BattleSystem : System<IBattleSystemParam>
+    public class BattleSystemParam_Test : IBattleSystemParam
+    {
+        public float DeltaTime => Time.deltaTime;
+    }
+ 
+   public abstract class BattleSystem : System<IBattleSystemParam>
     {
         //public override ISystemManager SystemManager => BattleSystemManager.Instance;
 

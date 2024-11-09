@@ -30,7 +30,7 @@ namespace Battle
             // 시나리오에 따라서 제어가 필요할 경우에는 어떻게 제어할 지 고민해보자 . 
             static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
             {            
-                { EnumScoreType.DamageRate_Dealt, 5f  },
+                { EnumScoreType.DamageRate_Dealt, 5f   },
                 { EnumScoreType.DamageRate_Taken, 0.5f },
                 { EnumScoreType.HitRate,          0.2f },
                 { EnumScoreType.DodgeRate,        0.2f },
@@ -184,7 +184,7 @@ namespace Battle
             var current_score = new ScoreResult().Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
 
             // 테스트 전투를 돌려서 계산을 해본다.                   
-            CombatSystemManager.Instance.Setup(TestCombat_Param.Cache.Set(_owner, _target));
+            CombatSystemManager.Instance.Setup(CombatParam_Plan.Cache.Set(_owner, _target));
 
 
             // 공격자/타겟이 입힌 데미지.
@@ -274,11 +274,7 @@ namespace Battle
             PathAlgorithm.FloodFill(_terrain_map, _path_owner, (_x, _y), _move_distance,
             ((int x, int y) _cell) =>
             {
-                // 공격위치가 완전히 비어있는지 체크합니다. 
-                if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y))
-                    return;
-
-                
+                                
                 // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
                 for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
                 {
@@ -294,7 +290,7 @@ namespace Battle
                             continue;
                         }
 
-                        // 이미 검사한 위치를 매번 검사하면 부하가 있을 것 같아서... 예외처리.
+                        // TODO: 똑같은 위치를 매번 Collecting 할 것인지 말지는 추후 고려.
                         if (close_list_attack.Contains((x, y)))
                         {
                             continue;

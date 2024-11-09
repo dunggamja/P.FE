@@ -126,12 +126,18 @@ public static partial class PathAlgorithm
 
 
     public static void FloodFill(
-        TerrainMap        _terrain_map,
-        IPathOwner        _path_owner,
-        (int x, int y)    _position,
-        int               _move_distance,
-        Action<(int x, int y)>  _func_on_cell = null)
+        TerrainMap              _terrain_map,
+        IPathOwner              _path_owner,
+        (int x, int y)          _position,
+        int                     _move_distance,        
+        Action<(int x, int y)>  _func_on_cell = null,
+        bool                    _is_call_func_any_cell = false)
     {
+        // callback이 없으면 아무것도 하지 않습니다.    
+        if (_func_on_cell == null)
+            return;
+
+
         var open_list_move    = new List<(int x, int y, int move_cost)>(10);
         var close_list_move   = new List<(int x, int y)>(10);
 
@@ -139,7 +145,7 @@ public static partial class PathAlgorithm
 
         while(open_list_move.Count > 0)
         {
-            // cost가 가장 적은 아이템을 가져옵니다.            
+            // movecost가 가장 적은 아이템을 가져옵니다.            
             var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
 
             // open/close list 셋팅
@@ -180,11 +186,13 @@ public static partial class PathAlgorithm
                 }
             }
 
-            // Floofill로 탐색된 셀에서 행할 행동.
-            if (_func_on_cell != null)
-            {
-                _func_on_cell((item.x, item.y));
-            }
+
+            // callback 호출 여부 체크. 
+            var call_func_on_cell = _is_call_func_any_cell || Verify_Movecost(_terrain_map, _path_owner, item.x, item.y, _is_occupancy:true).result;
+            if(!call_func_on_cell)
+                continue;
+
+            _func_on_cell((item.x, item.y));            
                 
         }
             
@@ -194,6 +202,9 @@ public static partial class PathAlgorithm
     {
         if (_terrain_map == null || _path_owner == null)
             return (false, 0);
+        
+        if (_x < 0 || _y < 0 || _terrain_map.Width <= _x || _terrain_map.Height <= _y)
+            return (false, 0);  
   
         // ZOC에 막히는지 체크합니다. (목표지점은 완전히 비어있어야 함.)
         if (_terrain_map.ZOC.IsBlockedZOC(_x, _y, (_is_occupancy) ? 0 : _path_owner.PathZOCFaction))
