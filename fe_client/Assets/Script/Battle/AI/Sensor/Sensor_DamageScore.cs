@@ -140,8 +140,8 @@ namespace Battle
                     owner_entity.Cell.x,
                     owner_entity.Cell.y,
                     move_distance,
-                    range_max,
-                    range_min);
+                    range_min,
+                    range_max);
 
 
                 foreach((var target_id, var attack_position_x, var attack_position_y) in list_target_id)

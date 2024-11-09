@@ -142,6 +142,18 @@ public class Test_Battle : MonoBehaviour
     void Test_BattleSystem_Setup_Terrain()
     {
         TerrainMapManager.Instance.Initialize();
+
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+
+
+        for(int y = 0; y < terrain_map.Height; ++y  )
+        {
+            for(int x = 0; x < terrain_map.Width; ++x)
+            {
+                terrain_map.Attribute.SetAttribute(x, y, EnumTerrainAttribute.Ground);
+            }
+        }
+
     }
 
 
@@ -186,6 +198,10 @@ public class Test_Battle : MonoBehaviour
             defender_status.SetStatus(EnumUnitStatus.Resistance, 3);
             defender_status.SetStatus(EnumUnitStatus.Luck, 5);
             defender_status.SetStatus(EnumUnitStatus.Weight, 4);
+
+
+            attacker.SetPathAttribute(EnumPathOwnerAttribute.Ground);
+            defender.SetPathAttribute(EnumPathOwnerAttribute.Ground);
         }
 
 

@@ -31,73 +31,73 @@ public class Terrain_Attribute : Terrain
         // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯? ScriptableObject...
         // move_cost == 0, 이동 불가
 
-        if ((_terrain_attribute & (int)EnumTerrainAttribute.Invalid) != 0)
+        if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
         {
             // 이동 불가 지역
             return 0;
         }
 
-        else if ((_terrain_attribute & (int)EnumTerrainAttribute.FlyerOnly) != 0)
+        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
         {
             // 비행 유닛만 가능.
-            if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) == 0)
+            if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
                 return 0;
 
             // 이동 Cost
             return 1;
         }
 
-        else if ((_terrain_attribute & (int)EnumTerrainAttribute.Water) != 0)
+        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
         {
             // 물 지형
-            if (((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) == 0)
-            &&  ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Water) == 0))
+            if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
+            &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) == 0))
                 return 0;
             
             // 물 지형 이동 Cost
             return 1;
         }
 
-        else if ((_terrain_attribute & (int)EnumTerrainAttribute.WaterSide) != 0)
+        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.WaterSide)) != 0)
         {
             // 물가
-             if (((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer)  == 0)
-            &&   ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Water)  == 0)
-            &&   ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Ground) == 0))
+             if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
+            &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water))  == 0)
+            &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0))
                 return 0;
 
             // 물가 지형 이동 Cost
             return 1;
         }
 
-        else if ((_terrain_attribute & (int)EnumTerrainAttribute.Ground) != 0)
+        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
         {
             // 땅
 
             
             {
                 // 비병은 지형 Cost 1로 통과가능.
-                if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Flyer) != 0)
+                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) != 0)
                     return 1;
 
                 // 땅 이동이 가능한 지 체크.
-                if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Ground) == 0)
+                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0)
                     return 0;
             }
 
             {
                 // 경사진 지형.
-                if ((_terrain_attribute & (int)EnumTerrainAttribute.Slope) != 0)
+                if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Slope)) != 0)
                 {
                     // 경사면 이동 가능한지 체크.
-                    if ((_path_owner_attribute & (int)EnumPathOwnerAttribute.Slope) == 0)
+                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Slope)) == 0)
                         return 0;
 
                     // 경사면 이동 Cost
                     return 3;
                 }
                 // 숲 지형
-                else if ((_terrain_attribute & (int)EnumTerrainAttribute.Forest) != 0)
+                else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Forest)) != 0)
                 {
                     // 숲 지형 이동 Cost
                     return 2;

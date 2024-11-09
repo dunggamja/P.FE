@@ -142,6 +142,7 @@ public static partial class PathAlgorithm
         var close_list_move   = new List<(int x, int y)>(10);
 
         open_list_move.Add((_position.x, _position.y, 0));
+        Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
 
         while(open_list_move.Count > 0)
         {
@@ -151,6 +152,7 @@ public static partial class PathAlgorithm
             // open/close list 셋팅
             open_list_move.Remove(item);
             close_list_move.Add((item.x, item.y));
+            Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
 
             // 이동 가능 지역 탐색. (FloodFill)
             for(int i = -1; i <= 1; ++i)
@@ -158,7 +160,7 @@ public static partial class PathAlgorithm
                 for(int k = -1; k <= 1; ++k)
                 {
                     var x = item.x + i;
-                    var y = item.y + k;
+                    var y = item.y + k;                    
 
                     // 이미 체크하였음.
                     if (close_list_move.Contains((x, y)))
@@ -167,6 +169,8 @@ public static partial class PathAlgorithm
                     // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
                     if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
                         continue;
+
+                    Debug.Log($"FloodFill, x:{x}, y:{y}");
 
                     // 통과 가능한 지역인지 체크합니다.
                     (var moveable, var move_cost) = Verify_Movecost(_terrain_map, _path_owner, x, y, _is_occupancy:false);
@@ -195,6 +199,8 @@ public static partial class PathAlgorithm
             _func_on_cell((item.x, item.y));            
                 
         }
+
+        Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");
             
     }
 
