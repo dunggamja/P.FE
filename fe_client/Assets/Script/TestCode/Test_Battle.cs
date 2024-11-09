@@ -168,6 +168,9 @@ public class Test_Battle : MonoBehaviour
         attacker.UpdateCellPosition(0, 0, true);
         defender.UpdateCellPosition(0, 1, true);
 
+        attacker.SetFaction(1);
+        defender.SetFaction(2);
+
 
 
         // 테스트를 위한 임시 능력치 셋팅.
@@ -214,12 +217,14 @@ public class Test_Battle : MonoBehaviour
             attacker_weapon.SetWeaponStatus(EnumWeaponStatus.Weight, 2);
             attacker_weapon.SetWeaponStatus(EnumWeaponStatus.Dodge_Critical, 30);
             attacker_weapon.SetWeaponStatus(EnumWeaponStatus.Range, 1);
+            attacker_weapon.SetWeaponStatus(EnumWeaponStatus.Range_Min, 1);
 
             defender_weapon.SetWeaponStatus(EnumWeaponStatus.Might_Physics, 3);
             defender_weapon.SetWeaponStatus(EnumWeaponStatus.Hit, 100);
             defender_weapon.SetWeaponStatus(EnumWeaponStatus.Weight, 2);
             defender_weapon.SetWeaponStatus(EnumWeaponStatus.Dodge_Critical, 30);
             defender_weapon.SetWeaponStatus(EnumWeaponStatus.Range, 1);
+            defender_weapon.SetWeaponStatus(EnumWeaponStatus.Range_Min, 1);
 
             attacker.Inventory.AddItem(attacker_weapon);
             defender.Inventory.AddItem(defender_weapon);    

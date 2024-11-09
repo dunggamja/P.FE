@@ -142,17 +142,25 @@ public static partial class PathAlgorithm
         var close_list_move   = new List<(int x, int y)>(10);
 
         open_list_move.Add((_position.x, _position.y, 0));
-        Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
+        // Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
 
         while(open_list_move.Count > 0)
         {
             // movecost가 가장 적은 아이템을 가져옵니다.            
             var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
 
+            // callback 호출 여부 체크. 
+            var call_func_on_cell = _is_call_func_any_cell ||
+                                    (item.x == _position.x && item.y == _position.y) ||
+                                    Verify_Movecost(_terrain_map, _path_owner, item.x, item.y, _is_occupancy:true).result;
+                                    
+            if (call_func_on_cell)
+                _func_on_cell((item.x, item.y));
+
             // open/close list 셋팅
             open_list_move.Remove(item);
             close_list_move.Add((item.x, item.y));
-            Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
+            // Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
 
             // 이동 가능 지역 탐색. (FloodFill)
             for(int i = -1; i <= 1; ++i)
@@ -170,13 +178,12 @@ public static partial class PathAlgorithm
                     if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
                         continue;
 
-                    Debug.Log($"FloodFill, x:{x}, y:{y}");
+                    // Debug.Log($"FloodFill, x:{x}, y:{y}");
 
                     // 통과 가능한 지역인지 체크합니다.
                     (var moveable, var move_cost) = Verify_Movecost(_terrain_map, _path_owner, x, y, _is_occupancy:false);
                     if (!moveable)
                         continue;
-
 
                     // 이동 범위 초과.
                     var total_cost = item.move_cost + move_cost;
@@ -188,19 +195,10 @@ public static partial class PathAlgorithm
                     // open_list 에 추가.
                     open_list_move.Add((x, y, total_cost));
                 }
-            }
-
-
-            // callback 호출 여부 체크. 
-            var call_func_on_cell = _is_call_func_any_cell || Verify_Movecost(_terrain_map, _path_owner, item.x, item.y, _is_occupancy:true).result;
-            if(!call_func_on_cell)
-                continue;
-
-            _func_on_cell((item.x, item.y));            
-                
+            }   
         }
 
-        Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");
+        // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");
             
     }
 
