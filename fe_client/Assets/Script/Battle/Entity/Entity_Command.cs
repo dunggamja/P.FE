@@ -34,6 +34,7 @@ namespace Battle
             BlackBoard.SetValue(EnumBlackBoard.CommandFlag, 0);
         }
 
+
         public EnumCommandProgressState GetCommandProgressState(int _faction)
         {
             // 진영이 다르면 행동 불가능.
@@ -61,20 +62,37 @@ namespace Battle
 
             return false;
         }
+
+
+        public bool ShouldSetCommandDone()
+        {
+            // 진행 중인 행동이 없으면 완료처리 할 필요 없음.
+            if (!BlackBoard.HasValue(EnumBlackBoard.CommandFlag))            
+                return false;
+
+            // 이미 완료 상태면 완료처리 할 필요 없음.  
+            if (HasCommandFlag(EnumCommandFlag.Done))
+                return false;
+            
+
+            return true;
+        }
+
+        
     }
 }
 
-public class Entity_Command : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
+// public class Entity_Command : MonoBehaviour
+// {
+//     // Start is called before the first frame update
+//     void Start()
+//     {
         
-    }
+//     }
 
-    // Update is called once per frame
-    void Update()
-    {
+//     // Update is called once per frame
+//     void Update()
+//     {
         
-    }
-}
+//     }
+// }

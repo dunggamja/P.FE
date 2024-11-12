@@ -60,6 +60,12 @@ namespace Battle
             if (list_commandable.TryGetValue(EnumCommandProgressState.Progress, out var list_progress))
             {
                 // TODO: 뭔가 명령을 내려야 겠지...?
+                //       일단은 완료 명령을 내리는 것으로 해둠. 
+                foreach (var e in list_progress)
+                {
+                    CommandManager.Instance.PushCommand(new Command_Done(e.ID));
+                }
+                
                 return true;
             }
             else if(list_commandable.TryGetValue(EnumCommandProgressState.None, out var list_none))
@@ -131,6 +137,7 @@ namespace Battle
                         _damage_score.WeaponID,
                         _damage_score.Position
                     )
+
                 }
             );
         }
