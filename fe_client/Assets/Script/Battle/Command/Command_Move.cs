@@ -8,13 +8,15 @@ namespace Battle
    public class Command_Move : Command
     {
         
-        (int x, int y)        m_cell_to         = (0, 0); 
+        (int x, int y)  m_cell_to         = (0, 0); 
         List<PathNode>  m_path_node       = new ();
         int             m_path_node_index = 0;
+        bool            m_is_immediate    = false;
 
-        public Command_Move(Int64 _owner_id, (int x, int y) _cell_to) : base(_owner_id)
+        public Command_Move(Int64 _owner_id, (int x, int y) _cell_to, bool _is_immediate = false) : base(_owner_id)
         {
-            m_cell_to = _cell_to;
+            m_cell_to      = _cell_to;
+            m_is_immediate = _is_immediate;
         }
         
 
@@ -23,12 +25,19 @@ namespace Battle
             if (Owner == null)
                 return;
 
-            // 경로 생성. 길찾기
-            Owner.PathNodeManager.CreatePath(
-                Owner.Cell.CellToPosition(),
-                m_cell_to.CellToPosition(),
-                Owner);
-
+            if (!m_is_immediate)
+            {
+                // 경로 생성 & 길찾기
+                Owner.PathNodeManager.CreatePath(
+                    Owner.Cell.CellToPosition(),
+                    m_cell_to.CellToPosition(),
+                    Owner);
+            }
+            else
+            {
+                // 경로 생성 안함.
+                Owner.PathNodeManager.ClearPath(); 
+            }
         }
 
         protected override bool OnUpdate()

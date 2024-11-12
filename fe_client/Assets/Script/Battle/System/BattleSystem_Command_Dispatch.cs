@@ -65,7 +65,7 @@ namespace Battle
                 {
                     CommandManager.Instance.PushCommand(new Command_Done(e.ID));
                 }
-                
+
                 return true;
             }
             else if(list_commandable.TryGetValue(EnumCommandProgressState.None, out var list_none))
@@ -126,7 +126,8 @@ namespace Battle
                     new Command_Move
                     (
                         _entity_id,
-                        _damage_score.Position
+                        _damage_score.Position,
+                        _is_immediate: true // 일단은 즉시 이동.    
                     ),
 
                     // 공격 명령

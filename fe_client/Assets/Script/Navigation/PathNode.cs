@@ -12,7 +12,7 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
     float m_position_z; // ?œ„ì¹? Z
     float m_rotation_y; // ë°©í–¥ Y
 
-    public static PathNode Empty { get; } = new PathNode { m_position_x = 0, m_position_z = 0, m_rotation_y = 0 };
+    public static PathNode Empty { get; } = new PathNode { m_position_x = -1f, m_position_z = -1f, m_rotation_y = -1f };
 
     public PathNode(float _position_x = -1f, float _position_z = -1f, float _rotation_y = -1f)
     {
@@ -176,13 +176,18 @@ public class PathNodeManager //: IPathNodeManager
         if (TerrainMap == null)
             return false;
 
-        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);
+        ClearPath();
         
-        m_list_path_node.Clear();
-        m_list_path_node = new Queue<PathNode>(list_path_node);
+        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);        
+        m_list_path_node   = new Queue<PathNode>(list_path_node);
 
         
         return 0 < m_list_path_node.Count;
+    }
+
+    public void ClearPath()
+    {
+        m_list_path_node.Clear();
     }
 
 }

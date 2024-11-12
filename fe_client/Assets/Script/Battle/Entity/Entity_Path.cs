@@ -35,9 +35,9 @@ namespace Battle
             }
         }
 
-        public void UpdatePathBehavior()
+        public void UpdatePathBehavior(float _speed_rate = 1f)
         {
-            PathVehicle.Update(this, Time.deltaTime);
+            PathVehicle.Update(this, Time.deltaTime * _speed_rate);
             PathNodeManager.Update(this);
         }
 

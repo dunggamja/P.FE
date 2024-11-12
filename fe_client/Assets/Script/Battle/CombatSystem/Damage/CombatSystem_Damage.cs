@@ -110,7 +110,9 @@ namespace Battle
 
             // 데미지 적용 여기서 한다.
             if (!_param.IsPlan)
+            {
                 target.ApplyDamage(Result_Damage);
+            }
 
 
             // 1 Tick에 완료 처리.
