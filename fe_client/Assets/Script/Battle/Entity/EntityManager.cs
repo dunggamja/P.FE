@@ -78,6 +78,8 @@ namespace Battle
             {
                 e.Update(Time.deltaTime);
             }
+
+            
         }
 
     }

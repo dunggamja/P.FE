@@ -1,0 +1,25 @@
+
+
+
+ Recode
+  m_list<RecodeData>
+
+
+RecordManager :singleton
+ - 모든 기록대상은 이 곳에 기록한다.
+ - 처음에는 유닛별로 가지고 있게 하려다가. 그건 FPS 스타일인듯
+ - RollbackManager 라고 두고 처리하는게 나을거 같다. 
+ - 
+
+
+유닛이 행동에 대해서 
+ - RecordManager::Record(object) 식으로 기록.
+ * Move 
+  * Record_Move(object, from, to)
+ * Attack
+  - Record HP(object, object)
+  - Record Item()
+  - 
+   
+
+1개의 유닛이 여러개의 Record를 가질수 있게 해볼까?
