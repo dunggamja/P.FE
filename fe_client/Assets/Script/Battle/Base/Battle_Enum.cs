@@ -108,6 +108,12 @@ namespace Battle
         CommandFlag,       // [유닛] 명령 상태 (0 : 대기, 1 : 행동 완료)
         Faction,           // [유닛] 진영
 
+        AIScore_Attack,    // [AI] 공격
+        AIScore_Protect,   // [AI] 보호 
+        AIScore_Survival,  // [AI] 생존
+        AIScore_Position,  // [AI] 위치 확보
+        AIScore_Advantage, // [AI] 이점 활용
+        AIScore_Custom,    // [AI] 스크립트로 제어되는 경우,
         // IsMoving,
     }
 
@@ -115,9 +121,9 @@ namespace Battle
     {
         None = 0,
 
-        Battle_Turn_UpdateCount = 1, // [전투시스템] Turn Update Count    
-        Battle_Turn_CurrentTurn,     // [전투시스템] Turn Number    
-        Battle_Turn_CurrentFaction,  // [전투시스템] Faction Number  
+        TurnUpdateCount = 1, // [Turn 시스템] Turn Update Count    
+        CurrentTurn,         // [Turn 시스템] Turn Number    
+        CurrentFaction,      // [Turn 시스템] Faction Number  
     }
 
     /// <summary>

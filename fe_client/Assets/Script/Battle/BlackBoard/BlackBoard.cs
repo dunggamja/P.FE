@@ -29,6 +29,16 @@ namespace Battle
             m_repository.SetValue(Convert.ToInt32(_type), _value);            
         }
 
+        public void SetBPValue(T _type, float _value)
+        {
+            SetValue(_type, (int)(_value * 10000));            
+        }
+
+        public float GetBPValueAsFloat(T _type)
+        {
+            return GetValue(_type) / 10000f;
+        }
+
         public void SetBitFlag(T _type, byte _bit_index)
         {
             SetValue(_type, GetValue(_type) | (1 << _bit_index));

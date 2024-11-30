@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class Sensor_DamageScore : ISensor
+    // 공격 타겟을 찾아봅시다.
+    public class Sensor_AttackTarget : ISensor
     {
         public class ScoreResult
         {
@@ -88,6 +89,12 @@ namespace Battle
             {
                 var result = 0f;
 
+                // 최고 점수.
+                var max_score = s_score_multiplier.Aggregate(0f, (result, kvp) => result + kvp.Value);
+                if (max_score <= float.Epsilon)
+                    return 0f;
+
+                // 점수 합산.
                 for (int i = 0; i < score.Length; ++i)
                 {
                     if (s_score_multiplier.TryGetValue((EnumScoreType)i, out var multiplier))
@@ -96,7 +103,8 @@ namespace Battle
                     }
                 }
 
-                return result;
+                // 점수는 0.0 ~ 1.0으로 제한.
+                return Mathf.Clamp01(result / max_score);
             }
         }
 
@@ -118,7 +126,6 @@ namespace Battle
 
             // 결과값은 가장 높은 것 1개만 저장해봅세...
             BestScore.Reset();
-
 
             // 소유 중인 무기들로 테스트 전투를 돌립니다.
             foreach(var e in owner_entity.Inventory.CollectItemByType(EnumItemType.Weapon))
@@ -171,6 +178,9 @@ namespace Battle
 
             // 무기 원상 복구.
             weapon.Equip(equiped_weapon_id);
+
+            // 타겟 점수 블랙보드에 저장.            
+            owner_entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, BestScore.Calculate_Total_Score());
         }
 
 

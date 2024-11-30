@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Battle
 {
     // 포지션 변경.
-    public class Rollback_Entity_Position : Rollback
+    public class Rollback_Entity_Position : Rollback    
     {
         Int64          entity_id = 0;
         (int x, int y) position  = (0, 0);
@@ -30,5 +30,30 @@ namespace Battle
             }
         }
     }
+
+    public class Rollback_Entity_Damage : Rollback
+    {
+        public Rollback_Entity_Damage(long _time_stamp) : base(_time_stamp)
+        {
+        }
+
+        public override void Undo()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Rollback_Entity_Death : Rollback
+    {
+        public Rollback_Entity_Death(long _time_stamp) : base(_time_stamp)
+        {
+        }
+
+        public override void Undo()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
 }

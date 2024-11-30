@@ -55,6 +55,7 @@ namespace Battle
 
             var list_none = EntityManager.Instance.Collect(e => e.GetCommandProgressState(faction) == EnumCommandProgressState.None);
            
+            // TODO: 요거 event dispatch로 바꾸자...
             // sensor 갱신.
             // TODO: sensor system에 대해서 정리 필요함...;;;;;
             // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
@@ -62,12 +63,12 @@ namespace Battle
 
             // TODO: 지금은 공격 스코어가 가장 높은 타겟을 고르고 있는데...
             //       추후에 다른 스코어를 추가할 수 있도록 변경 필요.   (전술적 목표에 따라서.)
-            var best_score = (EntityID:(Int64)0, ScoreResult:(Sensor_DamageScore.ScoreResult)new());
+            var best_score = (EntityID:(Int64)0, ScoreResult:(Sensor_AttackTarget.ScoreResult)new());
 
             // 가장 점수가 높은 행동을 할 수 있는 유닛을 1명 고릅시다.
             foreach(var e in list_none)
             {
-                var sensor_score = e.SensorManager.GetSensor<Sensor_DamageScore>();
+                var sensor_score = e.SensorManager.GetSensor<Sensor_AttackTarget>();
                 if (sensor_score == null)
                     continue;
 
@@ -92,7 +93,7 @@ namespace Battle
             
         }
 
-        void Command_By_DamageScore(Int64 _entity_id, Sensor_DamageScore.ScoreResult _damage_score)
+        void Command_By_DamageScore(Int64 _entity_id, Sensor_AttackTarget.ScoreResult _damage_score)
         {
             // 공격 명령 셋팅.                
             CommandManager.Instance.PushCommand(
