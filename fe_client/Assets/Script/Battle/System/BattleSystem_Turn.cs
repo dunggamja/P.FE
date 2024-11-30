@@ -8,9 +8,10 @@ namespace Battle
     public partial class BattleSystem_Turn : BattleSystem
     {
         // 진영별 턴  관리. 
-        //
-        int[] m_queue_turn    = new int[2];  //[0] : Prev, [1] : Current
-        int[] m_queue_faction = new int[2];  //[0] : Prev, [1] : Current
+        int   m_turn_update_count = 0;           // turn system update
+        int[] m_queue_turn        = new int[2];  //[0] : Prev, [1] : Current
+        int[] m_queue_faction     = new int[2];  //[0] : Prev, [1] : Current
+
 
         // 
         public int  Turn_Prev { get => m_queue_turn[0]; set => m_queue_turn[0] = value; }
@@ -33,6 +34,7 @@ namespace Battle
 
         public override void Release()
         {
+            m_turn_update_count = 0;
             Array.Clear(m_queue_turn, 0, m_queue_turn.Length);
             Array.Clear(m_queue_faction, 0, m_queue_faction.Length);
         }
@@ -86,6 +88,7 @@ namespace Battle
 
         protected override void OnExit(IBattleSystemParam _param)
         {
+
 
         }
 

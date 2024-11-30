@@ -50,5 +50,10 @@ namespace Battle
     {
         
     }
+
+    public class BattleBlackBoard : BlackBoard<EnumBattleBlackBoard>
+    {
+
+    }
 }
 

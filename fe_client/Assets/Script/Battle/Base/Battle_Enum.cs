@@ -104,18 +104,20 @@ namespace Battle
     {
         None         = 0,
 
-        CommandOwner = 1,  // 명령 타입
-        CommandFlag,       // 명령 상태 (0 : 대기, 1 : 행동 완료)
-        Faction,           // 진영
+        CommandOwner = 1,  // [유닛] 명령 타입
+        CommandFlag,       // [유닛] 명령 상태 (0 : 대기, 1 : 행동 완료)
+        Faction,           // [유닛] 진영
 
         // IsMoving,
     }
 
-    public enum EnumSystemBlackBoard
+    public enum EnumBattleBlackBoard
     {
         None = 0,
 
-        BattleTurnNumber = 1, // 현재 전투 Turn 값
+        Battle_Turn_UpdateCount = 1, // [전투시스템] Turn Update Count    
+        Battle_Turn_CurrentTurn,     // [전투시스템] Turn Number    
+        Battle_Turn_CurrentFaction,  // [전투시스템] Faction Number  
     }
 
     /// <summary>
