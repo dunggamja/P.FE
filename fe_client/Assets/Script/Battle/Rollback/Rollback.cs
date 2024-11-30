@@ -5,13 +5,21 @@ using UnityEngine;
 
 namespace Battle
 {
-    public abstract class IRollback
+    public abstract class Rollback
     {
         // EnumRecordType RecordType { get; }
         // Int64          EntityID   { get; } 
-        public Int64  TimeStamp  { get; protected set; } = 0; // TODO: BatttleSystem Turn과 연관이 되어야 할듯.
 
-        public abstract void     Rollback();
+        // TODO: BatttleSystem Turn과 연관이 되어야 할듯.
+        public Int64  TimeStamp  { get; private set; } = 0; 
+
+        public abstract void Undo();
+        // public abstract void Redo();
+
+        protected Rollback(Int64 _time_stamp)
+        {
+            TimeStamp = _time_stamp;
+        }
     }
 
 
@@ -19,7 +27,7 @@ namespace Battle
 
     public class RollbackManager : Singleton<RollbackManager>
     {
-        List<IRollback>  m_list_rollback = new(10);
+        List<Rollback>  m_list_rollback = new(10);
 
 
         public void Reset()
@@ -29,7 +37,7 @@ namespace Battle
         
         public int   RollbackCount() => m_list_rollback.Count;
 
-        public IRollback Peek(int _index = 0)
+        public Rollback Peek(int _index = 0)
         {
             if (m_list_rollback.Count == 0 || _index < 0 || m_list_rollback.Count <= _index)
                 return null;
@@ -37,7 +45,7 @@ namespace Battle
             return m_list_rollback[m_list_rollback.Count - 1 - _index]; 
         }
 
-        public void Push(IRollback _record)
+        public void Push(Rollback _record)
         {
             m_list_rollback.Add(_record);
         }  
@@ -61,7 +69,7 @@ namespace Battle
                     break;
 
                 // 롤백 처리
-                rollback.Rollback();
+                rollback.Undo();
 
                 // 롤백한 Record 제거.
                 Pop();

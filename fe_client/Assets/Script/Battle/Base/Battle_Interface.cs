@@ -43,16 +43,16 @@ namespace Battle
     /// <summary> 
     /// BlackBoard 
     /// </summary>
-    public interface IBlackBoard
-    {
-        int  GetValue(EnumBlackBoard _type);
-        bool HasValue(EnumBlackBoard _type);
-        void SetValue(EnumBlackBoard _type, int _value);
-        void SetValue(EnumBlackBoard _type, bool _value);
-        void SetBitFlag(EnumBlackBoard _type, byte _bit_index);
-        void ResetBitFlag(EnumBlackBoard _type, byte _bit_index);
-        bool HasBitFlag(EnumBlackBoard _type, byte _bit_index);
-    }
+    // public interface IBlackBoard
+    // {
+    //     int  GetValue(EnumEntityBlackBoard _type);
+    //     bool HasValue(EnumEntityBlackBoard _type);
+    //     void SetValue(EnumEntityBlackBoard _type, int _value);
+    //     void SetValue(EnumEntityBlackBoard _type, bool _value);
+    //     void SetBitFlag(EnumEntityBlackBoard _type, byte _bit_index);
+    //     void ResetBitFlag(EnumEntityBlackBoard _type, byte _bit_index);
+    //     bool HasBitFlag(EnumEntityBlackBoard _type, byte _bit_index);
+    // }
 
     /// <summary>
     /// 진영 정보.

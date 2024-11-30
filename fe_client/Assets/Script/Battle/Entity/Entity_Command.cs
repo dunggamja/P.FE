@@ -10,28 +10,28 @@ namespace Battle
     {
         public EnumCommandOwner GetCommandOwner()
         {
-            return (EnumCommandOwner)BlackBoard.GetValue(EnumBlackBoard.CommandOwner);
+            return (EnumCommandOwner)BlackBoard.GetValue(EnumEntityBlackBoard.CommandOwner);
         }
 
         public void SetCommandOwner(EnumCommandOwner _command_owner)
         {
-            BlackBoard.SetValue(EnumBlackBoard.CommandOwner, (int)_command_owner);
+            BlackBoard.SetValue(EnumEntityBlackBoard.CommandOwner, (int)_command_owner);
         }
 
         public bool HasCommandFlag(EnumCommandFlag _command_flag)
         {
-            return BlackBoard.HasBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
+            return BlackBoard.HasBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
         public void SetCommandFlag(EnumCommandFlag _command_flag, bool _set_flag)
         {
-            if (_set_flag) BlackBoard.SetBitFlag(EnumBlackBoard.CommandFlag,   (byte)_command_flag);
-            else           BlackBoard.ResetBitFlag(EnumBlackBoard.CommandFlag, (byte)_command_flag);
+            if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
+            else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
         public void ResetCommandProgressState()
         {
-            BlackBoard.SetValue(EnumBlackBoard.CommandFlag, 0);
+            BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
         }
 
 
@@ -46,7 +46,7 @@ namespace Battle
                 return EnumCommandProgressState.Done;
 
             // 그 외 값이 있으면 진행중인 행동이 있음.
-            if (BlackBoard.HasValue(EnumBlackBoard.CommandFlag))            
+            if (BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
                 return EnumCommandProgressState.Progress;
 
             // 대기 상태.
@@ -67,7 +67,7 @@ namespace Battle
         public bool ShouldSetCommandDone()
         {
             // 진행 중인 행동이 없으면 완료처리 할 필요 없음.
-            if (!BlackBoard.HasValue(EnumBlackBoard.CommandFlag))            
+            if (!BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
                 return false;
 
             // 이미 완료 상태면 완료처리 할 필요 없음.  

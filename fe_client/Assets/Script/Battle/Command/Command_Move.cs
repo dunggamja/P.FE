@@ -8,9 +8,9 @@ namespace Battle
    public class Command_Move : Command
     {
         
+        // List<PathNode>  m_path_node       = new ();
+        // int             m_path_node_index = 0;
         (int x, int y)  m_cell_to         = (0, 0); 
-        List<PathNode>  m_path_node       = new ();
-        int             m_path_node_index = 0;
         bool            m_is_immediate    = false;
 
         public Command_Move(Int64 _owner_id, (int x, int y) _cell_to, bool _is_immediate = false) : base(_owner_id)
@@ -56,6 +56,7 @@ namespace Battle
         {
             if (Owner != null)
             {
+                
                 // 좌표 이동 처리.
                 Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, true);
 

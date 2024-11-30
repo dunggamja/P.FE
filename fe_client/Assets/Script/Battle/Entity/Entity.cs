@@ -13,7 +13,7 @@ namespace Battle
 
         public (int x, int y)       Cell            { get; private set; }
         // public ITarget              Target          { get; }
-        public IBlackBoard          BlackBoard      { get; }
+        public EntityBlackBoard     BlackBoard      { get; }
         public ISkill               Skill           { get; } 
         public BattleStatusManager  StatusManager   { get; } 
         public Inventory            Inventory       { get; }
@@ -35,7 +35,7 @@ namespace Battle
             // Target          = null;
             Cell            = (0, 0);
                  
-            BlackBoard      = new BattleBlackBoard();
+            BlackBoard      = new EntityBlackBoard();
             Skill           = new BattleSkill();
             StatusManager   = new BattleStatusManager(this);
             PathNodeManager = new PathNodeManager();
@@ -91,12 +91,12 @@ namespace Battle
 
         public int GetFaction()
         {
-            return BlackBoard.GetValue(EnumBlackBoard.Faction);
+            return BlackBoard.GetValue(EnumEntityBlackBoard.Faction);
         }
 
         public void SetFaction(int _faction)
         {
-            BlackBoard.SetValue(EnumBlackBoard.Faction, _faction);
+            BlackBoard.SetValue(EnumEntityBlackBoard.Faction, _faction);
         }
 
 

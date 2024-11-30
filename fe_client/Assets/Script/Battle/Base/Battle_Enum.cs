@@ -100,15 +100,22 @@ namespace Battle
     /// <summary>
     /// 블랙보드
     /// </summary>
-    public enum EnumBlackBoard
+    public enum EnumEntityBlackBoard
     {
         None         = 0,
 
-        CommandOwner,  // 명령 타입
-        CommandFlag, // 명령 상태 (0 : 대기, 1 : 행동 완료)
-        Faction,      // 진영
+        CommandOwner = 1,  // 명령 타입
+        CommandFlag,       // 명령 상태 (0 : 대기, 1 : 행동 완료)
+        Faction,           // 진영
 
-        IsMoving,
+        // IsMoving,
+    }
+
+    public enum EnumSystemBlackBoard
+    {
+        None = 0,
+
+        BattleTurnNumber = 1, // 현재 전투 Turn 값
     }
 
     /// <summary>

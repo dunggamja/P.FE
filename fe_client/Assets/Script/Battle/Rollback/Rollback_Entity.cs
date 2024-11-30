@@ -5,17 +5,28 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class Rollback_Entity_Position : IRollback
+    // 포지션 변경.
+    public class Rollback_Entity_Position : Rollback
     {
-        Int64          _entity_id = 0;
-        (int x, int y) _position  = (0, 0);
+        Int64          entity_id = 0;
+        (int x, int y) position  = (0, 0);
 
-        public override void Rollback()
+        public Rollback_Entity_Position(
+            Int64          _time_stamp,
+            Int64          _entity_id,
+            (int x, int y) _position) 
+            : base(_time_stamp)
         {
-            var entity = EntityManager.Instance.GetEntity(_entity_id);
+            entity_id = _entity_id;
+            position  = _position;
+        }
+
+        public override void Undo()
+        {
+            var entity = EntityManager.Instance.GetEntity(entity_id);
             if (entity != null)
             {
-                entity.UpdateCellPosition(_position.x, _position.y, true);
+                entity.UpdateCellPosition(position.x, position.y, true);
             }
         }
     }
