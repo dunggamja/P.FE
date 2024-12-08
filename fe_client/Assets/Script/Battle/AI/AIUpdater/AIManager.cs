@@ -5,7 +5,15 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class SensorManager
+    // public enum EnumAIType
+    // {
+    //     None,
+        
+    //     Attack, // 공격
+    //     Done,   // 행동완료
+    // }
+
+    public class AIManager
     {
         // TODO: sensor system에 대해서 정리 필요함...;;;;;
         // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
@@ -20,39 +28,39 @@ namespace Battle
 
             m_owner_id = _owner.ID;
 
-            AddSensor(new Sensor_AttackTarget());
+            AddAIUpdater(new AI_Attack());
 
             return true;
         }
 
 
-        private List<(System.Type _type, ISensor _sensor)> m_repository = new(10);
+        private List<(System.Type _type, IAIUpdater _ai)> m_repository = new(10);
 
-        public bool AddSensor(ISensor _sensor)
+        public bool AddAIUpdater(IAIUpdater _ai)
         {
-            if (_sensor == null)
+            if (_ai == null)
                 return false;
 
-            var type        = _sensor.GetType();
+            var type        = _ai.GetType();
             var find_index  = m_repository.FindIndex((e) => { return e._type == type; });
             if (find_index >= 0)
                 return false;
 
 
-            m_repository.Add((type, _sensor));
+            m_repository.Add((type, _ai));
             return true;
         }
 
-        public T GetSensor<T>() where T : class, ISensor 
+        public T GetAIUpdater<T>() where T : class, IAIUpdater 
         {
             var find_index  = m_repository.FindIndex((e) => { return e._type == typeof(T);});
             if (find_index >= 0)
-                return m_repository[find_index]._sensor as T;
+                return m_repository[find_index]._ai as T;
 
             return null;
         }
 
-        public bool RemoveSensor<T>() where T : class, ISensor 
+        public bool RemoveAIUpdater<T>() where T : class, IAIUpdater 
         {
             var find_index = m_repository.FindIndex((e) => { return e._type == typeof(T);});
             if (find_index < 0)
@@ -62,18 +70,18 @@ namespace Battle
             return true;
         }
 
-        public T TryAddSensor<T>() where T : class, ISensor, new()
+        public T TryAddAIUpdater<T>() where T : class, IAIUpdater, new()
         {
-            var sensor = GetSensor<T>();
-            if (sensor == null)
+            var ai = GetAIUpdater<T>();
+            if (ai == null)
             {
-                if(!AddSensor(new T()))
+                if(!AddAIUpdater(new T()))
                     return null;
 
-                sensor = GetSensor<T>();
+                ai = GetAIUpdater<T>();
             }
 
-            return sensor;            
+            return ai;            
         }
 
 
@@ -83,9 +91,9 @@ namespace Battle
             if (entity == null)
                 return;
 
-            foreach((var type, var sensor) in m_repository)
+            foreach((var type, var ai) in m_repository)
             {
-                sensor.Update(entity);
+                ai.Update(entity);
             }
         }
     }

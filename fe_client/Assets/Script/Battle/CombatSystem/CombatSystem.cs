@@ -20,7 +20,7 @@ namespace Battle
 
         
 
-        public static CombatParam_Plan Cache = new CombatParam_Plan();
+        public static CombatParam_Plan Cached = new CombatParam_Plan();
 
         public CombatParam_Plan Set(Entity _attacker, Entity _defender)
         {

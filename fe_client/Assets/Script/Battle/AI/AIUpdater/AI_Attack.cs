@@ -1,14 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
 namespace Battle
 {
     // 공격 타겟을 찾아봅시다.
-    public class Sensor_AttackTarget : ISensor
+    public class AI_Attack : IAIUpdater
     {
         public class ScoreResult
         {
@@ -56,6 +54,7 @@ namespace Battle
             {
                 TargetID = 0;
                 WeaponID = 0;
+                Position = (0, 0);
                 Array.Clear(score, 0, score.Length);
 
                 return this;
@@ -76,6 +75,14 @@ namespace Battle
                 Position = (_x, _y);
             }
 
+            public void SetData(ScoreResult _o)
+            {
+                TargetID = _o.TargetID;
+                WeaponID = _o.WeaponID;
+                Position = _o.Position;
+                score    = (float[])_o.score.Clone();
+            }
+
 
             // public float GetScore(EnumScoreType _score_type)
             // {
@@ -85,7 +92,7 @@ namespace Battle
             //     return score[index];
             // }
 
-            public float Calculate_Total_Score()
+            public float CalculateScore()
             {
                 var result = 0f;
 
@@ -108,7 +115,7 @@ namespace Battle
             }
         }
 
-        public ScoreResult BestScore { get; private set; } = new();
+        // public ScoreResult BestScore { get; private set; } = new();
 
 
         public void Update(IOwner _owner)
@@ -117,70 +124,87 @@ namespace Battle
                 return;
 
             var owner_entity = EntityManager.Instance.GetEntity(_owner.ID);
-            if (owner_entity == null || owner_entity.StatusManager == null)
+            if (owner_entity == null)
                 return;
 
+            // 코드가 너무 길어져서 변수들 캐싱.
+            var owner_status     = owner_entity.StatusManager;
+            var owner_blackboard = owner_entity.BlackBoard;
+            var owner_inventory  = owner_entity.Inventory;
+
             // 착용중인 무기 / 아이템 ID
-            var weapon            = owner_entity.StatusManager.Weapon;
-            var equiped_weapon_id = weapon.ItemID;
+            var owner_weapon      = owner_status.Weapon;
+            var equiped_weapon_id = owner_weapon.ItemID;
+
 
             // 결과값은 가장 높은 것 1개만 저장해봅세...
-            BestScore.Reset();
+            owner_blackboard.aiscore_attack.Reset();
+            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, 0f);            
 
-            // 소유 중인 무기들로 테스트 전투를 돌립니다.
-            foreach(var e in owner_entity.Inventory.CollectItemByType(EnumItemType.Weapon))
+
+            // 행동들이 가능한 상태인지 체크.
+            var is_moveable   = !owner_entity.HasCommandFlag(EnumCommandFlag.Move);
+            var is_attackable = !owner_entity.HasCommandFlag(EnumCommandFlag.Action);
+
+            // 공격이 가능한지 체크.
+            if (is_attackable)
             {
-                // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
-                weapon.Equip(e.ID);
-
-                // 최대 이동 거리.
-                var move_distance = owner_entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
-
-                // 무기 사정거리. (최소/최대)
-                var range_min = owner_entity.StatusManager.GetBuffedWeaponStatus(weapon, EnumWeaponStatus.Range_Min);
-                var range_max = owner_entity.StatusManager.GetBuffedWeaponStatus(weapon, EnumWeaponStatus.Range);
-
-                // Target Collect
-                var list_target_id = CollectTarget(
-                    TerrainMapManager.Instance.TerrainMap,
-                    owner_entity,
-                    owner_entity.Cell.x,
-                    owner_entity.Cell.y,
-                    move_distance,
-                    range_min,
-                    range_max);
-
-
-                foreach((var target_id, var attack_position_x, var attack_position_y) in list_target_id)
+                // 소유 중인 무기들로 테스트 전투를 돌립니다.
+                foreach(var e in owner_inventory.CollectItemByType(EnumItemType.Weapon))
                 {
-                    var target_entity = EntityManager.Instance.GetEntity(target_id);
-                    if (target_entity == null)
-                        continue;          
+                    // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
+                    owner_weapon.Equip(e.ID);
+                    
+                    // 최대 이동 거리. 
+                    var move_distance = (is_moveable) ? owner_status.GetBuffedUnitStatus(EnumUnitStatus.Movement) : 0;
+
+                    // 무기 사정거리. (최소/최대)
+                    var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
+                    var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range);
+
+                    // Target Collect
+                    var list_target_id = CollectTarget(
+                        TerrainMapManager.Instance.TerrainMap,
+                        owner_entity,
+                        owner_entity.Cell.x,
+                        owner_entity.Cell.y,
+                        move_distance,
+                        range_min,
+                        range_max);
 
 
-                    // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.// 혼돈같은 상태이상도 있을수 있고... NPC인데 아군도 있을 수 있고...
-                    if (target_entity.GetFaction() == owner_entity.GetFaction())
-                        continue;
-
-                    // 점수 계산.
-                    var current_score = Score_Calculate(owner_entity, target_entity);
-
-                    // 위치 셋팅.
-                    current_score.SetAttackPosition(attack_position_x, attack_position_y);
-
-                    // 결과 값 변경.
-                    if (BestScore.Calculate_Total_Score() <= current_score.Calculate_Total_Score())
+                    foreach((var target_id, var attack_position_x, var attack_position_y) in list_target_id)
                     {
-                        BestScore = current_score;
+                        var target_entity = EntityManager.Instance.GetEntity(target_id);
+                        if (target_entity == null)
+                            continue;      
+
+                        // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.// 혼돈같은 상태이상도 있을수 있고... NPC인데 아군도 있을 수 있고...
+                        if (target_entity.GetFaction() == owner_entity.GetFaction())
+                            continue;
+
+                        // 점수 계산.
+                        var current_score = Score_Calculate(owner_entity, target_entity);
+
+                        // 위치 셋팅.
+                        current_score.SetAttackPosition(attack_position_x, attack_position_y);
+
+                        // 점수 계산.
+                        var calculate_score = current_score.CalculateScore();
+
+                        // 점수 비교.
+                        if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
+                        {
+                            // 높은 점수 셋팅.
+                            owner_blackboard.aiscore_attack.SetData(current_score);                            
+                            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
+                        }
                     }
                 }
             }
 
             // 무기 원상 복구.
-            weapon.Equip(equiped_weapon_id);
-
-            // 타겟 점수 블랙보드에 저장.            
-            owner_entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, BestScore.Calculate_Total_Score());
+            owner_weapon.Equip(equiped_weapon_id);                       
         }
 
 
@@ -193,10 +217,6 @@ namespace Battle
             // 전투 결과 스코어
             var current_score = new ScoreResult().Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
 
-            // 테스트 전투를 돌려서 계산을 해본다.                   
-            CombatSystemManager.Instance.Setup(CombatParam_Plan.Cache.Set(_owner, _target));
-
-
             // 공격자/타겟이 입힌 데미지.
             var damage_dealt_count = 0;
             var damage_taken_count = 0;                    
@@ -205,6 +225,8 @@ namespace Battle
             var hit_rate           = 0f;
             var dodge_rate         = 0f;                    
             
+            // 테스트 전투를 돌려서 계산을 해본다.                   
+            CombatSystemManager.Instance.Setup(CombatParam_Plan.Cached.Set(_owner, _target));
 
             // 
             while (!CombatSystemManager.Instance.IsFinished)
@@ -227,7 +249,6 @@ namespace Battle
                         hit_rate     += turn_hit;
 
                         ++damage_dealt_count;
-
                     }
                     break;
                     case CombatSystem_Turn.EnumCombatTurn.Defender: 

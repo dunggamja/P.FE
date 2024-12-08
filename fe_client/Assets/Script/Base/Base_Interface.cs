@@ -88,7 +88,7 @@ public interface ISkill
 }
 
 
-public interface ISensor 
+public interface IAIUpdater 
 {
     void Update(IOwner _owner);
 }

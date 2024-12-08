@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -8,14 +9,63 @@ namespace Battle
 {
     public partial class Entity 
     {
-        public EnumCommandOwner GetCommandOwner()
+        // public EnumCommandOwner GetCommandOwner()
+        // {
+        //     return (EnumCommandOwner)BlackBoard.GetValue(EnumEntityBlackBoard.CommandOwner);
+        // }
+
+        // public void SetCommandOwner(EnumCommandOwner _command_owner)
+        // {
+        //     BlackBoard.SetValue(EnumEntityBlackBoard.CommandOwner, (int)_command_owner);
+        // }
+
+        public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
         {
-            return (EnumCommandOwner)BlackBoard.GetValue(EnumEntityBlackBoard.CommandOwner);
+            // 검사할 AIScore 목록
+            var list_ai = new [] 
+            { 
+                EnumEntityBlackBoard.AIScore_Attack,
+                EnumEntityBlackBoard.AIScore_Done 
+            };
+
+            // 가장 높은 Score를 반환합니다.
+            return list_ai.Aggregate((type:EnumEntityBlackBoard.None, score:0f), (top_score, e) =>
+            {
+                var     score = BlackBoard.GetBPValueAsFloat(e);
+                return (score > top_score.score) ? (e, score) : top_score;
+            });
         }
 
-        public void SetCommandOwner(EnumCommandOwner _command_owner)
+        void OnReceiveEvent_Command_Dispatch_AI_Update(SituationUpdatedEvent _param)
         {
-            BlackBoard.SetValue(EnumEntityBlackBoard.CommandOwner, (int)_command_owner);
+            // 다른 진영의 턴이면 아무 것도 하지 않는다.
+            var faction = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
+            if (faction != GetFaction())
+                return;
+
+            // 플레이어 턴이면 AI Update 할 일이 없겠지?
+            // TODO: 혼란 상태 등은 나중에 따로 처리.
+            var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+            if (commander_type == EnumCommanderType.Player)
+                return;
+
+            // 현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자.
+            var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntityID();
+            if (command_progress_id > 0 && command_progress_id != ID)
+                return;
+
+            
+            // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
+            AIManager.Update();
+
+            var my_score  = GetAIScoreMax().score;
+            var top_score = BattleSystemManager.Instance.BlackBoard.GetBPValueAsFloat(EnumBattleBlackBoard.AIScore);
+        
+            if (my_score > top_score)
+            {
+                BattleSystemManager.Instance.BlackBoard.SetBPValue(EnumBattleBlackBoard.AIScore, my_score);
+                BattleSystemManager.Instance.BlackBoard.aiscore_top_entity_id = ID;
+            }
         }
 
         public bool HasCommandFlag(EnumCommandFlag _command_flag)
@@ -34,13 +84,10 @@ namespace Battle
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
         }
 
+    
 
-        public EnumCommandProgressState GetCommandProgressState(int _faction)
+        public EnumCommandProgressState GetCommandProgressState()
         {
-            // 진영이 다르면 행동 불가능.
-            if (GetFaction() != _faction)
-                return EnumCommandProgressState.Invalid;
-
             // 행동 완료 상태.
             if (HasCommandFlag(EnumCommandFlag.Done))
                 return EnumCommandProgressState.Done;
@@ -53,15 +100,28 @@ namespace Battle
             return EnumCommandProgressState.None;
         }
 
-        public bool IsEnableCommandProgress(int _faction)
+        public bool IsEnableCommandProgress()
         {
-            var progress_state = GetCommandProgressState(_faction);
+            var progress_state = GetCommandProgressState();
             if (progress_state == EnumCommandProgressState.None
             ||  progress_state == EnumCommandProgressState.Progress)
                 return true;
 
             return false;
         }
+
+        public bool IsEnableCommandProgress(int _faction)
+        {
+            // TODO: 진영 체크하는 부분 삭제하자...
+            //       LOOP 돌면서 찾기 위해서 만들어 놨는데 최적화 하면 필요없을 코드임.
+            // 진영이 다르면 행동 불가능.
+            if (GetFaction() != _faction)
+                return false;
+
+            return IsEnableCommandProgress();
+        }
+
+        
 
 
         public bool ShouldSetCommandDone()

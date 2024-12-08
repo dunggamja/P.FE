@@ -21,7 +21,7 @@ namespace Battle
         public PathVehicle          PathVehicle     { get; } 
         public int                  PathAttribute   { get; private set; }
         public int                  PathZOCFaction  => GetFaction();
-        public SensorManager        SensorManager   { get; private set; }
+        public AIManager            AIManager       { get; private set; }
         // public CommandManager       CommandManager  { get; private set; }    
 
 
@@ -41,7 +41,7 @@ namespace Battle
             PathNodeManager = new PathNodeManager();
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
-            SensorManager   = new SensorManager();
+            AIManager   = new AIManager();
             // CommandManager  = new CommandManager();
         }
 
@@ -56,7 +56,7 @@ namespace Battle
         public void Initialize()
         {
             Inventory.Initialize(this);
-            SensorManager.Initialize(this);
+            AIManager.Initialize(this);
             // CommandManager.Initialize(this);
             // PathNodeManager.Setup(CellPosition);
             PathVehicle.Setup(Cell.CellToPosition());
@@ -106,7 +106,13 @@ namespace Battle
             {
                 switch(situation_updated.Situation)
                 {
-                    case EnumSituationType.BattleSystem_Faction_Changed: OnReceiveEvent_Faction_Changed(situation_updated); break;
+                    case EnumSituationType.BattleSystem_Faction_Changed: 
+                    OnReceiveEvent_Faction_Changed(situation_updated); 
+                    break;
+
+                    case EnumSituationType.BattleSystem_Command_Dispatch_AI_Update:
+                    OnReceiveEvent_Command_Dispatch_AI_Update(situation_updated);
+                    break;
                 }
 
 
@@ -131,10 +137,9 @@ namespace Battle
                 // 행동 완료 처리 reset 
                 ResetCommandProgressState();
             }
-            
-
-
         }
+
+        
     }
 
 

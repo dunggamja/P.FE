@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Battle
@@ -53,17 +54,58 @@ namespace Battle
         {
             return 0 != (GetValue(_type) & (1 << _bit_index));
         }
+
+
+        public virtual void Reset()
+        {
+            m_repository.Reset();
+        }
         
     }
 
     public class EntityBlackBoard : BlackBoard<EnumEntityBlackBoard>
     {
-        
+        public AI_Attack.ScoreResult aiscore_attack { get; private set; } = new();
+
+        public Int64 command_progress_entity_id = 0;
+
+        public override void Reset()
+        {
+            base.Reset();
+            aiscore_attack.Reset();
+            command_progress_entity_id = 0;
+        }
     }
 
     public class BattleBlackBoard : BlackBoard<EnumBattleBlackBoard>
     {
+        public  Int64            aiscore_top_entity_id      { get; set; } = 0;
+        private HashSet<Int64>   command_progress_entity_id { get; set; } = new ();
 
+        public void SetCommandProgressEntityID(Int64 _entity_id)
+        {
+            if (!command_progress_entity_id.Contains(_entity_id))
+                 command_progress_entity_id.Add(_entity_id);
+        }
+
+        public void RemoveCommandProgressEntityID(Int64 _entity_id)
+        {
+            command_progress_entity_id.Remove(_entity_id);
+        }
+
+        public Int64 PeekCommandProgressEntityID()
+        {
+            return 0 < command_progress_entity_id.Count ? command_progress_entity_id.First() : 0;
+        }
+
+        
+
+        public override void Reset()
+        {
+            base.Reset();
+            aiscore_top_entity_id = 0;
+            command_progress_entity_id.Clear();
+        }
     }
 }
 

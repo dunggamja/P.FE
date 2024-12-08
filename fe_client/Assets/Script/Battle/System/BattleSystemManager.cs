@@ -12,14 +12,19 @@ namespace Battle
         List<BattleSystem>      m_update_system = new();
 
 
-        public IBattleSystemParam  Param      { get; private set; }
-        public EnumState           State      { get; private set; }
+        public IBattleSystemParam                Param               { get; private set; }
+        public EnumState                         State               { get; private set; }
+                       
+        public BattleBlackBoard                  BlackBoard          { get; private set; } = new ();
+
+        
 
 
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
 
-        private int m_system_index = 0;
+        private int                                m_system_index      = 0;
+        private Dictionary<int, EnumCommanderType> m_faction_commander = new ();
 
 
         protected override void Init()
@@ -47,9 +52,12 @@ namespace Battle
         {
             Param = null;
             State = EnumState.None;
+            BlackBoard.Reset();
 
             m_update_system.ForEach(e => e.Release());
-            //m_update_index = 0;
+            m_system_index = 0;
+
+            m_faction_commander.Clear();
         }
 
         public void SetData(IBattleSystemParam _param)
@@ -142,6 +150,23 @@ namespace Battle
         private bool IsSystemFinished(EnumSystem _system_type)
         {
             return GetSystemState(_system_type) == EnumState.Finished;
+        }
+
+
+        public EnumCommanderType GetFactionCommanderType(int _faction)
+        {
+            if (m_faction_commander.TryGetValue(_faction, out var command_owner))
+                return command_owner;
+
+            return EnumCommanderType.None;
+        }
+
+        public void SetFactionCommanderType(int _faction, EnumCommanderType _commander_type)
+        {
+            if (!m_faction_commander.ContainsKey(_faction))
+                 m_faction_commander.Add(_faction, _commander_type);
+            else
+                 m_faction_commander[_faction] = _commander_type;
         }
 
 

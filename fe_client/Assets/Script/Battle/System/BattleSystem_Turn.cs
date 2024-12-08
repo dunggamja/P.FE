@@ -41,12 +41,15 @@ namespace Battle
 
         protected override void OnEnter(IBattleSystemParam _param)
         {
-           EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
+           //EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
         }
 
 
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
+
+            ++m_turn_update_count;
+
             // 다음에 행동할 진영을 찾아야 하는지 체크.
             var turn    = Turn_Cur;
             var faction = Faction_Cur;
@@ -71,8 +74,13 @@ namespace Battle
 
                 UpdateTurnAndFaction(turn, faction);
 
+                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.TurnUpdateCount, m_turn_update_count);
+                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentTurn,     Turn_Cur);
+                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentFaction,  Faction_Cur);
+
+
                 if (Faction_Cur != Faction_Prev) 
-                {
+                {                    
                     EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed, _param));
                 }
 

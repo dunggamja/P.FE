@@ -36,11 +36,28 @@ namespace Battle
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
             // command queue가 모두 종료될 때 까지 돌아봅시다.
-            var command = CommandManager.Instance.PeekCommand();
-            if (command != null && command.Update() == EnumState.Finished)
+            var command  = CommandManager.Instance.PeekCommand();
+            if (command != null)
             {
-                // command가 완료되면 pop 처리.
-                CommandManager.Instance.PopCommand();
+                if (command.Update() == EnumState.Finished)
+                {
+                    // command가 완료되면 pop 처리.
+                    CommandManager.Instance.PopCommand();
+                }
+
+                // 행동을 진행 중인 상태인지 체크합니다.
+                var entity           = EntityManager.Instance.GetEntity(command.OwnerID);
+                var command_progress = (entity != null && entity.GetCommandProgressState() == EnumCommandProgressState.Progress);
+                if (command_progress)
+                {
+                    // 행동이 이어지고 있다면 넣어준다.
+                    BattleSystemManager.Instance.BlackBoard.SetCommandProgressEntityID(command.OwnerID);                                          
+                }
+                else
+                {
+                    // 행동이 완료되었다면 빼준다.
+                    BattleSystemManager.Instance.BlackBoard.RemoveCommandProgressEntityID(command.OwnerID);
+                }
             }
  
             // queue가 모두 비었으면 종료처리.
