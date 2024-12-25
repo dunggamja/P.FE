@@ -18,16 +18,10 @@ namespace Battle
         // TODO: sensor system에 대해서 정리 필요함...;;;;;
         // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
 
-        Int64 m_owner_id = 0;
 
 
         public bool Initialize(IOwner _owner)
         {
-            if (_owner == null)
-                return false;
-
-            m_owner_id = _owner.ID;
-
             AddAIUpdater(new AI_Attack());
 
             return true;
@@ -85,15 +79,12 @@ namespace Battle
         }
 
 
-        public void Update()
+        public void Update(IOwner _owner)
         {
-            var entity = EntityManager.Instance.GetEntity(m_owner_id);
-            if (entity == null)
-                return;
-
+         
             foreach((var type, var ai) in m_repository)
             {
-                ai.Update(entity);
+                ai.Update(_owner);
             }
         }
     }

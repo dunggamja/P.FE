@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Battle
 {
-    [EventReceiverAttribute(typeof(SituationUpdatedEvent))]
     public partial class Entity : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
     {
         public Int64                ID              { get; private set; }
@@ -41,7 +39,7 @@ namespace Battle
             PathNodeManager = new PathNodeManager();
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
-            AIManager   = new AIManager();
+            AIManager       = new AIManager();
             // CommandManager  = new CommandManager();
         }
 
@@ -99,47 +97,8 @@ namespace Battle
             BlackBoard.SetValue(EnumEntityBlackBoard.Faction, _faction);
         }
 
+   
 
-        public void OnReceiveEvent(IEventParam _param)
-        {
-            if (_param is SituationUpdatedEvent situation_updated)
-            {
-                switch(situation_updated.Situation)
-                {
-                    case EnumSituationType.BattleSystem_Faction_Changed: 
-                    OnReceiveEvent_Faction_Changed(situation_updated); 
-                    break;
-
-                    case EnumSituationType.BattleSystem_Command_Dispatch_AI_Update:
-                    OnReceiveEvent_Command_Dispatch_AI_Update(situation_updated);
-                    break;
-                }
-
-
-                // situation 변경시 스킬 사용.
-                Skill.UseSkill(situation_updated.Situation, this);
-
-
-            }
-        }
-
-
-        void OnReceiveEvent_Faction_Changed(SituationUpdatedEvent _param)
-        {
-            // _param.SystemParam as Battlesys
-            var system = BattleSystemManager.Instance.GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
-            if (system == null)
-                return;
-
-            // 턴이 변경되었을 때.
-            if (system.Turn_Prev != system.Turn_Cur)
-            {
-                // 행동 완료 처리 reset 
-                ResetCommandProgressState();
-            }
-        }
-
-        
     }
 
 
