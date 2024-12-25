@@ -47,13 +47,13 @@ namespace Battle
             switch(_param.Situation)
             {
                 case EnumSituationType.BattleSystem_Command_Dispatch_AI_Update:
-                OnReceiveEvent_AI_CommandDispatch(_param);
+                OnSituationEvent_AI_CommandDispatch(_param);
                 break;
             }
 
         }
 
-        void OnReceiveEvent_AI_CommandDispatch(SituationUpdatedEvent _param)
+        void OnSituationEvent_AI_CommandDispatch(SituationUpdatedEvent _param)
         {
             // 다른 진영의 턴이면 아무 것도 하지 않는다.
             var faction = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
