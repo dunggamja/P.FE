@@ -65,37 +65,34 @@ namespace Battle
 
     public class EntityBlackBoard : BlackBoard<EnumEntityBlackBoard>
     {
-        public AI_Attack.ScoreResult aiscore_attack { get; private set; } = new();
+        public AI_Attack.ScoreResult Score_Attack { get; private set; } = new();
 
-        public Int64 command_progress_entity_id = 0;
 
         public override void Reset()
         {
             base.Reset();
-            aiscore_attack.Reset();
-            command_progress_entity_id = 0;
+            Score_Attack.Reset();
         }
     }
 
     public class BattleBlackBoard : BlackBoard<EnumBattleBlackBoard>
     {
-        public  Int64            aiscore_top_entity_id      { get; set; } = 0;
-        private HashSet<Int64>   command_progress_entity_id { get; set; } = new ();
+        private HashSet<Int64>   CommandProgress_Entities { get; set; } = new ();
 
-        public void SetCommandProgressEntityID(Int64 _entity_id)
+        public void InsertCommandProgressEntity(Int64 _entity_id)
         {
-            if (!command_progress_entity_id.Contains(_entity_id))
-                 command_progress_entity_id.Add(_entity_id);
+            if (!CommandProgress_Entities.Contains(_entity_id))
+                 CommandProgress_Entities.Add(_entity_id);
         }
 
-        public void RemoveCommandProgressEntityID(Int64 _entity_id)
+        public void RemoveCommandProgressEntity(Int64 _entity_id)
         {
-            command_progress_entity_id.Remove(_entity_id);
+            CommandProgress_Entities.Remove(_entity_id);
         }
 
-        public Int64 PeekCommandProgressEntityID()
+        public Int64 PeekCommandProgressEntity()
         {
-            return 0 < command_progress_entity_id.Count ? command_progress_entity_id.First() : 0;
+            return 0 < CommandProgress_Entities.Count ? CommandProgress_Entities.First() : 0;
         }
 
         
@@ -103,8 +100,7 @@ namespace Battle
         public override void Reset()
         {
             base.Reset();
-            aiscore_top_entity_id = 0;
-            command_progress_entity_id.Clear();
+            CommandProgress_Entities.Clear();
         }
     }
 }

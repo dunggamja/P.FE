@@ -138,7 +138,7 @@ namespace Battle
 
 
             // 결과값은 가장 높은 것 1개만 저장해봅세...
-            owner_blackboard.aiscore_attack.Reset();
+            owner_blackboard.Score_Attack.Reset();
             owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, 0f);            
 
 
@@ -177,7 +177,11 @@ namespace Battle
                     {
                         var target_entity = EntityManager.Instance.GetEntity(target_id);
                         if (target_entity == null)
-                            continue;      
+                            continue; 
+
+                        // 죽었으면 타겟팅에서 제외
+                        if (target_entity.IsDead)
+                            continue;     
 
                         // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.// 혼돈같은 상태이상도 있을수 있고... NPC인데 아군도 있을 수 있고...
                         if (target_entity.GetFaction() == owner_entity.GetFaction())
@@ -196,7 +200,7 @@ namespace Battle
                         if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
                         {
                             // 높은 점수 셋팅.
-                            owner_blackboard.aiscore_attack.SetData(current_score);                            
+                            owner_blackboard.Score_Attack.SetData(current_score);                            
                             owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                         }
                     }

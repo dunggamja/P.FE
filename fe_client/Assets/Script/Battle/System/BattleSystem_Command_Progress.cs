@@ -51,12 +51,12 @@ namespace Battle
                 if (command_progress)
                 {
                     // 행동이 이어지고 있다면 넣어준다.
-                    BattleSystemManager.Instance.BlackBoard.SetCommandProgressEntityID(command.OwnerID);                                          
+                    BattleSystemManager.Instance.BlackBoard.InsertCommandProgressEntity(command.OwnerID);                                          
                 }
                 else
                 {
                     // 행동이 완료되었다면 빼준다.
-                    BattleSystemManager.Instance.BlackBoard.RemoveCommandProgressEntityID(command.OwnerID);
+                    BattleSystemManager.Instance.BlackBoard.RemoveCommandProgressEntity(command.OwnerID);
                 }
             }
  

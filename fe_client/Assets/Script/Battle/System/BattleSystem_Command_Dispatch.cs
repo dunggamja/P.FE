@@ -29,15 +29,18 @@ namespace Battle
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
             // 현재 행동 진영.
-            var faction        = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
-            var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+            var faction         = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
+            var commander_type  = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+
+            //  AI 갱신 이벤트를 날려봅시다.
+            var ai_update_event = new AIUpdateEvent();
 
             switch(commander_type)
             {
                 case EnumCommanderType.None:
                 case EnumCommanderType.AI:
                 // AI Update Event Dispatch
-                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Command_Dispatch_AI_Update, _param));
+                EventDispatchManager.Instance.DispatchEvent(ai_update_event);
                 break;
 
                 case EnumCommanderType.Player:                
@@ -45,8 +48,8 @@ namespace Battle
                 break;
             }
 
-            var entity_id      = BattleSystemManager.Instance.BlackBoard.aiscore_top_entity_id;
-            var entity_object  = EntityManager.Instance.GetEntity(entity_id);
+            // ai 갱신 후 명령을 처리해야 하는 것이 있는지 봐봅세.
+            var entity_object  = EntityManager.Instance.GetEntity(ai_update_event.TopScore_EntityID);
             if (entity_object != null)
             {
                 switch(entity_object.GetAIScoreMax()._type)
@@ -54,68 +57,19 @@ namespace Battle
                     case EnumEntityBlackBoard.AIScore_Attack:
                     {
                         // 공격 명령을 내린다.
-                        Command_By_DamageScore(entity_id, entity_object.BlackBoard.aiscore_attack);
+                        Command_By_DamageScore(entity_object.ID, entity_object.BlackBoard.Score_Attack);
                     }
                     break;
 
                     case EnumEntityBlackBoard.AIScore_Done:
                     {
                         // 행동 완료 명령을 내린다.
-                        CommandManager.Instance.PushCommand(new Command_Done(entity_id));
+                        CommandManager.Instance.PushCommand(new Command_Done(entity_object.ID));
                     }
                     break;
                 }
-
             }
             
-
-
-
-            // // TODO: 행동중인 유닛이 있다면 그것을 우선 처리 해야함.
-            // var list_progress = EntityManager.Instance.Collect(e => e.GetCommandProgressState(faction) == EnumCommandProgressState.Progress);
-            // if (list_progress.Count > 0)
-            // {
-            //     // TODO: 일단은 완료 명령을 내리는 것으로 해둠. 
-            //     //       행동이 가능한게 있는지 확인하고 종료하도록 바꿔야 한다.
-            //     foreach (var e in list_progress)
-            //     {
-            //         CommandManager.Instance.PushCommand(new Command_Done(e.ID));
-            //     }
-
-            //     return true;
-            // }
-            
-
-            //var list_none = EntityManager.Instance.Collect(e => e.GetCommandProgressState(faction) == EnumCommandProgressState.None);
-           
-            
-            //EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Command_Dispatch_test, _param));
-            
-            // // TODO: 지금은 공격 스코어가 가장 높은 타겟을 고르고 있는데...
-            // //       추후에 다른 스코어를 추가할 수 있도록 변경 필요.   (전술적 목표에 따라서.)
-            // var best_score = (EntityID:(Int64)0, Score:0f);
-
-            // // 가장 점수가 높은 행동을 할 수 있는 유닛을 1명 고릅시다.
-            // foreach(var e in list_none)
-            // {
-            //     // e.BlackBoard.aiscore_attack
-            //     var score = e.BlackBoard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack);
-            //     if (best_score.Score < score)
-            //     {
-            //         best_score = (e.ID, score);
-            //     }
-            // }
-
-            // // 가장 점수가 높은 유닛에게 공격 명령   
-            // if (best_score.EntityID > 0)
-            // { 
-            //     var entity_object  = EntityManager.Instance.GetEntity(best_score.EntityID);  
-            //     if (entity_object != null)
-            //     {
-            //         Command_By_DamageScore(entity_object.ID, entity_object.BlackBoard.aiscore_attack);
-            //     }
-            // }
-
                 
             return true;
         }

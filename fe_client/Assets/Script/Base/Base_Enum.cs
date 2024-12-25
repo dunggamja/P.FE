@@ -42,7 +42,7 @@ public enum EnumSituationType
     BattleSystem_Turn_Changed,     // (전투) 턴 변경
     BattleSystem_Faction_Changed,  // (전투) 진영 변경
 
-    BattleSystem_Command_Dispatch_AI_Update,
+    //BattleSystem_Command_Dispatch_AI_Update,
 }
 
 

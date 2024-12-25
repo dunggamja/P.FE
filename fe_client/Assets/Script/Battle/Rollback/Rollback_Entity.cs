@@ -12,10 +12,10 @@ namespace Battle
         (int x, int y) position  = (0, 0);
 
         public Rollback_Entity_Position(
-            Int64          _time_stamp,
+            int            _turn,
             Int64          _entity_id,
             (int x, int y) _position) 
-            : base(_time_stamp)
+            : base(_turn)
         {
             entity_id = _entity_id;
             position  = _position;
@@ -33,7 +33,7 @@ namespace Battle
 
     public class Rollback_Entity_Damage : Rollback
     {
-        public Rollback_Entity_Damage(long _time_stamp) : base(_time_stamp)
+        public Rollback_Entity_Damage(Int32 _turn) : base(_turn)
         {
         }
 
@@ -45,7 +45,7 @@ namespace Battle
 
     public class Rollback_Entity_Death : Rollback
     {
-        public Rollback_Entity_Death(long _time_stamp) : base(_time_stamp)
+        public Rollback_Entity_Death(Int32 _turn): base(_turn)
         {
         }
 

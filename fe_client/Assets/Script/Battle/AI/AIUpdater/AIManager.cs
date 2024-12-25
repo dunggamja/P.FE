@@ -23,6 +23,7 @@ namespace Battle
         public bool Initialize(IOwner _owner)
         {
             AddAIUpdater(new AI_Attack());
+            AddAIUpdater(new AI_Done());
 
             return true;
         }

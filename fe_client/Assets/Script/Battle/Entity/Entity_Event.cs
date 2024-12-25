@@ -5,33 +5,40 @@ using UnityEngine;
 
 namespace Battle
 {
-    [EventReceiverAttribute(typeof(SituationUpdatedEvent))]
+    [EventReceiverAttribute(
+        typeof(SituationUpdatedEvent),
+        typeof(AIUpdateEvent)
+        )]
     public partial class Entity
     {
 
-        public void OnReceiveEvent(IEventParam _param)
-        {
+        public void OnReceiveEvent(IEventParam _event)
+        {            
             // situation update event
-            if (_param is SituationUpdatedEvent situation_updated)
+            if (_event is SituationUpdatedEvent situation_updated)
             {
                 // 진영 갱신 
                 OnSituationEvent_Turn(situation_updated);
 
-                // AI 갱신
-                OnSituationEvent_AI(situation_updated);
-
                 // 스킬 사용.
                 Skill.UseSkill(situation_updated.Situation, this);
             }
+            else if (_event is AIUpdateEvent ai_update_event)
+            {
+                // AI 갱신
+                OnAIUpdateEvent(ai_update_event);
+            }
+
+
         }
 
 
-        void OnSituationEvent_Turn(SituationUpdatedEvent _param)
+        void OnSituationEvent_Turn(SituationUpdatedEvent _event)
         {
-            if (_param == null)
+            if (_event == null)
                 return;
 
-            if (_param.Situation == EnumSituationType.BattleSystem_Turn_Changed)
+            if (_event.Situation == EnumSituationType.BattleSystem_Turn_Changed)
             {
                 // 턴이 변경되었을 때.
                 // 행동 완료 처리 reset 
@@ -39,22 +46,13 @@ namespace Battle
             }
         }   
 
-        void OnSituationEvent_AI(SituationUpdatedEvent _param)
+
+        void OnAIUpdateEvent(AIUpdateEvent _event)
         {
-            if (_param == null)
+            // 죽었으면 암것도 안함.
+            if (IsDead)
                 return;
 
-            switch(_param.Situation)
-            {
-                case EnumSituationType.BattleSystem_Command_Dispatch_AI_Update:
-                OnSituationEvent_AI_CommandDispatch(_param);
-                break;
-            }
-
-        }
-
-        void OnSituationEvent_AI_CommandDispatch(SituationUpdatedEvent _param)
-        {
             // 다른 진영의 턴이면 아무 것도 하지 않는다.
             var faction = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
             if (faction != GetFaction())
@@ -67,21 +65,15 @@ namespace Battle
                 return;
 
             // 현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자.
-            var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntityID();
+            var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntity();
             if (command_progress_id > 0 && command_progress_id != ID)
                 return;
             
             // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
             AIManager.Update(this);
 
-            var my_score  = GetAIScoreMax().score;
-            var top_score = BattleSystemManager.Instance.BlackBoard.GetBPValueAsFloat(EnumBattleBlackBoard.AIScore);
-        
-            if (my_score > top_score)
-            {
-                BattleSystemManager.Instance.BlackBoard.SetBPValue(EnumBattleBlackBoard.AIScore, my_score);
-                BattleSystemManager.Instance.BlackBoard.aiscore_top_entity_id = ID;
-            }
+            // event param에 등록.
+            _event.TryTopScore(ID, GetAIScoreMax().score);
         }
     }
 }

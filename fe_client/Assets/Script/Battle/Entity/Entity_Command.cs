@@ -58,6 +58,10 @@ namespace Battle
 
         public EnumCommandProgressState GetCommandProgressState()
         {
+            // 죽은 것도 행동 완료로...
+            if (IsDead)
+                return EnumCommandProgressState.Done;
+
             // 행동 완료 상태.
             if (HasCommandFlag(EnumCommandFlag.Done))
                 return EnumCommandProgressState.Done;

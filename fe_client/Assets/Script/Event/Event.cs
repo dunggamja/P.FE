@@ -10,7 +10,6 @@ public interface IEventParam
 
 
 
-
 [System.AttributeUsage(System.AttributeTargets.Class |
                        System.AttributeTargets.Struct)]
 public class EventReceiverAttribute : System.Attribute
