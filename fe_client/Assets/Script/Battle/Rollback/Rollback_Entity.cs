@@ -8,8 +8,8 @@ namespace Battle
     // 포지션 변경.
     public class Rollback_Entity_Position : Rollback    
     {
-        Int64          entity_id = 0;
-        (int x, int y) position  = (0, 0);
+        Int64          EntityID  = 0;
+        (int x, int y) Position  = (0, 0);
 
         public Rollback_Entity_Position(
             int            _turn,
@@ -17,36 +17,51 @@ namespace Battle
             (int x, int y) _position) 
             : base(_turn)
         {
-            entity_id = _entity_id;
-            position  = _position;
+            EntityID = _entity_id;
+            Position = _position;
         }
 
         public override void Undo()
         {
-            var entity = EntityManager.Instance.GetEntity(entity_id);
+            var entity = EntityManager.Instance.GetEntity(EntityID);
             if (entity != null)
             {
-                entity.UpdateCellPosition(position.x, position.y, true);
+                entity.UpdateCellPosition(Position.x, Position.y, true);
             }
         }
     }
 
-    public class Rollback_Entity_Damage : Rollback
+    public class Rollback_Entity_HP : Rollback
     {
-        public Rollback_Entity_Damage(Int32 _turn) : base(_turn)
+        Int64 EntityID = 0;
+        Int32 HP       = 0;
+        public Rollback_Entity_HP(
+            Int32 _turn,
+            Int64 _entity_id,
+            Int32 _hp)
+             : base(_turn)
         {
+            EntityID = _entity_id;
+            HP        = _hp;
         }
 
         public override void Undo()
         {
-            throw new NotImplementedException();
+            var entity = EntityManager.Instance.GetEntity(EntityID);
+            if (entity != null)
+            {
+                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP, HP);
+            }
         }
     }
 
     public class Rollback_Entity_Death : Rollback
     {
-        public Rollback_Entity_Death(Int32 _turn): base(_turn)
+        public Rollback_Entity_Death(
+            Int32 _turn)
+        : base(_turn)
         {
+            // entity
         }
 
         public override void Undo()
