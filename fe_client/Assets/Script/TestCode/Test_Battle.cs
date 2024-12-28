@@ -113,12 +113,12 @@ public class Test_Battle : MonoBehaviour
         //}
     }
 
-    [ContextMenu("AddressableTest")]
-    void Test_Addressable()
-    {
-        Battle.EntityHelper.CreateBattleEntityAndObject();
-        //WorldObjectManager.Instance.Create(Util.GenerateID());
-    }
+    // [ContextMenu("AddressableTest")]
+    // void Test_Addressable()
+    // {
+    //     Battle.EntityHelper.CreateBattleEntityAndObject();
+    //     //WorldObjectManager.Instance.Create(Util.GenerateID());
+    // }
 
     [ContextMenu("Test_BattelSystem_Setup")]
     void Test_BattleSystem_Setup()
@@ -159,8 +159,11 @@ public class Test_Battle : MonoBehaviour
 
     void Test_BattleSystem_Setup_Unit()
     {
-        var attacker = Entity.Create(Util.GenerateID());
-        var defender = Entity.Create(Util.GenerateID());
+        var attacker_id = Util.GenerateID();
+        var defender_id = Util.GenerateID();
+        var attacker    = Entity.Create(attacker_id);
+        var defender    = Entity.Create(defender_id);
+
 
         EntityManager.Instance.AddEntity(attacker);
         EntityManager.Instance.AddEntity(defender);
@@ -234,6 +237,8 @@ public class Test_Battle : MonoBehaviour
         }
 
 
+        WorldObjectManager.Instance.CreateObject(attacker.ID);
+        WorldObjectManager.Instance.CreateObject(defender.ID);
     }
 
 }

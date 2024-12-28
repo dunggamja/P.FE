@@ -6,24 +6,37 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 
-public class WorldObjectManager : SingletonMono<WorldObjectManager>
+public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEventReceiver
 {
     Dictionary<Int64, WorldObject> m_repository = new(); 
 
-    public WorldObject Seek(Int64 _id)             => m_repository.TryGetValue(_id, out var result) ? result : null;
-    public bool  Remove(Int64 _id)                 => m_repository.Remove(_id);
-    public bool  Insert(WorldObject _world_object) => (_world_object) ? m_repository.TryAdd(_world_object.ID, _world_object) : false;
+    public WorldObject Seek(Int64 _id)      => m_repository.TryGetValue(_id, out var result) ? result : null;
+    bool  Remove(Int64 _id)                 => m_repository.Remove(_id);
+    bool  Insert(WorldObject _world_object) => (_world_object) ? m_repository.TryAdd(_world_object.ID, _world_object) : false;
     
-    public void Create(Int64 _id, Action<bool, Int64> _on_result = null)
+
+
+
+    public void CreateObject(Int64 _id, Action<bool, Int64> _on_result = null)
     {   
 
         var load_asset_address = "test";
         //Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");            
 
         AssetManager.Instance.InstantiateAsync(load_asset_address, (_object)=>
-        {
+        {            
             if (_object)
             {
+                var exist_object  = Seek(_id);
+                if (exist_object != null)
+                {
+                    // 중복으로 생성이 되있을 경우 삭제 처리.
+                    Debug.LogError($"already exist object, {_id}"); 
+                    GameObject.Destroy(_object);
+                    return;
+                }
+
+
                 _object.name  = $"{_id.ToString("D10")}_{load_asset_address}";
                 var new_actor = _object.TryAddComponent<WorldObject>();
 
@@ -42,6 +55,8 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
                 _on_result?.Invoke(false, _id);         
             }
         });
+
+
 
         //Debug.Log($"InstantiateAsync Try-2, {load_asset_address}");            
 
@@ -88,11 +103,23 @@ public class WorldObjectManager : SingletonMono<WorldObjectManager>
 
 
     }
+
+
+    public void DeleteObject(Int64 _id)
+    {
+        var world_object =  Seek(_id);
+        if (world_object == null)
+            return;
+
+        GameObject.Destroy(world_object);
+        Remove(_id);
+    }
+
     // public async (bool, Actor) CreateActorAsync(Int64 _id)
     // {
     //     // TODO: Addressable 사용해보자.
     //     await;
-        
+
     //     // var load_request = Resources.LoadAsync("unit/test");
     //     // await load_request.
 

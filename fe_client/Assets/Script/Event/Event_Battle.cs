@@ -33,8 +33,3 @@ namespace Battle
     }
 }
 
-
-public class BattleSystem_Command_Dispatch : IEventParam
-{
-    
-}

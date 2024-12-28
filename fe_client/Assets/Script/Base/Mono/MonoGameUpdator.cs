@@ -8,15 +8,11 @@ public class MonoGameUpdator : SingletonMono<MonoGameUpdator>
 {
 
 
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-    }
+    // // Start is called before the first frame update
+    // protected override void Start()
+    // {
+    //     base.Start();
+    // }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }
