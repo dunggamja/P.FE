@@ -63,7 +63,10 @@ namespace Battle
         {
             if (Owner != null)
             {
-                Owner.SetCommandFlag(EnumCommandFlag.Action, true);
+
+                // Owner.SetCommandDone(EnumCommandFlag.Action);
+                // TODO: 일단 모든 행동 종료처리로 해둔다.
+                Owner.SetAllCommandDone();
             }
 
             CombatParam.Cache.Reset();

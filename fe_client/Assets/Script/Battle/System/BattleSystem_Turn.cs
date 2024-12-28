@@ -50,6 +50,12 @@ namespace Battle
 
             ++m_turn_update_count;
 
+            if (Turn_Cur == 0 && Faction_Cur == 0)
+            {
+                // 턴이 셋팅되지 않았을 때 초기화 처리.
+                UpdateTurnAndFaction(1, 0);
+            }
+
             // 다음에 행동할 진영을 찾아야 하는지 체크.
             var turn    = Turn_Cur;
             var faction = Faction_Cur;
@@ -73,21 +79,6 @@ namespace Battle
 
 
                 UpdateTurnAndFaction(turn, faction);
-
-                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.TurnUpdateCount, m_turn_update_count);
-                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentTurn,     Turn_Cur);
-                BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentFaction,  Faction_Cur);
-
-
-                if (Faction_Cur != Faction_Prev) 
-                {                    
-                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed, _param));
-                }
-
-                if (Turn_Cur != Turn_Prev) 
-                {
-                    EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
-                }
             }
 
 
@@ -144,7 +135,24 @@ namespace Battle
             Faction_Prev = Faction_Cur;
 
             Turn_Cur     = _turn;
-            Faction_Cur  = _faction;            
+            Faction_Cur  = _faction;        
+
+
+            // BlackBoard에 셋팅.
+            BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.TurnUpdateCount, m_turn_update_count);
+            BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentTurn,     Turn_Cur);
+            BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentFaction,  Faction_Cur);
+
+            // 이벤트 디스팻치.
+            if (Faction_Cur != Faction_Prev) 
+            {                    
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
+            }
+
+            if (Turn_Cur != Turn_Prev) 
+            {
+                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+            }    
         }
 
         

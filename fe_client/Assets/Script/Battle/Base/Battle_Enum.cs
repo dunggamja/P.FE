@@ -125,8 +125,6 @@ namespace Battle
         TurnUpdateCount = 1, // [Turn 시스템] Turn Update Count    
         CurrentTurn,         // [Turn 시스템] Turn Number    
         CurrentFaction,      // [Turn 시스템] Faction Number  
-
-        AIScore, 
     }
 
     /// <summary>
@@ -182,11 +180,11 @@ namespace Battle
 
     public enum EnumCommandFlag : byte
     {
-        None,
+        // None,        
         Move,     // 이동
         Action,   // 아이템 사용, 공격 등.
         Exchange, // 아이템 교환, ... 요건 Action이 가능하면 냅둘 예정?
-        Done,     // 행동 종료에 대한 플래그.
+        // Done,     // 행동 종료
     }
 
     public enum EnumCommandProgressState 

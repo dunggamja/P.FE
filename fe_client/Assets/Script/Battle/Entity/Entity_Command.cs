@@ -24,8 +24,8 @@ namespace Battle
             // 검사할 AIScore 목록
             var list_ai = new [] 
             { 
-                EnumEntityBlackBoard.AIScore_Attack,
-                EnumEntityBlackBoard.AIScore_Done 
+                EnumEntityBlackBoard.AIScore_Attack
+              , EnumEntityBlackBoard.AIScore_Done 
             };
 
             // 가장 높은 Score를 반환합니다.
@@ -36,38 +36,81 @@ namespace Battle
             });
         }
 
-        
+        public bool HasCommandEnable()
+        {
+            // 가능한 행동이 있는지 체크.
+            foreach(var e in Util.CachedEnumValues<EnumCommandFlag>())
+            {
+                if (HasCommandEnable(e))
+                    return true;
+            }
 
-        public bool HasCommandFlag(EnumCommandFlag _command_flag)
+            return false;
+            // return BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag);
+        }
+
+        public bool HasCommandDone()
+        {
+            // 진행한 행동이 있는지 체크.
+            foreach(var e in Util.CachedEnumValues<EnumCommandFlag>())
+            {
+                if (!HasCommandEnable(e))
+                    return true;                
+            }
+
+            // 진행한 행동이 없는 상태.
+            return false;
+        }
+
+
+        public bool HasCommandEnable(EnumCommandFlag _command_flag)
         {
             return BlackBoard.HasBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
-        public void SetCommandFlag(EnumCommandFlag _command_flag, bool _set_flag)
+        public void SetCommandDone(params EnumCommandFlag[] _command_flag)
         {
-            if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
-            else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+            // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
+            // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+
+            foreach (var e in _command_flag)
+                BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)e);
         }
 
-        public void ResetCommandProgressState()
+        public void SetCommandEnable(params EnumCommandFlag[] _command_flag)
         {
+            // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
+            // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+            foreach (var e in _command_flag)
+                BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)e);
+        }
+
+
+        public void SetAllCommandEnable()
+        {            
+            // 모든 비트플래그를 1로 해준다.
+            BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, -1);
+        }
+
+        public void SetAllCommandDone()
+        {
+            // 모든 비트플래그를 0으로 해준다.
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
         }
 
-    
 
         public EnumCommandProgressState GetCommandProgressState()
         {
-            // 죽은 것도 행동 완료로...
+            // 죽었다.
             if (IsDead)
+                return EnumCommandProgressState.Invalid;
+
+            // 가능한 행동이 없다.
+            if (!HasCommandEnable())
                 return EnumCommandProgressState.Done;
 
-            // 행동 완료 상태.
-            if (HasCommandFlag(EnumCommandFlag.Done))
-                return EnumCommandProgressState.Done;
-
-            // 그 외 값이 있으면 진행중인 행동이 있음.
-            if (BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
+            // 진행한 행동이 있음.
+            if (HasCommandDone())
                 return EnumCommandProgressState.Progress;
 
             // 대기 상태.
@@ -98,19 +141,19 @@ namespace Battle
         
 
 
-        public bool ShouldSetCommandDone()
-        {
-            // 진행 중인 행동이 없으면 완료처리 할 필요 없음.
-            if (!BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
-                return false;
+        // public bool ShouldSetCommandDone()
+        // {
+        //     // 진행 중인 행동이 없으면 완료처리 할 필요 없음.
+        //     if (!BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
+        //         return false;
 
-            // 이미 완료 상태면 완료처리 할 필요 없음.  
-            if (HasCommandFlag(EnumCommandFlag.Done))
-                return false;
+        //     // 이미 완료 상태면 완료처리 할 필요 없음.  
+        //     if (HasCommandFlag(EnumCommandFlag.Done))
+        //         return false;
             
 
-            return true;
-        }
+        //     return true;
+        // }
 
         
     }

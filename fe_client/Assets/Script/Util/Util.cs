@@ -5,19 +5,31 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public static class Util
+public static partial class Util
 {
     static long   s_last_generated_id = 0;
     public static long GenerateID() => ++s_last_generated_id;
     public static void InitializeGenerateID(Int64 _last_generated_id) => s_last_generated_id = _last_generated_id;
-    
-    public static void  SetRandomSeed(int _seed)             => UnityEngine.Random.InitState(_seed);
-    public static float Random01()                           => UnityEngine.Random.Range(0f, 1f); // 0.0 ~ 1.0
-    public static int   Random100()                          => UnityEngine.Random.Range(0, 100); // 0 ~ 99
-    public static bool  Random100_Result(int _success_rate)  => Random100() < _success_rate;
-    public static bool  Random01_Result(float _success_rate) => Random01()  < _success_rate;
 
 
+    static Dictionary<Type, Array> s_cached_enum_values = new();
+    public static T[] CachedEnumValues<T>() where T : Enum
+    {
+        var type = typeof(T);
+        if (!s_cached_enum_values.TryGetValue(type, out var values))
+        {
+            values = Enum.GetValues(type);
+            s_cached_enum_values.Add(type, values);
+        }
+        
+        return (T[])values;
+    }
+
+
+
+    //--------------------------------------
+    // extension methods
+    //--------------------------------------
     public static T TryAddComponent<T>(this GameObject _object) where T : Component
     {
         if (_object == null)
@@ -30,7 +42,6 @@ public static class Util
 
         return result;
     }
-
 
     public static Vector3 CellToPosition(this (int x, int y) _cell) => new Vector3(_cell.x, 0f, _cell.y);
 }

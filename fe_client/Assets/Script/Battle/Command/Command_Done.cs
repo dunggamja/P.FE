@@ -26,7 +26,8 @@ namespace Battle
         {
             if (Owner != null)
             {
-                Owner.SetCommandFlag(EnumCommandFlag.Done, true);
+                // Owner.SetCommandDone(EnumCommandFlag.Done);
+                Owner.SetAllCommandDone();
             }
         }
 

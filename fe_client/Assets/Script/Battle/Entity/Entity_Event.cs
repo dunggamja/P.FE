@@ -41,8 +41,8 @@ namespace Battle
             if (_event.Situation == EnumSituationType.BattleSystem_Turn_Changed)
             {
                 // 턴이 변경되었을 때.
-                // 행동 완료 처리 reset 
-                ResetCommandProgressState();
+                // 행동 가능하게끔...
+                SetAllCommandEnable();
             }
         }   
 

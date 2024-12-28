@@ -27,7 +27,7 @@ namespace Battle
 
             var turn = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentTurn);
 
-            // 이동 전에 RollbackManager에 저장해둔다.
+            // 이동 전에 RollbackManager에 저장해둔다.            
             RollbackManager.Instance.Push(new Rollback_Entity_Position(turn, OwnerID, Owner.Cell));
 
             if (!m_is_immediate)
@@ -66,7 +66,7 @@ namespace Battle
                 Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, true);
 
                 // 행동 플래그 
-                Owner.SetCommandFlag(EnumCommandFlag.Move, true);
+                Owner.SetCommandDone(EnumCommandFlag.Move);
 
             }
         }

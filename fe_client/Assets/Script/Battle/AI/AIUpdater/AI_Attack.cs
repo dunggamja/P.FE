@@ -143,8 +143,8 @@ namespace Battle
 
 
             // 행동들이 가능한 상태인지 체크.
-            var is_moveable   = !owner_entity.HasCommandFlag(EnumCommandFlag.Move);
-            var is_attackable = !owner_entity.HasCommandFlag(EnumCommandFlag.Action);
+            var is_moveable   = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
+            var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
 
             // 공격이 가능한지 체크.
             if (is_attackable)
