@@ -89,8 +89,8 @@ namespace Battle
                     new Command_Move
                     (
                         _entity_id,
-                        _damage_score.Position,
-                        _is_immediate: true // 일단은 즉시 이동.    
+                        _damage_score.Position
+                        //, _is_immediate: true // 일단은 즉시 이동.    
                     ),
 
                     // 공격 명령

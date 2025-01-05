@@ -27,4 +27,6 @@ public class Singleton<T> where T : Singleton<T>, new()
     }
 
     protected virtual void Init() { }
+
+    
 }

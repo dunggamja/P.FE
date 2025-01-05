@@ -41,9 +41,18 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    public static void DestroySingleton()
+    {        
+        if (m_instance)
+        {
+            GameObject.Destroy(m_instance.gameObject);
+            m_instance = null;
+        }
+    }
+
 
     
-    private   float         MIN_UPDATE_INTERVAL = 1f/60f;
+    private   float         MIN_UPDATE_INTERVAL = 1f/120f;
     protected virtual float UpdateInterval     => 0f;
     private   float         m_last_update_time =  0f;
 
@@ -76,6 +85,11 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    // private void LateUpdate()
+    // {
+    //     OnLateUpdate();
+    // }
+
     private void OnApplicationQuit()
     {
         m_shutdown = true;
@@ -83,7 +97,7 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
 
     private void OnDestroy()
     {
-        m_shutdown = true;
+        OnRelease(m_shutdown);
     }
 
     
@@ -95,5 +109,13 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
     }
 
     protected virtual void OnUpdate()
+    { }
+
+    // protected virtual void OnLateUpdate()
+    // {
+
+    // }
+
+    protected virtual void OnRelease(bool _is_shutdown)
     { }
 }

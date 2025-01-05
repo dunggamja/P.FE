@@ -86,7 +86,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     }
 
     // Queue에 넣어놓고 Update에서 처리.
-    public void EnqueueEvent(IEventParam _event)
+    public void AddEventQueue(IEventParam _event)
     {
         if (_event == null)
             return;

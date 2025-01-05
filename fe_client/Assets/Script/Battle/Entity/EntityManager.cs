@@ -88,15 +88,13 @@ namespace Battle
             return null;
         }
 
-        public void Update()
-        {
-            foreach(var e in m_repository_by_id.Values)
-            {
-                e.Update(Time.deltaTime);
-            }
-
-            
-        }
+        // public void Update()
+        // {
+        //     foreach(var e in m_repository_by_id.Values)
+        //     {
+        //         e.Update(Time.deltaTime);
+        //     }
+        // }
 
     }
 }

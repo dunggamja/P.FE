@@ -57,7 +57,8 @@ namespace Battle
             AIManager.Initialize(this);
             // CommandManager.Initialize(this);
             // PathNodeManager.Setup(CellPosition);
-            PathVehicle.Setup(Cell.CellToPosition());
+            UpdateCellPosition(Cell.x, Cell.y, true);
+            //PathVehicle.Setup(Cell.CellToPosition());
             
             EventDispatchManager.Instance.AttachReceiver(this);
         }
@@ -67,9 +68,6 @@ namespace Battle
             EventDispatchManager.Instance.DetachReceiver(this);
         }
 
-        public void Update(float _delta_time)
-        {
-        }
 
 
 

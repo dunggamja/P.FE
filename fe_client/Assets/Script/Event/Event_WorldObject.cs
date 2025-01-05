@@ -3,21 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Battle
-{
-    public class WorldPositionEvent : IEventParam
+// namespace Battle
+// {
+    public class WorldObjectPositionEvent : IEventParam
     {
-        public Int64   ID         { get; private set; } = 0;
-        public Vector3 Position   { get; private set; } = Vector3.zero;
-        public Vector3 Velocity   { get; private set; } = Vector3.zero;
-        public bool    SyncVisual { get; private set; } = false;
+        public Int64   ID            { get; private set; } = 0;
+        public Vector3 Position      { get; private set; } = Vector3.zero;
+        public Vector3 Position_Prev { get; private set; } = Vector3.zero;
+        // public float   Position_Time { get; private set; } = 0f;
         
-        public WorldPositionEvent(Int64 _id, Vector3 _position, Vector3 _velocity, bool _sync_visual)
+        public WorldObjectPositionEvent(Int64 _id, Vector3 _position, Vector3 _position_prev)
         {
-            ID         = _id;
-            Position   = _position;
-            Velocity   = _velocity;
-            SyncVisual = _sync_visual;
+            ID            = _id;
+            Position      = _position;
+            Position_Prev = _position_prev;
+            // Position_Time = _position_time;
         }
     }
-}
+// }

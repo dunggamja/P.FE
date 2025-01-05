@@ -51,7 +51,9 @@ namespace Battle
                 return true;
 
             // 유닛 이동 처리.
-            Owner.UpdatePathBehavior();
+            Owner.UpdatePathBehavior(Constants.BATTLE_SYSTEM_UPDATE_INTERVAL);
+
+            //Debug.Log($"Command_Move, OnUpdate, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
             // 이동이 완료되었으면 완료처리.
             return Owner.PathNodeManager.IsEmpty();
@@ -61,9 +63,12 @@ namespace Battle
         {
             if (Owner != null)
             {
+                // Owner.PathVehicle.Position
                 
                 // 좌표 이동 처리.
-                Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, true);
+                Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, false);
+
+                //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
                 // 행동 플래그 
                 Owner.SetCommandDone(EnumCommandFlag.Move);

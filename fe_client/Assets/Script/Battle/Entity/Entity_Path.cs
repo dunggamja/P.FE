@@ -8,7 +8,7 @@ namespace Battle
 {
     public partial class Entity 
     {
-        public void UpdateCellPosition(int _x, int _y, bool _setup_path_vehicle = false)
+        public void UpdateCellPosition(int _x, int _y, bool _ignore_prev_position = false)
         {
             // 이전 위치.
             var from_x = Cell.x;
@@ -17,28 +17,38 @@ namespace Battle
             // 새 위치.
             Cell = (_x, _y);
 
-            // 맵 정보 갱신.
-            var terrain_map  = PathNodeManager.TerrainMap;
-            if (terrain_map != null)
-            {
-                // 위치 갱신.
-                terrain_map.BlockManager.RefreshEntity(ID, from_x, from_y, _x, _y);                
+            var position_cur  = Cell.CellToPosition();
+            var position_prev = (_ignore_prev_position) ? Cell.CellToPosition() : PathVehicle.Position;
 
-                // ZOC 갱신.
-                terrain_map.ZOC.DecreaseZOC(PathZOCFaction, from_x, from_y);
-                terrain_map.ZOC.IncreaseZOC(PathZOCFaction, _x, _y);
-            }
+            PathVehicle.Setup(position_cur, position_prev);
 
-            if (_setup_path_vehicle)
-            {
-                PathVehicle.Setup(Cell.CellToPosition());
-            }
+            // 이벤트 : Cell
+            EventDispatchManager.Instance.DispatchEvent(new CellPositionEvent(
+                ID,
+                PathZOCFaction,
+                Cell,
+                (from_x, from_y),
+                _ignore_prev_position
+            ));
+
+            // 이벤트 : WorldObejct Position
+            EventDispatchManager.Instance.AddEventQueue(new WorldObjectPositionEvent(
+                ID,
+                PathVehicle.Position,
+                PathVehicle.PositionPrev
+            ));
         }
 
-        public void UpdatePathBehavior(float _speed_rate = 1f)
+        public void UpdatePathBehavior(float _delta_time)
         {
-            PathVehicle.Update(this, Time.deltaTime * _speed_rate);
+            PathVehicle.Update(this, _delta_time);
             PathNodeManager.Update(this);
+
+            EventDispatchManager.Instance.AddEventQueue(new WorldObjectPositionEvent(
+                    ID,
+                    PathVehicle.Position,
+                    PathVehicle.PositionPrev
+                ));
         }
 
 
@@ -51,5 +61,7 @@ namespace Battle
         {
             PathAttribute &= ~(1 << (int)_attribute);
         }
+
+
     }
 }

@@ -8,7 +8,9 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEventReceiver
 {
-    Dictionary<Int64, WorldObject> m_repository = new(); 
+    Dictionary<Int64, WorldObject> m_repository   = new(); 
+
+    private List<WorldObject>      m_remove_queue = new(10);
 
     public WorldObject Seek(Int64 _id)      => m_repository.TryGetValue(_id, out var result) ? result : null;
     bool  Remove(Int64 _id)                 => m_repository.Remove(_id);
@@ -111,9 +113,47 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
         if (world_object == null)
             return;
 
-        GameObject.Destroy(world_object);
+
         Remove(_id);
+
+        // 비활성화 후 삭제 큐에 넣어놓읍시다.
+        world_object.gameObject.SetActive(false);
+        m_remove_queue.Add(world_object);
+
+        // GameObject.Destroy(world_object);
     }
+
+    protected override void OnInitialize()
+    {
+        base.OnInitialize();
+        EventDispatchManager.Instance.AttachReceiver(this);
+    }
+
+
+    protected override void OnUpdate()
+    {
+        base.OnUpdate();
+
+        // 오브젝트 삭제 처리.
+        {
+            foreach(var e in m_remove_queue)
+            {
+                GameObject.Destroy(e.gameObject);
+            }
+            m_remove_queue.Clear();
+        }
+    }
+
+    protected override void OnRelease(bool _is_shutdown)
+    {
+        base.OnRelease(_is_shutdown);
+
+        if (!_is_shutdown)
+        {
+            EventDispatchManager.Instance.DetachReceiver(this);
+        }
+    }
+
 
     // public async (bool, Actor) CreateActorAsync(Int64 _id)
     // {
