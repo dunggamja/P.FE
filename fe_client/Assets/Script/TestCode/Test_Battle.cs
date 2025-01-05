@@ -91,48 +91,48 @@ public class Test_Battle : MonoBehaviour
     }
 
 
-    [ContextMenu("TickUpdate")]
-    void TickUpdate()
-    {
-        //IBattleSystemParam
-        CombatSystemManager.Instance.Update();
-    }
-
-
-    public Vector2Int pos_from = Vector2Int.zero;
-    public Vector2Int pos_to   = Vector2Int.zero;
-    [ContextMenu("PathFind")]
-    void PathFind()
-    {
-        // TerrainMapManager.Instance.Initialize();
-        // var battle_terrain = TerrainMapManager.Instance.TerrainMap;
-        //var list_path      = PathFinder.Find(battle_terrain, pos_from.x, pos_from.y, pos_to.x, pos_to.y);
-        //foreach(var e in list_path)
-        //{
-        //    Debug.LogWarning(e.GetPosition().ToString());
-        //}
-    }
-
-    // [ContextMenu("AddressableTest")]
-    // void Test_Addressable()
+    // [ContextMenu("TickUpdate")]
+    // void TickUpdate()
     // {
-    //     Battle.EntityHelper.CreateBattleEntityAndObject();
-    //     //WorldObjectManager.Instance.Create(Util.GenerateID());
+    //     //IBattleSystemParam
+    //     CombatSystemManager.Instance.Update();
     // }
 
-    [ContextMenu("Test_BattelSystem_Setup")]
-    void Test_BattleSystem_Setup()
-    {
+
+    // public Vector2Int pos_from = Vector2Int.zero;
+    // public Vector2Int pos_to   = Vector2Int.zero;
+    // [ContextMenu("PathFind")]
+    // void PathFind()
+    // {
+    //     // TerrainMapManager.Instance.Initialize();
+    //     // var battle_terrain = TerrainMapManager.Instance.TerrainMap;
+    //     //var list_path      = PathFinder.Find(battle_terrain, pos_from.x, pos_from.y, pos_to.x, pos_to.y);
+    //     //foreach(var e in list_path)
+    //     //{
+    //     //    Debug.LogWarning(e.GetPosition().ToString());
+    //     //}
+    // }
+
+    // // [ContextMenu("AddressableTest")]
+    // // void Test_Addressable()
+    // // {
+    // //     Battle.EntityHelper.CreateBattleEntityAndObject();
+    // //     //WorldObjectManager.Instance.Create(Util.GenerateID());
+    // // }
+
+    // [ContextMenu("Test_BattelSystem_Setup")]
+    // void Test_BattleSystem_Setup()
+    // {
 
 
 
-         // 전투 시스템 Update
-         // BattleSystemManager.Instance.Update();
-    }
-    [ContextMenu("Test_BattelSystem_Update")]
-    void Test_BattleSystem_Update()
-    {
-        BattleSystemManager.Instance.Update();
-    }
+    //      // 전투 시스템 Update
+    //      // BattleSystemManager.Instance.Update();
+    // }
+    // [ContextMenu("Test_BattelSystem_Update")]
+    // void Test_BattleSystem_Update()
+    // {
+    //     BattleSystemManager.Instance.Update();
+    // }
 
 }
