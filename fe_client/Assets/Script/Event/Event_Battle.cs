@@ -7,7 +7,8 @@ namespace Battle
 {
     public class SituationUpdatedEvent : IEventParam
     {
-        public EnumSituationType  Situation   { get; private set; } 
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+        public EnumSituationType      Situation   { get; private set; } 
         // public ISystemParam       SystemParam { get; private set; }   
 
         public SituationUpdatedEvent(EnumSituationType _situation_type)
@@ -19,6 +20,8 @@ namespace Battle
 
     public class AIUpdateEvent : IEventParam
     {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+
         public float TopScore          { get; private set; } = 0;
         public Int64 TopScore_EntityID { get; private set; } = 0;
 
@@ -34,6 +37,8 @@ namespace Battle
 
     public class CellPositionEvent : IEventParam
     {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+
         public Int64          EntityID       { get; private set; } = 0;
         public int            Faction        { get; private set; } = 0;
         public (int x, int y) Cell_Cur       { get; private set; } = (0, 0);

@@ -40,7 +40,7 @@ namespace Battle
                 case EnumCommanderType.None:
                 case EnumCommanderType.AI:
                 // AI Update Event Dispatch
-                EventDispatchManager.Instance.DispatchEvent(ai_update_event);
+                EventDispatchManager.Instance.UpdateEvent(ai_update_event);
                 break;
 
                 case EnumCommanderType.Player:                

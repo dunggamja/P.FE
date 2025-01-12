@@ -146,12 +146,12 @@ namespace Battle
             // 이벤트 디스팻치.
             if (Faction_Cur != Faction_Prev) 
             {                    
-                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
+                EventDispatchManager.Instance.UpdateEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Faction_Changed));
             }
 
             if (Turn_Cur != Turn_Prev) 
             {
-                EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
+                EventDispatchManager.Instance.UpdateEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed));
             }    
         }
 

@@ -68,8 +68,25 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         }
     }
 
+
+    public void UpdateEvent(IEventParam _event)
+    {
+        if (_event == null)
+            return;
+
+        switch (_event.EventProcessTiming)
+        {
+            // 즉시 처리.
+            case EnumEventProcessTiming.Immediate:    DispatchEvent(_event);    break;
+            
+            // 다음 프레임에 처리.
+            case EnumEventProcessTiming.OnNextUpdate: UpdateEventQueue(_event); break;
+        }
+        
+    }
+
     // 이벤트 즉시 처리.
-    public void DispatchEvent(IEventParam _event)
+    private void DispatchEvent(IEventParam _event)
     {
         if (_event == null)
             return;
@@ -85,8 +102,9 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         }
     }
 
+
     // Queue에 넣어놓고 Update에서 처리.
-    public void AddEventQueue(IEventParam _event)
+    private void UpdateEventQueue(IEventParam _event)
     {
         if (_event == null)
             return;
@@ -105,7 +123,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     }
 
 
-    private void DispatchUpdateEventQueue()
+    private void DispatchEventQueue()
     {
         // 큐를 복사한뒤에 처리합시다. 
         var copy_queue = new List<IEventParam>(m_update_event_queue);
@@ -135,7 +153,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     {
         base.OnUpdate();
 
-        DispatchUpdateEventQueue();
+        DispatchEventQueue();
     }
 
 }

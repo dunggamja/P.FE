@@ -4,8 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+public enum EnumEventProcessTiming
+{
+    Immediate,
+    OnNextUpdate,
+}
+
 public interface IEventParam
 {
+    EnumEventProcessTiming EventProcessTiming { get; }
 }
 
 
