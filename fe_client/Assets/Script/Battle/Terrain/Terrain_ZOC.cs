@@ -55,7 +55,7 @@ public class Terrain_ZOC
         }
     }
 
-    public bool IsBlockedZOC(int _x, int _y, params int[] _faction_ignore)
+    public bool IsBlockedZOC(int _x, int _y, int _faction_ignore)
     {
         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
             return false;
@@ -63,9 +63,28 @@ public class Terrain_ZOC
 
         foreach((var faction, var data) in m_faction_zoc)
         {
-            // 같은 팩션의 zoc는 무시합니다.
-            if (_faction_ignore.Contains(faction))
+            // 같은 진영은 통과가능.
+            if (_faction_ignore == faction)
+            {
                 continue;
+            }
+
+            // var is_same_faction = false;
+            // if (_faction_ignore != null)
+            // {
+            //     for (int i = 0; i < _faction_ignore.Length; ++i)
+            //     {
+            //         if (_faction_ignore[i] == faction)
+            //         {
+            //             is_same_faction = true;
+            //             break;
+            //         }
+            //     }
+            // }
+
+            // // 같은 진영은 통과가능.
+            // if (is_same_faction)
+            //     continue;
 
             if (0 < data[_x, _y])
                 return true;

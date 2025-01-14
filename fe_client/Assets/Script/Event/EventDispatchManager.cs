@@ -1,68 +1,104 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
 public class EventDispatchManager : SingletonMono<EventDispatchManager>
 {
-    HashSet<IEventReceiver>                       m_receivers          = new();
+    // HashSet<IEventReceiver>                       m_receivers          = new();
     Dictionary<System.Type, List<IEventReceiver>> m_receivers_by_type  = new();
     List<IEventParam>                             m_update_event_queue = new();
+    
+    
+    Dictionary<Type, EventReceiverAttribute[]>    m_cached_attribute   = new();
 
+    List<IEventParam>                             m_cached_event_queue = new();
+
+    List<IEventParam>                             m_cached_dispatched  = new();
+
+    EventReceiverAttribute[] TryGetAttribute(Type _type)
+    {
+        if (!m_cached_attribute.TryGetValue(_type, out var _attributes))
+        {
+            // EventReceiverAttributes만 선택해서 배열로 만들어줍니다. 
+            _attributes = System.Attribute.GetCustomAttributes(_type)
+            .Where(e => e is EventReceiverAttribute)
+            .Select(e => e as EventReceiverAttribute)
+            .ToArray();
+             
+
+            m_cached_attribute.Add(_type, _attributes);
+        }
+
+        return _attributes;
+    }
 
     public void Reset()
     {
-        m_receivers.Clear();
+        // m_receivers.Clear();
         m_receivers_by_type.Clear();
+        m_update_event_queue.Clear();
+        m_cached_attribute.Clear();
+        m_cached_event_queue.Clear();
+        m_cached_dispatched.Clear();
     }
 
     public void AttachReceiver(IEventReceiver _receiver)
     {
-        m_receivers.Add(_receiver);
+        if (_receiver == null)
+            return;
 
-        // 뭔가 복잡...
-        foreach(var e in System.Attribute.GetCustomAttributes(_receiver.GetType()))
+        var receiver_type = _receiver.GetType();
+        var attributes    = TryGetAttribute(receiver_type);
+        if (attributes   == null)
+            return;
+
+        // m_receivers.Add(_receiver);
+
+        foreach(var e in attributes)
         {
-            if (e is EventReceiverAttribute event_receiver_attribute)
-            {
-                if (event_receiver_attribute.GetReceiveEventTypes() != null)
-                {
-                    foreach(var event_type in event_receiver_attribute.GetReceiveEventTypes())
-                    {
-                        if (!m_receivers_by_type.TryGetValue(event_type, out var value))
-                        {
-                            value = new List<IEventReceiver>();
-                            m_receivers_by_type.Add(event_type, value);
-                        }
+            if (e.GetReceiveEventTypes() == null)
+                continue;
 
-                        value.Add(_receiver);
-                    }
+            foreach(var event_type in e.GetReceiveEventTypes())
+            {
+                if (!m_receivers_by_type.TryGetValue(event_type, out var list_receiver))
+                {
+                    list_receiver = new List<IEventReceiver>();
+                    m_receivers_by_type.Add(event_type, list_receiver);
                 }
+
+                list_receiver.Add(_receiver);
             }
         }
     }
 
     public void DetachReceiver(IEventReceiver _receiver)
     {
-        m_receivers.Remove(_receiver);
+        if (_receiver == null)
+            return;
+
+        var receiver_type = _receiver.GetType();
+        var attributes    = TryGetAttribute(receiver_type);
+        if (attributes == null)
+            return;
+
+        // m_receivers.Remove(_receiver);
 
         // 
-        foreach(var e in System.Attribute.GetCustomAttributes(_receiver.GetType()))
+        foreach(var e in attributes)
         {
-            var event_receiver_attribute = e as EventReceiverAttribute ;
-            if (event_receiver_attribute == null)
-                continue;
-            
-            var receiver_types = event_receiver_attribute.GetReceiveEventTypes();
+            var receiver_types = e.GetReceiveEventTypes();
             if (receiver_types == null || receiver_types.Length == 0)
                 continue;
 
             foreach(var event_type in receiver_types)
             {
-                if (m_receivers_by_type.TryGetValue(event_type, out var value))
+                if (m_receivers_by_type.TryGetValue(event_type, out var list_receiver))
                 {
-                    value.Remove(_receiver);
+                    list_receiver.Remove(_receiver);
                 }
             }
         }
@@ -85,7 +121,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         
     }
 
-    // 이벤트 즉시 처리.
+    // 이벤트 dispatch
     private void DispatchEvent(IEventParam _event)
     {
         if (_event == null)
@@ -100,6 +136,12 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
                     e.OnReceiveEvent(_event);
             }
         }
+
+
+        m_cached_dispatched.Add(_event);
+
+        //_event.Release();
+        //ObjectPool.Release()
     }
 
 
@@ -126,34 +168,41 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     private void DispatchEventQueue()
     {
         // 큐를 복사한뒤에 처리합시다. 
-        var copy_queue = new List<IEventParam>(m_update_event_queue);
+        m_cached_event_queue.AddRange(m_update_event_queue);
+
         // 큐 클리어.
         m_update_event_queue.Clear();
 
-        foreach (var e in copy_queue)
+        foreach (var e in m_cached_event_queue)
         {
             DispatchEvent(e);
         }
 
-        // // 타입별로 event들 dispatch
-        // foreach((var event_type, var list_event) in copy_queue)
-        // {
-        //     if (m_receivers_by_type.TryGetValue(event_type, out var list_receiver))
-        //     {
-        //         foreach (var receiver in list_receiver)
-        //         {
-        //             foreach(var e in list_event)
-        //                 receiver.OnReceiveEvent(e);
-        //         }
-        //     }
-        // }
+        // 사용 완료했으면 클리어.
+        m_cached_event_queue.Clear();
+    }
+
+    private void PostDispatchedEvent()
+    {
+        foreach(var e in m_cached_dispatched)
+        {
+            // Release 처리.
+            if (e != null)
+                e.Release();
+        }
+
+        m_cached_dispatched.Clear();
     }
 
     protected override void OnUpdate()
     {
         base.OnUpdate();
 
+        // 이벤트 dispatch 처리.
         DispatchEventQueue();
+
+        // 이벤트 dispatch 후처리.
+        PostDispatchedEvent();
     }
 
 }

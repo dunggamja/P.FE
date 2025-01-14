@@ -125,6 +125,52 @@ public static partial class PathAlgorithm
 
 
 
+    class floodfill_node : IPoolObject
+    {        
+        List<(int x, int y, int move_cost)> Nodes = new(10);
+
+        public int Count => Nodes.Count;
+
+
+        public void Reset()
+        {
+            Nodes.Clear();
+        }
+
+        public void Add((int x, int y, int move_cost) _item)
+        {
+            Nodes.Add(_item);
+        }
+
+        public void Remove((int x, int y, int move_cost) _item)
+        {
+            Nodes.Remove(_item);
+        }
+
+        public bool Contains((int x, int y, int move_cost) _item)
+        {
+            return Nodes.Contains(_item);
+        }
+
+        public (int x, int y, int move_cost) FindMinimumCostNode()
+        {
+            if (Nodes.Count == 0)
+                return (0, 0, int.MaxValue);
+
+            var min_cost_node = Nodes[0];
+            foreach (var node in Nodes)
+            {
+                if (node.move_cost < min_cost_node.move_cost)
+                {
+                    min_cost_node = node;
+                }
+            }
+
+            return min_cost_node;
+        }
+    }
+
+
     public static void FloodFill(
         TerrainMap              _terrain_map,
         IPathOwner              _path_owner,
@@ -138,8 +184,8 @@ public static partial class PathAlgorithm
             return;
 
 
-        var open_list_move    = new List<(int x, int y, int move_cost)>(10);
-        var close_list_move   = new List<(int x, int y)>(10);
+        var open_list_move    = ObjectPool<floodfill_node>.Acquire();
+        var close_list_move   = ObjectPool<floodfill_node>.Acquire();
 
         open_list_move.Add((_position.x, _position.y, 0));
         // Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
@@ -147,7 +193,7 @@ public static partial class PathAlgorithm
         while(open_list_move.Count > 0)
         {
             // movecost가 가장 적은 아이템을 가져옵니다.            
-            var item = open_list_move.Aggregate(open_list_move.First(), (a, b) => a.move_cost < b.move_cost ? a : b);
+            var item = open_list_move.FindMinimumCostNode();
 
             // callback 호출 여부 체크. 
             var call_func_on_cell = _is_call_func_any_cell ||
@@ -159,7 +205,7 @@ public static partial class PathAlgorithm
 
             // open/close list 셋팅
             open_list_move.Remove(item);
-            close_list_move.Add((item.x, item.y));
+            close_list_move.Add((item.x, item.y, 0));
             // Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
 
             // 이동 가능 지역 탐색. (FloodFill)
@@ -171,7 +217,7 @@ public static partial class PathAlgorithm
                     var y = item.y + k;                    
 
                     // 이미 체크하였음.
-                    if (close_list_move.Contains((x, y)))
+                    if (close_list_move.Contains((x, y, 0)))
                         continue;
 
                     // 가로, 세로 1칸씩만 이동가능. (대각선 이동 없음)
@@ -198,8 +244,9 @@ public static partial class PathAlgorithm
             }   
         }
 
-        // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");
-            
+        ObjectPool<floodfill_node>.Release(open_list_move);
+        ObjectPool<floodfill_node>.Release(close_list_move);
+        // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");            
     }
 
     static (bool result, int move_cost) Verify_Movecost(TerrainMap _terrain_map, IPathOwner _path_owner, int _x, int _y, bool _is_occupancy)
@@ -211,9 +258,10 @@ public static partial class PathAlgorithm
             return (false, 0);  
   
         // ZOC에 막히는지 체크합니다. (목표지점은 완전히 비어있어야 함.)
-        if (_terrain_map.ZOC.IsBlockedZOC(_x, _y, (_is_occupancy) ? 0 : _path_owner.PathZOCFaction))
+        if (_terrain_map.ZOC.IsBlockedZOC(_x, _y, (_is_occupancy) ? 0 : _path_owner.PathZOCFaction))        
             return (false, 0);
 
+        
         // 이동 Cost 계산.
         var move_cost = Terrain_Attribute.Calculate_MoveCost(_path_owner.PathAttribute, _terrain_map.Attribute.GetAttribute(_x, _y));
         if (move_cost <= 0)

@@ -33,7 +33,7 @@ namespace Battle
             var commander_type  = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
             //  AI 갱신 이벤트를 날려봅시다.
-            var ai_update_event = new AIUpdateEvent();
+            var ai_update_event = ObjectPool<AIUpdateEvent>.Acquire();
 
             switch(commander_type)
             {
@@ -69,7 +69,7 @@ namespace Battle
                     break;
                 }
             }
-            
+           
                 
             return true;
         }

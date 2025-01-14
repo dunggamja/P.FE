@@ -22,8 +22,11 @@ namespace Battle
 
             PathVehicle.Setup(position_cur, position_prev);
 
+            
+
             // 이벤트 : Cell
-            EventDispatchManager.Instance.UpdateEvent(new CellPositionEvent(
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<CellPositionEvent>.Acquire().Set(
                 ID,
                 PathZOCFaction,
                 Cell,
@@ -32,7 +35,8 @@ namespace Battle
             ));
 
             // 이벤트 : WorldObejct Position
-            EventDispatchManager.Instance.UpdateEvent(new WorldObjectPositionEvent(
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<WorldObjectPositionEvent>.Acquire().Set(
                 ID,
                 PathVehicle.Position,
                 PathVehicle.PositionPrev
@@ -44,7 +48,10 @@ namespace Battle
             PathVehicle.Update(this, _delta_time);
             PathNodeManager.Update(this);
 
-            EventDispatchManager.Instance.UpdateEvent(new WorldObjectPositionEvent(
+            
+
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<WorldObjectPositionEvent>.Acquire().Set(
                     ID,
                     PathVehicle.Position,
                     PathVehicle.PositionPrev

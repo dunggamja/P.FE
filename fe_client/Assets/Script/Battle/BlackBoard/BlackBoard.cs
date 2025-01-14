@@ -2,32 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections.LowLevel.Unsafe;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Battle
 {
-    public class BlackBoard<T> where T : Enum
+    public class BlackBoard<T> where T : unmanaged
     {
         BaseContainer m_repository = new BaseContainer();
 
-        public int GetValue(T _type)
+        private unsafe int to_int(T _type)
         {
-            return m_repository.GetValue(Convert.ToInt32(_type));
+            T*   temp = &_type;
+            int* ptr  = (int*)temp;
+            return *ptr;
+        }
+
+        public int GetValue(T _type)
+        {   
+            return m_repository.GetValue(to_int(_type));
         }
 
         public bool HasValue(T _type)
         {
-            return m_repository.HasValue(Convert.ToInt32(_type));
+            return m_repository.HasValue(to_int(_type));
         }
 
         public void SetValue(T _type, int _value)
         {
-            m_repository.SetValue(Convert.ToInt32(_type), _value);
+            m_repository.SetValue(to_int(_type), _value);
         }
 
         public void SetValue(T _type, bool _value)
         {
-            m_repository.SetValue(Convert.ToInt32(_type), _value);            
+            m_repository.SetValue(to_int(_type), _value);            
         }
 
         public void SetBPValue(T _type, float _value)

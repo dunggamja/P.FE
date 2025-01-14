@@ -10,9 +10,11 @@ public enum EnumEventProcessTiming
     OnNextUpdate,
 }
 
-public interface IEventParam
+public interface IEventParam : IPoolObject
 {
-    EnumEventProcessTiming EventProcessTiming { get; }
+    EnumEventProcessTiming EventProcessTiming { get; }    
+
+    void Release();
 }
 
 

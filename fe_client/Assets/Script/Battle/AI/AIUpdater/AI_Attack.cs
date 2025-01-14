@@ -8,7 +8,7 @@ namespace Battle
     // 공격 타겟을 찾아봅시다.
     public class AI_Attack : IAIUpdater
     {
-        public class ScoreResult
+        public class ScoreResult : IPoolObject
         {
             public enum EnumScoreType
             {
@@ -41,7 +41,7 @@ namespace Battle
             public  Int64          WeaponID { get; private set; } = 0;
             public  (int x, int y) Position { get; private set; } = (0, 0);
 
-            private float[]        score = new float[(int)EnumScoreType.MAX] ;
+            private float[]        m_score = new float[(int)EnumScoreType.MAX] ;
 
             public ScoreResult Setup(Int64 _entity_id, Int64 _weapon_id)
             {
@@ -50,24 +50,22 @@ namespace Battle
                 return this;
             }
 
-            public ScoreResult Reset()
+            public void Reset()
             {
                 TargetID = 0;
                 WeaponID = 0;
                 Position = (0, 0);
-                Array.Clear(score, 0, score.Length);
-
-                return this;
+                Array.Clear(m_score, 0, m_score.Length);
             }
 
             public void SetScore(EnumScoreType _score_type, float _score_value)
             {
                 var index = (int)_score_type;
-                if (index < 0 || score.Length <= index)
+                if (index < 0 || m_score.Length <= index)
                     return;
                 
                 // 각 스코어는 0.0 ~ 1.0 까지만 유효.
-                score[index] = Mathf.Clamp01(_score_value);                
+                m_score[index] = Mathf.Clamp01(_score_value);                
             }
 
             public void SetAttackPosition(int _x, int _y)
@@ -80,7 +78,7 @@ namespace Battle
                 TargetID = _o.TargetID;
                 WeaponID = _o.WeaponID;
                 Position = _o.Position;
-                score    = (float[])_o.score.Clone();
+                Array.Copy(_o.m_score, m_score, m_score.Length);
             }
 
 
@@ -94,19 +92,25 @@ namespace Battle
 
             public float CalculateScore()
             {
-                var result = 0f;
+                var result    = 0f;
+                var max_score = 0f;
 
                 // 최고 점수.
-                var max_score = s_score_multiplier.Aggregate(0f, (result, kvp) => result + kvp.Value);
+                foreach(var e in s_score_multiplier.Values)
+                {
+                    max_score += e;
+                }
+
+                
                 if (max_score <= float.Epsilon)
                     return 0f;
 
                 // 점수 합산.
-                for (int i = 0; i < score.Length; ++i)
+                for (int i = 0; i < m_score.Length; ++i)
                 {
                     if (s_score_multiplier.TryGetValue((EnumScoreType)i, out var multiplier))
                     {
-                        result += score[i] * multiplier;
+                        result += m_score[i] * multiplier;
                     }
                 }
 
@@ -187,22 +191,37 @@ namespace Battle
                         if (target_entity.GetFaction() == owner_entity.GetFaction())
                             continue;
 
-                        // 점수 계산.
-                        var current_score = Score_Calculate(owner_entity, target_entity);
-
-                        // 위치 셋팅.
-                        current_score.SetAttackPosition(attack_position_x, attack_position_y);
-
-                        // 점수 계산.
-                        var calculate_score = current_score.CalculateScore();
-
-                        // 점수 비교.
-                        if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
+                        try
                         {
-                            // 높은 점수 셋팅.
-                            owner_blackboard.Score_Attack.SetData(current_score);                            
-                            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
+                            // 점수 계산.
+                            var current_score = ObjectPool<ScoreResult>.Acquire();
+                            if (current_score == null)
+                                continue;
+
+                            Score_Calculate(ref current_score, owner_entity, target_entity);
+
+                            // 위치 셋팅.
+                            current_score.SetAttackPosition(attack_position_x, attack_position_y);
+
+                            // 점수 계산.
+                            var calculate_score = current_score.CalculateScore();
+
+                            // 점수 비교.
+                            if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
+                            {
+                                // 높은 점수 셋팅.
+                                owner_blackboard.Score_Attack.SetData(current_score);                            
+                                owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
+                            }
                         }
+                        finally
+                        {
+
+                        }
+
+
+                        
+
                     }
                 }
             }
@@ -212,14 +231,15 @@ namespace Battle
         }
 
 
-        static ScoreResult Score_Calculate(Entity _owner, Entity _target)
+        static void Score_Calculate(ref ScoreResult _score, Entity _owner, Entity _target)
         {
             if (_owner == null || _target == null)
-                return new ScoreResult();
+                return;
 
 
             // 전투 결과 스코어
-            var current_score = new ScoreResult().Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
+            _score.Reset();
+            _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
 
             // 공격자/타겟이 입힌 데미지.
             var damage_dealt_count = 0;
@@ -272,19 +292,18 @@ namespace Battle
 
             
             // 데미지 점수 셋팅. 
-            current_score.SetScore(ScoreResult.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
-            current_score.SetScore(ScoreResult.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
+            _score.SetScore(ScoreResult.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
+            _score.SetScore(ScoreResult.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
 
             // 이동거리 점수 셋팅.
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
             var distance_max     = _owner.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
-            current_score.SetScore(ScoreResult.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
+            _score.SetScore(ScoreResult.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중 / 회피 점수 셋팅.
-            current_score.SetScore(ScoreResult.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
-            current_score.SetScore(ScoreResult.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
+            _score.SetScore(ScoreResult.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
+            _score.SetScore(ScoreResult.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
-            return current_score;
         }
 
 

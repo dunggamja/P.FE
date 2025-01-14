@@ -7,6 +7,8 @@ public class UIManager : SingletonMono<UIManager>
 {
     [SerializeField] private Canvas m_screen_canvas_root = null;
 
+    
+
 
     
 }

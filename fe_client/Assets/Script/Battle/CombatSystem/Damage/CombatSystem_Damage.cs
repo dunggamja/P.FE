@@ -71,7 +71,9 @@ namespace Battle
 
             // 공격 전 스킬 사용.
             if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Start));
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Start)
+                    );
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -126,7 +128,9 @@ namespace Battle
 
             // 공격 후 스킬 사용.
             if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Damage_Finish));
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Finish)
+                    );
         }
 
 

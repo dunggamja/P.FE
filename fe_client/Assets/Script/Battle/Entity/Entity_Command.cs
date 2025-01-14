@@ -22,18 +22,28 @@ namespace Battle
         public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
         {
             // 검사할 AIScore 목록
-            var list_ai = new [] 
+            Span<EnumEntityBlackBoard> list_ai_type = stackalloc EnumEntityBlackBoard[2] 
             { 
                 EnumEntityBlackBoard.AIScore_Attack
               , EnumEntityBlackBoard.AIScore_Done 
             };
 
+
+            var top_score_type = EnumEntityBlackBoard.None;
+            var top_score      = 0f;
+
             // 가장 높은 Score를 반환합니다.
-            return list_ai.Aggregate((type:EnumEntityBlackBoard.None, score:0f), (top_score, e) =>
+            foreach (var ai_type in list_ai_type)
             {
-                var     score = BlackBoard.GetBPValueAsFloat(e);
-                return (score > top_score.score) ? (e, score) : top_score;
-            });
+                var score = BlackBoard.GetBPValueAsFloat(ai_type);
+                if (score > top_score)
+                {
+                    top_score      = score;
+                    top_score_type = ai_type;
+                }
+            }
+
+            return (top_score_type, top_score);
         }
 
         public bool HasCommandEnable()
@@ -68,21 +78,21 @@ namespace Battle
             return BlackBoard.HasBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
-        public void SetCommandDone(params EnumCommandFlag[] _command_flag)
+        public void SetCommandDone(EnumCommandFlag _command_flag)
         {
             // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
             // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
 
-            foreach (var e in _command_flag)
-                BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)e);
+            // foreach (var e in )
+                BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
-        public void SetCommandEnable(params EnumCommandFlag[] _command_flag)
+        public void SetCommandEnable(EnumCommandFlag _command_flag)
         {
             // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
             // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
-            foreach (var e in _command_flag)
-                BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)e);
+            // foreach (var e in _command_flag)
+                BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
         }
 
 

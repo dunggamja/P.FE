@@ -41,7 +41,8 @@ namespace Battle
             {
                 buff_value += Buff.Collect(_situation_type, Owner, e);
             }
-
+            
+            
             return buff_value.Calculate(status);
         }
 

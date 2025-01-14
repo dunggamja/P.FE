@@ -192,7 +192,9 @@ namespace Battle
 
             // 공/방 돌입전 턴 관련 스킬 사용할 것이 있다면 여기서 사용.
             if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(new SituationUpdatedEvent(EnumSituationType.CombatSystem_Turn_Start));
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.CombatSystem_Turn_Start)
+                    );
         }
 
         /// <summary>

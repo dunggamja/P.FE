@@ -14,6 +14,9 @@ namespace Battle
         {
             base.OnInitialize();
 
+            // 프로파일링을 위해 임시 처리
+            Debug.unityLogger.logEnabled = false;
+
             // 지형 시스템 초기화
             Test_BattleSystem_Setup_Terrain();
 
