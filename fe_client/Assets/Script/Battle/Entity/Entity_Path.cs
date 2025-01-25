@@ -69,6 +69,5 @@ namespace Battle
             PathAttribute &= ~(1 << (int)_attribute);
         }
 
-
     }
 }

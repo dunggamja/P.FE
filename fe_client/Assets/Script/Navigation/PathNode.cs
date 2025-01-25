@@ -178,8 +178,15 @@ public class PathNodeManager //: IPathNodeManager
 
         ClearPath();
         
-        var list_path_node = PathAlgorithm.PathFind(TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);        
-        m_list_path_node   = new Queue<PathNode>(list_path_node);
+        var list_path_node = ListPool<PathNode>.Acquire();
+
+        PathAlgorithm.PathFind(ref list_path_node, TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);        
+
+        m_list_path_node.Clear();
+        foreach (var node in list_path_node)
+            m_list_path_node.Enqueue(node);
+
+        ListPool<PathNode>.Release(list_path_node);
 
         
         return 0 < m_list_path_node.Count;

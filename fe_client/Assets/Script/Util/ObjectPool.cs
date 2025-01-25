@@ -17,6 +17,8 @@ public static class ObjectPool<T> where T : IPoolObject, new()
 
     private static readonly HashSet<T> m_inuse = new();
 
+    // public static bool IsPoolingObject
+
 
 
     public static T Acquire()
@@ -44,3 +46,64 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         m_pool.Push(_obj);
     }
 }
+
+public static class ListPool<T>
+{
+    private static readonly Stack<List<T>> m_pool = new();
+
+    public static List<T> Acquire()
+    {
+        var list = m_pool.Count > 0 ? m_pool.Pop() : new List<T>();
+        return list;
+    }
+
+    public static void Release(List<T> list)
+    {
+        if (list == null)
+            return;
+
+        list.Clear();
+        m_pool.Push(list);
+    }
+}
+
+public static class HashSetPool<T>
+{
+    private static readonly Stack<HashSet<T>> m_pool = new();
+
+    public static HashSet<T> Acquire()
+    {
+        var hashSet = m_pool.Count > 0 ? m_pool.Pop() : new HashSet<T>();
+        return hashSet;
+    }
+
+    public static void Release(HashSet<T> hashSet)
+    {
+        if (hashSet == null)
+            return;
+
+        hashSet.Clear();
+        m_pool.Push(hashSet);
+    }
+}
+
+public static class DictionaryPool<TKey, TValue>
+{
+    private static readonly Stack<Dictionary<TKey, TValue>> m_pool = new();
+
+    public static Dictionary<TKey, TValue> Acquire()
+    {
+        var dict = m_pool.Count > 0 ? m_pool.Pop() : new Dictionary<TKey, TValue>();
+        return dict;
+    }
+
+    public static void Release(Dictionary<TKey, TValue> dict)
+    {
+        if (dict == null)
+            return;
+
+        dict.Clear();
+        m_pool.Push(dict);
+    }
+}
+

@@ -99,7 +99,7 @@ public interface IAIUpdater
 //     void     Update();
 // }
 
-public interface IPathOwner
+public interface IPathOwner 
 {
     PathNodeManager  PathNodeManager { get; }
     PathVehicle      PathVehicle     { get; }

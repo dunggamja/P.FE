@@ -10,22 +10,23 @@ using UnityEngine.Assertions.Comparers;
 public static partial class PathAlgorithm
 {
     
-    public static List<PathNode> PathFind(TerrainMap _terrain_map, IPathOwner _path_owner, int _from_x, int _from_y, int _to_x, int _to_y)
+    public static void PathFind(ref List<PathNode> _path_nodes, TerrainMap _terrain_map, IPathOwner _path_owner, int _from_x, int _from_y, int _to_x, int _to_y)
     {
-        var result     = new List<PathNode>(20);
+        if (_path_nodes == null)
+            _path_nodes = ListPool<PathNode>.Acquire();
 
-        // A* 
+        _path_nodes.Clear();
+
+        // A* 로 길찾기. 못찾으면 null 반환.
         var    node  = AStar(_terrain_map, _path_owner, _from_x, _from_y, _to_x, _to_y);
         while (node != null)
         {
-            result.Add(new PathNode(node.x, node.y));
+            _path_nodes.Add(new PathNode(node.x, node.y));
             node = node.parent;
         }
 
-        // 
-        result.Reverse();
-
-        return result;
+        // 뒤집어 줘야함.
+        _path_nodes.Reverse();
     }
 
 
@@ -170,6 +171,10 @@ public static partial class PathAlgorithm
         }
     }
 
+    public interface IFloodFillVisitor
+    {
+        void Visit(Int64 _entity_id, int x, int y);
+    }
 
     public static void FloodFill(
         TerrainMap              _terrain_map,

@@ -81,7 +81,8 @@ namespace Battle
 
         void Command_By_DamageScore(Int64 _entity_id, AI_Attack.ScoreResult _damage_score)
         {
-            // 공격 명령 셋팅.                
+           
+            // 공격 명령 셋팅.               
             CommandManager.Instance.PushCommand(
                 new Command[]
                 {

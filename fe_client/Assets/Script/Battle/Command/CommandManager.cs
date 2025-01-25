@@ -47,3 +47,23 @@ namespace Battle
         }
     }
 }
+
+public static class QueuePool<T>
+{
+    private static readonly Stack<Queue<T>> m_pool = new();
+
+    public static Queue<T> Acquire()
+    {
+        var queue = m_pool.Count > 0 ? m_pool.Pop() : new Queue<T>();
+        return queue;
+    }
+
+    public static void Release(Queue<T> queue)
+    {
+        if (queue == null)
+            return;
+
+        queue.Clear();
+        m_pool.Push(queue);
+    }
+}
