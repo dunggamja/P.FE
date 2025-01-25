@@ -17,3 +17,7 @@ fe_client/mono_crash.c3dca6d08.0.json
 fe_client/Assets/AssetStore.meta
 /fe_client/Assets/ResourceAssetStore
 fe_client/Assets/ResourceAssetStore.meta
+/fe_client/Assets/Purchased
+/fe_client/Assets/ResourcePurchased
+fe_client/Assets/Purchased.meta
+fe_client/Assets/ResourcePurchased.meta
