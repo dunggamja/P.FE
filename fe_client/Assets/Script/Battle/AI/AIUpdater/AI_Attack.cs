@@ -166,8 +166,11 @@ namespace Battle
                     var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
                     var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range);
 
+                    var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Acquire();
+                    
                     // Target Collect
-                    var list_target_id = CollectTarget(
+                    CollectTarget(
+                        ref list_collect_target,
                         TerrainMapManager.Instance.TerrainMap,
                         owner_entity,
                         owner_entity.Cell.x,
@@ -177,7 +180,7 @@ namespace Battle
                         range_max);
 
 
-                    foreach((var target_id, var attack_position_x, var attack_position_y) in list_target_id)
+                    foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target)
                     {
                         var target_entity = EntityManager.Instance.GetEntity(target_id);
                         if (target_entity == null)
@@ -201,7 +204,7 @@ namespace Battle
                             Score_Calculate(ref current_score, owner_entity, target_entity);
 
                             // 위치 셋팅.
-                            current_score.SetAttackPosition(attack_position_x, attack_position_y);
+                            current_score.SetAttackPosition(attack_pos_x, attack_pos_y);
 
                             // 점수 계산.
                             var calculate_score = current_score.CalculateScore();
@@ -218,11 +221,9 @@ namespace Battle
                         {
 
                         }
-
-
-                        
-
                     }
+
+                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Release(list_collect_target);
                 }
             }
 
@@ -307,8 +308,9 @@ namespace Battle
         }
 
 
-        static List<(Int64 target_id, int attack_position_x, int atatck_position_y)> 
+        static void
             CollectTarget(
+            ref List<(Int64 target_id, int attack_position_x, int atatck_position_y)> _collect_targets,
             TerrainMap _terrain_map, 
             IPathOwner _path_owner, 
             int        _x, 
@@ -319,16 +321,16 @@ namespace Battle
         {
 
             if (_terrain_map == null || _path_owner == null)
-                return new();
+                return;
+
 
             var list_attack       = new List<(Int64 target_id, int attack_position_x, int atatck_position_y)>();
-            var close_list_attack = new List<(int x, int y)>(10);
+            var close_list_attack = HashSetPool<(int x, int y)>.Acquire();
 
 
             PathAlgorithm.FloodFill(_terrain_map, _path_owner, (_x, _y), _move_distance,
             ((int x, int y) _cell) =>
-            {
-                                
+            {                                
                 // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
                 for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
                 {
@@ -363,7 +365,8 @@ namespace Battle
                 }
             });
 
-            return list_attack;
+
+            HashSetPool<(int x, int y)>.Release(close_list_attack);
         }
 
     }    

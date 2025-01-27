@@ -126,50 +126,49 @@ public static partial class PathAlgorithm
 
 
 
-    class floodfill_node : IPoolObject
-    {        
-        List<(int x, int y, int move_cost)> Nodes = new(10);
+    // class floodfill_node : IPoolObject
+    // {        
+    //     // List<(int x, int y, int move_cost)> Nodes = new(10);
+    //     HashSet<(int x, int y, int move_cost)> Nodes = new();
+        
 
-        public int Count => Nodes.Count;
+    //     public int Count => Nodes.Count;
 
 
-        public void Reset()
-        {
-            Nodes.Clear();
-        }
+    //     public void Reset()
+    //     {
+    //         Nodes.Clear();
+    //     }
 
-        public void Add((int x, int y, int move_cost) _item)
-        {
-            Nodes.Add(_item);
-        }
+    //     public void Add((int x, int y, int move_cost) _item)
+    //     {
+    //         Nodes.Add(_item);
+    //     }
 
-        public void Remove((int x, int y, int move_cost) _item)
-        {
-            Nodes.Remove(_item);
-        }
+    //     public void Remove((int x, int y, int move_cost) _item)
+    //     {
+    //         Nodes.Remove(_item);
+    //     }
 
-        public bool Contains((int x, int y, int move_cost) _item)
-        {
-            return Nodes.Contains(_item);
-        }
+    //     public bool Contains((int x, int y, int move_cost) _item)
+    //     {
+    //         return Nodes.Contains(_item);
+    //     }
 
-        public (int x, int y, int move_cost) FindMinimumCostNode()
-        {
-            if (Nodes.Count == 0)
-                return (0, 0, int.MaxValue);
+    //     public (int x, int y, int move_cost) FindMinimumCostNode()
+    //     {
+    //         var min_cost_node = (x:0, y:0, move_cost:int.MaxValue);
+    //         foreach (var node in Nodes)
+    //         {
+    //             if (node.move_cost < min_cost_node.move_cost)
+    //             {
+    //                 min_cost_node = node;
+    //             }
+    //         }
 
-            var min_cost_node = Nodes[0];
-            foreach (var node in Nodes)
-            {
-                if (node.move_cost < min_cost_node.move_cost)
-                {
-                    min_cost_node = node;
-                }
-            }
-
-            return min_cost_node;
-        }
-    }
+    //         return min_cost_node;
+    //     }
+    // }
 
     public interface IFloodFillVisitor
     {
@@ -188,9 +187,8 @@ public static partial class PathAlgorithm
         if (_func_on_cell == null)
             return;
 
-
-        var open_list_move    = ObjectPool<floodfill_node>.Acquire();
-        var close_list_move   = ObjectPool<floodfill_node>.Acquire();
+        var open_list_move    = HashSetPool<(int x, int y, int move_cost)>.Acquire();
+        var close_list_move   = HashSetPool<(int x, int y, int move_cost)>.Acquire();
 
         open_list_move.Add((_position.x, _position.y, 0));
         // Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
@@ -198,7 +196,14 @@ public static partial class PathAlgorithm
         while(open_list_move.Count > 0)
         {
             // movecost가 가장 적은 아이템을 가져옵니다.            
-            var item = open_list_move.FindMinimumCostNode();
+            var item = (x:0, y:0, move_cost:int.MaxValue);
+            
+            foreach(var e in open_list_move)
+            {
+                if (e.move_cost < item.move_cost) 
+                    item = e;
+            }
+            
 
             // callback 호출 여부 체크. 
             var call_func_on_cell = _is_call_func_any_cell ||
@@ -249,8 +254,8 @@ public static partial class PathAlgorithm
             }   
         }
 
-        ObjectPool<floodfill_node>.Release(open_list_move);
-        ObjectPool<floodfill_node>.Release(close_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Release(open_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Release(close_list_move);
         // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");            
     }
 
