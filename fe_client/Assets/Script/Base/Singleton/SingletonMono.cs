@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.ResourceManagement.ResourceProviders.Simulation;
 
 public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
 {

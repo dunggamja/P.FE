@@ -10,27 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: test_base
+  m_Name: local_update
   m_EditorClassIdentifier: 
-  m_GroupName: test_base
-  m_Data:
-    m_SerializedData: []
-  m_GUID: 5000d0c12cf804636b811786f29ffa87
+  m_GroupName: local_update
+  m_GUID: a7bd5d34607cc4329b50f05118aac4f4
   m_SerializeEntries:
-  - m_GUID: 40bde17c59be24857b62189859670fcf
-    m_Address: test
+  - m_GUID: 23dd4bbb6f87b4aec9380ebc3ebfcc13
+    m_Address: local_update/tile_highlight
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7d2a557de92054245be8f79741e87034
-    m_Address: empty
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - scene
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 62df1256286ae451e981a95a587c2343
-    m_Address: uimanager
+  - m_GUID: 48148f7f23b3a40f9a6a0ea6aa01ed97
+    m_Address: local_update/test
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
@@ -39,5 +31,4 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 4e818e88f4f044a12a9586bb68d17534, type: 2}
-    - {fileID: 11400000, guid: b3a8f4de47dee4ca1870863f65f802bc, type: 2}
+    - {fileID: 11400000, guid: 078506e3f554c42e18f46aecf659c4c3, type: 2}

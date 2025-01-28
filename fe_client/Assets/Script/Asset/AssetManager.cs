@@ -14,6 +14,7 @@ public class AssetManager : Singleton<AssetManager>
    
     public void InstantiateAsync(string _asset_path, Action<GameObject> _callback = null)
     {
+        
         var task_async        = Addressables.InstantiateAsync(_asset_path);
         task_async.Completed += (e) => 
         {
@@ -30,9 +31,9 @@ public class AssetManager : Singleton<AssetManager>
         };
     }
 
-    public void LoadAssetAsync(string _asset_path, Action<object> _callback = null)
+    public void LoadAssetAsync<T>(string _asset_path, Action<T> _callback = null)
     {   
-        var task_async        = Addressables.LoadAssetAsync<object>(_asset_path);   
+        var task_async        = Addressables.LoadAssetAsync<T>(_asset_path);   
         task_async.Completed += (e) => 
         {   
             if (e.Status == AsyncOperationStatus.Succeeded)
