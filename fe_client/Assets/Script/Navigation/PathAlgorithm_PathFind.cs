@@ -170,10 +170,10 @@ public static partial class PathAlgorithm
     //     }
     // }
 
-    public interface IFloodFillVisitor
-    {
-        void Visit(Int64 _entity_id, int x, int y);
-    }
+    // public interface IFloodFillVisitor
+    // {
+    //     void Visit(Int64 _entity_id, int x, int y);
+    // }
 
     public static void FloodFill(
         TerrainMap              _terrain_map,

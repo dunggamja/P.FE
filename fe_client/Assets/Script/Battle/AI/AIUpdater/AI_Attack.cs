@@ -310,7 +310,7 @@ namespace Battle
 
         static void
             CollectTarget(
-            ref List<(Int64 target_id, int attack_position_x, int atatck_position_y)> _collect_targets,
+            ref List<(Int64 target_id, int attack_pos_x, int atatck_pos_y)> _collect_targets,
             TerrainMap _terrain_map, 
             IPathOwner _path_owner, 
             int        _x, 
@@ -324,7 +324,7 @@ namespace Battle
                 return;
 
 
-            var list_attack       = new List<(Int64 target_id, int attack_position_x, int atatck_position_y)>();
+            var list_attack       = ListPool<(Int64 target_id, int attack_pos_x, int atatck_pos_y)>.Acquire();
             var close_list_attack = HashSetPool<(int x, int y)>.Acquire();
 
 
@@ -365,7 +365,10 @@ namespace Battle
                 }
             });
 
+            
+            _collect_targets.AddRange(list_attack);
 
+            ListPool<(Int64, int, int)>.Release(list_attack);
             HashSetPool<(int x, int y)>.Release(close_list_attack);
         }
 
