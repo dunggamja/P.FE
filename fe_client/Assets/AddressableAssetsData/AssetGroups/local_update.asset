@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: local_update
   m_GUID: a7bd5d34607cc4329b50f05118aac4f4
   m_SerializeEntries:
-  - m_GUID: 23dd4bbb6f87b4aec9380ebc3ebfcc13
-    m_Address: local_update/tile_highlight
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 48148f7f23b3a40f9a6a0ea6aa01ed97
     m_Address: local_update/test
     m_ReadOnly: 0

@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: local_base
   m_GUID: 5000d0c12cf804636b811786f29ffa87
   m_SerializeEntries:
+  - m_GUID: 06da943b3f465469fb03bf1eed7546d3
+    m_Address: local_base/tile_selection
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40bde17c59be24857b62189859670fcf
     m_Address: local_base/test
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 627bce4bee59b4996a274983762ed382
+    m_Address: local_base/tile_highlight
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
