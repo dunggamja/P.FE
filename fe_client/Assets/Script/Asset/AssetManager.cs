@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,38 +13,51 @@ public class AssetManager : Singleton<AssetManager>
 {
     Dictionary<string, AsyncOperationHandle> m_asset_handles = new (20);
    
-    public void InstantiateAsync(string _asset_path, Action<GameObject> _callback = null)
+    public async UniTask<GameObject> InstantiateAsync(string _asset_path)
     {
-        
-        var task_async        = Addressables.InstantiateAsync(_asset_path);
-        task_async.Completed += (e) => 
-        {
-            if (e.Status == AsyncOperationStatus.Succeeded)
-            {
-                if (e.Result)
-                {
-                    e.Result.TryAddComponent<AssetSelfCleanup>();
-                }
-            }
+        // , Action<GameObject> _callback = null
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(_asset_path);
+        GameObject                       result = await handle.Task;
 
-            if (_callback != null)
-                _callback(e.Result);
-        };
+        if (handle.Status == AsyncOperationStatus.Succeeded && result != null)
+        {
+            result.TryAddComponent<AssetSelfCleanup>();
+        }
+
+        return result;
     }
 
-    public void LoadAssetAsync<T>(string _asset_path, Action<T> _callback = null)
-    {   
-        var task_async        = Addressables.LoadAssetAsync<T>(_asset_path);   
-        task_async.Completed += (e) => 
-        {   
-            if (e.Status == AsyncOperationStatus.Succeeded)
-            {
-                m_asset_handles.TryAdd(_asset_path, task_async);            
-            }
+    // public void InstantiateAsync(string _asset_path, Action<GameObject> _callback = null)
+    // {        
+    //     var task_async        = Addressables.InstantiateAsync(_asset_path);
+    //     task_async.Completed += (e) => 
+    //     {
+    //         if (e.Status == AsyncOperationStatus.Succeeded)
+    //         {
+    //             if (e.Result)
+    //             {
+    //                 e.Result.TryAddComponent<AssetSelfCleanup>();
+    //             }
+    //         }
+    //         if (_callback != null)
+    //             _callback(e.Result);
+    //     };
+    // }
 
-            if (_callback != null)
-                _callback(e.Result);
-        };     
+
+    public async UniTask<T> LoadAssetAsync<T>(string _asset_path)
+    {   
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(_asset_path);  
+        
+        // ´ë±â.
+        var result = await handle.Task;
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            m_asset_handles.TryAdd(_asset_path, handle);       
+        }
+
+        return result;
     }
 
     public void ReleaseAsset(string _asset_path)

@@ -21,7 +21,6 @@ namespace Battle
 
             PathVehicle.Setup(position_cur, position_prev);
 
-            
 
             // ¿Ã∫•∆Æ : Cell
             EventDispatchManager.Instance.UpdateEvent(

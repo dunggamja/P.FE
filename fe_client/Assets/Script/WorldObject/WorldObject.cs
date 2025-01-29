@@ -23,9 +23,17 @@ public class WorldObject : MonoBehaviour
     // private float   m_position_visual_time  = 0f;
 
 
-    public void Initialize(Int64 _id)
+    public bool Initialize(Entity _entity)
     {
-        ID = _id;
+        if (_entity == null)
+            return false;
+
+        ID = _entity.ID;
+
+        
+        SetPositionData(_entity.PathVehicle.Position, _entity.PathVehicle.PositionPrev, 0f);
+
+        return true;
     }
 
     private void Update()

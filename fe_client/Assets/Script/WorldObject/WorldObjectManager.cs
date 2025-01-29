@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Battle;
+using Cysharp.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -19,91 +21,48 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
 
 
-    public void CreateObject(Int64 _id, Action<bool, Int64> _on_result = null)
+    public async void CreateObject(Int64 _id)//, Action<bool, Int64> _on_result = null)
     {   
-
+        //async
         var load_asset_address = AssetName.TEST_PREFAB;
         //var load_asset_address = "test_base/test";
         //Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");   
-        ;
-
-        AssetManager.Instance.InstantiateAsync(load_asset_address, (_object)=>
-        {            
-            if (_object)
-            {
-                var exist_object  = Seek(_id);
-                if (exist_object != null)
-                {
-                    // 중복으로 생성이 되있을 경우 삭제 처리.
-                    Debug.LogError($"already exist object, {_id}"); 
-                    GameObject.Destroy(_object);
-                    return;
-                }
-
-
-                _object.name  = $"{_id.ToString("D10")}_{load_asset_address}";
-                var new_actor = _object.TryAddComponent<WorldObject>();
-
-                new_actor.Initialize(_id);
-
-                Insert(new_actor);
-
-                _on_result?.Invoke(true, _id);
-
-                //Debug.Log($"InstantiateAsync Success, {load_asset_address}");            
-            }
-            else
-            {
-                Debug.LogError($"InstantiateAsync Failed, {load_asset_address}");   
-
-                _on_result?.Invoke(false, _id);         
-            }
-        });
-
-
-
-        //Debug.Log($"InstantiateAsync Try-2, {load_asset_address}");            
-
-        // var new_object = async_instantiate.Result;
-        // if (new_object)
-        // {
-        //     new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
-        //     var new_actor   = new_object.TryAddComponent<WorldObject>();
-
-        //     new_actor.Initialize(_id);
-
-        //     Insert(new_actor);
-        // }
-        // else
-        // {
-        //     Debug.Log($"InstantiateAsync Failed, {async_instantiate.Status}");            
-        // }
-
         
-        
-        // var load_asset_handle  = Addressables.LoadAssetAsync<GameObject>(load_asset_address);
-        // load_asset_handle.Completed += (operation) => 
-        // {
-        //     if (operation.Status == AsyncOperationStatus.Succeeded)
-        //     {
-        //         operation.
-        //     }
-        //     else
-        //     {
-        //         Debug.LogError($"load async failed, {load_asset_address}");
-        //     }
-        // };
+        // unitask 대기.
+        var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address);
 
-        // var key = "prefab";
+        // 대기 완료 후 처리.
+        if (new_object != null)
+        {
+            var entity            = EntityManager.Instance.GetEntity(_id);
+            var duplicate_object  = Seek(_id);
 
-        // UnityEngine.ResourceManagement.ResourceLocations.
-        //  Addressables.LoadAssetsAsync<GameObject>(key, (e) => 
-        //  {
-        //     if (e != null)
-        //     {
-        //         Debug.LogWarning(e.name);
-        //     }
-        //  });
+            // 중복 오브젝트 생성 or entity가 없으면 생성 실패 처리.
+            var is_error = (duplicate_object != null) || (entity == null);
+            if (is_error)
+            {
+                Debug.LogError($"error, create object, {_id}"); 
+                GameObject.Destroy(new_object);
+                return;
+            }
+
+            new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
+            var new_actor   = new_object.TryAddComponent<WorldObject>();
+
+            new_actor.Initialize(entity);
+
+            Insert(new_actor);
+
+            // 생성했을 때 이벤트 처리.
+
+            // Debug.Log($"InstantiateAsync Success, {_id}");  
+        }   
+        else
+        {
+            Debug.Log($"InstantiateAsync Failed, {load_asset_address}");  
+        }     
+
+       
 
 
     }
