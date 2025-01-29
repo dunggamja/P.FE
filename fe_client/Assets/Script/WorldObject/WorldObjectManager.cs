@@ -22,10 +22,10 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
     public void CreateObject(Int64 _id, Action<bool, Int64> _on_result = null)
     {   
 
-        var load_asset_address = "local_base/test";
+        var load_asset_address = AssetName.TEST_PREFAB;
         //var load_asset_address = "test_base/test";
         //Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");   
-       
+        ;
 
         AssetManager.Instance.InstantiateAsync(load_asset_address, (_object)=>
         {            
