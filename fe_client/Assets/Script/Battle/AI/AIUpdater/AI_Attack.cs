@@ -194,7 +194,7 @@ namespace Battle
                         if (target_entity.GetFaction() == owner_entity.GetFaction())
                             continue;
 
-                        try
+                        // try
                         {
                             // 점수 계산.
                             var current_score = ObjectPool<ScoreResult>.Acquire();
@@ -216,11 +216,14 @@ namespace Battle
                                 owner_blackboard.Score_Attack.SetData(current_score);                            
                                 owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                             }
-                        }
-                        finally
-                        {
 
+                            ObjectPool<ScoreResult>.Release(current_score);
                         }
+                        // finally
+                        // {
+                            
+
+                        // }
                     }
 
                     ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Release(list_collect_target);
@@ -308,6 +311,72 @@ namespace Battle
         }
 
 
+        class CollectTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
+        {
+            public TerrainMap     TerrainMap     { get; set; }  
+            public IPathOwner     PathOwner      { get; set; }  
+            public (int x, int y) Position       { get; set; }  
+            public int            MoveDistance   { get; set; }             
+            public int            WeaponRangeMin { get; set; }
+            public int            WeaponRangeMax { get; set; }
+
+            List<(Int64 id, int attack_pos_x, int attack_pos_y)> CollectTargets { get; set;} = new();
+            HashSet<(int x, int y)>                              VisitList      { get; set; } = new();
+
+            public List<(Int64 id, int attack_pos_x, int attack_pos_y)> GetCollectTargets()
+            {
+                return CollectTargets;
+            }
+
+            public void Reset()
+            {
+                TerrainMap     = null;
+                PathOwner      = null;
+                Position       = (0, 0);
+                MoveDistance   = 0;
+                WeaponRangeMin = 0;
+                WeaponRangeMax = 0;
+                CollectTargets.Clear();
+                VisitList.Clear();
+            }
+
+            public void Visit(int _visit_x, int _visit_y)
+            {
+                for(int i = -WeaponRangeMax; i <= WeaponRangeMax; ++i)
+                {
+                    for(int k = -WeaponRangeMax; k <= WeaponRangeMax; ++k)
+                    {
+                        var x = _visit_x + i;
+                        var y = _visit_y + k;
+
+                        // 무기 사거리 체크
+                        var distance = PathAlgorithm.Distance(_visit_x, _visit_y, x, y);
+                        if (distance < WeaponRangeMin || WeaponRangeMax < distance)
+                        {
+                            continue;
+                        }
+
+                        // TODO: 똑같은 위치를 매번 Collecting 할 것인지 말지는 추후 고려.
+                        if (VisitList.Contains((x, y)))
+                        {
+                            continue;
+                        }
+
+                        // 검사 기록에 추가.
+                        VisitList.Add((x, y));
+                        
+                        // 타겟 추가. (대상 id, 공격 위치 x, 공격 위치 y)
+                        var entity_id = TerrainMap.BlockManager.FindEntityID(x, y);
+                        if (entity_id > 0)
+                        {
+                            CollectTargets.Add((entity_id, _visit_x, _visit_y));
+                        }
+                    }
+                }
+            }
+        }
+
+
         static void
             CollectTarget(
             ref List<(Int64 target_id, int attack_pos_x, int atatck_pos_y)> _collect_targets,
@@ -323,53 +392,22 @@ namespace Battle
             if (_terrain_map == null || _path_owner == null)
                 return;
 
+            // 콜백 함수를 줄이기 위해... 따로 클래스 작성.
+            var visitor            = ObjectPool<CollectTargetVisitor>.Acquire();
+            visitor.TerrainMap     = _terrain_map;
+            visitor.PathOwner      = _path_owner;
+            visitor.Position       = (_x, _y);
+            visitor.MoveDistance   = _move_distance;
+            visitor.WeaponRangeMax = _weapon_range_max;
+            visitor.WeaponRangeMin = _weapon_range_min;
 
-            var list_attack       = ListPool<(Int64 target_id, int attack_pos_x, int atatck_pos_y)>.Acquire();
-            var close_list_attack = HashSetPool<(int x, int y)>.Acquire();
+            // FloodFill을 통해서 공격 가능한 타겟을 찾아봅시다. 
+            PathAlgorithm.FloodFill(visitor);
 
+            // 타겟 이관.
+            _collect_targets.AddRange(visitor.GetCollectTargets());
 
-            PathAlgorithm.FloodFill(_terrain_map, _path_owner, (_x, _y), _move_distance,
-            ((int x, int y) _cell) =>
-            {                                
-                // 무기 사거리 범위 안에 들어온 타겟들 콜렉팅
-                for(int i = -_weapon_range_max; i <= _weapon_range_max; ++i)
-                {
-                    for(int k = -_weapon_range_max; k <= _weapon_range_max; ++k)
-                    {
-                        var x = _cell.x + i;
-                        var y = _cell.y + k;
-
-                        // 무기 사거리 체크
-                        var distance = PathAlgorithm.Distance(_cell.x, _cell.y, x, y);
-                        if (distance < _weapon_range_min || _weapon_range_max < distance)
-                        {
-                            continue;
-                        }
-
-                        // TODO: 똑같은 위치를 매번 Collecting 할 것인지 말지는 추후 고려.
-                        if (close_list_attack.Contains((x, y)))
-                        {
-                            continue;
-                        }
-
-                        // 검사 기록에 추가.
-                        close_list_attack.Add((x, y));
-                        
-                        // 타겟 추가. (대상 id, 공격 위치 x, 공격 위치 y)
-                        var entity_id = _terrain_map.BlockManager.FindEntityID(x, y);
-                        if (entity_id > 0)
-                        {
-                            list_attack.Add((entity_id, _cell.x, _cell.y));
-                        }
-                    }
-                }
-            });
-
-            
-            _collect_targets.AddRange(list_attack);
-
-            ListPool<(Int64, int, int)>.Release(list_attack);
-            HashSetPool<(int x, int y)>.Release(close_list_attack);
+            ObjectPool<CollectTargetVisitor>.Release(visitor);
         }
 
     }    

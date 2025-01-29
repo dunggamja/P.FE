@@ -170,27 +170,27 @@ public static partial class PathAlgorithm
     //     }
     // }
 
-    // public interface IFloodFillVisitor
-    // {
-    //     void Visit(Int64 _entity_id, int x, int y);
-    // }
-
-    public static void FloodFill(
-        TerrainMap              _terrain_map,
-        IPathOwner              _path_owner,
-        (int x, int y)          _position,
-        int                     _move_distance,        
-        Action<(int x, int y)>  _func_on_cell = null,
-        bool                    _is_call_func_any_cell = false)
+    public interface IFloodFillVisitor
     {
-        // callback이 없으면 아무것도 하지 않습니다.    
-        if (_func_on_cell == null)
+        TerrainMap     TerrainMap   { get; }
+        IPathOwner     PathOwner    { get; }
+        (int x, int y) Position     { get; }
+        int            MoveDistance { get; }
+
+
+        void Visit(int x, int y);
+    }
+
+    public static void FloodFill(IFloodFillVisitor _visitor)
+    {
+        // _visitor 없으면 아무것도 하지 않습니다.    
+        if (_visitor == null)
             return;
 
         var open_list_move    = HashSetPool<(int x, int y, int move_cost)>.Acquire();
         var close_list_move   = HashSetPool<(int x, int y, int move_cost)>.Acquire();
 
-        open_list_move.Add((_position.x, _position.y, 0));
+        open_list_move.Add((_visitor.Position.x, _visitor.Position.y, 0));
         // Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
 
         while(open_list_move.Count > 0)
@@ -202,16 +202,14 @@ public static partial class PathAlgorithm
             {
                 if (e.move_cost < item.move_cost) 
                     item = e;
-            }
-            
+            }            
 
-            // callback 호출 여부 체크. 
-            var call_func_on_cell = _is_call_func_any_cell ||
-                                    (item.x == _position.x && item.y == _position.y) ||
-                                    Verify_Movecost(_terrain_map, _path_owner, item.x, item.y, _is_occupancy:true).result;
+            // 내가 점유가능한 위치에서만 Visit을 실행합니다. 
+            var call_visit = (item.x == _visitor.Position.x && item.y == _visitor.Position.y) ||
+                             Verify_Movecost(_visitor.TerrainMap, _visitor.PathOwner, item.x, item.y, _is_occupancy:true).result;
                                     
-            if (call_func_on_cell)
-                _func_on_cell((item.x, item.y));
+            if (call_visit)
+                _visitor.Visit(item.x, item.y);
 
             // open/close list 셋팅
             open_list_move.Remove(item);
@@ -237,13 +235,13 @@ public static partial class PathAlgorithm
                     // Debug.Log($"FloodFill, x:{x}, y:{y}");
 
                     // 통과 가능한 지역인지 체크합니다.
-                    (var moveable, var move_cost) = Verify_Movecost(_terrain_map, _path_owner, x, y, _is_occupancy:false);
+                    (var moveable, var move_cost) = Verify_Movecost(_visitor.TerrainMap, _visitor.PathOwner, x, y, _is_occupancy:false);
                     if (!moveable)
                         continue;
 
                     // 이동 범위 초과.
                     var total_cost = item.move_cost + move_cost;
-                    if (total_cost > _move_distance)
+                    if (total_cost > _visitor.MoveDistance)
                     {
                         continue;
                     }
