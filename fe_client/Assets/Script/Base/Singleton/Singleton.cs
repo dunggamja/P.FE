@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public class Singleton<T> where T : Singleton<T>, new()
 {
@@ -26,7 +29,44 @@ public class Singleton<T> where T : Singleton<T>, new()
         }
     }
 
-    protected virtual void Init() { }
+    private   float                   MIN_LOOP_INTERVAL = 1f/120f;
+    protected virtual float           LoopInterval      => 0f;
+    private   CancellationTokenSource LoopCancelToken   = null;
+
+ 
+    protected virtual void Init() 
+    { 
+        LoopCancelToken = new CancellationTokenSource();
+        
+        // 비동기 대기하지 않고 진행.
+        StartLoop(LoopCancelToken.Token).Forget();
+    }
+
+
+    private async UniTask StartLoop(CancellationToken _token)
+    {
+        try
+        {
+            while (true)
+            {
+                _token.ThrowIfCancellationRequested();
+
+                OnLoop();
+                await UniTask.WaitForSeconds(Mathf.Max(MIN_LOOP_INTERVAL, LoopInterval));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("Task was cancelled");
+        }
+
+    }
+
+
+    protected virtual void OnLoop()
+    {  
+        // Debug.LogWarning(this.GetType().Name);
+    }
 
     
 }

@@ -194,9 +194,9 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         m_cached_dispatched.Clear();
     }
 
-    protected override void OnUpdate()
+    protected override void OnLoop()
     {
-        base.OnUpdate();
+        base.OnLoop();
 
         // 이벤트 dispatch 처리.
         DispatchEventQueue();

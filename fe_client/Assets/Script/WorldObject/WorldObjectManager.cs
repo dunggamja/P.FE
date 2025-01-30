@@ -91,9 +91,9 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
     }
 
 
-    protected override void OnUpdate()
+    protected override void OnLoop()
     {
-        base.OnUpdate();
+        base.OnLoop();
 
         // 오브젝트 삭제 처리.
         {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
@@ -49,45 +51,15 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-
-    
-    private   float         MIN_UPDATE_INTERVAL = 1f/120f;
-    protected virtual float UpdateInterval     => 0f;
-    private   float         m_last_update_time =  0f;
-
-    private   bool  IsUpdateTime()
-    {
-        var cur_time = Time.time;
-        var interval = Mathf.Max(MIN_UPDATE_INTERVAL, UpdateInterval);
-
-        if (cur_time - m_last_update_time >= interval)
-        {
-            m_last_update_time = cur_time;
-            return true;
-        }
-        return false;
-    }
-
+    private   float                 MIN_UPDATE_INTERVAL = 1f/120f;
+    protected virtual float         LoopInterval        => 0f;
+    private CancellationTokenSource LoopCancelToken     = null;
 
     
     protected virtual void Start()
     {
         OnInitialize();       
     } 
-
-    // Update is called once per frame
-    private void Update()
-    {
-        if (IsUpdateTime())
-        {
-            OnUpdate();
-        }
-    }
-
-    // private void LateUpdate()
-    // {
-    //     OnLateUpdate();
-    // }
 
     private void OnApplicationQuit()
     {
@@ -105,16 +77,50 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
     {
         if (!this.name.Equals(Name))
              this.name = Name;
+
+        LoopCancelToken = new CancellationTokenSource();
+        StartLoop(LoopCancelToken.Token).Forget();
+       
     }
 
-    protected virtual void OnUpdate()
-    { }
+    private async UniTask StartLoop(CancellationToken _token)
+    {  
+        try
+        {
+            while(true)
+            {
+                _token.ThrowIfCancellationRequested();
 
-    // protected virtual void OnLateUpdate()
-    // {
+                OnLoop();
+                await UniTask.WaitForSeconds(Mathf.Max(MIN_UPDATE_INTERVAL, LoopInterval));
+            } 
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.LogWarning("Task was cancelled");
+        }
 
-    // }
+    }
+
+    protected virtual void OnLoop()
+    {
+       // Debug.LogWarning(this.GetType().Name);
+    }
 
     protected virtual void OnRelease(bool _is_shutdown)
-    { }
+    { 
+        if (!_is_shutdown)
+        {
+            CancelTask();
+        }
+    }
+
+    private void CancelTask()
+    {
+        if (LoopCancelToken != null)
+        {
+            LoopCancelToken.Cancel();
+            LoopCancelToken = null;
+        }
+    }
 }

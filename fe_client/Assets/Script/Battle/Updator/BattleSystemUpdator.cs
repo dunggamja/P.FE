@@ -8,14 +8,14 @@ namespace Battle
 
     public class BattleSystemUpdator : SingletonMono<BattleSystemUpdator>
     {
-        protected override float UpdateInterval => Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
+        protected override float LoopInterval => Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
 
         protected override void OnInitialize()
         {
             base.OnInitialize();
 
             // 프로파일링을 위해 임시 처리
-            Debug.unityLogger.logEnabled = false;
+            // Debug.unityLogger.logEnabled = false;
 
             // 지형 시스템 초기화
             Test_BattleSystem_Setup_Terrain();
@@ -24,9 +24,9 @@ namespace Battle
             Test_BattleSystem_Setup_Unit();
         }
 
-        protected override void OnUpdate()
+        protected override void OnLoop()
         {
-            base.OnUpdate();
+            base.OnLoop();
 
             BattleSystemManager.Instance.Update();
         }
@@ -70,6 +70,10 @@ namespace Battle
 
             attacker.SetFaction(1);
             defender.SetFaction(2);
+
+            // 1. 플레이어 진영, 2: AI 진영.
+            //BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
+            //BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
 
 
 
