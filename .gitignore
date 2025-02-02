@@ -15,3 +15,8 @@ fe_client/Unity.Scripting.Python.Samples.PySide.csproj
 fe_client/mono_crash.c3dca6d08.0.json
 fe_client/Assets/Purchased
 fe_client/Assets/Purchased.meta
+fe_client/Assets/Samples
+fe_client/Unity.Scripting.Python.Samples.PySide.csproj
+fe_client/Assembly-CSharp-Editor.csproj
+fe_client/InputSystem.Samples.Visualizers.csproj
+fe_client/Unity.Scripting.Python.Samples.PySide.csproj

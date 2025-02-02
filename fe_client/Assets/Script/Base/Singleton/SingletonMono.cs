@@ -78,6 +78,8 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
         if (!this.name.Equals(Name))
              this.name = Name;
 
+        CancelTask();
+        
         LoopCancelToken = new CancellationTokenSource();
         StartLoop(LoopCancelToken.Token).Forget();
        
@@ -87,12 +89,12 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
     {  
         try
         {
-            while(true)
+            while (true)
             {
-                _token.ThrowIfCancellationRequested();
-
-                OnLoop();
                 await UniTask.WaitForSeconds(Mathf.Max(MIN_UPDATE_INTERVAL, LoopInterval));
+
+                _token.ThrowIfCancellationRequested();
+                OnLoop();
             } 
         }
         catch (OperationCanceledException)

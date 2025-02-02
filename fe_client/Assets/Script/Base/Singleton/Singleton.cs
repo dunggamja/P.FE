@@ -36,6 +36,8 @@ public class Singleton<T> where T : Singleton<T>, new()
  
     protected virtual void Init() 
     { 
+        CancelTask();
+
         LoopCancelToken = new CancellationTokenSource();
         
         // 비동기 대기하지 않고 진행.
@@ -49,10 +51,9 @@ public class Singleton<T> where T : Singleton<T>, new()
         {
             while (true)
             {
-                _token.ThrowIfCancellationRequested();
-
-                OnLoop();
                 await UniTask.WaitForSeconds(Mathf.Max(MIN_LOOP_INTERVAL, LoopInterval));
+                _token.ThrowIfCancellationRequested();
+                OnLoop();
             }
         }
         catch (OperationCanceledException)
@@ -66,6 +67,16 @@ public class Singleton<T> where T : Singleton<T>, new()
     protected virtual void OnLoop()
     {  
         // Debug.LogWarning(this.GetType().Name);
+    }
+
+
+    private void CancelTask()
+    {
+        if (LoopCancelToken != null)
+        {
+            LoopCancelToken.Cancel();
+            LoopCancelToken = null;
+        }
     }
 
     
