@@ -29,7 +29,7 @@ public abstract class PathVehicle
     public void Setup(Vector3 _position, Vector3 _position_prev, Vector3 _velocity = default, float _max_speed = 5f)
     {
         m_position      = _position;
-        m_position      = _position_prev;
+        m_position_prev = _position_prev;
         m_velocity      = _velocity;
         m_max_speed     = _max_speed;
     }

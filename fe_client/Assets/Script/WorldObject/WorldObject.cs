@@ -8,7 +8,7 @@ public class WorldObject : MonoBehaviour
     
     public Int64 ID { get; private set; } = 0;
 
-    private const float INTERPOLATION_INTERVAL = 0.15f;
+    private const float INTERPOLATION_INTERVAL = Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
 
     private Vector3 m_position          = Vector3.zero;
     private Vector3 m_position_prev     = Vector3.zero;
