@@ -74,8 +74,19 @@ public class Singleton<T> where T : Singleton<T>, new()
     {
         if (LoopCancelToken != null)
         {
-            LoopCancelToken.Cancel();
-            LoopCancelToken = null;
+            try
+            {
+                LoopCancelToken.Cancel();
+                LoopCancelToken.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+                Debug.LogWarning("LoopCancelToken already disposed");
+            }
+            finally
+            {
+                LoopCancelToken = null;
+            }
         }
     }
 

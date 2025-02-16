@@ -121,8 +121,19 @@ public abstract class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour
     {
         if (LoopCancelToken != null)
         {
-            LoopCancelToken.Cancel();
-            LoopCancelToken = null;
+            try
+            {
+                LoopCancelToken.Cancel();
+                LoopCancelToken.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+                Debug.LogWarning("LoopCancelToken already disposed");
+            }
+            finally
+            {
+                LoopCancelToken = null;
+            }
         }
     }
 }
