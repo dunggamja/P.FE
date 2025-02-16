@@ -41,7 +41,7 @@ namespace Battle
             if (State != EnumState.Progress)
             {
                 OnExit();
-                Debug.Log($"Command, Finished, ID:{OwnerID}, Command:{GetType().Name}");
+                //Debug.Log($"Command, Finished, ID:{OwnerID}, Command:{GetType().Name}");
             }
 
             return State;   

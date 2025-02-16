@@ -20,7 +20,19 @@ public class UIManager : SingletonMono<UIManager>
     [SerializeField] private Canvas m_canvas_root_hud    = null;
 
     
-
+    private void Awake()
+    {
+        var main_camera = Camera.main;
+        if (main_camera == null)
+        {
+            Debug.LogError("UIManager: Main Camera is not found.");
+        }
+        else
+        {
+            // 메인 카메라를 참조하도록 설정.
+            m_canvas_root_hud.worldCamera = main_camera;            
+        }
+    }
 
     
 }

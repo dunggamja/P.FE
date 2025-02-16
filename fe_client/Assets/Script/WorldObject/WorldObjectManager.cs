@@ -21,8 +21,10 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
 
 
-    public async void CreateObject(Int64 _id)//, Action<bool, Int64> _on_result = null)
+    public async UniTask CreateObject(Int64 _id)//, Action<bool, Int64> _on_result = null)
     {   
+        // todo: cancellation token 처리 추가하자.
+
         //async
         var load_asset_address = AssetName.TEST_PREFAB;
         //var load_asset_address = "test_base/test";

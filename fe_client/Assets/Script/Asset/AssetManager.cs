@@ -27,6 +27,15 @@ public class AssetManager : Singleton<AssetManager>
         return result;
     }
 
+    public void ReleaseAsset(string _asset_path)
+    {
+        if (m_asset_handles.TryGetValue(_asset_path, out var handle))
+        {
+            m_asset_handles.Remove(_asset_path);
+            Addressables.Release(handle);
+        }
+    }
+
     // public void InstantiateAsync(string _asset_path, Action<GameObject> _callback = null)
     // {        
     //     var task_async        = Addressables.InstantiateAsync(_asset_path);
@@ -45,28 +54,21 @@ public class AssetManager : Singleton<AssetManager>
     // }
 
 
-    public async UniTask<T> LoadAssetAsync<T>(string _asset_path)
-    {   
-        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(_asset_path);  
+    // public async UniTask<T> LoadAssetAsync<T>(string _asset_path)
+    // {   
+    //     AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(_asset_path);  
         
-        // 대기.
-        var result = await handle.Task;
+    //     // 대기.
+    //     var result = await handle.Task;
 
-        if (handle.Status == AsyncOperationStatus.Succeeded)
-        {
-            m_asset_handles.TryAdd(_asset_path, handle);       
-        }
+    //     if (handle.Status == AsyncOperationStatus.Succeeded)
+    //     {
+    //         m_asset_handles.TryAdd(_asset_path, handle);       
+    //     }
 
-        return result;
-    }
+    //     return result;
+    // }
 
-    public void ReleaseAsset(string _asset_path)
-    {
-        if (m_asset_handles.TryGetValue(_asset_path, out var handle))
-        {
-            m_asset_handles.Remove(_asset_path);
-            Addressables.Release(handle);
-        }
-    }
+
 
 }

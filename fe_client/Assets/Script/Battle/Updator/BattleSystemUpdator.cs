@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 
@@ -72,8 +73,8 @@ namespace Battle
             defender.SetFaction(2);
 
             // 1. 플레이어 진영, 2: AI 진영.
-            //BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
-            //BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
+            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.Player);
+            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.AI);
 
 
 
@@ -138,8 +139,8 @@ namespace Battle
             }
 
 
-            WorldObjectManager.Instance.CreateObject(attacker.ID);
-            WorldObjectManager.Instance.CreateObject(defender.ID);
+            WorldObjectManager.Instance.CreateObject(attacker.ID).Forget();
+            WorldObjectManager.Instance.CreateObject(defender.ID).Forget();
         }
 
 

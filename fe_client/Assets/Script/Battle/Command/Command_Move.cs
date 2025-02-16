@@ -68,7 +68,7 @@ namespace Battle
                 // 좌표 이동 처리.
                 Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, false);
 
-                //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
+                Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
                 // 행동 플래그 
                 Owner.SetCommandDone(EnumCommandFlag.Move);
