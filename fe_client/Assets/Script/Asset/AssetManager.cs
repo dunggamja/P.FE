@@ -16,12 +16,32 @@ public class AssetManager : Singleton<AssetManager>
     public async UniTask<GameObject> InstantiateAsync(string _asset_path)
     {
         // , Action<GameObject> _callback = null
-        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(_asset_path);
-        GameObject                       result = await handle.Task;
+        var asset = await LoadAssetAsync<GameObject>(_asset_path);
+        if (asset == null)
+        {
+            return null;
+        }
 
-        if (handle.Status == AsyncOperationStatus.Succeeded && result != null)
+        var result  = GameObject.Instantiate(asset);
+        if (result != null)
         {
             result.TryAddComponent<AssetSelfCleanup>();
+        }
+
+        return result;
+    }
+
+    public async UniTask<T> LoadAssetAsync<T>(string _asset_path)
+    {
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(_asset_path);
+        T result = await handle.ToUniTask();
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            if (!m_asset_handles.ContainsKey(_asset_path))
+            {
+                 m_asset_handles.Add(_asset_path, handle);
+            }
         }
 
         return result;
