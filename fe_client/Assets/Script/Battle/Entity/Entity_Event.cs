@@ -14,22 +14,20 @@ namespace Battle
 
         public void OnReceiveEvent(IEventParam _event)
         {            
-            // situation update event
-            if (_event is SituationUpdatedEvent situation_updated)
+            switch (_event)
             {
-                // 진영 갱신 
-                OnSituationEvent_Turn(situation_updated);
-
-                // 스킬 사용.
-                Skill.UseSkill(situation_updated.Situation, this);
+                case SituationUpdatedEvent situation_updated:
+                    // 진영 갱신 
+                    OnSituationEvent_Turn(situation_updated);
+                    // 스킬 사용.
+                    Skill.UseSkill(situation_updated.Situation, this);
+                    
+                    break;
+                case AIUpdateEvent ai_update_event:
+                    // AI 갱신
+                    OnAIUpdateEvent(ai_update_event);
+                    break;
             }
-            else if (_event is AIUpdateEvent ai_update_event)
-            {
-                // AI 갱신
-                OnAIUpdateEvent(ai_update_event);
-            }
-
-
         }
 
 

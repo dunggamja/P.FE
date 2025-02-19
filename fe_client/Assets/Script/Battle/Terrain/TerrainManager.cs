@@ -29,9 +29,11 @@ namespace Battle
 
         public void OnReceiveEvent(IEventParam _event)
         {
-            if (_event is CellPositionEvent cell_event)
+            switch (_event)
             {
-                OnReceiveEvent_CellPositionEvent(cell_event);
+                case CellPositionEvent cell_event:
+                    OnReceiveEvent_CellPositionEvent(cell_event);
+                    break;
             }
         }
 

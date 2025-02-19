@@ -11,10 +11,11 @@ public partial class WorldObjectManager
 {
     public void OnReceiveEvent(IEventParam _event)
     {
-
-        if (_event is WorldObjectPositionEvent position_event)
+        switch (_event)
         {
-            OnReceiveEvent_WorldPositionEvent(position_event);
+            case WorldObjectPositionEvent position_event:
+                OnReceiveEvent_WorldPositionEvent(position_event);
+                break;
         }
         
     }
