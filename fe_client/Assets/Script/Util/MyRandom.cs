@@ -2,6 +2,7 @@ using System;
 
 public class MyRandom
 {
+    // AI가 짜준 랜덤 코드.
     private const int N           = 624;
     private const int M           = 397;
     private const uint MATRIX_A   = 0x9908B0DF; // constant vector a
@@ -80,11 +81,33 @@ public class MyRandom
 
     public int Next(int minInclusive, int maxExclusive)
     {
+        if (minInclusive >= maxExclusive)
+        {
+            throw new ArgumentException("minInclusive must be less than maxExclusive");
+        }
+
         return (int)(Next() % (maxExclusive - minInclusive)) + minInclusive; // 지정된 범위 내에서 랜덤 정수 생성
     }
 
     public float NextFloat()
     {
         return Next() / (float)uint.MaxValue; // 0.0 ~ 1.0 범위의 랜덤 부동 소수점 수 생성
+    }
+
+    public Int64 NextInt64()
+    {
+        Int64 high = (Int64)Next() << 32;
+        Int64 low  = (Int64)Next() & 0xFFFFFFFF;
+        return high | low;
+    }
+
+    public Int64 NextInt64(Int64 minInclusive, Int64 maxExclusive)
+    {
+        if (minInclusive >= maxExclusive)
+        {
+            throw new ArgumentException("minInclusive must be less than maxExclusive");
+        }
+        
+        return ((Int64)NextInt64() % (maxExclusive - minInclusive)) + minInclusive;
     }
 } 

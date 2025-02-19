@@ -252,8 +252,8 @@ public static partial class PathAlgorithm
             }   
         }
 
-        HashSetPool<(int x, int y, int move_cost)>.Release(open_list_move);
-        HashSetPool<(int x, int y, int move_cost)>.Release(close_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return(open_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return(close_list_move);
         // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");            
     }
 

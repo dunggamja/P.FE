@@ -25,7 +25,7 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<SituationUpdatedEvent>.Release(this);
+            ObjectPool<SituationUpdatedEvent>.Return(this);
         }
     }
 
@@ -53,7 +53,7 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<AIUpdateEvent>.Release(this);
+            ObjectPool<AIUpdateEvent>.Return(this);
         }
     }
 
@@ -94,7 +94,7 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<CellPositionEvent>.Release(this);
+            ObjectPool<CellPositionEvent>.Return(this);
         }
     }
 }

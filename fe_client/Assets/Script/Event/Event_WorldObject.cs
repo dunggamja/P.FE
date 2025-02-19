@@ -32,7 +32,7 @@ using UnityEngine;
 
         public void Release()
         {
-            ObjectPool<WorldObjectPositionEvent>.Release(this);
+            ObjectPool<WorldObjectPositionEvent>.Return(this);
         }
     }
 // }

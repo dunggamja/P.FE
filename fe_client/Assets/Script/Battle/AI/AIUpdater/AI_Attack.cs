@@ -217,7 +217,7 @@ namespace Battle
                                 owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                             }
 
-                            ObjectPool<ScoreResult>.Release(current_score);
+                            ObjectPool<ScoreResult>.Return(current_score);
                         }
                         // finally
                         // {
@@ -226,7 +226,7 @@ namespace Battle
                         // }
                     }
 
-                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Release(list_collect_target);
+                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(list_collect_target);
                 }
             }
 
@@ -407,7 +407,7 @@ namespace Battle
             // Å¸°Ù ÀÌ°ü.
             _collect_targets.AddRange(visitor.GetCollectTargets());
 
-            ObjectPool<CollectTargetVisitor>.Release(visitor);
+            ObjectPool<CollectTargetVisitor>.Return(visitor);
         }
 
     }    

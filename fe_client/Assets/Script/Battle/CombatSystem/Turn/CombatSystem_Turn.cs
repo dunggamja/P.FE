@@ -57,11 +57,13 @@ namespace Battle
 
             bool IsRemainAttackCount()
             {
+                // 공격횟수가 남아 있는지 체크.
                 return m_attack_count < (m_attack_count_max + m_attack_count_extra);
             }
 
             bool HasNextTurn()
             {
+                // 행동 횟수가 남아 있는지 체크.
                 return m_turn_count + 1 < m_turn_count_max;
             }
 
@@ -94,7 +96,12 @@ namespace Battle
 
             public void ProcessTurn()
             {
-                if (!IsRemainAttackCount())
+                if (IsRemainAttackCount())
+                {
+                    // 공격 횟수가 남아 있음.
+                    ++m_attack_count;
+                }
+                else
                 {
                     // 해당턴의 공격 완료, 다음 턴으로 넘어감
                     ++m_turn_count;
@@ -103,10 +110,6 @@ namespace Battle
                     m_attack_count_extra = 0;
                 }
 
-                if (IsRemainAttackCount())
-                {
-                    ++m_attack_count;
-                }
             }
         }
 
@@ -163,6 +166,8 @@ namespace Battle
                 return;
 
             Release();
+
+            
 
             var attacker = _param.Attacker;
             var defender = _param.Defender;

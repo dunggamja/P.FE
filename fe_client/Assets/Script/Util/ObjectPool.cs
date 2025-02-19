@@ -30,7 +30,7 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         return pool_object;
     }
 
-    public static void Release(T _obj)
+    public static void Return(T _obj)
     {
         if (_obj == null)
             return;
@@ -57,7 +57,7 @@ public static class ListPool<T>
         return list;
     }
 
-    public static void Release(List<T> list)
+    public static void Return(List<T> list)
     {
         if (list == null)
             return;
@@ -77,7 +77,7 @@ public static class HashSetPool<T>
         return hashSet;
     }
 
-    public static void Release(HashSet<T> hashSet)
+    public static void Return(HashSet<T> hashSet)
     {
         if (hashSet == null)
             return;
@@ -97,7 +97,7 @@ public static class DictionaryPool<TKey, TValue>
         return dict;
     }
 
-    public static void Release(Dictionary<TKey, TValue> dict)
+    public static void Return(Dictionary<TKey, TValue> dict)
     {
         if (dict == null)
             return;

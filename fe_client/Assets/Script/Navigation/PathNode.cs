@@ -186,7 +186,7 @@ public class PathNodeManager //: IPathNodeManager
         foreach (var node in list_path_node)
             m_list_path_node.Enqueue(node);
 
-        ListPool<PathNode>.Release(list_path_node);
+        ListPool<PathNode>.Return(list_path_node);
 
         
         return 0 < m_list_path_node.Count;

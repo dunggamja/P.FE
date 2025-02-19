@@ -13,6 +13,7 @@ public class VFXManager : SingletonMono<VFXManager>
 
         if (m_vfx_pools.TryGetValue(_vfx_name, out var pool) && pool.Count > 0)
         {
+            // 풀에 이미 있을경우.
             vfx_object = pool.Dequeue();                        
         }
         else

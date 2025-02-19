@@ -25,6 +25,9 @@ namespace Battle
         {
             base.Init();
 
+            // 현재는 파엠을 의식하고 1대1 전투를 상정하고 만들어져 있음.
+            // TODO: 파엠이 아닌 글룸헤이븐식 전투로 바꿀수도 있음.
+            //       
 
             var turn_sytem   = new CombatSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
             var damage_sytem = new CombatSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);

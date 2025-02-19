@@ -795,7 +795,7 @@
             "id": "bb02c4f2-2f05-4cdc-b2aa-0bb21cf95255",
             "actions": [
                 {
-                    "name": "Move",
+                    "name": "Grid_Move",
                     "type": "Value",
                     "id": "426fb411-a15c-4899-a7d7-63f173c33e5a",
                     "expectedControlType": "Vector2",
@@ -804,7 +804,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "PointerPosition",
+                    "name": "Grid_Pointer",
                     "type": "Value",
                     "id": "f6c9150b-9de7-4af8-ac42-170811234698",
                     "expectedControlType": "Vector2",
@@ -813,7 +813,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "PointerDelta",
+                    "name": "Grid_Delta",
                     "type": "PassThrough",
                     "id": "d2834a6a-4a70-4edd-9416-07a466fe4ab0",
                     "expectedControlType": "Vector2",
@@ -822,9 +822,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Confirm",
+                    "name": "Grid_AnyButton",
                     "type": "Button",
-                    "id": "31f258c4-f2c7-4a49-9c46-639c35fdd8fd",
+                    "id": "8d483fe2-c6b7-4ce5-a7a3-4849e5b0e8a5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Grid_Click",
+                    "type": "Button",
+                    "id": "04c9ba63-98d6-4afb-a91d-560f0cdb2b85",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Grid_Cancel",
+                    "type": "Button",
+                    "id": "2b3360f5-8638-4a6a-8b8a-f36194267b7e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -839,7 +857,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -850,7 +868,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -861,7 +879,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -872,7 +890,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -883,7 +901,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -894,7 +912,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -905,7 +923,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -916,7 +934,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -927,7 +945,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -938,7 +956,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Grid_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -949,7 +967,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PointerPosition",
+                    "action": "Grid_Pointer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -960,18 +978,51 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PointerDelta",
+                    "action": "Grid_Delta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "d3996416-4cad-46be-aa12-03bc71314d57",
-                    "path": "",
+                    "id": "6977313f-f201-4791-9d97-c4edfcdfecd2",
+                    "path": "*/{Cancel}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Confirm",
+                    "action": "Grid_Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8180e09e-30ba-4f67-bd15-066fcee18e3a",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "66f1dad1-751e-47fe-80ee-054496198e1c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "985424f7-6aa5-41f6-96fc-e5a0112a2139",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_AnyButton",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
