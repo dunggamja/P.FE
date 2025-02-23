@@ -10,9 +10,24 @@ public interface IPoolObject
     void Reset();
 }
 
+// TODO: MonoBehaviour(GameObject)에 대한 풀링 처리 필요...
 
-public static class ObjectPool<T> where T : IPoolObject, new()
+// public static class GameObjectPool<T> where T : MonoBehaviour
+// {
+//     private static readonly Stack<T>   m_pool  = new();
+//     private static readonly HashSet<T> m_inuse = new();
+// }
+
+public static class ObjectPool<T> where T : IPoolObject, new() 
 {
+    static ObjectPool()
+    {
+        if (typeof(T).IsSubclassOf(typeof(UnityEngine.Object)))
+        {
+            throw new InvalidOperationException("ObjectPool<T>는 MonoBehaviour(GameObject)에 대한 풀링 처리를 하지 않습니다.");
+        }
+    }
+    
     private static readonly Stack<T>   m_pool  = new();
 
     private static readonly HashSet<T> m_inuse = new();

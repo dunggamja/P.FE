@@ -167,8 +167,6 @@ namespace Battle
 
             Release();
 
-            
-
             var attacker = _param.Attacker;
             var defender = _param.Defender;
 

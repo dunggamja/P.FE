@@ -138,7 +138,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2774118189239439135}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
-        m_MethodName: OnGrid_Move
+        m_MethodName: OnGrid_Delta
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -211,3 +211,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa80f2aaa1ca8465f9c369477feb7c88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_player_input: {fileID: 2097582775772885667}

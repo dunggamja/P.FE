@@ -7,7 +7,27 @@ public partial class InputManager
     [InputBinding("Grid_Move")]
     public void OnGrid_Move(InputAction.CallbackContext _context)
     {
+        switch(_context)
+        {
+            case InputAction.CallbackContext _ when _context.started:
+                Debug.LogWarning("started");
+                break;
+            case InputAction.CallbackContext _ when _context.performed:
+                Debug.LogWarning("performed");
+                break;
+            case InputAction.CallbackContext _ when _context.canceled:
+                Debug.LogWarning("canceled");
+                break;
+        }
 
+        {
+            var direction   = _context.ReadValue<Vector2>();
+            var input_param = new InputParam_Grid_Move(direction);
+            
+            m_queue_input_param.Enqueue(input_param);
+        }
+        
+        
         Debug.Log($"{_context.action.actionMap.name}:Grid_Move");
     }
 

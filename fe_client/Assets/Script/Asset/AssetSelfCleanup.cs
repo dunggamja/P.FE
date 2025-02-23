@@ -14,4 +14,5 @@ public class AssetSelfCleanup : MonoBehaviour
         // Addressables.InstantiateAsync ¿Í ±ò¸ÂÃã
         Addressables.ReleaseInstance(gameObject);
     }
+
 }
