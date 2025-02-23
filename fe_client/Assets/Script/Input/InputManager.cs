@@ -4,16 +4,16 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class InputBindingAttribute : PropertyAttribute
-{
-    public string ActionName { get; private set; } = string.Empty;
+// [AttributeUsage(AttributeTargets.Method)]
+// public class InputBindingAttribute : PropertyAttribute
+// {
+//     public string ActionName { get; private set; } = string.Empty;
 
-    public InputBindingAttribute(string _action_name)
-    {
-        ActionName = _action_name;
-    }
-}
+//     public InputBindingAttribute(string _action_name)
+//     {
+//         ActionName = _action_name;
+//     }
+// }
 
 public partial class InputManager : SingletonMono<InputManager>
 {
@@ -21,11 +21,11 @@ public partial class InputManager : SingletonMono<InputManager>
     PlayerInput                                    m_player_input               = null;
 
     
-    Dictionary<EnumInputHandlerType, InputHandler> m_list_input_handler         = new();
-    Stack<EnumInputHandlerType>                    m_stack_input_handler_type   = new();
-    Queue<InputParam>                              m_queue_input_param          = new();
+    // Dictionary<EnumInputHandlerType, InputHandler> m_list_input_handler         = new();
+    Stack<InputHandler>                            m_stack_input_handler    = new();
+    Queue<InputParam>                              m_queue_input_param      = new();
 
-    InputHandler                                   m_current_input_handler      = null;     
+    InputHandler                                   m_current_input_handler  = null;     
 
     
 
@@ -33,10 +33,10 @@ public partial class InputManager : SingletonMono<InputManager>
     {
         base.OnInitialize();
 
-        m_list_input_handler.Add(EnumInputHandlerType.UI,   new InputHandler_UI());
-        m_list_input_handler.Add(EnumInputHandlerType.Grid, new InputHandler_Grid());
+        // m_list_input_handler.Add(EnumInputHandlerType.UI,          new InputHandler_UI());
+        // m_list_input_handler.Add(EnumInputHandlerType.Grid_Select, new InputHandler_Grid_Select());
 
-        m_stack_input_handler_type.Push(EnumInputHandlerType.Grid);
+        m_stack_input_handler.Push(new InputHandler_Grid_Select());
     }
 
     protected override void OnLoop()
@@ -44,8 +44,8 @@ public partial class InputManager : SingletonMono<InputManager>
         base.OnLoop();
 
         // 현재 입력 핸들러가 없거나, 현재 입력 핸들러의 타입이 스택의 최상단 타입과 다르면 입력 핸들러 변경...
-        var peek_handler_type = m_stack_input_handler_type.Peek();
-        var change_hander     = (m_current_input_handler == null ||  m_current_input_handler.HandlerType != peek_handler_type);
+        var peek_handler  = m_stack_input_handler.Peek();
+        var change_hander = (m_current_input_handler == null ||  m_current_input_handler != peek_handler);
         if (change_hander)
         {
             // 이전 입력 핸들러가 있으면 취소 처리...
@@ -59,7 +59,7 @@ public partial class InputManager : SingletonMono<InputManager>
             m_queue_input_param.Clear();
 
             // 새로운 입력 핸들러 설정...
-            m_current_input_handler = m_list_input_handler[peek_handler_type];
+            m_current_input_handler = peek_handler;
 
             // 새로운 입력 핸들러가 있으면 재개 처리...
             if (m_current_input_handler != null)
@@ -68,15 +68,12 @@ public partial class InputManager : SingletonMono<InputManager>
 
         if (m_current_input_handler != null)
         {
-            var input_param = (m_queue_input_param.Count > 0) ? m_queue_input_param.Dequeue() : null;  
-
             // 핸들러 업데이트
-            if (m_current_input_handler.Update(input_param))
+            if (m_current_input_handler.Update(m_queue_input_param))
             {
                 // 스택에서 핸들러 제거
-                m_stack_input_handler_type.Pop();
+                m_stack_input_handler.Pop();
             }
-
         }
         
     }
@@ -92,21 +89,15 @@ public partial class InputManager : SingletonMono<InputManager>
     //     m_queue_input_param.Enqueue(_input_param);
     // }
 
-    public void StackHandler(EnumInputHandlerType _input_handler_type)
+    public void StackHandler(InputHandler _input_handler)
     {
-        if (m_stack_input_handler_type.TryPeek(out EnumInputHandlerType _peek))
-        {
-            // 이미 해당 입력 핸들러가 최상단에 들어가 있으면 리턴...
-            if (_peek == _input_handler_type)
-                return;
-        }
-
-        m_stack_input_handler_type.Push(_input_handler_type);
+        m_stack_input_handler.Push(_input_handler);
     }
 
-    // public void PopHandler()
-    // {
-    //     m_stack_input_handler_type.Pop();
-    // }
+    void PopHandler()
+    {
+        if (m_stack_input_handler.Count > 1)
+            m_stack_input_handler.Pop();        
+    }
 
 }

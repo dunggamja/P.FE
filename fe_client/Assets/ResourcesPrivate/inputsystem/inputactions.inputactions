@@ -796,21 +796,21 @@
             "actions": [
                 {
                     "name": "Grid_Move",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "426fb411-a15c-4899-a7d7-63f173c33e5a",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Grid_Pointer",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "f6c9150b-9de7-4af8-ac42-170811234698",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Grid_Delta",
@@ -823,7 +823,7 @@
                 },
                 {
                     "name": "Grid_AnyButton",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "8d483fe2-c6b7-4ce5-a7a3-4849e5b0e8a5",
                     "expectedControlType": "",
                     "processors": "",

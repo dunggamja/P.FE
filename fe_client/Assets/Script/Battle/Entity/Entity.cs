@@ -95,6 +95,7 @@ namespace Battle
             BlackBoard.SetValue(EnumEntityBlackBoard.Faction, _faction);
         }
 
+        
    
 
     }
