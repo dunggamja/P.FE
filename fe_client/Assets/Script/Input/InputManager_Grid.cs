@@ -12,8 +12,7 @@ public partial class InputManager
             var direction   = _context.ReadValue<Vector2>();
             var input_param = new InputParam_Grid_Move(direction);
             
-            m_queue_input_param.Enqueue(input_param);
-
+            m_input_handler_context.InputParamQueue.Enqueue(input_param);
             // Debug.Log($"{_context.action.actionMap.name}:Grid_Move");
         }
         
