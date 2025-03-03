@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using R3;
+using System.Threading;
 
 
 public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEventReceiver
@@ -22,53 +23,54 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
 
 
-    public async UniTask CreateObject(Int64 _id)//, Action<bool, Int64> _on_result = null)
+    public async UniTask CreateObject(Int64 _id, CancellationToken _cancel_token = default)//, Action<bool, Int64> _on_result = null)
     {   
-        // todo: cancellation token 처리 추가하자.
-        
+        // todo: cancellation token 처리 추가하자.        
 
-        //async
+        // test code
         var load_asset_address = AssetName.TEST_PREFAB;
-        //var load_asset_address = "test_base/test";
-        //Debug.Log($"InstantiateAsync Try-1, {load_asset_address}");   
         
         // unitask 대기.
-        var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address);
 
-        // 대기 완료 후 처리.
-        if (new_object != null)
+        try
         {
-            var entity            = EntityManager.Instance.GetEntity(_id);
-            var duplicate_object  = Seek(_id);
-
-            // 중복 오브젝트 생성 or entity가 없으면 생성 실패 처리.
-            var is_error = (duplicate_object != null) || (entity == null);
-            if (is_error)
+            var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address, _cancel_token);
+            
+            // 대기 완료 후 처리.
+            if (new_object != null)
             {
-                Debug.LogError($"error, create object, {_id}"); 
-                GameObject.Destroy(new_object);
-                return;
-            }
+                var entity            = EntityManager.Instance.GetEntity(_id);
+                var duplicate_object  = Seek(_id);
 
-            new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
-            var new_actor   = new_object.TryAddComponent<WorldObject>();
+                // 중복 오브젝트 생성 or entity가 없으면 생성 실패 처리.
+                var is_error = (duplicate_object != null) || (entity == null);
+                if (is_error)
+                {
+                    Debug.LogError($"error, create object, {_id}"); 
+                    GameObject.Destroy(new_object);
+                    return;
+                }
 
-            new_actor.Initialize(entity);
+                new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
+                var new_actor   = new_object.TryAddComponent<WorldObject>();
 
-            Insert(new_actor);
+                new_actor.Initialize(entity);
 
-            // 생성했을 때 이벤트 처리.
+                Insert(new_actor);
 
-            // Debug.Log($"InstantiateAsync Success, {_id}");  
-        }   
-        else
+                // 생성했을 때 이벤트 처리.
+
+                // Debug.Log($"InstantiateAsync Success, {_id}");  
+            }   
+            else
+            {
+                Debug.Log($"InstantiateAsync Failed, {load_asset_address}");  
+            }  
+        }
+        catch (OperationCanceledException)
         {
-            Debug.Log($"InstantiateAsync Failed, {load_asset_address}");  
-        }     
-
-       
-
-
+            Debug.LogError($"error, create object, {_id}"); 
+        }
     }
 
 

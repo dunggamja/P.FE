@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class VFXManager : SingletonMono<VFXManager>
     private Dictionary<string, Queue<VFXObject>> m_vfx_pools = new();
     
 
-    public async UniTask<VFXObject> CreateVFX(string _vfx_name)
+    public async UniTask<VFXObject> CreateVFX(string _vfx_name, CancellationToken _cancel_token = default)
     {
         VFXObject vfx_object = null;
 
@@ -18,7 +19,7 @@ public class VFXManager : SingletonMono<VFXManager>
         }
         else
         {
-            var new_object = await AssetManager.Instance.InstantiateAsync(_vfx_name);
+            var new_object = await AssetManager.Instance.InstantiateAsync(_vfx_name, _cancel_token);
             if (new_object == null)
             {
                 Debug.LogError($"VFXManager: CreateVFX failed to instantiate {_vfx_name}");
