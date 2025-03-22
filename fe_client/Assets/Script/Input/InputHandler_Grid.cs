@@ -7,17 +7,19 @@ using UnityEngine;
 
 public class InputHandler_Grid_Select : InputHandler
 {    
+    
+    const float  MOVE_TILE_INTERVAL = 0.15f;
+    const float  MOVE_DIRECTION_MIN = 0.4f;
+    const string VFX_SELECTION      = "local_base/tile_selection";
+
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
     bool                    IsFinish          { get; set; } = false;                
     int                     SelectTile_X      { get; set; } = 0;
     int                     SelectTile_Y      { get; set; } = 0;
     float                   MoveTile_LastTime { get; set; } = 0f;
-    CancellationTokenSource CancelTokenSource { get; set; } = null;
-    const float MOVE_TILE_INTERVAL = 0.15f;
-    const float MOVE_DIRECTION_MIN = 0.4f;
 
-    const string VFX_SELECTION = "local_base/tile_selection";
+    int                     VFX_Selection     { get; set; } = 0;
 
     public InputHandler_Grid_Select(InputHandlerContext _context) 
         : base(_context)
@@ -36,10 +38,11 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnStart()
     {
-        CancelTokenSource = new CancellationTokenSource();
+        // CancelTokenSource = new CancellationTokenSource();
         // ÀÌÆåÆ® »ý¼º
-        VFXManager.Instance.CreateVFX(VFX_SELECTION, CancelTokenSource.Token)
-        .ContinueWith(OnCompleteVFXTask);
+        // VFXManager.Instance.CreateVFX(VFX_SELECTION, CancelTokenSource.Token)
+
+        VFX_Selection = VFXManager.Instance.CreateVFXAsync(VFX_SELECTION);//.ContinueWith(OnCompleteVFXTask);
     }
 
     protected override bool OnUpdate()
@@ -74,17 +77,21 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnFinish()
     {
-        if (CancelTokenSource != null)
-        {
-            CancelTokenSource.Cancel();
-            CancelTokenSource.Dispose();
-            CancelTokenSource = null;
-        }
+        VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
+
+        // if (CancelTokenSource != null)
+        // {
+        //     CancelTokenSource.Cancel();
+        //     CancelTokenSource.Dispose();
+        //     CancelTokenSource = null;
+        // }
     }
 
     ProcParam_Result OnUpdate_ProcParam(Queue<InputParam> _queue_input_param)
     {        
         ProcParam_Result result = new ProcParam_Result();
+
+
         while (_queue_input_param.Count > 0)
         {
             var input_param = _queue_input_param.Dequeue();
@@ -178,14 +185,12 @@ public class InputHandler_Grid_Select : InputHandler
         return;
     }
 
-    private void OnCompleteVFXTask(VFXObject _vfx_object)
-    {
-        
-
-        if (CancelTokenSource != null)
-        {
-            CancelTokenSource.Dispose();
-            CancelTokenSource = null;
-        }
-    }
+    // private void OnCompleteVFXTask(VFXObject _vfx_object)
+    // {
+    //     // if (CancelTokenSource != null)
+    //     // {
+    //     //     CancelTokenSource.Dispose();
+    //     //     CancelTokenSource = null;
+    //     // }
+    // }
 }
