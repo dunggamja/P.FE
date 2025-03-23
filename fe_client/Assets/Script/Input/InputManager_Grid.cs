@@ -14,7 +14,11 @@ public partial class InputManager
             
             m_input_handler_context.InputParamQueue.Enqueue(input_param);
             // Debug.Log($"{_context.action.actionMap.name}:Grid_Move");
+
+            // Debug.Log($"OnGrid_Move performed: {_context.ReadValue<Vector2>()}");
         }
+
+        // Debug.Log($"OnGrid_Move anything: {_context.ReadValue<Vector2>()}");
         
         
     }
