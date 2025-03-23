@@ -11,26 +11,9 @@ struct VFXCreateParam
     public Vector3    Position     { get; set; }
     public Quaternion Rotation     { get; set; }
     public float      Scale        { get; set; }
-
-    // public static VFXCreateParam Default
-    // {
-    //     get
-    //     {
-    //         return new VFXCreateParam()
-    //         {
-    //             SerialNumber = 0,
-    //             VFXName      = string.Empty,
-    //             Parent       = null,
-    //             Position     = Vector3.zero,
-    //             Rotation     = Quaternion.identity,
-    //             Scale        = 1f
-    //         };
-    //     }
-    // }
-
 }
 
-public class VFXManager : SingletonMono<VFXManager>
+public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 {
     [SerializeField]
     private Transform m_vfx_pool_root = null;
@@ -61,7 +44,40 @@ public class VFXManager : SingletonMono<VFXManager>
         return m_vfx_serial;
     }
 
-    public int CreateVFXAsync(string _vfx_name, Transform _parent = null, Vector3 _position = default, Quaternion _rotation = default, float _scale = 1f)
+    protected override void OnInitialize()
+    {
+        base.OnInitialize();
+
+        EventDispatchManager.Instance.AttachReceiver(this);
+    }
+
+
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        OnLoop_ReleaseVFX();
+    }
+
+
+    protected override void OnRelease(bool _is_shutdown)
+    {
+        base.OnRelease(_is_shutdown);
+
+        if (!_is_shutdown)
+        {
+            EventDispatchManager.Instance.DetachReceiver(this);
+        }
+    }
+
+
+    public int CreateVFXAsync(
+        string     _vfx_name, 
+        Transform  _parent       = null, 
+        Vector3    _position     = default, 
+        Quaternion _rotation     = default, 
+        float      _scale        = 1f,
+        bool       _auto_release = false)
     {
         // TODO: 자동 이펙트가 릴리즈 되는 기능 추가.
 
@@ -92,6 +108,14 @@ public class VFXManager : SingletonMono<VFXManager>
             return false;
 
         return m_vfx_release_list.Add(_serial_number);
+    }
+
+    VFXObject SeekVFX(int _serial_number)
+    {
+        if (_serial_number == 0)
+            return null;
+
+        return m_vfx_repository.TryGetValue(_serial_number, out var vfx_object) ? vfx_object : null;
     }
     
 
@@ -198,12 +222,8 @@ public class VFXManager : SingletonMono<VFXManager>
         _vfx_object.transform.localScale    = Vector3.one;
     }
 
-    protected override void OnLoop()
-    {
-        base.OnLoop();
 
-        OnLoop_ReleaseVFX();
-    }
+
 
 
     void OnLoop_ReleaseVFX()
@@ -229,4 +249,7 @@ public class VFXManager : SingletonMono<VFXManager>
         // 풀에 반환.
         HashSetPool<int>.Return(release_list);
     }
+
+
+
 }

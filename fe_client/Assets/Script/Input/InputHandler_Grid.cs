@@ -38,11 +38,13 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnStart()
     {
-        // CancelTokenSource = new CancellationTokenSource();
-        // 이펙트 생성
-        // VFXManager.Instance.CreateVFX(VFX_SELECTION, CancelTokenSource.Token)
+        // 이펙트 생성.
+        VFX_Selection = VFXManager.Instance.CreateVFXAsync(VFX_SELECTION); 
+        //.ContinueWith(OnCompleteVFXTask);
 
-        VFX_Selection = VFXManager.Instance.CreateVFXAsync(VFX_SELECTION);//.ContinueWith(OnCompleteVFXTask);
+        // // 이펙트 삭제 예정 목록에 추가.
+        // VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
+
     }
 
     protected override bool OnUpdate()
@@ -142,6 +144,15 @@ public class InputHandler_Grid_Select : InputHandler
         if (is_moved == true)
         {
             MoveTile_LastTime = Time.time;
+
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<VFXTransformEvent>.Acquire()
+                .SetID(VFX_Selection)
+                .SetPosition(new Vector3(SelectTile_X, 0f, SelectTile_Y))                
+            );
+
+            
+
             //Debug.LogWarning($"SelectTile_X: {SelectTile_X}, SelectTile_Y: {SelectTile_Y}");
         }
     }

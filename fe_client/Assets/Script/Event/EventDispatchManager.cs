@@ -16,7 +16,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
 
     List<IEventParam>                             m_cached_event_queue = new();
 
-    List<IEventParam>                             m_cached_dispatched  = new();
+    List<IEventParam>                             m_dispatched_list  = new();
 
     EventReceiverAttribute[] TryGetAttribute(Type _type)
     {
@@ -42,7 +42,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         m_update_event_queue.Clear();
         m_cached_attribute.Clear();
         m_cached_event_queue.Clear();
-        m_cached_dispatched.Clear();
+        m_dispatched_list.Clear();
     }
 
     public void AttachReceiver(IEventReceiver _receiver)
@@ -137,8 +137,8 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
             }
         }
 
-
-        m_cached_dispatched.Add(_event);
+        // 디스패치 완료 된 이벤트
+        m_dispatched_list.Add(_event);
 
         //_event.Release();
         //ObjectPool.Release()
@@ -167,31 +167,32 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
 
     private void DispatchEventQueue()
     {
-        // 큐를 복사한뒤에 처리합시다. 
-        m_cached_event_queue.AddRange(m_update_event_queue);
+        // 큐를 복사합시다.
+        var list_event = ListPool<IEventParam>.Acquire();
+        list_event.AddRange(m_update_event_queue);
 
         // 큐 클리어.
         m_update_event_queue.Clear();
 
-        foreach (var e in m_cached_event_queue)
+        foreach (var e in list_event)
         {
             DispatchEvent(e);
         }
 
         // 사용 완료했으면 클리어.
-        m_cached_event_queue.Clear();
+        ListPool<IEventParam>.Return(list_event);
     }
 
     private void PostDispatchedEvent()
     {
-        foreach(var e in m_cached_dispatched)
+        foreach(var e in m_dispatched_list)
         {
             // Release 처리.
             if (e != null)
                 e.Release();
         }
 
-        m_cached_dispatched.Clear();
+        m_dispatched_list.Clear();
     }
 
     protected override void OnLoop()
