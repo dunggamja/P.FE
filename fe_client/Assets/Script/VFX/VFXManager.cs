@@ -119,6 +119,14 @@ public class VFXManager : SingletonMono<VFXManager>
             }
         }
 
+        // 삭제 예정 목록에 있으면 생성하지 않습니다.
+        if (m_vfx_release_list.Contains(_param.SerialNumber))
+        {
+            m_vfx_release_list.Remove(_param.SerialNumber);
+            ReturnToPool(_param.VFXName, vfx_object);
+            return null;
+        }
+
         // 레포지토리에 추가.
         m_vfx_repository.Add(_param.SerialNumber, vfx_object);
 
@@ -208,7 +216,6 @@ public class VFXManager : SingletonMono<VFXManager>
 
         // 릴리즈 목록 복사.
         release_list.UnionWith(m_vfx_release_list);
-        m_vfx_release_list.Clear();
 
         // 릴리즈 목록 처리.
         foreach (var serial_number in release_list)
