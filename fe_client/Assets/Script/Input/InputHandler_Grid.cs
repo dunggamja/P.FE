@@ -173,12 +173,18 @@ public class InputHandler_Grid_Select : InputHandler
             var faction        = entity.GetFaction();
             var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
+            // TESTCODE:
+            GUIManager.Instance.OpenUI("gui/page/unit_command");
+
+
             switch(commander_type)
             {
                 case EnumCommanderType.None:
                 break;
 
                 case EnumCommanderType.Player:
+
+
                 //InputManager.Instance.StackHandler(EnumInputHandlerType.UI_Command);
                 break;
 

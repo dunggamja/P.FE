@@ -206,6 +206,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 8d483fe2-c6b7-4ce5-a7a3-4849e5b0e8a5
     m_ActionName: 'Grid/Grid_AnyButton[/Keyboard/anyKey]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2774118189239439135}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: OnGrid_Select
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2a47c61d-1000-4758-a348-cde4464399c3
+    m_ActionName: 'Grid/Grid_Select[/Keyboard/z]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PC
   m_DefaultActionMap: Grid

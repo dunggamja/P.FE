@@ -42,6 +42,11 @@ public partial class InputManager
         // Debug.Log($"{_context.action.actionMap.name}:Grid_Click");
     }
 
+    public void OnGrid_Select(InputAction.CallbackContext _context)
+    {
+        // Debug.Log($"{_context.action.actionMap.name}:Grid_Select");
+    }
+
     // [InputBinding("Grid_Cancel")]
     public void OnGrid_Cancel(InputAction.CallbackContext _context)
     {

@@ -847,6 +847,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Grid_Select",
+                    "type": "Button",
+                    "id": "2a47c61d-1000-4758-a348-cde4464399c3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1006,6 +1015,17 @@
                 },
                 {
                     "name": "",
+                    "id": "38742864-e283-4e88-b882-781917f3c2e5",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "66f1dad1-751e-47fe-80ee-054496198e1c",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -1023,6 +1043,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Grid_AnyButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ee3fd86-c7aa-4d89-82e8-a27509f1e3d2",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
