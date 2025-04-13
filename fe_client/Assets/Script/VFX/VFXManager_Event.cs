@@ -28,15 +28,13 @@ public partial class VFXManager
             vfx_object.SetParent(_event.Parent.value);
 
         if (_event.Position.apply)
-            vfx_object.SetPosition(_event.Position.value);
+            vfx_object.SetPosition(_event.Position.value, _event.Position.time);
 
         if (_event.Rotation.apply)
-            vfx_object.SetRotation(_event.Rotation.value);
+            vfx_object.SetRotation(_event.Rotation.value, _event.Rotation.time);
 
         if (_event.Scale.apply)
-            vfx_object.SetScale(_event.Scale.value);
-
-        // TODO: Time 처리 필요.
+            vfx_object.SetScale(_event.Scale.value, _event.Scale.time);
 
         // 이펙트 위치 변경.
         //_event.Transform.position = _event.Position;

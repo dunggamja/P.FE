@@ -3,14 +3,17 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-struct VFXCreateParam
+struct VFXObjectParam
 {
-    public int        SerialNumber { get; set; }
-    public string     VFXName      { get; set; }
-    public Transform  Parent       { get; set; }
-    public Vector3    Position     { get; set; }
-    public Quaternion Rotation     { get; set; }
-    public float      Scale        { get; set; }
+    public int        SerialNumber      { get; set; }
+    public string     VFXName           { get; set; }
+    public Transform  VFXRoot           { get; set; }
+    public Vector3    Position          { get; set; }
+    public Quaternion Rotation          { get; set; }
+    public float      Scale             { get; set; }
+
+    public (Transform target, bool is_attatched) 
+    FollowTarget { get; set; }
 }
 
 public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
@@ -73,11 +76,13 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
     public int CreateVFXAsync(
         string     _vfx_name, 
-        Transform  _parent       = null, 
-        Vector3    _position     = default, 
-        Quaternion _rotation     = default, 
-        float      _scale        = 1f,
-        bool       _auto_release = false)
+        Vector3    _position      = default, 
+        Quaternion _rotation      = default, 
+        float      _scale         = 1f,   
+        Transform  _follow_target = null,
+        bool       _is_attatched  = false
+        
+        )
     {
         // TODO: 자동 이펙트가 릴리즈 되는 기능 추가.
 
@@ -85,14 +90,15 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         var serial_number = GenerateSerial();
 
         // 파라미터 설정.
-        var param = new VFXCreateParam()
+        var param = new VFXObjectParam()
         {
             SerialNumber = serial_number,
             VFXName      = _vfx_name,
-            Parent       = (_parent != null) ? _parent : m_vfx_use_root,
+            VFXRoot      = m_vfx_use_root,
             Position     = _position,
             Rotation     = _rotation,
-            Scale        = _scale
+            Scale        = _scale,
+            FollowTarget = (_follow_target, _is_attatched)
         };
 
         // 이펙트 생성. (비동기)
@@ -119,7 +125,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
     }
     
 
-    async UniTask<VFXObject> CreateVFXAsync(VFXCreateParam _param, CancellationToken _cancel_token = default)
+    async UniTask<VFXObject> CreateVFXAsync(VFXObjectParam _param, CancellationToken _cancel_token = default)
     {
         // 풀에서 가져오기.
         VFXObject vfx_object = AcquireFromPool(_param.VFXName);
@@ -158,7 +164,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         vfx_object.OnCreate(
             _param.SerialNumber, 
             _param.VFXName, 
-            _param.Parent,
+            _param.VFXRoot,
             _param.Position,
             _param.Rotation,
             _param.Scale);

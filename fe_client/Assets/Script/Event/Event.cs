@@ -6,8 +6,8 @@ using UnityEngine;
 
 public enum EnumEventProcessTiming
 {
-    Immediate,
-    OnNextUpdate,
+    Immediate,    // 이벤트 Dispatch 시점에 즉시 처리.
+    OnNextUpdate, // 다음 업데이트시 처리.
 }
 
 public interface IEventParam : IPoolObject

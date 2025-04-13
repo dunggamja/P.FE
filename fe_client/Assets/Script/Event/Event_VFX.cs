@@ -7,18 +7,28 @@ using UnityEngine;
     public class VFXTransformEvent : IEventParam
     {
         
-        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public EnumEventProcessTiming EventProcessTiming 
+        => EnumEventProcessTiming.OnNextUpdate;
 
-        public int                            ID       { get; private set; }
-        public (bool apply, Transform  value) Parent   { get; private set; }
-        public (bool apply, Vector3    value) Position { get; private set; }
-        public (bool apply, Quaternion value) Rotation { get; private set; }
-        public (bool apply, float      value) Scale    { get; private set; }       
-        public  float                         Time     { get; private set; }
+        public int ID { get; private set; }
+
+        public (bool apply, Transform  value) 
+        Parent   { get; private set; }
+
+        public (bool apply, Vector3    value, float time) 
+        Position { get; private set; }
+
+        public (bool apply, Quaternion value, float time) 
+        Rotation { get; private set; }
+
+        public (bool apply, float      value, float time) 
+        Scale    { get; private set; }       
+        
 
 
         public void Release()
         {
+            // ObjectPooling...
             ObjectPool<VFXTransformEvent>.Return(this);        
         }
 
@@ -26,10 +36,9 @@ using UnityEngine;
         {
             ID       = 0;
             Parent   = (false, null);
-            Position = (false, Vector3.zero);
-            Rotation = (false, Quaternion.identity);
-            Scale    = (false, 1f);
-            Time     = 0f;
+            Position = (false, Vector3.zero, 0f);
+            Rotation = (false, Quaternion.identity, 0f);
+            Scale    = (false, 1f, 0f);
         }
 
         public VFXTransformEvent SetID(int _id)
@@ -44,29 +53,24 @@ using UnityEngine;
             return this;
         }
 
-        public VFXTransformEvent SetPosition(Vector3 _position)
+        public VFXTransformEvent SetPosition(Vector3 _position, float _time = 0f)
         {
-            Position = (true, _position);
+            Position = (true, _position, _time);
             return this;
         }
 
-        public VFXTransformEvent SetRotation(Quaternion _rotation)
+        public VFXTransformEvent SetRotation(Quaternion _rotation, float _time = 0f)
         {
-            Rotation = (true, _rotation);
+            Rotation = (true, _rotation, _time);
             return this;
         }
 
-        public VFXTransformEvent SetScale(float _scale)
+        public VFXTransformEvent SetScale(float _scale, float _time = 0f)
         {
-            Scale = (true, _scale);
+            Scale = (true, _scale, _time);
             return this;
         }
 
-        public VFXTransformEvent SetTime(float _time)
-        {
-            Time = _time;
-            return this;
-        }
     }
 
 
