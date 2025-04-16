@@ -76,6 +76,7 @@ public class InputHandler_Grid_Select : InputHandler
     protected override void OnFinish()
     {
         VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
+        IsFinish = false;
 
         // if (CancelTokenSource != null)
         // {

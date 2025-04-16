@@ -18,7 +18,7 @@ public class GUIPage : GUIBase
     public int                 SerialNumber          { get; private set; } = 0;
     public EnumGUIType         GUIType               => m_gui_type;
     public string              GUIName               => m_gui_name;
-    public bool                IsEnableMultiInstance => m_is_enable_multi_instance;
+    // public bool                IsEnableMultiInstance => m_is_enable_multi_instance;
 
     public bool                IsInitialized { get; private set;} = false;
 
@@ -30,7 +30,7 @@ public class GUIPage : GUIBase
     [SerializeField]
     private string      m_gui_name                 = string.Empty;
     [SerializeField]
-    private bool        m_is_enable_multi_instance = false;
+    // private bool        m_is_enable_multi_instance = false;
     // public abstract bool       IsModal               { get; }
 
 
