@@ -34,7 +34,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
         try
         {
-            var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address, _cancel_token);
+            var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address, null, _cancel_token);
             
             // 대기 완료 후 처리.
             if (new_object != null)

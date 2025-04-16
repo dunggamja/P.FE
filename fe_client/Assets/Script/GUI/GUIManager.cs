@@ -72,7 +72,12 @@ public class GUIManager : SingletonMono<GUIManager>
         m_async_operation_tracker.TrackOperation(serial_number, cts);
 
         // UI 열기.
-        OpenUIAsync(new GUIPage.GUIOpenParam { SerialNumber = serial_number, GUIName = name }, cts.Token).Forget();
+        OpenUIAsync(new GUIPage.GUIOpenParam 
+        { 
+            SerialNumber = serial_number, 
+            GUIName      = name,
+            GUIType      = EnumGUIType.Screen
+        }, cts.Token).Forget();
 
         return serial_number;
     }
@@ -95,13 +100,37 @@ public class GUIManager : SingletonMono<GUIManager>
                 list_sn.Add(_param.SerialNumber);
             }
 
+            Transform _ui_root = null;
+
+             switch(_param.GUIType)
+            {
+                case EnumGUIType.Screen:
+                case EnumGUIType.Popup:
+                _ui_root = m_canvas_root_screen.transform;
+                break;
+
+                case EnumGUIType.HUD:
+                _ui_root = m_canvas_root_hud.transform;
+                break;
+            }
+
             // 취소 토큰 처리.
             
-            var gui_object = await AssetManager.Instance.InstantiateAsync(_param.GUIName, _cancel_token);
+            var gui_object = await AssetManager.Instance.InstantiateAsync(_param.GUIName, _ui_root, _cancel_token);
             if (gui_object == null)
             {
                 Debug.LogError($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
-                return;
+
+                throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+            }
+
+            // GUIPage 컴포넌트 체크.
+            if (gui_object.TryGetComponent<GUIPage>(out var gui_page) == false)
+            {
+                Debug.LogError($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
+                GameObject.Destroy(gui_object);
+
+                throw new Exception($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
             }
 
             // 취소 시 gui_object 제거.
@@ -111,22 +140,16 @@ public class GUIManager : SingletonMono<GUIManager>
                 GameObject.Destroy(gui_object);
 
                 _cancel_token.ThrowIfCancellationRequested();
-                return;
             }
 
-            // GUIPage 컴포넌트 체크.
-            if (gui_object.TryGetComponent<GUIPage>(out var gui_page) == false)
-            {
-                Debug.LogError($"GUIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
-                return;
-            }
+           
 
             // UI 열기.
             gui_page.Open(_param);            
         }
-        catch (OperationCanceledException)
+        catch (Exception e)
         {
-            Debug.LogError($"GUIManager: OpenUIAsync canceled. {_param.GUIName}");
+            Debug.LogError($"GUIManager: OpenUIAsync canceled. {_param.GUIName}, e:{e.Message}");
 
             {
                 // 취소 시 목록 제거.
@@ -137,8 +160,6 @@ public class GUIManager : SingletonMono<GUIManager>
                     list_sn.Remove(_param.SerialNumber);
             }
         }
-
-        
         
     }
 

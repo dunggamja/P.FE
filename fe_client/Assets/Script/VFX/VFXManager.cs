@@ -134,7 +134,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (vfx_object == null)
         {
             // 프리팹 로드 대기.
-            var new_object = await AssetManager.Instance.InstantiateAsync(_param.VFXName, _cancel_token);
+            var new_object = await AssetManager.Instance.InstantiateAsync(_param.VFXName, _param.VFXRoot, _cancel_token);
             if (new_object == null)
             {
                 Debug.LogError($"VFXManager: CreateVFX failed to instantiate {_param.VFXName}");

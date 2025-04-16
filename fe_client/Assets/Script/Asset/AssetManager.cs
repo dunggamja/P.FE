@@ -15,7 +15,9 @@ public class AssetManager : Singleton<AssetManager>
 {
     Dictionary<string, AsyncOperationHandle> m_asset_handles = new (20);
    
-    public async UniTask<GameObject> InstantiateAsync(string _asset_path, CancellationToken _cancel_token = default)
+    public async UniTask<GameObject> InstantiateAsync(string _asset_path, 
+    Transform         _parent = null,
+    CancellationToken _cancel_token = default)
     {
         // , Action<GameObject> _callback = null
         var asset = await LoadAssetAsync<GameObject>(_asset_path, _cancel_token);
@@ -24,7 +26,7 @@ public class AssetManager : Singleton<AssetManager>
             return null;
         }
 
-        var result  = GameObject.Instantiate(asset);
+        var result  = GameObject.Instantiate(asset, _parent, false);
         if (result != null)
         {
             result.TryAddComponent<AssetSelfCleanup>();

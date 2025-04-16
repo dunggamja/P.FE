@@ -44,12 +44,31 @@ public partial class InputManager
 
     public void OnGrid_Select(InputAction.CallbackContext _context)
     {
+        if (_context.started || _context.performed)
+        {
+            var input_param = new InputParam_Grid_Select();
+            m_input_handler_context.InputParamQueue.Enqueue(input_param);
+
+            Debug.Log($"OnGrid_Select performed, {_context.phase}");
+        }
+
+        // Debug.Log($"OnGrid_Select anything");
+
         // Debug.Log($"{_context.action.actionMap.name}:Grid_Select");
     }
 
     // [InputBinding("Grid_Cancel")]
     public void OnGrid_Cancel(InputAction.CallbackContext _context)
     {
+        if (_context.started || _context.performed)
+        {
+            var input_param = new InputParam_Grid_Cancel();
+            m_input_handler_context.InputParamQueue.Enqueue(input_param);
+
+            Debug.Log($"OnGrid_Cancel performed, {_context.phase}");
+        }
+
+        //Debug.Log($"OnGrid_Cancel anything");
         // Debug.Log($"{_context.action.actionMap.name}:Grid_Cancel");
     }
 
