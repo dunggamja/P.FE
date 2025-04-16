@@ -9,12 +9,20 @@ using UnityEngine.EventSystems;
 public class InputHandler_Grid_Select : InputHandler
 {   
     
-    struct InputParam_Result
+    struct InputParam_Result : IPoolObject
     {
         public bool                             IsSelect      { get; set; }
         public bool                             IsCancel      { get; set; }
         public (bool changed, Vector2    value) MoveDirection { get; set; }
         public (bool changed, Vector2Int value) SelectTile    { get; set; }
+
+        public void Reset()
+        {
+            IsSelect      = false;
+            IsCancel      = false;
+            MoveDirection = default;
+            SelectTile    = default;
+        }
     }
  
     
@@ -56,18 +64,19 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override bool OnUpdate()
     {
-        // 입력의 결과값
-        var proc_result = OnUpdate_Input_Compute(m_context.InputParamQueue);
+        var input_result = ObjectPool<InputParam_Result>.Acquire();
+
+        // 입력의 결과값을 생성.
+        OnUpdate_Input_Compute(m_context.InputParamQueue, ref input_result);
 
         // 입력의 결과값을 처리.
-        OnUpdate_Input_Process(proc_result);
-
+        OnUpdate_Input_Process(input_result);
 
         // 타일 이동.
         OnUpdate_Tile_Move();
 
 
-
+        ObjectPool<InputParam_Result>.Return(input_result);
         
         
         return IsFinish;
@@ -77,20 +86,11 @@ public class InputHandler_Grid_Select : InputHandler
     {
         VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
         IsFinish = false;
-
-        // if (CancelTokenSource != null)
-        // {
-        //     CancelTokenSource.Cancel();
-        //     CancelTokenSource.Dispose();
-        //     CancelTokenSource = null;
-        // }
     }
 
-    InputParam_Result OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param)
+    void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
     {        
-        // 결과값.
-        InputParam_Result result = new ();
-
+    
         // 입력 파람 처리.
         while (_queue_input_param.Count > 0)
         {
@@ -101,7 +101,7 @@ public class InputHandler_Grid_Select : InputHandler
                 case InputParam_Grid_Move input_param_move: 
                 {
                     // 이동 방향 설정.
-                    result.MoveDirection = (true, input_param_move.Direction);
+                    _result.MoveDirection = (true, input_param_move.Direction);
                 }
                 break;
 
@@ -109,27 +109,25 @@ public class InputHandler_Grid_Select : InputHandler
                 {
                     // 타일 위치 설정.
                     var tile_pos      = new Vector2Int((int)input_param_pointer.Position.x, (int)input_param_pointer.Position.y);
-                    result.SelectTile = (true, tile_pos);
+                    _result.SelectTile = (true, tile_pos);
                 }
                 break;
 
                 case InputParam_Grid_Select:
                 {
                     // 선택 처리.
-                    result.IsSelect = true;
+                    _result.IsSelect = true;
                 }
                 break;
 
                 case InputParam_Grid_Cancel:
                 {
                     // 취소 처리.
-                    result.IsCancel = true;
+                    _result.IsCancel = true;
                 }
                 break;  
             }
         }
-
-        return result;
     }
 
 
