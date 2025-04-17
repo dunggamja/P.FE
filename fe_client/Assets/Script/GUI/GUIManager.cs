@@ -17,30 +17,11 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
 
-    Dictionary<int,    GUIPage>      m_active_gui              = new (); // serial number, GUIObject
-    Dictionary<string, HashSet<int>> m_active_gui_by_name      = new (); // 이름, serial number
-    AsyncOperationTracker            m_async_operation_tracker = new();
+    Dictionary<Int64,    GUIPage>      m_active_gui              = new (); // serial number, GUIObject
+    Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // 이름, serial number
+    AsyncOperationTracker              m_async_operation_tracker = new();
 
-    // TODO: Open/Close AsyncOperationTracker로 관리해도 될 것 같음.
 
-    private int m_ui_serial = 0;
-
-    private int GenerateSerial()
-    {
-        do
-        { 
-            // 시리얼 넘버 증가.
-            ++m_ui_serial;
-
-            // 시리얼 넘버가 0이면 1로 변경.
-            if (m_ui_serial <= 0)
-                m_ui_serial = 1;
-            
-            // 중복 체크.
-        } while (m_active_gui.ContainsKey(m_ui_serial));
-
-        return m_ui_serial;
-    }
 
        
     private void Awake()
@@ -63,41 +44,35 @@ public class GUIManager : SingletonMono<GUIManager>
         base.OnLoop();
     }
 
-    public int OpenUI(string name)
+    public Int64 OpenUI(GUIOpenParam _param)
     {       
-        var serial_number = GenerateSerial();
         var cts           = new CancellationTokenSource();
 
         // 취소 토큰 추적.  
-        m_async_operation_tracker.TrackOperation(serial_number, cts);
+        m_async_operation_tracker.TrackOperation(_param.ID, cts);
 
         // UI 열기.
-        OpenUIAsync(new GUIPage.GUIOpenParam 
-        { 
-            SerialNumber = serial_number, 
-            GUIName      = name,
-            GUIType      = EnumGUIType.Screen
-        }, cts.Token).Forget();
+        OpenUIAsync(_param, cts.Token).Forget();
 
-        return serial_number;
+        return _param.ID;
     }
 
 
-    async UniTask OpenUIAsync(GUIPage.GUIOpenParam _param, CancellationToken _cancel_token = default)
+    async UniTask OpenUIAsync(GUIOpenParam _param, CancellationToken _cancel_token = default)
     {
         try
         {
             // 활성화된 UI 목록에 추가.
             {
-                m_active_gui.Add(_param.SerialNumber, null);
+                m_active_gui.Add(_param.ID, null);
 
                 // 이름에 해당하는 UI 목록에 추가.
                 if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_sn) == false)
                 {
-                    list_sn = new HashSet<int>(); 
+                    list_sn = new HashSet<Int64>(); 
                     m_active_gui_by_name.Add(_param.GUIName, list_sn);
                 }
-                list_sn.Add(_param.SerialNumber);
+                list_sn.Add(_param.ID);
             }
 
             Transform _ui_root = null;
@@ -153,11 +128,11 @@ public class GUIManager : SingletonMono<GUIManager>
 
             {
                 // 취소 시 목록 제거.
-                m_active_gui.Remove(_param.SerialNumber);
+                m_active_gui.Remove(_param.ID);
 
                 // 이름에 해당하는 UI 목록에 추가.
                 if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_sn))
-                    list_sn.Remove(_param.SerialNumber);
+                    list_sn.Remove(_param.ID);
             }
         }
         
@@ -166,30 +141,30 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public void CloseUI(string name)
     {
-        var temp = HashSetPool<int>.Acquire();
+        var temp = HashSetPool<Int64>.Acquire();
 
         // 이름에 해당하는 UI 객체를 모두 닫는다.
         if (m_active_gui_by_name.TryGetValue(name, out temp))
         {
             foreach (var e in temp)
                 CloseUI(e);
-        }
+        }   
 
-        HashSetPool<int>.Return(temp);
+        HashSetPool<Int64>.Return(temp);
     }
 
-    public void CloseUI(int serial_number)
+    public void CloseUI(Int64 id)
     {
-        if (m_active_gui.TryGetValue(serial_number, out var gui_object))
+        if (m_active_gui.TryGetValue(id, out var gui_object))
         {
             if (gui_object != null)
             {
                 // 컨테이너 제거 1.
-                m_active_gui.Remove(serial_number);
+                m_active_gui.Remove(id);
 
                 // 컨테이너 제거 2.
                 if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var temp))
-                    temp.Remove(serial_number);
+                    temp.Remove(id);
 
                 // UI 닫기 처리.
                 gui_object.Close();
@@ -197,10 +172,6 @@ public class GUIManager : SingletonMono<GUIManager>
         }
 
         // 취소 토큰에 대해서도 처리.
-        m_async_operation_tracker.TryCancelOperation(serial_number);
+        m_async_operation_tracker.TryCancelOperation(id);
     }
-
-
-    
-    
 }

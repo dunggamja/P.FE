@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -7,11 +8,11 @@ using UnityEngine;
 
 public class AsyncOperationTracker
 {
-    private readonly Dictionary<int, CancellationTokenSource> _operationTokens = new();
+    private readonly Dictionary<Int64, CancellationTokenSource> _operationTokens = new();
     // private readonly CancellationTokenSourcePool _ctsPool = new();
     // private readonly object _lock = new object();
 
-    public bool TryCancelOperation(int id)
+    public bool TryCancelOperation(Int64 id)
     {
         // lock (_lock)
         {
@@ -26,7 +27,7 @@ public class AsyncOperationTracker
         }
     }
 
-    public void TrackOperation(int id, CancellationTokenSource cts)
+    public void TrackOperation(Int64 id, CancellationTokenSource cts)
     {
         // lock (_lock)
         {
@@ -34,7 +35,7 @@ public class AsyncOperationTracker
         }
     }
 
-    public void CompleteOperation(int id)
+    public void CompleteOperation(Int64 id)
     {
         // lock (_lock)
         {

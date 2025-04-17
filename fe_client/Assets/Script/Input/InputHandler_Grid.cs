@@ -172,8 +172,8 @@ public class InputHandler_Grid_Select : InputHandler
             var faction        = entity.GetFaction();
             var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
-            // TESTCODE:
-            GUIManager.Instance.OpenUI("gui/page/unit_command");
+            // TESTCODE:            
+            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(entity_id));
 
 
             switch(commander_type)
@@ -238,11 +238,15 @@ public class InputHandler_Grid_Select : InputHandler
         SelectTile_X += MoveDirection.x;
         SelectTile_Y += MoveDirection.y;
 
+        var VFX_Position = new Vector3(SelectTile_X, 0f, SelectTile_Y);
+
+        
+
         // 이펙트 위치 이동.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFXTransformEvent>.Acquire()
             .SetID(VFX_Selection)
-            .SetPosition(new Vector3(SelectTile_X, 0f, SelectTile_Y))                
+            .SetPosition(VFX_Position)                
         );
 
     }

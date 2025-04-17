@@ -3,36 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public class GUIOpenParam
+{
+    public Int64             ID      { get; private set; }
+    public string            GUIName { get; private set; }
+    public EnumGUIType       GUIType { get; private set; }
+
+    protected GUIOpenParam(Int64 _id, string _gui_name, EnumGUIType _gui_type)
+    {
+        ID      = _id;
+        GUIName = _gui_name;
+        GUIType = _gui_type;
+    }
+}
+
 public abstract class GUIPage : GUIBase
 {
-    // GUI 
-
-
-    public struct GUIOpenParam
-    {
-        public int               SerialNumber;
-        public string            GUIName;
-        public EnumGUIType       GUIType;        
-    }
-
-    public int                   SerialNumber  { get; private set; } = 0;
-    public bool                  IsInitialized { get; private set; } = false;
-    public abstract EnumGUIType  GUIType       { get; }
-    public abstract string       GUIName       { get; }
     
-
-    
-
-    
-    // [SerializeField]
-    // private EnumGUIType m_gui_type                 = EnumGUIType.None;
-    // [SerializeField]
-    // private string      m_gui_name                 = string.Empty;
-    // [SerializeField]
-    // private bool        m_is_enable_multi_instance = false;
-    // public abstract bool       IsModal               { get; }
-
-
+    public Int64        ID            { get; private set; } = 0;
+    public bool         IsInitialized { get; private set; } = false;
+    public EnumGUIType  GUIType       { get; private set; } = EnumGUIType.None;
+    public string       GUIName       { get; private set; } = "";
     
 
     bool OnPreProcess_Open(GUIOpenParam _param)
@@ -43,11 +35,20 @@ public abstract class GUIPage : GUIBase
             return false;
         }
 
+        if (_param == null)
+        {
+            Debug.LogError($"GUIPage: OnPreProcess_Open failed. _param is null.");
+            return false;
+        }
+
 
 
         gameObject.SetActive(false);
 
-        SerialNumber  = _param.SerialNumber;
+        ID            = _param.ID;
+        GUIType       = _param.GUIType;
+        GUIName       = _param.GUIName;
+
         IsInitialized = true;
 
         gameObject.SetActive(true);

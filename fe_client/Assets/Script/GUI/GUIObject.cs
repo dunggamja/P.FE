@@ -44,7 +44,6 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         transform.localRotation = m_init_local_rotation;
         transform.localScale    = m_init_local_scale;
     }
-
 }
 
 public abstract class GUIElement : GUIBase
