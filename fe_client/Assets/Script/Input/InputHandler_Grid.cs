@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Battle;
@@ -28,16 +29,19 @@ public class InputHandler_Grid_Select : InputHandler
     
     const float  MOVE_TILE_INTERVAL = 0.15f;
     const float  MOVE_DIRECTION_MIN = 0.4f;
-    const string VFX_SELECTION      = "local_base/tile_selection";
+    const string VFX_SELECT_NAME    = "local_base/tile_selection";
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
-    bool                    IsFinish          { get; set; } = false;                
     int                     SelectTile_X      { get; set; } = 0;
     int                     SelectTile_Y      { get; set; } = 0;
+
+
+    bool                    IsFinish          { get; set; } = false;                
     float                   MoveTile_LastTime { get; set; } = 0f;
-    Vector2Int              MoveDirection     { get; set; } = Vector2Int.zero;
-    int                     VFX_Selection     { get; set; } = 0;
+    Vector2Int              MoveDirection     { get; set; } = Vector2Int.zero;    
+    int                     VFX_Select_ID     { get; set; } = 0;
+    Int64                   SelectedEntityID  { get; set; } = 0; 
 
     
 
@@ -54,7 +58,7 @@ public class InputHandler_Grid_Select : InputHandler
     protected override void OnStart()
     {
         // 이펙트 생성.
-        VFX_Selection = VFXManager.Instance.CreateVFXAsync(VFX_SELECTION); 
+        VFX_Select_ID = VFXManager.Instance.CreateVFXAsync(VFX_SELECT_NAME); 
         //.ContinueWith(OnCompleteVFXTask);
 
         // // 이펙트 삭제 예정 목록에 추가.
@@ -84,13 +88,22 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnFinish()
     {
-        VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
-        IsFinish = false;
+        
+        VFXManager.Instance.ReserveReleaseVFX(VFX_Select_ID);
+        
+        IsFinish          = false;
+        VFX_Select_ID     = 0;
+        MoveTile_LastTime = 0f; 
+        MoveDirection     = Vector2Int.zero;
+        SelectedEntityID  = 0;
+
+
+        // SelectTile_X      = 0;
+        // SelectTile_Y      = 0;
     }
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
-    {        
-    
+    {     
         // 입력 파람 처리.
         while (_queue_input_param.Count > 0)
         {
@@ -140,8 +153,9 @@ public class InputHandler_Grid_Select : InputHandler
         }
         else if (_result.IsCancel)
         {
+            OnUpdate_Input_Process_Cancel();
             // 취소 처리. (종료)
-            IsFinish = true;
+            // IsFinish = true;
         }
         else if (_result.MoveDirection.changed)
         {
@@ -165,40 +179,63 @@ public class InputHandler_Grid_Select : InputHandler
             return;
         }
 
-        var entity_id = terrain_map.BlockManager.FindEntityID(SelectTile_X, SelectTile_Y);
-        if (entity_id > 0)
+        if (SelectedEntityID > 0)
         {
-            var entity         = EntityManager.Instance.GetEntity(entity_id);
-            var faction        = entity.GetFaction();
-            var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+            //var entity         = EntityManager.Instance.GetEntity(SelectedEntityID);
+            //var faction        = entity?.GetFaction() ?? 0;
+            //var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
             // TESTCODE:            
-            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(entity_id));
-
-
-            switch(commander_type)
-            {
-                case EnumCommanderType.None:
-                break;
-
-                case EnumCommanderType.Player:
-
-
-                //InputManager.Instance.StackHandler(EnumInputHandlerType.UI_Command);
-                break;
-
-                case EnumCommanderType.AI:
-                break;
-            }
+            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
         }
         else
         {
-            //InputManager.Instance.StackHandler(EnumInputHandlerType.UI_Menu);
+
+            var entity_id = terrain_map.BlockManager.FindEntityID(SelectTile_X, SelectTile_Y);
+            if (entity_id > 0)
+            {
+                var entity         = EntityManager.Instance.GetEntity(entity_id);
+                var faction        = entity.GetFaction();
+                var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+
+                // // TESTCODE:            
+                // GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(entity_id));
+
+
+                switch(commander_type)
+                {                 
+                    case EnumCommanderType.Player:
+                    {
+                        SelectedEntityID = entity_id;
+                    }
+                    break;  
+
+                    case EnumCommanderType.None:
+                    case EnumCommanderType.AI:
+                    {
+                        // TODO: 상태창 열기.
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                //InputManager.Instance.StackHandler(EnumInputHandlerType.UI_Menu);
+            }
+
         }
+
 
         return;
     }
 
+    void OnUpdate_Input_Process_Cancel()
+    {
+        if (SelectedEntityID > 0)
+        {
+            SelectedEntityID = 0;
+        }
+    }
 
     void OnUpdate_Input_Process_Move(Vector2 _move_direction)
     {           
@@ -245,10 +282,19 @@ public class InputHandler_Grid_Select : InputHandler
         // 이펙트 위치 이동.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFXTransformEvent>.Acquire()
-            .SetID(VFX_Selection)
+            .SetID(VFX_Select_ID)
             .SetPosition(VFX_Position)                
         );
 
+        // 유닛 이동.
+        if (SelectedEntityID > 0)
+        {
+            var entity  = EntityManager.Instance.GetEntity(SelectedEntityID);
+            if (entity != null)
+            {
+                entity.UpdateCellPosition(SelectTile_X, SelectTile_Y);
+            }
+        }
     }
 
     // private void OnCompleteVFXTask(VFXObject _vfx_object)

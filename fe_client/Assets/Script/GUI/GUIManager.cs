@@ -45,7 +45,13 @@ public class GUIManager : SingletonMono<GUIManager>
     }
 
     public Int64 OpenUI(GUIOpenParam _param)
-    {       
+    {   
+        if (IsOpenUI(_param.GUIName))
+        {
+            Debug.Log($"GUIManager: OpenUI failed. {_param.GUIName} is already open.");
+            return 0;
+        }
+
         var cts           = new CancellationTokenSource();
 
         // 취소 토큰 추적.  
@@ -174,4 +180,15 @@ public class GUIManager : SingletonMono<GUIManager>
         // 취소 토큰에 대해서도 처리.
         m_async_operation_tracker.TryCancelOperation(id);
     }
+
+
+    bool IsOpenUI(string _name)
+    {
+        if (m_active_gui_by_name.TryGetValue(_name, out var list_sn))
+            return list_sn.Count > 0;
+
+        return false;
+    }
+
+
 }
