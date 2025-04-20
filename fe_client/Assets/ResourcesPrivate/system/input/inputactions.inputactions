@@ -647,11 +647,33 @@
                 },
                 {
                     "name": "",
+                    "id": "4f146a98-2f1d-43f3-bd4b-91e1a302c346",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "4b6b7315-32d2-441b-82dd-6c3b8d75ce82",
                     "path": "*/{Cancel}",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "922221f2-8b51-4c59-ab8b-2affd8cfdc28",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -860,7 +882,7 @@
             ],
             "bindings": [
                 {
-                    "name": "arrow",
+                    "name": "Keyboard",
                     "id": "517c0c69-9d8e-4318-a596-949946593201",
                     "path": "2DVector",
                     "interactions": "",
@@ -915,17 +937,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "wasd",
-                    "id": "4cf9e995-1c4b-4937-af7b-6cd564416f23",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Grid_Move",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "up",
                     "id": "0d95a7d1-a6c9-4736-870c-02660abeb082",
                     "path": "<Keyboard>/w",
@@ -970,6 +981,127 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "Gamepad",
+                    "id": "c531f251-b4b9-4e29-a621-ad079b9a6d7c",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "ffa02628-8700-4375-81bc-dca286a02171",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "636578d3-5844-436e-a881-13b4ffded235",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "f7b1622f-72d9-4122-a631-57da2e7e961e",
+                    "path": "<Gamepad>/leftStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "96f3b03b-cbd1-425e-82c5-a48015a8617a",
+                    "path": "<Gamepad>/leftStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "fb62dbd1-62fb-42ee-97e8-4d19b29099e1",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Joystick",
+                    "id": "7b47fa55-1957-4169-90b7-56635f0ff0c5",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "30354423-8ec3-4744-83e1-2ee781af2caf",
+                    "path": "<Joystick>/stick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "345df19b-7d24-4bb0-961e-4d1208a2d5d1",
+                    "path": "<Joystick>/stick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "bfb5ae81-94dd-411e-8171-a363d7592151",
+                    "path": "<Joystick>/stick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "1032a4b8-441a-4594-9e89-be4b1db8f9ec",
+                    "path": "<Joystick>/stick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "9370346a-a2a0-4489-91d7-cedd9d2cec51",
                     "path": "<Mouse>/position",
@@ -995,17 +1127,6 @@
                     "name": "",
                     "id": "6977313f-f201-4791-9d97-c4edfcdfecd2",
                     "path": "*/{Cancel}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Grid_Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8180e09e-30ba-4f67-bd15-066fcee18e3a",
-                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1043,6 +1164,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Grid_AnyButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a655f220-ca63-4abf-9197-368a74a77554",
+                    "path": "*/{Submit}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
