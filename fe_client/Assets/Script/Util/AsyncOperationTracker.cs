@@ -9,6 +9,8 @@ using UnityEngine;
 public class AsyncOperationTracker
 {
     private readonly Dictionary<Int64, CancellationTokenSource> _operationTokens = new();
+
+    // 멀티 스레드 환경이 아니라서 주석처리.
     // private readonly CancellationTokenSourcePool _ctsPool = new();
     // private readonly object _lock = new object();
 

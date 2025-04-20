@@ -13,6 +13,7 @@ public class InputManagerEditor : Editor
     {
         base.OnInspectorGUI();
 
+        // 자동 바인딩이 의도대로 동작하지 않아서 주석처리.
         // if (GUILayout.Button("Auto Bind Input"))
         // {
         //     AutoBindInput();

@@ -73,12 +73,12 @@ public class GUIManager : SingletonMono<GUIManager>
                 m_active_gui.Add(_param.ID, null);
 
                 // 이름에 해당하는 UI 목록에 추가.
-                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_sn) == false)
+                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id) == false)
                 {
-                    list_sn = new HashSet<Int64>(); 
-                    m_active_gui_by_name.Add(_param.GUIName, list_sn);
+                    list_gui_id = new HashSet<Int64>(); 
+                    m_active_gui_by_name.Add(_param.GUIName, list_gui_id);
                 }
-                list_sn.Add(_param.ID);
+                list_gui_id.Add(_param.ID);
             }
 
             Transform _ui_root = null;
@@ -137,8 +137,8 @@ public class GUIManager : SingletonMono<GUIManager>
                 m_active_gui.Remove(_param.ID);
 
                 // 이름에 해당하는 UI 목록에 추가.
-                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_sn))
-                    list_sn.Remove(_param.ID);
+                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id))
+                    list_gui_id.Remove(_param.ID);
             }
         }
         
@@ -147,30 +147,26 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public void CloseUI(string name)
     {
-        var temp = HashSetPool<Int64>.Acquire();
-
         // 이름에 해당하는 UI 객체를 모두 닫는다.
-        if (m_active_gui_by_name.TryGetValue(name, out temp))
+        if (m_active_gui_by_name.TryGetValue(name, out var list_gui_id))
         {
-            foreach (var e in temp)
+            foreach (var e in list_gui_id)
                 CloseUI(e);
         }   
-
-        HashSetPool<Int64>.Return(temp);
     }
 
-    public void CloseUI(Int64 id)
+    public void CloseUI(Int64 _id)
     {
-        if (m_active_gui.TryGetValue(id, out var gui_object))
+        if (m_active_gui.TryGetValue(_id, out var gui_object))
         {
             if (gui_object != null)
             {
                 // 컨테이너 제거 1.
-                m_active_gui.Remove(id);
+                m_active_gui.Remove(_id);
 
                 // 컨테이너 제거 2.
-                if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var temp))
-                    temp.Remove(id);
+                if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var list_gui_id))
+                    list_gui_id.Remove(_id);
 
                 // UI 닫기 처리.
                 gui_object.Close();
@@ -178,14 +174,14 @@ public class GUIManager : SingletonMono<GUIManager>
         }
 
         // 취소 토큰에 대해서도 처리.
-        m_async_operation_tracker.TryCancelOperation(id);
+        m_async_operation_tracker.TryCancelOperation(_id);
     }
 
 
     bool IsOpenUI(string _name)
     {
-        if (m_active_gui_by_name.TryGetValue(_name, out var list_sn))
-            return list_sn.Count > 0;
+        if (m_active_gui_by_name.TryGetValue(_name, out var list_gui_id))
+            return list_gui_id.Count > 0;
 
         return false;
     }

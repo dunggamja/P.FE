@@ -40,10 +40,9 @@ public abstract class InputHandler
     }
 
     public abstract EnumInputHandlerType HandlerType { get; }
-    public EnumState State { get; private set; } = EnumState.None;
-
-
-    private InputHandler m_child_handler = null;
+    
+    public EnumState    State        { get; private set; } = EnumState.None;
+    public InputHandler ChildHandler { get; private set; } = null; 
     
     protected readonly InputHandlerContext m_context;
 
@@ -60,7 +59,7 @@ public abstract class InputHandler
 
     protected void SetChildHandler(InputHandler _child_handler)
     {
-        m_child_handler = _child_handler;
+        ChildHandler = _child_handler;
     }
 
 
@@ -76,10 +75,10 @@ public abstract class InputHandler
         }
 
         // 자식 핸들러가 있으면 그걸 먼저 처리.        
-        if (m_child_handler != null)
+        if (ChildHandler != null)
         {
-            if (m_child_handler.Update())
-                m_child_handler = null;
+            if (ChildHandler.Update())
+                ChildHandler = null;
         }
         else
         {

@@ -52,9 +52,6 @@ public class InputHandler_Grid_Select : InputHandler
     }
 
 
-
-
-
     protected override void OnStart()
     {
         // ÀÌÆåÆ® »ý¼º.
@@ -186,7 +183,9 @@ public class InputHandler_Grid_Select : InputHandler
             //var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
             // TESTCODE:            
-            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
+            var gui_id        = GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
+            var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create(gui_id));
+            SetChildHandler(input_handler);
         }
         else
         {
