@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 
@@ -77,9 +79,7 @@ public abstract class GUIPage : GUIBase
 
     public void Close()
     {
-        OnClose();
-
-        OnPostProcess_Close();
+        OnCloseAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
     protected virtual void OnOpen()
@@ -89,7 +89,30 @@ public abstract class GUIPage : GUIBase
 
     protected virtual void OnClose()
     {
-        gameObject.SetActive(false);
+        gameObject.SetActive(false);    
+    }
+
+    async UniTask OnCloseAsync(CancellationToken _token)
+    {
+        try
+        {
+            OnClose();
+            
+            await UniTask.Delay(100, cancellationToken: _token);
+            
+            OnPostProcess_Close();
+
+
+            // ÆÄ±« Ã³¸®.
+            if (this != null && this.gameObject != null)
+            {
+                Destroy(this.gameObject);
+            }            
+        }
+        catch (System.Exception)
+        {
+            
+        }
     }
     
 

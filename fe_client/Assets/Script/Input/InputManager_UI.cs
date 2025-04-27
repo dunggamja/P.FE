@@ -19,7 +19,7 @@ public partial class InputManager
             var input_param = new InputParam_UI_Move(direction);
             input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnUI_Move performed, direction: {direction}, {_context.phase}");
+            // Debug.Log($"OnUI_Move performed, direction: {direction}, {_context.phase}");
         }
     }
 
@@ -77,7 +77,7 @@ public partial class InputManager
             var input_param = new InputParam_UI_Select();
             input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnUI_Select performed, {_context.phase}");
+            // Debug.Log($"OnUI_Select performed, {_context.phase}");
         }
     }
 
@@ -96,7 +96,7 @@ public partial class InputManager
             var input_param = new InputParam_UI_Cancel();
             input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnUI_Cancel performed, {_context.phase}");
+            // Debug.Log($"OnUI_Cancel performed, {_context.phase}");
         }
     }
 }
