@@ -15,20 +15,19 @@ public class InputHandler_Grid_Select : InputHandler
         public bool                             IsSelect      { get; set; }
         public bool                             IsCancel      { get; set; }
         public (bool changed, Vector2    value) MoveDirection { get; set; }
-        public (bool changed, Vector2Int value) SelectTile    { get; set; }
+        // public (bool changed, Vector2Int value) SelectTile    { get; set; }
 
         public void Reset()
         {
             IsSelect      = false;
             IsCancel      = false;
             MoveDirection = default;
-            SelectTile    = default;
+            // SelectTile    = default;
         }
     }
  
     
-    const float  MOVE_TILE_INTERVAL = 0.15f;
-    const float  MOVE_DIRECTION_MIN = 0.4f;
+    
     const string VFX_SELECT_NAME    = "local_base/tile_selection";
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
@@ -68,7 +67,7 @@ public class InputHandler_Grid_Select : InputHandler
         var input_result = ObjectPool<InputParam_Result>.Acquire();
 
         // 입력의 결과값을 생성.
-        OnUpdate_Input_Compute(m_context.InputParamQueue, ref input_result);
+        OnUpdate_Input_Compute(Context.InputParamQueue, ref input_result);
 
         // 입력의 결과값을 처리.
         OnUpdate_Input_Process(input_result);
@@ -117,9 +116,9 @@ public class InputHandler_Grid_Select : InputHandler
 
                 case InputParam_Grid_Pointer input_param_pointer:
                 {
-                    // 타일 위치 설정.
-                    var tile_pos      = new Vector2Int((int)input_param_pointer.Position.x, (int)input_param_pointer.Position.y);
-                    _result.SelectTile = (true, tile_pos);
+                    // // 타일 위치 설정.
+                    // var tile_pos      = new Vector2Int((int)input_param_pointer.Position.x, (int)input_param_pointer.Position.y);
+                    // _result.SelectTile = (true, tile_pos);
                 }
                 break;
 
@@ -159,11 +158,11 @@ public class InputHandler_Grid_Select : InputHandler
             // 이동 방향 처리.
             OnUpdate_Input_Process_Move(_result.MoveDirection.value);
         }
-        else if (_result.SelectTile.changed)
-        {
-            // 타일 선택.
-            // OnUpdate_Select(proc_result.SelectTile);
-        }
+        // else if (_result.SelectTile.changed)
+        // {
+        //     // 타일 선택.
+        //     // OnUpdate_Select(proc_result.SelectTile);
+        // }
     }
 
     void OnUpdate_Input_Process_Select()
@@ -185,6 +184,8 @@ public class InputHandler_Grid_Select : InputHandler
             // TESTCODE:            
             var gui_id        = GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
             var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create(gui_id));
+
+            Debug.LogWarning($"InputHandler_Grid_Select OnUpdate_Input_Process_Select, gui_id: {gui_id}");
             SetChildHandler(input_handler);
         }
         else
@@ -263,7 +264,7 @@ public class InputHandler_Grid_Select : InputHandler
             return;
         
         // 이동 시간이 지났는지 확인.
-        var is_time_passed = (Time.time - MoveTile_LastTime > MOVE_TILE_INTERVAL);
+        var is_time_passed = (Time.time - MoveTile_LastTime > MOVE_INTERVAL);
         if (is_time_passed == false)
             return;
 

@@ -7,12 +7,19 @@ public partial class InputManager
     // [InputBinding("Grid_Move")]
     public void OnGrid_Move(InputAction.CallbackContext _context)
     {
+        var input_handler_context = GetCurrentInputHandlerContext();
+        if (input_handler_context == null)
+        {
+            Debug.LogError("InputHandlerContext is null");
+            return;
+        }
+
         if (_context.started || _context.performed)
         {
             var direction   = _context.ReadValue<Vector2>();
             var input_param = new InputParam_Grid_Move(direction);
             
-            m_input_handler_context.InputParamQueue.Enqueue(input_param);
+            input_handler_context.InputParamQueue.Enqueue(input_param);
             // Debug.Log($"{_context.action.actionMap.name}:Grid_Move");
 
             // Debug.Log($"OnGrid_Move performed: {_context.ReadValue<Vector2>()}");
@@ -44,10 +51,17 @@ public partial class InputManager
 
     public void OnGrid_Select(InputAction.CallbackContext _context)
     {
+        var input_handler_context = GetCurrentInputHandlerContext();
+        if (input_handler_context == null)
+        {
+            Debug.LogError("InputHandlerContext is null");
+            return;
+        }
+
         if (_context.started || _context.performed)
         {
             var input_param = new InputParam_Grid_Select();
-            m_input_handler_context.InputParamQueue.Enqueue(input_param);
+            input_handler_context.InputParamQueue.Enqueue(input_param);
 
             Debug.Log($"OnGrid_Select performed, {_context.phase}");
         }
@@ -60,10 +74,17 @@ public partial class InputManager
     // [InputBinding("Grid_Cancel")]
     public void OnGrid_Cancel(InputAction.CallbackContext _context)
     {
+        var input_handler_context = GetCurrentInputHandlerContext();
+        if (input_handler_context == null)
+        {
+            Debug.LogError("InputHandlerContext is null");
+            return;
+        }
+
         if (_context.started || _context.performed)
         {
             var input_param = new InputParam_Grid_Cancel();
-            m_input_handler_context.InputParamQueue.Enqueue(input_param);
+            input_handler_context.InputParamQueue.Enqueue(input_param);
 
             Debug.Log($"OnGrid_Cancel performed, {_context.phase}");
         }

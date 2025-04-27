@@ -25,6 +25,12 @@ public abstract class GUIPage : GUIBase
     public bool         IsInitialized { get; private set; } = false;
     public EnumGUIType  GUIType       { get; private set; } = EnumGUIType.None;
     public string       GUIName       { get; private set; } = "";
+
+    static private Int64 s_id_generator = 0;
+    static public Int64 GenerateID()
+    {
+        return ++s_id_generator;
+    }
     
 
     bool OnPreProcess_Open(GUIOpenParam _param)

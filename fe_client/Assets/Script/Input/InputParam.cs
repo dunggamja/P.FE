@@ -68,6 +68,47 @@ public class InputParam_Grid_Cancel : InputParam
     public override EnumInputParamType ParamType => EnumInputParamType.Grid_Cancel;
 }
 
+public class InputParam_UI_Move : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Move;
+
+    public Vector2 Direction { get; private set; }
+
+    public InputParam_UI_Move(Vector2 _direction)
+    {
+        Direction = _direction;
+    }
+}
+
+public class InputParam_UI_Pointer : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Pointer;
+
+    public Vector2 Position { get; private set; }
+
+    public InputParam_UI_Pointer(Vector2 _position)
+    {
+        Position = _position;
+    }
+}
+
+public class InputParam_UI_Delta : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Delta;
+    
+}
+
+public class InputParam_UI_Select : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Select;
+}
+
+public class InputParam_UI_Cancel : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Cancel;
+}
+
+
 
 // public class InputParam_Grid_Delta : InputParam
 // {

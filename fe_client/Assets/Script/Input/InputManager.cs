@@ -23,10 +23,23 @@ public partial class InputManager : SingletonMono<InputManager>
     [SerializeField]
     PlayerInput         m_player_input          = null;
 
-    InputHandlerContext m_input_handler_context = new();
+    // InputHandlerContext m_input_handler_context = new();
 
     InputHandler        m_input_handler         = null;     
 
+    InputHandler        GetCurrentInputHandler()
+    {
+        var    input_handler  = m_input_handler;
+        while (input_handler != null)
+        {   
+            if (input_handler.ChildHandler == null)
+                break;
+
+            input_handler = input_handler.ChildHandler;
+        }
+
+        return input_handler;
+    }
 
     EnumInputHandlerType GetCurrentInputHandlerType()
     {
@@ -38,8 +51,14 @@ public partial class InputManager : SingletonMono<InputManager>
 
             input_handler = input_handler.ChildHandler;
         }
-    
+
         return input_handler?.HandlerType ?? EnumInputHandlerType.None;
+    }
+
+    InputHandlerContext GetCurrentInputHandlerContext()
+    {
+        var input_handler = GetCurrentInputHandler();
+        return input_handler?.Context ?? null;
     }
 
 
@@ -69,14 +88,20 @@ public partial class InputManager : SingletonMono<InputManager>
         // m_stack_input_handler.Push(new InputHandler_Grid_Select());
 
         // 초기 입력 핸들러 설정.
-        m_input_handler = new InputHandler_Grid_Select(m_input_handler_context);
+        m_input_handler = new InputHandler_Grid_Select(new InputHandlerContext());
+
+        // 초기 입력 맵 설정.
+        if (m_player_input != null)
+        {
+            m_player_input.SwitchCurrentActionMap(m_player_input.defaultActionMap);
+        }
     }
 
     protected override void OnLoop()
     {
         base.OnLoop();
 
-        // InputMap 변경 처리...
+        // InputAction의 Map 변경 처리...
         if (m_player_input != null)
         {
             var prev_input_map_name  = m_player_input.currentActionMap?.name ?? string.Empty;

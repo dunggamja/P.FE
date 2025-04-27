@@ -9,7 +9,7 @@ public class GUIPage_Unit_Command : GUIPage
 
         private PARAM(Int64 _entity_id) 
         : base(
-            Util.GenerateID(),
+            GUIPage.GenerateID(),
             "gui/page/unit_command",
             EnumGUIType.Screen)
         { 

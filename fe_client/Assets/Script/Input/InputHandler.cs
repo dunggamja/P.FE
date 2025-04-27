@@ -39,16 +39,19 @@ public abstract class InputHandler
         Finish,  // 종료
     }
 
+    protected const float  MOVE_INTERVAL      = 0.15f;
+    protected const float  MOVE_DIRECTION_MIN = 0.4f;
+
     public abstract EnumInputHandlerType HandlerType { get; }
     
     public EnumState    State        { get; private set; } = EnumState.None;
     public InputHandler ChildHandler { get; private set; } = null; 
     
-    protected readonly InputHandlerContext m_context;
+    public readonly InputHandlerContext Context = null;
 
     public InputHandler(InputHandlerContext _context)
     {
-        m_context = _context;
+        Context = _context;
     }
 
 
@@ -71,7 +74,7 @@ public abstract class InputHandler
             State = EnumState.Update;
 
             // 
-            m_context.Clear();
+            Context.Clear();
         }
 
         // 자식 핸들러가 있으면 그걸 먼저 처리.        
@@ -96,7 +99,7 @@ public abstract class InputHandler
             State = EnumState.Finish;
 
             // 
-            m_context.Clear();
+            Context.Clear();
         }
 
         return State == EnumState.Finish;
@@ -106,7 +109,14 @@ public abstract class InputHandler
     {
         if (State == EnumState.Update)
         {
+            if (ChildHandler != null)
+            {
+                ChildHandler.Abort();
+                ChildHandler = null;
+            }
+
             OnFinish();
+
             State = EnumState.Finish;
         }
     }

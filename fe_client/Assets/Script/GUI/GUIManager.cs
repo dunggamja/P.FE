@@ -123,7 +123,9 @@ public class GUIManager : SingletonMono<GUIManager>
                 _cancel_token.ThrowIfCancellationRequested();
             }
 
-           
+
+            // 활성화된 UI 목록에 추가.
+            m_active_gui[_param.ID] = gui_page;
 
             // UI 열기.
             gui_page.Open(_param);            
