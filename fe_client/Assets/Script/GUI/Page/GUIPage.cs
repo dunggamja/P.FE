@@ -56,9 +56,11 @@ public abstract class GUIPage : GUIBase
         ID            = _param.ID;
         GUIType       = _param.GUIType;
         GUIName       = _param.GUIName;
+        
 
         IsInitialized = true;
 
+        gameObject.name = $"[{ID}] {GUIName}";
         gameObject.SetActive(true);
 
         return true;
@@ -89,7 +91,6 @@ public abstract class GUIPage : GUIBase
 
     protected virtual void OnClose()
     {
-        gameObject.SetActive(false);    
     }
 
     async UniTask OnCloseAsync(CancellationToken _token)
@@ -98,7 +99,14 @@ public abstract class GUIPage : GUIBase
         {
             OnClose();
             
+            // TODO: 이것은 임시로 추후 비동기 처리를 위해 넣은 코드임.
             await UniTask.Delay(100, cancellationToken: _token);
+
+            if (this != null && this.gameObject != null)
+            {
+                gameObject.SetActive(false);    
+            }
+
             
             OnPostProcess_Close();
 

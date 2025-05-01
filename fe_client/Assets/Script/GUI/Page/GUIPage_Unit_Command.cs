@@ -9,9 +9,9 @@ public class GUIPage_Unit_Command : GUIPage
 
         private PARAM(Int64 _entity_id) 
         : base(
-            GUIPage.GenerateID(),
-            "gui/page/unit_command",
-            EnumGUIType.Screen)
+            GUIPage.GenerateID(),    // id      
+            "gui/page/unit_command", // asset path
+            EnumGUIType.Screen)      // gui type
         { 
             EntityID = _entity_id;  
         }

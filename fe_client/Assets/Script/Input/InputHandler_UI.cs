@@ -75,7 +75,7 @@ public class InputHandler_UI_Menu : InputHandler
         }
 
         GUI_ID = context.GUI_ID;
-        Debug.LogWarning($"InputHandler_UI_Menu OnStart, GUI_ID: {GUI_ID}");
+        //Debug.LogWarning($"InputHandler_UI_Menu OnStart, GUI_ID: {GUI_ID}");
     }
 
     protected override bool OnUpdate()
@@ -171,7 +171,7 @@ public class InputHandler_UI_Menu : InputHandler
 
     protected override void OnFinish()
     {
-        Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
+        //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
 
         // ¸Þ´º ´Ý±â.
         GUIManager.Instance.CloseUI(GUI_ID);
