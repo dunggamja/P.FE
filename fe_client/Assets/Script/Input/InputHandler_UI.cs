@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class InputHandler_UI_Menu : InputHandler
 {
-    struct InputParam_Result : IPoolObject
+    class InputParam_Result : IPoolObject
     {
         public bool                             IsSelect      { get; set; }
         public bool                             IsCancel      { get; set; }
