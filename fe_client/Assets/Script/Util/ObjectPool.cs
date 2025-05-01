@@ -33,6 +33,8 @@ public static class ObjectPool<T> where T : IPoolObject, new()
 
     private static readonly HashSet<T> m_inuse = new();
 
+    private static int m_max_count = 5;
+
     // public static bool IsPoolingObject
 
 
@@ -54,7 +56,10 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         // 풀링을 목적으로 생성된 객체가 아니라면 반환 처리 하지 않는다.
         if (m_inuse.Contains(_obj) == false)
             return;
-        
+
+        // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
+        if (m_pool.Count >= m_max_count)
+            return;        
         
         _obj.Reset();
 
