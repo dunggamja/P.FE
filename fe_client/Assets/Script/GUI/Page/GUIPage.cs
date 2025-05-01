@@ -66,17 +66,14 @@ public abstract class GUIPage : GUIBase
         return true;
     }
 
-    void OnPostProcess_Close()
-    {
-        IsInitialized = false;
-    }
+
 
 
     public void Open(GUIOpenParam _param)
     {        
         OnPreProcess_Open(_param);
         
-        OnOpen();
+        OnOpen(_param);
     }
 
     public void Close()
@@ -84,14 +81,11 @@ public abstract class GUIPage : GUIBase
         OnCloseAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    protected virtual void OnOpen()
-    {
+    protected abstract void OnOpen(GUIOpenParam _param);
 
-    }
+    protected abstract void OnClose();
 
-    protected virtual void OnClose()
-    {
-    }
+    protected abstract void OnPostProcess_Close();
 
     async UniTask OnCloseAsync(CancellationToken _token)
     {
@@ -107,11 +101,12 @@ public abstract class GUIPage : GUIBase
                 gameObject.SetActive(false);    
             }
 
-            
             OnPostProcess_Close();
 
+            IsInitialized = false;
 
-            // 파괴 처리.
+            // TODO: GUI를 파괴 할지 재활용할지는 나중에 다시 고민해보자.
+            // 일단은 파괴 처리.
             if (this != null && this.gameObject != null)
             {
                 Destroy(this.gameObject);

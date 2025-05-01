@@ -68,7 +68,7 @@ public partial class InputManager : SingletonMono<InputManager>
         {
             case EnumInputHandlerType.UI_Menu: 
             case EnumInputHandlerType.UI_Command: 
-                return "UI";
+                return "Menu";
             case EnumInputHandlerType.Grid_Select: 
                 return "Grid";
         }
@@ -99,7 +99,7 @@ public partial class InputManager : SingletonMono<InputManager>
 
     protected override void OnLoop()
     {
-        base.OnLoop();
+        base.OnLoop(); 
 
         // InputAction의 Map 변경 처리...
         if (m_player_input != null)

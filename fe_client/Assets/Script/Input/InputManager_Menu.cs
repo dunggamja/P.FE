@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public partial class InputManager
 {
     // [InputBinding("UI_Move")]
-    public void OnUI_Move(InputAction.CallbackContext _context)
+    public void OnMenu_Move(InputAction.CallbackContext _context)
     {
         var input_handler_context = GetCurrentInputHandlerContext();
         if (input_handler_context == null)
@@ -24,46 +24,46 @@ public partial class InputManager
     }
 
     // [InputBinding("UI_Pointer")]
-    public void OnUI_Pointer(InputAction.CallbackContext _context)
-    {
-        var input_handler_context = GetCurrentInputHandlerContext();
-        if (input_handler_context == null)
-        {
-            Debug.LogError("InputHandlerContext is null");
-            return;
-        }
+    // public void OnMenu_Pointer(InputAction.CallbackContext _context)
+    // {
+    //     var input_handler_context = GetCurrentInputHandlerContext();
+    //     if (input_handler_context == null)
+    //     {
+    //         Debug.LogError("InputHandlerContext is null");
+    //         return;
+    //     }
 
-        if (_context.started || _context.performed)
-        {
-            var position = _context.ReadValue<Vector2>();
-            var input_param = new InputParam_UI_Pointer(position);
-            input_handler_context.InputParamQueue.Enqueue(input_param);
+    //     if (_context.started || _context.performed)
+    //     {
+    //         var position = _context.ReadValue<Vector2>();
+    //         var input_param = new InputParam_UI_Pointer(position);
+    //         input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnUI_Pointer performed, position: {position}, {_context.phase}");
-        }
-    }
+    //         Debug.Log($"OnUI_Pointer performed, position: {position}, {_context.phase}");
+    //     }
+    // }
 
     // [InputBinding("UI_Delta")]
-    public void OnUI_Delta(InputAction.CallbackContext _context)
-    {
-        var input_handler_context = GetCurrentInputHandlerContext();
-        if (input_handler_context == null)
-        {
-            Debug.LogError("InputHandlerContext is null");
-            return;
-        }
+    // public void OnUI_Delta(InputAction.CallbackContext _context)
+    // {
+    //     var input_handler_context = GetCurrentInputHandlerContext();
+    //     if (input_handler_context == null)
+    //     {
+    //         Debug.LogError("InputHandlerContext is null");
+    //         return;
+    //     }
 
-        if (_context.started || _context.performed)
-        {
-            var input_param = new InputParam_UI_Delta();
-            input_handler_context.InputParamQueue.Enqueue(input_param);
+    //     if (_context.started || _context.performed)
+    //     {
+    //         var input_param = new InputParam_UI_Delta();
+    //         input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnUI_Delta performed, {_context.phase}");
-        }
-    }
+    //         Debug.Log($"OnUI_Delta performed, {_context.phase}");
+    //     }
+    // }
 
     // [InputBinding("UI_Select")]
-    public void OnUI_Select(InputAction.CallbackContext _context)
+    public void OnMenu_Select(InputAction.CallbackContext _context)
     {
         var input_handler_context = GetCurrentInputHandlerContext();
         if (input_handler_context == null)
@@ -82,7 +82,7 @@ public partial class InputManager
     }
 
     // [InputBinding("UI_Cancel")]
-    public void OnUI_Cancel(InputAction.CallbackContext _context)
+    public void OnMenu_Cancel(InputAction.CallbackContext _context)
     {
         var input_handler_context = GetCurrentInputHandlerContext();
         if (input_handler_context == null)
