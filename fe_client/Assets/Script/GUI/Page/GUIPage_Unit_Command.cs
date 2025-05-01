@@ -119,22 +119,25 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     private void UpdateLayout()
     {
-        if (m_grid_menu_padding.init == false)
+        // 메뉴 아이템 갯수에 따라서 사이즈 조절.
         {
-            var padding = m_grid_menu_root_bg_rect.sizeDelta - m_grid_menu_root_rect.sizeDelta;
-            padding.x   = Mathf.Abs(padding.x);
-            padding.y   = Mathf.Abs(padding.y);
+            if (m_grid_menu_padding.init == false)
+            {
+                var padding = m_grid_menu_root_bg_rect.sizeDelta - m_grid_menu_root_rect.sizeDelta;
+                padding.x   = Mathf.Abs(padding.x);
+                padding.y   = Mathf.Abs(padding.y);
 
-            m_grid_menu_padding = (true, padding);
+                m_grid_menu_padding = (true, padding);
+            }
+
+            var padding_height = m_grid_menu_root.padding.top + m_grid_menu_root.padding.bottom;
+            var child_count    = m_grid_menu_root.transform.childCount;
+            var cell_height    = m_grid_menu_root.cellSize.y;
+            var spacing_height = m_grid_menu_root.spacing.y;
+            var total_height   = (child_count * cell_height) + Mathf.Max(0, spacing_height * (child_count - 1)) + padding_height;
+
+            m_grid_menu_root_rect.sizeDelta    = new Vector2(m_grid_menu_root_rect.sizeDelta.x, total_height);
+            m_grid_menu_root_bg_rect.sizeDelta = new Vector2(m_grid_menu_root_bg_rect.sizeDelta.x, total_height + m_grid_menu_padding.value.y);
         }
-
-        var padding_height = m_grid_menu_root.padding.top + m_grid_menu_root.padding.bottom;
-        var child_count    = m_grid_menu_root.transform.childCount;
-        var cell_height    = m_grid_menu_root.cellSize.y;
-        var spacing_height = m_grid_menu_root.spacing.y;
-        var total_height   = (child_count * cell_height) + Mathf.Max(0, spacing_height * (child_count - 1)) + padding_height;
-
-        m_grid_menu_root_rect.sizeDelta    = new Vector2(m_grid_menu_root_rect.sizeDelta.x, total_height);
-        m_grid_menu_root_bg_rect.sizeDelta = new Vector2(m_grid_menu_root_bg_rect.sizeDelta.x, total_height + m_grid_menu_padding.value.y);
     }
 }
