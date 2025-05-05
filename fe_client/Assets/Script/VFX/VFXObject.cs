@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 public class VFXObject : MonoBehaviour
 {
-    public int    SerialNumber { get; private set; } = 0;
+    public Int64  SerialNumber { get; private set; } = 0;
     public string VFXName      { get; private set; } = string.Empty;
 
     public struct VFXAttribute<T> 
@@ -62,7 +63,7 @@ public class VFXObject : MonoBehaviour
     
 
     public void OnCreate(
-        int        _serial_number,
+        Int64      _serial_number,
         string     _vfx_name, 
         Transform  _parent,
         Vector3    _position,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 struct VFXObjectParam
 {
-    public int        SerialNumber      { get; set; }
+    public Int64      SerialNumber      { get; set; }
     public string     VFXName           { get; set; }
     public Transform  VFXRoot           { get; set; }
     public Vector3    Position          { get; set; }
@@ -25,26 +26,14 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
 
     private Dictionary<string, Queue<VFXObject>> m_vfx_pools        = new();
-    private Dictionary<int, VFXObject>           m_vfx_repository   = new();
-    private HashSet<int>                         m_vfx_release_list = new();
+    private Dictionary<Int64, VFXObject>         m_vfx_repository   = new();
+    private HashSet<Int64>                       m_vfx_release_list = new();
 
-    private int m_vfx_serial = 0;
+    private Int64 m_vfx_serial = 0;
 
-    private int GenerateSerial()
+    private Int64 GenerateSerial()
     {
-        do
-        {
-            // 시리얼 넘버 증가.
-            ++m_vfx_serial;
-
-            // 시리얼 넘버가 0이면 1로 변경.
-            if (m_vfx_serial <= 0)
-                m_vfx_serial = 1;
-            
-            // 중복 체크.
-        } while (m_vfx_repository.ContainsKey(m_vfx_serial));
-
-        return m_vfx_serial;
+        return ++m_vfx_serial;
     }
 
     protected override void OnInitialize()
@@ -74,7 +63,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
     }
 
 
-    public int CreateVFXAsync(
+    public Int64 CreateVFXAsync(
         string     _vfx_name, 
         Vector3    _position      = default, 
         Quaternion _rotation      = default, 
@@ -108,7 +97,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         return serial_number;
     }
 
-    public bool ReserveReleaseVFX(int _serial_number)
+    public bool ReserveReleaseVFX(Int64 _serial_number)
     {
         if (_serial_number == 0)
             return false;
@@ -116,7 +105,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         return m_vfx_release_list.Add(_serial_number);
     }
 
-    VFXObject SeekVFX(int _serial_number)
+    VFXObject SeekVFX(Int64 _serial_number)
     {
         if (_serial_number == 0)
             return null;
@@ -238,7 +227,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             return;
 
         // 풀에서 가져오기
-        var release_list = HashSetPool<int>.Acquire();
+        var release_list = HashSetPool<Int64>.Acquire();
 
         // 릴리즈 목록 복사.
         release_list.UnionWith(m_vfx_release_list);
@@ -253,7 +242,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         }
 
         // 풀에 반환.
-        HashSetPool<int>.Return(release_list);
+        HashSetPool<Int64>.Return(release_list);
     }
 
 

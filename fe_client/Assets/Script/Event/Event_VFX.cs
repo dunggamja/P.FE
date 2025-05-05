@@ -10,7 +10,8 @@ using UnityEngine;
         public EnumEventProcessTiming EventProcessTiming 
         => EnumEventProcessTiming.OnNextUpdate;
 
-        public int ID { get; private set; }
+        public Int64 
+        ID { get; private set; }
 
         public (bool apply, Transform  value) 
         Parent   { get; private set; }
@@ -41,7 +42,7 @@ using UnityEngine;
             Scale    = (false, 1f, 0f);
         }
 
-        public VFXTransformEvent SetID(int _id)
+        public VFXTransformEvent SetID(Int64 _id)
         {
             ID = _id;
             return this;

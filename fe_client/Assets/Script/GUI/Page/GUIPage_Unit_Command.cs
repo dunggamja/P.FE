@@ -87,6 +87,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     protected override void OnPostProcess_Close()
     {
+        
     }
 
 

@@ -39,7 +39,7 @@ public class InputHandler_Grid_Select : InputHandler
     bool                    IsFinish          { get; set; } = false;                
     float                   MoveTile_LastTime { get; set; } = 0f;
     Vector2Int              MoveDirection     { get; set; } = Vector2Int.zero;    
-    int                     VFX_Select_ID     { get; set; } = 0;
+    Int64                   VFX_Select_ID     { get; set; } = 0;
     Int64                   SelectedEntityID  { get; set; } = 0; 
 
     
