@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 829721955b29342a1bf13009485324fd
+    m_Address: vfx/tile_effect_green
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f79889ec7c4684d07b9e202cc5eea8af
     m_Address: vfx/tile_effect_blue
     m_ReadOnly: 0
