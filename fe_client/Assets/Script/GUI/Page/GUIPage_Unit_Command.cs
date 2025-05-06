@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using R3;
+using System.Collections.Generic;
 
 [EventReceiver()]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
@@ -55,7 +57,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private MENU_ITEM_DATA[]            m_menu_item_datas;
     private (bool init, Vector2 value)  m_grid_menu_padding = (false, Vector2.zero);
 
-
+    private Subject<int>                m_selected_index_subject    = new ();
+    
 
     protected override void OnOpen(GUIOpenParam _param)
     {
@@ -116,6 +119,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             clonedItem.SetText(m_menu_item_datas[i].Text);
             clonedItem.gameObject.SetActive(true);
         }
+
+        // 초기 선택 인덱스 설정 (0번 인덱스 선택)
+        SetSelectedIndex(0);
     }
 
     private void UpdateLayout()
@@ -141,4 +147,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             m_grid_menu_root_bg_rect.sizeDelta = new Vector2(m_grid_menu_root_bg_rect.sizeDelta.x, total_height + m_grid_menu_padding.value.y);
         }
     }
+
+    // 인덱스 변경 메서드
+    public void SetSelectedIndex(int index)
+    {
+        m_selected_index_subject.OnNext(index);
+    }
+
 }
