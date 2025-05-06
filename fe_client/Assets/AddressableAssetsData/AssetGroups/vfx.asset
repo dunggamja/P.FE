@@ -10,32 +10,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: local_base
+  m_Name: vfx
   m_EditorClassIdentifier: 
-  m_GroupName: local_base
-  m_GUID: 5000d0c12cf804636b811786f29ffa87
+  m_GroupName: vfx
+  m_GUID: 3b0126c887dbc4f46bb3e1014e38c0cc
   m_SerializeEntries:
-  - m_GUID: 40bde17c59be24857b62189859670fcf
-    m_Address: local_base/test
+  - m_GUID: 06da943b3f465469fb03bf1eed7546d3
+    m_Address: vfx/tile_selection
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 62df1256286ae451e981a95a587c2343
-    m_Address: local_base/uimanager
+  - m_GUID: 627bce4bee59b4996a274983762ed382
+    m_Address: vfx/tile_highlight
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7d2a557de92054245be8f79741e87034
-    m_Address: empty
+  - m_GUID: f79889ec7c4684d07b9e202cc5eea8af
+    m_Address: vfx/tile_effect_blue
     m_ReadOnly: 0
     m_SerializedLabels:
-    - scene
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe85765e9a17d41fc97f876e6a4f8b8c
+    m_Address: vfx/tile_effect_red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 4e818e88f4f044a12a9586bb68d17534, type: 2}
-    - {fileID: 11400000, guid: b3a8f4de47dee4ca1870863f65f802bc, type: 2}
+    - {fileID: 11400000, guid: 033d5afde5f184310921b025be5addf4, type: 2}
+    - {fileID: 11400000, guid: 90bf78bcd811d4c5481c9a342e1ab8b9, type: 2}

@@ -9,6 +9,9 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
     [SerializeField]
     private TextMeshProUGUI m_text;
 
+    [SerializeField]
+    private RectTransform   m_slot_cursor;
+
     public void SetText(string _text)
     {
         if (m_text == null)

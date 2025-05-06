@@ -10,14 +10,14 @@ using UnityEngine;
 
 public class GUIManager : SingletonMono<GUIManager>
 {
-    // canvas를 sort order 순서에 따라 복수개를 둘 필요는 없는가?...
+    // 
 
     [SerializeField] private Canvas m_canvas_root_screen = null;
     [SerializeField] private Canvas m_canvas_root_hud    = null;
 
 
 
-    Dictionary<Int64,    GUIPage>      m_active_gui              = new (); // serial number, GUIObject
+    Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
     Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // 이름, serial number
     AsyncOperationTracker              m_async_operation_tracker = new();
 
@@ -33,7 +33,7 @@ public class GUIManager : SingletonMono<GUIManager>
         }
         else
         {
-            // 메인 카메라를 참조하도록 설정.
+            // HUD 캔버스는 메인 카메라를 참조하도록 설정. (임시?)
             m_canvas_root_hud.worldCamera = main_camera;            
         }
     }

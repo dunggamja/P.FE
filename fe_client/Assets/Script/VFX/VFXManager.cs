@@ -4,7 +4,14 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-struct VFXObjectParam
+public enum EnumVFXAttachmentType
+{
+    World,      // 월드 좌표에 고정
+    Child,      // 특정 오브젝트의 자식으로 부착
+    Track       // 특정 오브젝트를 추적
+}
+
+struct VFXInstancingParam
 {
     public Int64      SerialNumber      { get; set; }
     public string     VFXName           { get; set; }
@@ -13,9 +20,10 @@ struct VFXObjectParam
     public Quaternion Rotation          { get; set; }
     public float      Scale             { get; set; }
 
-    public (Transform target, bool is_attatched) 
+    public (Transform target, EnumVFXAttachmentType attachment_type) 
     FollowTarget { get; set; }
 }
+
 
 public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 {
@@ -64,12 +72,12 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
 
     public Int64 CreateVFXAsync(
-        string     _vfx_name, 
-        Vector3    _position      = default, 
-        Quaternion _rotation      = default, 
-        float      _scale         = 1f,   
-        Transform  _follow_target = null,
-        bool       _is_attatched  = false
+        string                _vfx_name, 
+        Vector3               _position        = default, 
+        Quaternion            _rotation        = default, 
+        float                 _scale           = 1f,   
+        Transform             _target          = null,
+        EnumVFXAttachmentType _attachment_type = EnumVFXAttachmentType.World
         
         )
     {
@@ -79,7 +87,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         var serial_number = GenerateSerial();
 
         // 파라미터 설정.
-        var param = new VFXObjectParam()
+        var param = new VFXInstancingParam()
         {
             SerialNumber = serial_number,
             VFXName      = _vfx_name,
@@ -87,7 +95,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             Position     = _position,
             Rotation     = _rotation,
             Scale        = _scale,
-            FollowTarget = (_follow_target, _is_attatched)
+            FollowTarget = (_target, _attachment_type)
         };
 
         // 이펙트 생성. (비동기)
@@ -114,7 +122,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
     }
     
 
-    async UniTask<VFXObject> CreateVFXAsync(VFXObjectParam _param, CancellationToken _cancel_token = default)
+    async UniTask<VFXObject> CreateVFXAsync(VFXInstancingParam _param, CancellationToken _cancel_token = default)
     {
         // 풀에서 가져오기.
         VFXObject vfx_object = AcquireFromPool(_param.VFXName);

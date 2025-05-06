@@ -28,7 +28,7 @@ public class InputHandler_Grid_Select : InputHandler
  
     
     
-    const string VFX_SELECT_NAME    = "local_base/tile_selection";
+    const string VFX_SELECT_NAME    = AssetName.TILE_SELECTION;
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
