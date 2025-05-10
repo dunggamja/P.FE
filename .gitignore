@@ -26,3 +26,6 @@ fe_client/ShapesEditor.csproj
 fe_client/ShapesRuntime.csproj
 fe_client/ShapesSamples.csproj
 fe_client/Unity.Scripting.Python.Samples.PySide.csproj
+fe_client/Sirenix.OdinInspector.Modules.Unity.Addressables.csproj
+fe_client/Sirenix.OdinInspector.Modules.UnityMathematics.csproj
+fe_client/Unity.Scripting.Python.Samples.PySide.csproj
