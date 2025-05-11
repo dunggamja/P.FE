@@ -10,11 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
-  m_Name: base Shared Data
+  m_Name: localization_base Shared Data
   m_EditorClassIdentifier: 
-  m_TableCollectionName: base
+  m_TableCollectionName: localization_base
   m_TableCollectionNameGuidString: bbc0bc032d1c74a388deb3b99b9f95c6
-  m_Entries: []
+  m_Entries:
+  - m_Id: 27671986692096
+    m_Key: ui_menu_attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28213957877760
+    m_Key: ui_menu_wait
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

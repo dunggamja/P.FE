@@ -10,14 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: base_ko
+  m_Name: localization_base_en
   m_EditorClassIdentifier: 
   m_LocaleId:
-    m_Code: ko
+    m_Code: en
   m_SharedData: {fileID: 11400000, guid: bbc0bc032d1c74a388deb3b99b9f95c6, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 27671986692096
+    m_Localized: Attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28213957877760
+    m_Localized: Wait
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
