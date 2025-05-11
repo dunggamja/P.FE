@@ -8,21 +8,29 @@ using R3;
 public class LocalizationManager : Singleton<LocalizationManager>
 {
     
-    public string GetText(string _key)
+    public string GetText(string _table, string _key)
     {
-        return LocalizationSettings.StringDatabase.GetLocalizedString(_key);
+        return LocalizationSettings.StringDatabase.GetLocalizedString(_table, _key);
     }
 
-    public async UniTask<string> GetTextAsync(string _key)
+    public async UniTask<string> GetTextAsync(string _table, string _key)
     {
-        var    handle = LocalizationSettings.StringDatabase.GetLocalizedStringAsync(_key);
+        var    handle = LocalizationSettings.StringDatabase.GetLocalizedStringAsync(_table, _key);
         await  handle;
         return handle.Result;
     }
 
-    public IObservable<string> GetTextObservable(string _key)
+    public Observable<string> GetTextObservable(string _table, string _key)
     {
-        return GetTextAsync(_key).ToObservable();
-    }
+        return Observable.Create<string>(observer =>
+        {
+            GetTextAsync(_table, _key).ContinueWith(text =>
+            {
+                observer.OnNext(text);
+                observer.OnCompleted();
+            });
 
+            return Disposable.Empty;
+        });
+    }
 }

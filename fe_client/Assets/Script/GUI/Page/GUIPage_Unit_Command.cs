@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using R3;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 [EventReceiver()]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
@@ -29,13 +30,36 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     class MENU_ITEM_DATA
     {
-        public int    Index { get; private set; } = 0;
-        public string Text  { get; private set; } = "";
-
-        public MENU_ITEM_DATA(int _index, string _text)
+        public enum EnumMenuType
         {
-            Index = _index;
-            Text  = _text;
+            None,
+            Attack,
+            Skill,
+            Item,
+            Wait,
+        }
+
+        public int          Index { get; private set; } = 0;
+        public EnumMenuType MenuType { get; private set; } = EnumMenuType.None;
+        // public string       Text  { get; private set; } = "";
+        public MENU_ITEM_DATA(int _index, EnumMenuType _type)
+        {
+            Index    = _index;
+            MenuType = _type;
+        }
+
+        public (string table, string key) GetLocalizeKey()
+        {
+            switch (MenuType)
+            {
+                // TODO: 언어별 대응을 하려면 어떻께 해야 할까?
+                case EnumMenuType.Attack: return ("localization_base", "ui_menu_attack");
+                case EnumMenuType.Wait:   return ("localization_base", "ui_menu_wait");
+                case EnumMenuType.Skill:  return ("localization_base", "ui_menu_skill");
+                case EnumMenuType.Item:   return ("localization_base", "ui_menu_item");                
+            }
+
+            return ("", "");
         }
     }
 
@@ -57,7 +81,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private MENU_ITEM_DATA[]            m_menu_item_datas;
     private (bool init, Vector2 value)  m_grid_menu_padding = (false, Vector2.zero);
 
-    private Subject<int>                m_selected_index_subject    = new ();
+    private BehaviorSubject<int>        m_selected_index_subject    = new(0);
     
 
     protected override void OnOpen(GUIOpenParam _param)
@@ -71,8 +95,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 레이아웃 갱신
         UpdateLayout();
 
-
-        
 
         // var entity = EntityManager.Instance.Find(_param.EntityID);
         
@@ -105,8 +127,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
          // TESTCODE: 메뉴 아이템 데이터 생성.
         m_menu_item_datas = new MENU_ITEM_DATA[]
         {
-            new MENU_ITEM_DATA(0, "Attack"),
-            new MENU_ITEM_DATA(1, "Wait"),
+            new MENU_ITEM_DATA(0, MENU_ITEM_DATA.EnumMenuType.Attack),
+            new MENU_ITEM_DATA(1, MENU_ITEM_DATA.EnumMenuType.Wait),
             // new MENU_ITEM_DATA(2, "Move"),
             // new MENU_ITEM_DATA(3, "Skill"),
             // new MENU_ITEM_DATA(4, "Item")
@@ -115,9 +137,17 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 메뉴 아이템 생성.
         for (int i = 0; i < m_menu_item_datas.Length; i++)
         {
+            var (table, key) = m_menu_item_datas[i].GetLocalizeKey();
+            var text_subject = LocalizationManager.Instance.GetTextObservable(table, key);
+
+
             var clonedItem = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
-            clonedItem.SetText(m_menu_item_datas[i].Text);
+            
+            clonedItem.Initialize(i, m_selected_index_subject, text_subject);
+
+            // clonedItem.SetText(m_menu_item_datas[i].GetMenuText());
             clonedItem.gameObject.SetActive(true);
+
         }
 
         // 초기 선택 인덱스 설정 (0번 인덱스 선택)
@@ -153,5 +183,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     {
         m_selected_index_subject.OnNext(index);
     }
+
+    
 
 }

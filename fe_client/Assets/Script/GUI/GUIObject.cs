@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 
@@ -44,6 +46,35 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
     //     transform.localRotation = m_init_local_rotation;
     //     transform.localScale    = m_init_local_scale;
     // }
+
+    virtual protected void Awake()
+    {
+        StartLoop().Forget();
+    }
+
+
+    virtual protected void OnLoop()
+    {
+
+    }
+
+    private async UniTask StartLoop()
+    {  
+        try
+        {
+            while (true)
+            {
+                // UI 갱신 120프레임
+                await UniTask.WaitForSeconds(1f/120f);
+                OnLoop();
+            } 
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.LogWarning("Task was cancelled");
+        }
+    }
+
 }
 
 public abstract class GUIElement : GUIBase
