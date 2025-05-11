@@ -29,3 +29,5 @@ fe_client/Unity.Scripting.Python.Samples.PySide.csproj
 fe_client/Sirenix.OdinInspector.Modules.Unity.Addressables.csproj
 fe_client/Sirenix.OdinInspector.Modules.UnityMathematics.csproj
 fe_client/Unity.Scripting.Python.Samples.PySide.csproj
+fe_client/Sirenix.OdinInspector.Modules.UnityLocalization.csproj
+fe_client/Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj
