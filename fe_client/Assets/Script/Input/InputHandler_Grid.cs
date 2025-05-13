@@ -281,7 +281,7 @@ public class InputHandler_Grid_Select : InputHandler
 
         // 이펙트 위치 이동.
         EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<VFXTransformEvent>.Acquire()
+            ObjectPool<VFX_TransformEvent>.Acquire()
             .SetID(VFX_Select_ID)
             .SetPosition(VFX_Position)                
         );

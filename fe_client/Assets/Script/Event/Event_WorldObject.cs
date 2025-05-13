@@ -5,7 +5,7 @@ using UnityEngine;
 
 // namespace Battle
 // {
-    public class WorldObjectPositionEvent : IEventParam
+    public class WorldObject_PositionEvent : IEventParam
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
 
@@ -14,7 +14,7 @@ using UnityEngine;
         public Vector3 Position_Prev { get; private set; } = Vector3.zero;
         // public float   Position_Time { get; private set; } = 0f;
         
-        public WorldObjectPositionEvent Set(Int64 _id, Vector3 _position, Vector3 _position_prev)
+        public WorldObject_PositionEvent Set(Int64 _id, Vector3 _position, Vector3 _position_prev)
         {
             ID            = _id;
             Position      = _position;
@@ -32,7 +32,7 @@ using UnityEngine;
 
         public void Release()
         {
-            ObjectPool<WorldObjectPositionEvent>.Return(this);
+            ObjectPool<WorldObject_PositionEvent>.Return(this);
         }
     }
 // }

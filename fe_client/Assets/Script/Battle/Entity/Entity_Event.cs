@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Battle
 {
-    [EventReceiverAttribute(
-        typeof(SituationUpdatedEvent),
-        typeof(AIUpdateEvent)
+    [EventReceiver(
+        typeof(Battle_Situation_UpdateEvent),
+        typeof(Battle_AI_Command_DecisionEvent)
         )]
     public partial class Entity
     {
@@ -16,14 +16,14 @@ namespace Battle
         {            
             switch (_event)
             {
-                case SituationUpdatedEvent situation_updated:
+                case Battle_Situation_UpdateEvent situation_updated:
                     // 진영 갱신 
                     OnSituationEvent_Turn(situation_updated);
                     // 스킬 사용.
                     Skill.UseSkill(situation_updated.Situation, this);
                     
                     break;
-                case AIUpdateEvent ai_update_event:
+                case Battle_AI_Command_DecisionEvent ai_update_event:
                     // AI 갱신
                     OnAIUpdateEvent(ai_update_event);
                     break;
@@ -31,7 +31,7 @@ namespace Battle
         }
 
 
-        void OnSituationEvent_Turn(SituationUpdatedEvent _event)
+        void OnSituationEvent_Turn(Battle_Situation_UpdateEvent _event)
         {
             if (_event == null)
                 return;
@@ -45,7 +45,7 @@ namespace Battle
         }   
 
 
-        void OnAIUpdateEvent(AIUpdateEvent _event)
+        void OnAIUpdateEvent(Battle_AI_Command_DecisionEvent _event)
         {
             // 죽었으면 암것도 안함.
             if (IsDead)

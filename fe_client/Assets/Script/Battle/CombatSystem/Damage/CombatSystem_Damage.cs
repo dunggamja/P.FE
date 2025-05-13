@@ -72,7 +72,7 @@ namespace Battle
             // 공격 전 스킬 사용.
             if (!_param.IsPlan)
                 EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Start)
+                    ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Start)
                     );
         }
 
@@ -129,7 +129,7 @@ namespace Battle
             // 공격 후 스킬 사용.
             if (!_param.IsPlan)
                 EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Finish)
+                    ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Finish)
                     );
         }
 

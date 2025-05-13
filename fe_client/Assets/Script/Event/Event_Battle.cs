@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class SituationUpdatedEvent : IEventParam
+    public class Battle_Situation_UpdateEvent : IEventParam
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
         public EnumSituationType      Situation   { get; private set; }  = EnumSituationType.None;
         // public ISystemParam       SystemParam { get; private set; }   
 
-        public SituationUpdatedEvent Set(EnumSituationType _situation_type)
+        public Battle_Situation_UpdateEvent Set(EnumSituationType _situation_type)
         {
             Situation   = _situation_type;
             // SystemParam = _system_param;
@@ -25,12 +25,14 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<SituationUpdatedEvent>.Return(this);
+            ObjectPool<Battle_Situation_UpdateEvent>.Return(this);
         }
     }
 
-    public class AIUpdateEvent : IEventParam
+    public class Battle_AI_Command_DecisionEvent : IEventParam
     {
+        // AI 명령 결정 이벤트.
+
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
         public float TopScore          { get; private set; } = 0;
@@ -53,12 +55,14 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<AIUpdateEvent>.Return(this);
+            ObjectPool<Battle_AI_Command_DecisionEvent>.Return(this);
         }
     }
 
-    public class CellPositionEvent : IEventParam
+    public class Battle_Cell_OccupyEvent : IEventParam
     {
+        // 셀 점유 이벤트.
+
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
         public Int64          EntityID       { get; private set; } = 0;
@@ -67,7 +71,7 @@ namespace Battle
         public (int x, int y) Cell_Prev      { get; private set; } = (0, 0);
         public bool           IgnorePrevCell { get; private set; } = false;
 
-        public CellPositionEvent Set(
+        public Battle_Cell_OccupyEvent Set(
             Int64          _entity_id, 
             int            _faction,
             (int x, int y) _cell_cur,
@@ -94,7 +98,7 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<CellPositionEvent>.Return(this);
+            ObjectPool<Battle_Cell_OccupyEvent>.Return(this);
         }
     }
 }

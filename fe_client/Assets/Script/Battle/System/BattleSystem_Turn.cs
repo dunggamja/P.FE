@@ -147,12 +147,12 @@ namespace Battle
             if (Faction_Cur != Faction_Prev) 
             {  
                 
-                EventDispatchManager.Instance.UpdateEvent(ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.BattleSystem_Faction_Changed));
+                EventDispatchManager.Instance.UpdateEvent(ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.BattleSystem_Faction_Changed));
             }
 
             if (Turn_Cur != Turn_Prev) 
             {
-                EventDispatchManager.Instance.UpdateEvent(ObjectPool<SituationUpdatedEvent>.Acquire().Set(EnumSituationType.BattleSystem_Turn_Changed));
+                EventDispatchManager.Instance.UpdateEvent(ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.BattleSystem_Turn_Changed));
             }    
         }
 

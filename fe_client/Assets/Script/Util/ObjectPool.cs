@@ -35,6 +35,11 @@ public static class ObjectPool<T> where T : IPoolObject, new()
 
     private static int m_max_count = 5;
 
+    public static void SetMaxPoolCount(int _max_count)
+    {
+        m_max_count = _max_count;
+    }
+
     // public static bool IsPoolingObject
 
 
@@ -72,6 +77,14 @@ public static class ListPool<T>
 {
     private static readonly Stack<List<T>> m_pool = new();
 
+    private static int m_max_count = 5;
+
+    public static void SetMaxPoolCount(int _max_count)
+    {
+        m_max_count = _max_count;
+    }
+
+
     public static List<T> Acquire()
     {
         var list = m_pool.Count > 0 ? m_pool.Pop() : new List<T>();
@@ -83,6 +96,10 @@ public static class ListPool<T>
         if (list == null)
             return;
 
+        // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
+        if (m_pool.Count >= m_max_count)
+            return;
+
         list.Clear();
         m_pool.Push(list);
     }
@@ -91,6 +108,14 @@ public static class ListPool<T>
 public static class HashSetPool<T>
 {
     private static readonly Stack<HashSet<T>> m_pool = new();
+
+    private static int m_max_count = 5;
+
+    public static void SetMaxPoolCount(int _max_count)
+    {
+        m_max_count = _max_count;
+    }
+
 
     public static HashSet<T> Acquire()
     {
@@ -103,6 +128,10 @@ public static class HashSetPool<T>
         if (hashSet == null)
             return;
 
+        // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
+        if (m_pool.Count >= m_max_count)
+            return;
+
         hashSet.Clear();
         m_pool.Push(hashSet);
     }
@@ -111,6 +140,14 @@ public static class HashSetPool<T>
 public static class DictionaryPool<TKey, TValue>
 {
     private static readonly Stack<Dictionary<TKey, TValue>> m_pool = new();
+
+    private static int m_max_count = 5;
+
+    public static void SetMaxPoolCount(int _max_count)
+    {
+        m_max_count = _max_count;
+    }
+
 
     public static Dictionary<TKey, TValue> Acquire()
     {
@@ -121,6 +158,10 @@ public static class DictionaryPool<TKey, TValue>
     public static void Return(Dictionary<TKey, TValue> dict)
     {
         if (dict == null)
+            return;
+
+        // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
+        if (m_pool.Count >= m_max_count)
             return;
 
         dict.Clear();

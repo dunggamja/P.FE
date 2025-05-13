@@ -6,21 +6,21 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 
-[EventReceiverAttribute(typeof(WorldObjectPositionEvent))]
+[EventReceiver(typeof(WorldObject_PositionEvent))]
 public partial class WorldObjectManager 
 {
     public void OnReceiveEvent(IEventParam _event)
     {
         switch (_event)
         {
-            case WorldObjectPositionEvent position_event:
+            case WorldObject_PositionEvent position_event:
                 OnReceiveEvent_WorldPositionEvent(position_event);
                 break;
         }
         
     }
 
-    void OnReceiveEvent_WorldPositionEvent(WorldObjectPositionEvent _event)
+    void OnReceiveEvent_WorldPositionEvent(WorldObject_PositionEvent _event)
     {
         if (_event == null)
             return;

@@ -24,7 +24,7 @@ namespace Battle
 
             // 이벤트 : Cell
             EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<CellPositionEvent>.Acquire().Set(
+                ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
                 ID,
                 PathZOCFaction,
                 Cell,
@@ -34,7 +34,7 @@ namespace Battle
 
             // 이벤트 : WorldObejct Position
             EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<WorldObjectPositionEvent>.Acquire().Set(
+                ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
                 ID,
                 PathVehicle.Position,
                 PathVehicle.PositionPrev
@@ -49,7 +49,7 @@ namespace Battle
             
 
             EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<WorldObjectPositionEvent>.Acquire().Set(
+                ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
                     ID,
                     PathVehicle.Position,
                     PathVehicle.PositionPrev

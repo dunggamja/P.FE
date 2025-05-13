@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-    public class VFXTransformEvent : IEventParam
+    public class VFX_TransformEvent : IEventParam
     {
         
         public EnumEventProcessTiming EventProcessTiming 
@@ -30,7 +30,7 @@ using UnityEngine;
         public void Release()
         {
             // ObjectPooling...
-            ObjectPool<VFXTransformEvent>.Return(this);        
+            ObjectPool<VFX_TransformEvent>.Return(this);        
         }
 
         public void Reset()
@@ -42,31 +42,31 @@ using UnityEngine;
             Scale    = (false, 1f, 0f);
         }
 
-        public VFXTransformEvent SetID(Int64 _id)
+        public VFX_TransformEvent SetID(Int64 _id)
         {
             ID = _id;
             return this;
         }
 
-        public VFXTransformEvent SetParent(Transform _parent)
+        public VFX_TransformEvent SetParent(Transform _parent)
         {
             Parent = (true, _parent);
             return this;
         }
 
-        public VFXTransformEvent SetPosition(Vector3 _position, float _time = 0f)
+        public VFX_TransformEvent SetPosition(Vector3 _position, float _time = 0f)
         {
             Position = (true, _position, _time);
             return this;
         }
 
-        public VFXTransformEvent SetRotation(Quaternion _rotation, float _time = 0f)
+        public VFX_TransformEvent SetRotation(Quaternion _rotation, float _time = 0f)
         {
             Rotation = (true, _rotation, _time);
             return this;
         }
 
-        public VFXTransformEvent SetScale(float _scale, float _time = 0f)
+        public VFX_TransformEvent SetScale(float _scale, float _time = 0f)
         {
             Scale = (true, _scale, _time);
             return this;

@@ -52,9 +52,11 @@ public class InputHandler_UI_Menu : InputHandler
 
 
 
-    public bool IsFinish      { get; private set; } = false;
-    Vector2Int  MoveDirection { get; set; }         = Vector2Int.zero; 
-    Int64       GUI_ID        { get; set; }         = 0;
+    public bool IsFinish          { get; private set; } = false;
+    Vector2Int  MoveDirection     { get; set; }         = Vector2Int.zero; 
+    float       MoveMenu_LastTime { get; set; }         = 0f;
+    Int64       GUI_ID            { get; set; }         = 0;
+
 
     void Reset()
     {
@@ -84,6 +86,11 @@ public class InputHandler_UI_Menu : InputHandler
 
         OnUpdate_Input_Compute(Context.InputParamQueue, ref input_result);
         OnUpdate_Input_Process(input_result);
+
+        if (input_result.MoveDirection.changed)
+        {
+
+        }
 
 
         ObjectPool<InputParam_Result>.Return(input_result);
@@ -169,6 +176,25 @@ public class InputHandler_UI_Menu : InputHandler
         MoveDirection = new Vector2Int(input_direction_x, input_direction_y);
     }
 
+    void OnUpdate_Menu_Move()
+    {
+        // 이동 방향이 없으면 종료.
+        if (MoveDirection == Vector2Int.zero)
+            return;
+        
+        // 이동 시간이 지났는지 확인.
+        var is_time_passed = (Time.time - MoveMenu_LastTime > MOVE_INTERVAL);
+        if (is_time_passed == false)
+            return;
+
+        // 이동 시간 갱신.
+        MoveMenu_LastTime = Time.time;
+
+        // 이동 방향 이벤트 발생.
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<GUI_Menu_MoveEvent>.Acquire().Set(GUI_ID, MoveDirection));
+    }
+
     protected override void OnFinish()
     {
         //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
@@ -178,6 +204,5 @@ public class InputHandler_UI_Menu : InputHandler
 
         // 초기화.
         Reset();
-
     }
 }

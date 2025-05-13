@@ -5,7 +5,7 @@ using R3;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-[EventReceiver()]
+[EventReceiverAttribute(typeof(GUI_Menu_MoveEvent))]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 {
     public class PARAM : GUIOpenParam
@@ -116,7 +116,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     }
 
 
-
     public void OnReceiveEvent(IEventParam _event)
     {
         // throw new NotImplementedException();
@@ -140,14 +139,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             var (table, key) = m_menu_item_datas[i].GetLocalizeKey();
             var text_subject = LocalizationManager.Instance.GetTextObservable(table, key);
 
-
-            var clonedItem = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
+            // TODO: 오브젝트 풀링하는게 더 좋을까?
+            var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
             
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
 
             // clonedItem.SetText(m_menu_item_datas[i].GetMenuText());
             clonedItem.gameObject.SetActive(true);
-
         }
 
         // 초기 선택 인덱스 설정 (0번 인덱스 선택)

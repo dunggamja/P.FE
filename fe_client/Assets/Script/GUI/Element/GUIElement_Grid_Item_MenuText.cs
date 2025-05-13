@@ -32,12 +32,13 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         m_selected_index_subscription?.Dispose();
         m_text_subscription?.Dispose();
         
-        // 새로운 구독
+        // 새로운 구독.
         m_selected_index_subscription = _subject_select_index.Subscribe(i => 
             {
                 m_cursor.gameObject.SetActive(i == m_index);
             });
 
+        // 텍스트 구독.
         m_text_subscription = _subject_text.Subscribe(text =>
         {
             m_text.text = text;

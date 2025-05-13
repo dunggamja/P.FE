@@ -1,21 +1,21 @@
 using UnityEngine;
 
 
-[EventReceiverAttribute(typeof(VFXTransformEvent))]
+[EventReceiver(typeof(VFX_TransformEvent))]
 public partial class VFXManager
 {
     public void OnReceiveEvent(IEventParam _event)
     {
         switch (_event)
         {
-            case VFXTransformEvent transform_event:
+            case VFX_TransformEvent transform_event:
                 OnReceiveEvent_VFXTransform(transform_event);
                 break;
         }
     }
 
 
-    void OnReceiveEvent_VFXTransform(VFXTransformEvent _event)
+    void OnReceiveEvent_VFXTransform(VFX_TransformEvent _event)
     {
         if (_event == null)
             return;
