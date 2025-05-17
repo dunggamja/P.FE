@@ -25,3 +25,15 @@ fe_client/Sirenix.OdinInspector.Modules.UnityMathematics.csproj
 fe_client/Unity.Scripting.Python.Samples.PySide.csproj
 fe_client/Sirenix.OdinInspector.Modules.UnityLocalization.csproj
 fe_client/Sirenix.OdinInspector.Modules.UnityLocalization.Editor.csproj
+fe_client/Febucci.TextAnimator.TMP.Runtime.csproj
+fe_client/Febucci.TextAnimator.Runtime.csproj
+fe_client/Febucci.TextAnimator.Editor.csproj
+fe_client/Febucci.TextAnimator.Demo.Runtime.csproj
+fe_client/Febucci.Attributes.Runtime.csproj
+fe_client/Febucci.Attributes.Editor.csproj
+fe_client/Lofelt.NiceVibrations.csproj
+fe_client/Lofelt.NiceVibrations.Demo.csproj
+fe_client/Lofelt.NiceVibrations.Editor.csproj
+fe_client/MoreMountains.Tools.csproj
+fe_client/MoreMountains.Tools.Editor.csproj
+fe_client/VFavorites.csproj
