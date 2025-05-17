@@ -6,6 +6,7 @@ public partial class InputManager
     // [InputBinding("UI_Move")]
     public void OnMenu_Move(InputAction.CallbackContext _context)
     {
+        // Debug.Log($"OnMenu_Move: {_context.ReadValue<Vector2>()}");
         var input_handler_context = GetCurrentInputHandlerContext();
         if (input_handler_context == null)
         {

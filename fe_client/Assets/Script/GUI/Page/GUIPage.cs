@@ -49,6 +49,12 @@ public abstract class GUIPage : GUIBase
             return false;
         }
 
+        if (this is IEventReceiver)
+        {
+            EventDispatchManager.Instance.AttachReceiver(this as IEventReceiver);
+        }
+        
+
 
 
         gameObject.SetActive(false);
@@ -79,6 +85,11 @@ public abstract class GUIPage : GUIBase
     public void Close()
     {
         OnCloseAsync(this.GetCancellationTokenOnDestroy()).Forget();
+
+        if (this is IEventReceiver)
+        {
+            EventDispatchManager.Instance.DetachReceiver(this as IEventReceiver);
+        }
     }
 
     protected abstract void OnOpen(GUIOpenParam _param);

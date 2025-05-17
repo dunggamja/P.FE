@@ -87,10 +87,7 @@ public class InputHandler_UI_Menu : InputHandler
         OnUpdate_Input_Compute(Context.InputParamQueue, ref input_result);
         OnUpdate_Input_Process(input_result);
 
-        if (input_result.MoveDirection.changed)
-        {
-
-        }
+        OnUpdate_Menu_Move();
 
 
         ObjectPool<InputParam_Result>.Return(input_result);

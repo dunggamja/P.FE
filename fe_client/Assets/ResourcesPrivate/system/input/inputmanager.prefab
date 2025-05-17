@@ -218,22 +218,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2774118189239439135}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
-        m_MethodName: OnMenu_Move
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 52294727-07f6-423c-8571-84e295d5d81f
-    m_ActionName: 'Menu/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2774118189239439135}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
         m_MethodName: OnMenu_Select
         m_Mode: 0
         m_Arguments:
@@ -262,6 +246,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 24a395ba-0f37-4761-b520-1b88a88780d8
     m_ActionName: 'Menu/Cancel[/Keyboard/escape,/Keyboard/x]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2774118189239439135}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: OnMenu_Move
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a5a5de84-f752-4975-b0f7-b08960a7849c
+    m_ActionName: 'Menu/Grid_Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PC
   m_DefaultActionMap: Grid

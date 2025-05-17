@@ -5,7 +5,7 @@ using R3;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-[EventReceiverAttribute(typeof(GUI_Menu_MoveEvent))]
+[EventReceiver(typeof(GUI_Menu_MoveEvent))]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 {
     public class PARAM : GUIOpenParam
@@ -82,6 +82,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private (bool init, Vector2 value)  m_grid_menu_padding = (false, Vector2.zero);
 
     private BehaviorSubject<int>        m_selected_index_subject    = new(0);
+
+
+    public void OnReceiveEvent(IEventParam _event)
+    {
+        switch (_event)
+        {
+            case GUI_Menu_MoveEvent menu_move_event:
+                OnReceiveEvent_GUI_Menu_MoveEvent(menu_move_event);
+                break;
+        }
+        // throw new NotImplementedException();
+    }
     
 
     protected override void OnOpen(GUIOpenParam _param)
@@ -116,10 +128,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     }
 
 
-    public void OnReceiveEvent(IEventParam _event)
-    {
-        // throw new NotImplementedException();
-    }
 
     private void UpdateMenuItems()
     {
@@ -183,5 +191,26 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     }
 
     
+    // 메뉴 이동 이벤트 수신.
+    void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
+    {
+        // Debug.Log($"OnReceiveEvent_GUI_Menu_Move: {_event.MoveDirection}");
+        if (_event == null)
+            return;
+
+        if (_event.MoveDirection.y  == 0)
+        {
+            // 이동 방향이 없으면 종료.
+            return;
+        }
+        var add_index = _event.MoveDirection.y > 0 ? -1 : +1;
+        var cur_index = m_selected_index_subject.Value;
+        var new_index = cur_index + add_index;
+
+        new_index = Math.Clamp(new_index, 0, m_menu_item_datas.Length - 1);
+        // 이동 방향에 따라서 메뉴 아이템 선택.
+        
+        SetSelectedIndex(new_index);
+    }
 
 }
