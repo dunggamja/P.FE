@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 5000d0c12cf804636b811786f29ffa87
   m_currentHash:
     serializedVersion: 2
-    Hash: c273055f4412c18ab3e732017001a2b0
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -110,6 +110,8 @@ MonoBehaviour:
     m_LabelNames:
     - default
     - prefab
+    - vfx
+    - gui
     - scene
     - base
     - test

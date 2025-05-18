@@ -20,30 +20,42 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 627bce4bee59b4996a274983762ed382
     m_Address: vfx/tile_highlight
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c15fd4c9d4254f2ca81188baff9ff7c
+    m_Address: vfx/tile_effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 829721955b29342a1bf13009485324fd
     m_Address: vfx/tile_effect_green
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f79889ec7c4684d07b9e202cc5eea8af
     m_Address: vfx/tile_effect_blue
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fe85765e9a17d41fc97f876e6a4f8b8c
     m_Address: vfx/tile_effect_red
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
+    - vfx
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}

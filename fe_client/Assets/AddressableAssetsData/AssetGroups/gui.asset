@@ -19,6 +19,7 @@ MonoBehaviour:
     m_Address: gui/page/unit_command
     m_ReadOnly: 0
     m_SerializedLabels:
+    - gui
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
