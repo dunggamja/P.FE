@@ -73,7 +73,7 @@ namespace Battle
             defender.SetFaction(2);
 
             // 1. 플레이어 진영, 2: AI 진영.
-            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
+            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.AI);
             BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
 
 

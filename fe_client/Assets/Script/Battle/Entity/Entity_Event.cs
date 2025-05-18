@@ -8,6 +8,7 @@ namespace Battle
     [EventReceiver(
         typeof(Battle_Situation_UpdateEvent),
         typeof(Battle_AI_Command_DecisionEvent)
+        // typeof(Battle_Entity_MoveEvent)
         )]
     public partial class Entity
     {
@@ -18,20 +19,24 @@ namespace Battle
             {
                 case Battle_Situation_UpdateEvent situation_updated:
                     // 진영 갱신 
-                    OnSituationEvent_Turn(situation_updated);
-                    // 스킬 사용.
-                    Skill.UseSkill(situation_updated.Situation, this);
+                    OnReceiveEvent_Battle_Situation_UpdateEvent(situation_updated);
+                    
                     
                     break;
                 case Battle_AI_Command_DecisionEvent ai_update_event:
                     // AI 갱신
-                    OnAIUpdateEvent(ai_update_event);
+                    OnReceiveEvent_Battle_AI_Command_DecisionEvent(ai_update_event);
                     break;
+
+                // case Battle_Entity_MoveEvent entity_move_event:
+                //     // 이동 이벤트
+                //     OnReceiveEvent_Battle_Entity_MoveEvent(entity_move_event);
+                //     break;
             }
         }
 
 
-        void OnSituationEvent_Turn(Battle_Situation_UpdateEvent _event)
+        void OnReceiveEvent_Battle_Situation_UpdateEvent(Battle_Situation_UpdateEvent _event)
         {
             if (_event == null)
                 return;
@@ -42,10 +47,14 @@ namespace Battle
                 // 행동 가능하게끔...
                 SetAllCommandEnable();
             }
+
+
+            // 스킬 사용.
+            Skill.UseSkill(_event.Situation, this);
         }   
 
 
-        void OnAIUpdateEvent(Battle_AI_Command_DecisionEvent _event)
+        void OnReceiveEvent_Battle_AI_Command_DecisionEvent(Battle_AI_Command_DecisionEvent _event)
         {
             // 죽었으면 암것도 안함.
             if (IsDead)
@@ -62,10 +71,15 @@ namespace Battle
             if (commander_type == EnumCommanderType.Player)
                 return;
 
-            // 현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자.
-            var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntity();
-            if (command_progress_id > 0 && command_progress_id != ID)
-                return;
+            // 사용할 일이 없을 거 같아서 주석처리.
+            // // 현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자.
+            // var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntity();
+            // if (command_progress_id > 0 && command_progress_id != ID)
+            // {
+            //     // 이런 경우가 잇나.?
+            //     Debug.Log($"현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자. {command_progress_id}");
+            //     return;
+            // }
             
             // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
             AIManager.Update(this);
@@ -73,5 +87,11 @@ namespace Battle
             // event param에 등록.
             _event.TryTopScore(ID, GetAIScoreMax().score);
         }
+
+        // void OnReceiveEvent_Battle_Entity_MoveEvent(Battle_Entity_MoveEvent _event)
+        // {
+        //     if (_event == null)
+        //         return;
+        // }
     }
 }

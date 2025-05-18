@@ -9,13 +9,12 @@ namespace Battle
     {
         // Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
 
-        List<BattleSystem>      m_update_system = new();
 
 
-        public IBattleSystemParam                Param               { get; private set; }
-        public EnumState                         State               { get; private set; }
+        public IBattleSystemParam  Param          { get; private set; }
+        public EnumState           State          { get; private set; }
                        
-        public BattleBlackBoard                  BlackBoard          { get; private set; } = new ();
+        public BattleBlackBoard    BlackBoard     { get; private set; } = new ();
 
         
 
@@ -23,16 +22,18 @@ namespace Battle
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
 
+        private List<BattleSystem>                 m_update_system     = new();
         private int                                m_system_index      = 0;
         private Dictionary<int, EnumCommanderType> m_faction_commander = new ();
+        private Queue<Command>                     m_command_queue     = new (10);
+
 
 
         protected override void Init()
         {
             base.Init();
 
-    
-
+            
             // 실행할 순서대로 넣어놓는다.
 
             // 턴 진행
@@ -58,6 +59,7 @@ namespace Battle
             m_system_index = 0;
 
             m_faction_commander.Clear();
+            m_command_queue.Clear();
         }
 
         public void SetData(IBattleSystemParam _param)
@@ -167,6 +169,27 @@ namespace Battle
                  m_faction_commander.Add(_faction, _commander_type);
             else
                  m_faction_commander[_faction] = _commander_type;
+        }
+
+        public void PushCommand(Command _command)
+        {
+            m_command_queue.Enqueue(_command);
+        }   
+
+        public Command PopCommand()
+        {
+            if (m_command_queue.Count == 0)
+                return null;
+
+            return m_command_queue.Dequeue();
+        }
+
+        public Command PeekCommand()
+        {
+            if (m_command_queue.Count == 0)
+                return null;
+
+            return m_command_queue.Peek();
         }
 
 

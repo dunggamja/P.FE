@@ -286,14 +286,16 @@ public class InputHandler_Grid_Select : InputHandler
             .SetPosition(VFX_Position)                
         );
 
-        // À¯´Ö ÀÌµ¿.
+        // À¯´Ö ÀÌµ¿
         if (SelectedEntityID > 0)
         {
-            var entity  = EntityManager.Instance.GetEntity(SelectedEntityID);
-            if (entity != null)
-            {
-                entity.UpdateCellPosition(SelectTile_X, SelectTile_Y);
-            }
+            BattleSystemManager.Instance.PushCommand(
+                new Command_Move
+                (
+                    SelectedEntityID,
+                    (SelectTile_X, SelectTile_Y)
+                )
+            );
         }
     }
 

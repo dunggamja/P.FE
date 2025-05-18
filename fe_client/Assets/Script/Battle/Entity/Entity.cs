@@ -20,7 +20,12 @@ namespace Battle
         public int                  PathAttribute   { get; private set; }
         public int                  PathZOCFaction  => GetFaction();
         public AIManager            AIManager       { get; private set; }
-        // public CommandManager       CommandManager  { get; private set; }    
+
+        public bool                 IsCommandAbort { get; private set; }
+        public CommandManager       CommandManager  { get; private set; }    
+
+        // public bool                 IsCommandDirty { get; private set; }
+
 
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -40,7 +45,11 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
             AIManager       = new AIManager();
-            // CommandManager  = new CommandManager();
+
+            IsCommandAbort  = false;
+
+            // IsCommandDirty  = false;
+            // CommandManager = new CommandManager();
         }
 
         public static Entity Create(Int64 _id)
@@ -95,7 +104,15 @@ namespace Battle
             BlackBoard.SetValue(EnumEntityBlackBoard.Faction, _faction);
         }
 
-        
+        // public void SetCommandDirty(bool _is_dirty)
+        // {
+        //     IsCommandDirty = _is_dirty;
+        // }
+
+        public void SetCommandAbort(bool _is_abort)
+        {
+            IsCommandAbort = _is_abort;
+        }
    
 
     }

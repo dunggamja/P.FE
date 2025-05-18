@@ -68,6 +68,12 @@ namespace Battle
     /// </summary>
     public interface ICommand
     {
+        // bool IsCommandDirty { get; }
+        bool IsCommandAbort { get; }
+
+        // void SetCommandDirty(bool _is_dirty);
+        void SetCommandAbort(bool _is_abort);
+
         // EnumCommandOwner  GetCommandOwner();
         // void              SetCommandOwner(EnumCommandOwner _command_owner);
 

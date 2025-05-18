@@ -7,8 +7,7 @@ using UnityEngine;
     public class VFX_TransformEvent : IEventParam
     {
         
-        public EnumEventProcessTiming EventProcessTiming 
-        => EnumEventProcessTiming.OnNextUpdate;
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
 
         public Int64 
         ID { get; private set; }

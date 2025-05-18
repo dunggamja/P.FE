@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GUI_Menu_MoveEvent : IEventParam
 {
-    public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+    public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
 
     public Int64      GUI_ID        { get; private set; }
     public Vector2Int MoveDirection { get; private set; }

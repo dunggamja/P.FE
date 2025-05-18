@@ -8,5 +8,6 @@ public static class AssetName
 
     public const string TILE_EFFECT_BLUE = "vfx/tile_effect_blue";
     public const string TILE_EFFECT_RED  = "vfx/tile_effect_red";
+    public const string TILE_EFFECT      = "vfx/tile_effect";
 
 }

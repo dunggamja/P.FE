@@ -64,7 +64,7 @@ namespace Battle
                     case EnumEntityBlackBoard.AIScore_Done:
                     {
                         // 행동 완료 명령을 내린다.
-                        CommandManager.Instance.PushCommand(new Command_Done(entity_object.ID));
+                        BattleSystemManager.Instance.PushCommand(new Command_Done(entity_object.ID));
                     }
                     break;
                 }
@@ -83,17 +83,17 @@ namespace Battle
         {
            
             // 공격 명령 셋팅.               
-            CommandManager.Instance.PushCommand(
-                new Command[]
-                {
+            BattleSystemManager.Instance.PushCommand(
+                
                     // 이동 명령
                     new Command_Move
                     (
                         _entity_id,
                         _damage_score.Position
                         //, _is_immediate: true // 일단은 즉시 이동.    
-                    ),
-
+                    ));
+                    
+            BattleSystemManager.Instance.PushCommand(
                     // 공격 명령
                     new Command_Attack
                     (
@@ -101,10 +101,7 @@ namespace Battle
                         _damage_score.TargetID,
                         _damage_score.WeaponID,
                         _damage_score.Position
-                    )
-
-                }
-            );
+                    ));
         }
 
     }

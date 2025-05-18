@@ -31,7 +31,7 @@ public static class ObjectPool<T> where T : IPoolObject, new()
     
     private static readonly Stack<T>   m_pool  = new();
 
-    private static readonly HashSet<T> m_inuse = new();
+    // private static readonly HashSet<T> m_inuse = new();
 
     private static int m_max_count = 5;
 
@@ -48,7 +48,7 @@ public static class ObjectPool<T> where T : IPoolObject, new()
     {
         var pool_object = m_pool.Count > 0 ? m_pool.Pop() : new T();
         
-        m_inuse.Add(pool_object);
+        // m_inuse.Add(pool_object);
 
         return pool_object;
     }
@@ -58,9 +58,9 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         if (_obj == null)
             return;
 
-        // 풀링을 목적으로 생성된 객체가 아니라면 반환 처리 하지 않는다.
-        if (m_inuse.Contains(_obj) == false)
-            return;
+        // // 풀링을 목적으로 생성된 객체가 아니라면 반환 처리 하지 않는다.
+        // if (m_inuse.Contains(_obj) == false)
+        //     return;
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
         if (m_pool.Count >= m_max_count)
@@ -68,7 +68,7 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         
         _obj.Reset();
 
-        m_inuse.Remove(_obj);
+        // m_inuse.Remove(_obj);
         m_pool.Push(_obj);
     }
 }

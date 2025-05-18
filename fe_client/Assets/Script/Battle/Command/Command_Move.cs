@@ -12,11 +12,18 @@ namespace Battle
         // int             m_path_node_index = 0;
         (int x, int y)  m_cell_to         = (0, 0); 
         bool            m_is_immediate    = false;
+        bool            m_is_plan         = false;
 
-        public Command_Move(Int64 _owner_id, (int x, int y) _cell_to, bool _is_immediate = false) : base(_owner_id)
+        public Command_Move(
+          Int64          _owner_id
+        , (int x, int y) _cell_to
+        , bool           _is_immediate = false
+        , bool           _is_plan      = false)
+            : base(_owner_id)
         {
             m_cell_to      = _cell_to;
             m_is_immediate = _is_immediate;
+            m_is_plan      = _is_plan;
         }
         
 
@@ -27,8 +34,6 @@ namespace Battle
 
             var turn = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentTurn);
 
-            // 이동 전에 RollbackManager에 저장해둔다.            
-            RollbackManager.Instance.Push(new Rollback_Entity_Position(turn, OwnerID, Owner.Cell));
 
             if (!m_is_immediate)
             {
@@ -68,10 +73,11 @@ namespace Battle
                 // 좌표 이동 처리.
                 Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y, false);
 
-                Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
+                //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
-                // 행동 플래그 
-                Owner.SetCommandDone(EnumCommandFlag.Move);
+                // 행동 플래그 처리.
+                if (m_is_plan == false)
+                    Owner.SetCommandDone(EnumCommandFlag.Move);
 
             }
         }
