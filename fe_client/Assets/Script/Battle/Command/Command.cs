@@ -25,7 +25,12 @@ namespace Battle
 
         protected abstract void OnEnter();
         protected abstract bool OnUpdate();
-        protected abstract void OnExit();
+        protected abstract void OnExit(bool _is_abort);
+
+        public void Abort()
+        {
+            OnExit(true);
+        }
 
         public EnumState Update()
         {
@@ -42,7 +47,7 @@ namespace Battle
 
             if (State != EnumState.Progress)
             {
-                OnExit();
+                OnExit(false);
                 //Debug.Log($"Command, Finished, ID:{OwnerID}, Command:{GetType().Name}");
             }
 

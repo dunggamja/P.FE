@@ -22,8 +22,12 @@ namespace Battle
             return true;
         }
 
-        protected override void OnExit()
+        protected override void OnExit(bool _is_abort)
         {
+
+            if (_is_abort)
+                return;
+
             if (Owner != null)
             {
                 // Owner.SetCommandDone(EnumCommandFlag.Done);

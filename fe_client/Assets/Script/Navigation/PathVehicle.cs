@@ -26,7 +26,11 @@ public abstract class PathVehicle
     protected abstract (Vector3 velocity, Quaternion torque) Steering(IPathOwner _owner);
 
     // TODO: velocity, max_speed 를 setup 할 일이 있을까....
-    public void Setup(Vector3 _position, Vector3 _position_prev, Vector3 _velocity = default, float _max_speed = 5f)
+    public void Setup(
+        Vector3 _position, 
+        Vector3 _position_prev, 
+        Vector3 _velocity  = default, 
+        float   _max_speed = Battle.Constants.BATTLE_MOVE_SPEED_MAX)
     {
         m_position      = _position;
         m_position_prev = _position_prev;

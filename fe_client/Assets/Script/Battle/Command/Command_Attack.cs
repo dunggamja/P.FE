@@ -60,8 +60,13 @@ namespace Battle
             return CombatSystemManager.Instance.State == EnumState.Finished;
         }
 
-        protected override void OnExit()
+        protected override void OnExit(bool _is_abort)
         {
+            CombatParam.Cache.Reset();
+
+            if (_is_abort)
+                return;
+
             if (Owner != null)
             {
 
@@ -70,7 +75,6 @@ namespace Battle
                 Owner.SetAllCommandDone();
             }
 
-            CombatParam.Cache.Reset();
         }
 
     }

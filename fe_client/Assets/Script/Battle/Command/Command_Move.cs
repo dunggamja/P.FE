@@ -32,14 +32,11 @@ namespace Battle
             if (Owner == null)
                 return;
 
-            var turn = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentTurn);
-
-
             if (!m_is_immediate)
             {
                 // 경로 생성 & 길찾기
                 Owner.PathNodeManager.CreatePath(
-                    Owner.Cell.CellToPosition(),
+                    Owner.PathVehicle.Position,
                     m_cell_to.CellToPosition(),
                     Owner);
             }
@@ -64,8 +61,14 @@ namespace Battle
             return Owner.PathNodeManager.IsEmpty();
         }
 
-        protected override void OnExit()
+        protected override void OnExit(bool _is_abort)
         {
+            if (_is_abort)
+            {
+                return;
+            }
+
+
             if (Owner != null)
             {
                 // Owner.PathVehicle.Position
@@ -78,7 +81,6 @@ namespace Battle
                 // 행동 플래그 처리.
                 if (m_is_plan == false)
                     Owner.SetCommandDone(EnumCommandFlag.Move);
-
             }
         }
 

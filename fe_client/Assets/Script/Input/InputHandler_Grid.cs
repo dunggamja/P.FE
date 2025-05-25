@@ -289,11 +289,25 @@ public class InputHandler_Grid_Select : InputHandler
         // 유닛 이동
         if (SelectedEntityID > 0)
         {
+            
+            // 기존 이동명령 중단.
+            BattleSystemManager.Instance.PushCommand(
+                new Command_Abort
+                (
+                    SelectedEntityID,
+                    _is_pending_only: true
+                )
+            );
+
+            // 이동 명령 추가.
             BattleSystemManager.Instance.PushCommand(
                 new Command_Move
                 (
                     SelectedEntityID,
-                    (SelectTile_X, SelectTile_Y)
+                    (SelectTile_X, SelectTile_Y),
+
+                    _is_immediate: false,
+                    _is_plan:      true
                 )
             );
         }
