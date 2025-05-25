@@ -99,7 +99,7 @@ namespace Battle
 
             StatusManager.Status.SetPoint(EnumUnitPoint.HP, new_hp);
 
-            Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
+            // Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
         }
 
         public int GetFaction()

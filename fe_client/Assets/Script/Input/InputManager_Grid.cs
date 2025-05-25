@@ -63,7 +63,7 @@ public partial class InputManager
             var input_param = new InputParam_Grid_Select();
             input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnGrid_Select performed, {_context.phase}");
+            // Debug.Log($"OnGrid_Select performed, {_context.phase}");
         }
 
         // Debug.Log($"OnGrid_Select anything");
@@ -86,7 +86,7 @@ public partial class InputManager
             var input_param = new InputParam_Grid_Cancel();
             input_handler_context.InputParamQueue.Enqueue(input_param);
 
-            Debug.Log($"OnGrid_Cancel performed, {_context.phase}");
+            // Debug.Log($"OnGrid_Cancel performed, {_context.phase}");
         }
 
         //Debug.Log($"OnGrid_Cancel anything");

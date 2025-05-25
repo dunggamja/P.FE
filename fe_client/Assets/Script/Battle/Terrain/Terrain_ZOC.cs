@@ -39,7 +39,7 @@ public class Terrain_ZOC
         var index = _x + _y * m_width;
         m_faction_zoc[_faction][index]++;
 
-        Debug.Log($"IncreaseZOC: {_faction}, {_x}, {_y}, {m_faction_zoc[_faction][index]}");
+        // Debug.Log($"IncreaseZOC: {_faction}, {_x}, {_y}, {m_faction_zoc[_faction][index]}");
     }
 
     public void DecreaseZOC(int _faction, int _x, int _y)
@@ -56,7 +56,7 @@ public class Terrain_ZOC
         var index = _x + _y * m_width;
         m_faction_zoc[_faction][index]--;
 
-        Debug.Log($"DecreaseZOC: {_faction}, {_x}, {_y}, {m_faction_zoc[_faction][index]}");
+        // Debug.Log($"DecreaseZOC: {_faction}, {_x}, {_y}, {m_faction_zoc[_faction][index]}");
     }
 
     public bool IsBlockedZOC(int _x, int _y, int _faction_ignore)
