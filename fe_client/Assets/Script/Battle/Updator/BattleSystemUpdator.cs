@@ -66,12 +66,9 @@ namespace Battle
             EntityManager.Instance.AddEntity(attacker);
             EntityManager.Instance.AddEntity(defender);
 
-            attacker.UpdateCellPosition(0, 0, true);
-            defender.UpdateCellPosition(2, 3, true);
-
             attacker.SetFaction(1);
             defender.SetFaction(2);
-
+            
             // 1. 플레이어 진영, 2: AI 진영.
             BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
             BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
@@ -137,6 +134,10 @@ namespace Battle
                 attacker.StatusManager.Weapon.Equip(attacker_weapon.ID);
                 defender.StatusManager.Weapon.Equip(defender_weapon.ID);
             }
+
+
+            attacker.UpdateCellPosition(0, 0, EnumCellOccupyEvent.Enter, true);
+            defender.UpdateCellPosition(2, 3, EnumCellOccupyEvent.Enter, true);
 
 
             WorldObjectManager.Instance.CreateObject(attacker.ID).Forget();

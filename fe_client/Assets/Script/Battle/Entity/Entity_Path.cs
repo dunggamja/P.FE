@@ -7,37 +7,61 @@ namespace Battle
 {
     public partial class Entity 
     {
-        public void UpdateCellPosition(int _x, int _y, bool _ignore_prev_position = false)
+        public void UpdateCellPosition(
+            int                 _x, 
+            int                 _y,
+            EnumCellOccupyEvent _cell_occupy_event,
+            bool                _is_immediatly_move = false)
         {
-            // 이전 위치.
-            var from_x = Cell.x;
-            var from_y = Cell.y;
+            // 이전 위치.            
+            Cell_Prev = Cell;
             
             // 새 위치.
-            Cell = (_x, _y);
+            Cell        = (_x, _y);
+
+            
 
             var position_cur  = Cell.CellToPosition();
-            var position_prev = (_ignore_prev_position) ? Cell.CellToPosition() : PathVehicle.Position;
+            var position_prev = PathVehicle.Position;
 
             PathVehicle.Setup(position_cur, position_prev);
 
 
-            // 이벤트 : Cell
-            EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
-                ID,
-                PathZOCFaction,
-                Cell,
-                (from_x, from_y),
-                _ignore_prev_position
-            ));
+            if (_cell_occupy_event == EnumCellOccupyEvent.Leave
+            ||  _cell_occupy_event == EnumCellOccupyEvent.Change)
+            {
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
+                    ID,
+                    PathZOCFaction,
+                    Cell_Prev,
+                    _is_enter: false));
+            }
 
-            // 이벤트 : WorldObejct Position
+            if (_cell_occupy_event == EnumCellOccupyEvent.Enter
+            ||  _cell_occupy_event == EnumCellOccupyEvent.Change)
+            {
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
+                    ID,
+                    PathZOCFaction,
+                    Cell,
+                    _is_enter: true));
+            }
+
+
+            var visual_position_to   = PathVehicle.Position;
+            var visual_position_from = (_is_immediatly_move) 
+                                     ? PathVehicle.Position 
+                                     : PathVehicle.PositionPrev;
+            
+
+            // 이벤트 : 렌더링
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
                 ID,
-                PathVehicle.Position,
-                PathVehicle.PositionPrev
+                visual_position_to,
+                visual_position_from
             ));
         }
 

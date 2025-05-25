@@ -209,4 +209,12 @@ namespace Battle
         // 시스템 상 우선해서 처리해야 하는 경우
         Critical, 
     }
+
+    public enum EnumCellOccupyEvent
+    {
+        Enter,  // 신규 등장
+        Leave,  // 소멸
+
+        Change, // 이동
+    }
 }

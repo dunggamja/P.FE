@@ -27,10 +27,7 @@ namespace Battle
         protected abstract bool OnUpdate();
         protected abstract void OnExit(bool _is_abort);
 
-        public void Abort()
-        {
-            OnExit(true);
-        }
+        public void Abort() => OnExit(true);
 
         public EnumState Update()
         {

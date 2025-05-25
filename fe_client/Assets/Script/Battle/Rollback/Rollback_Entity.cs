@@ -26,7 +26,11 @@ namespace Battle
             var entity = EntityManager.Instance.GetEntity(EntityID);
             if (entity != null)
             {
-                entity.UpdateCellPosition(Position.x, Position.y, true);
+                entity.UpdateCellPosition(
+                    Position.x,
+                    Position.y,
+                    EnumCellOccupyEvent.Change,
+                    true);
             }
         }
     }

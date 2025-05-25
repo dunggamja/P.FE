@@ -44,20 +44,19 @@ namespace Battle
 
             if (_event == null)
                 return;
+           
 
-        
-            // 위치 갱신.
-            TerrainMap.BlockManager.RefreshEntity(
-                _event.EntityID, 
-                _event.Cell_Prev.x, _event.Cell_Prev.y,
-                _event.Cell_Cur.x, _event.Cell_Cur.y);                
-
-            // ZOC 갱신.
-            if (!_event.IgnorePrevCell)
-                TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell_Prev.x, _event.Cell_Prev.y);
-                
-            TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell_Cur.x,  _event.Cell_Cur.y);
-            
+            // 위치&ZOC 갱신.
+            if (_event.IsEnter)
+            {
+                TerrainMap.BlockManager.AddEntity(_event.EntityID, _event.Cell.x,  _event.Cell.y);
+                TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell.x,  _event.Cell.y);
+            }
+            else
+            {
+                TerrainMap.BlockManager.RemoveEntity(_event.EntityID, _event.Cell.x, _event.Cell.y);
+                TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);                
+            }
         }
     }
 }

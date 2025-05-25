@@ -161,26 +161,41 @@ public class TerrainBlockManager
         return m_blocks[block_x, block_y].FindEntity(_x, _y);
     }
 
-    public void RefreshEntity(Int64 _entity_id, int _from_x, int _from_y, int _to_x, int _to_y)
+    // void RefreshEntity(Int64 _entity_id, int _from_x, int _from_y, int _to_x, int _to_y)
+    // {
+    //     (var block_from_x, var block_from_y) = FindBlockIndex(_from_x, _from_y);
+    //     (var block_to_x,   var block_to_y)   = FindBlockIndex(_to_x, _to_y);
+    //     // 블록이 변경되었으면 이전 블록에서 제거.
+    //     if (block_from_x != block_to_x && block_from_y != block_to_y)
+    //     {
+    //         if (0 <= block_from_x && 0 <= block_from_y)
+    //         {
+    //             m_blocks[block_from_x, block_from_y].RemoveEntity(_entity_id);
+    //         }
+    //     }        
+    //     // 블록 위치 갱신.
+    //     if (0 <= block_to_x && 0 <= block_to_y)
+    //     {
+    //         m_blocks[block_to_x, block_to_y].SetEntity(_entity_id, _to_x, _to_y);
+    //     }
+    // }
+    
+    public void RemoveEntity(Int64 _entity_id, int _from_x, int _from_y)
     {
-        (var block_from_x, var block_from_y) = FindBlockIndex(_from_x, _from_y);
-        (var block_to_x,   var block_to_y)   = FindBlockIndex(_to_x, _to_y);
+        (var block_x, var block_y) = FindBlockIndex(_from_x, _from_y);
+        if (block_x < 0 || block_y < 0)
+            return;
 
-        // 블록이 변경되었으면 이전 블록에서 제거.
-        if (block_from_x != block_to_x && block_from_y != block_to_y)
-        {
-            if (0 <= block_from_x && 0 <= block_from_y)
-            {
-                m_blocks[block_from_x, block_from_y].RemoveEntity(_entity_id);
-            }
-        }
+        m_blocks[block_x, block_y].RemoveEntity(_entity_id);            
+    }
 
-        
-        // 블록 위치 갱신.
-        if (0 <= block_to_x && 0 <= block_to_y)
-        {
-            m_blocks[block_to_x, block_to_y].SetEntity(_entity_id, _to_x, _to_y);
-        }
+    public void AddEntity(Int64 _entity_id, int _to_x, int _to_y)
+    {
+        (var block_x, var block_y) = FindBlockIndex(_to_x, _to_y);
+        if (block_x < 0 || block_y < 0)
+            return;
+
+        m_blocks[block_x, block_y].SetEntity(_entity_id, _to_x, _to_y);            
     }
 
 }

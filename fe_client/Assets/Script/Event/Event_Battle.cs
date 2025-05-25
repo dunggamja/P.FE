@@ -78,37 +78,35 @@ namespace Battle
     {
         // 셀 점유 이벤트.
 
+        
+
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
-        public Int64          EntityID       { get; private set; } = 0;
-        public int            Faction        { get; private set; } = 0;
-        public (int x, int y) Cell_Cur       { get; private set; } = (0, 0);
-        public (int x, int y) Cell_Prev      { get; private set; } = (0, 0);
-        public bool           IgnorePrevCell { get; private set; } = false;
+        public Int64               EntityID        { get; private set; } = 0;
+        public int                 Faction         { get; private set; } = 0;
+        public (int x, int y)      Cell            { get; private set; } = (0, 0);
+        public bool                IsEnter         { get; private set; } = false;
+        
 
         public Battle_Cell_OccupyEvent Set(
-            Int64          _entity_id, 
-            int            _faction,
-            (int x, int y) _cell_cur,
-            (int x, int y) _cell_prev,
-            bool           _ignore_prev_cell)
+            Int64               _entity_id, 
+            int                 _faction,
+            (int x, int y)      _cell,
+            bool                _is_enter)
         {
-            EntityID       = _entity_id;
-            Faction        = _faction;
-            Cell_Cur       = _cell_cur;
-            Cell_Prev      = _cell_prev;
-            IgnorePrevCell = _ignore_prev_cell;
-
+            EntityID        = _entity_id;
+            Faction         = _faction;
+            Cell            = _cell;
+            IsEnter         = _is_enter;
             return this;
         }
 
         public void Reset()
         {
-            EntityID       = 0;
-            Faction        = 0;
-            Cell_Cur       = (0, 0);
-            Cell_Prev      = (0, 0);
-            IgnorePrevCell = false;            
+            EntityID        = 0;
+            Faction         = 0;
+            Cell            = (0, 0);  
+            IsEnter         = false;
         }
 
         public void Release()

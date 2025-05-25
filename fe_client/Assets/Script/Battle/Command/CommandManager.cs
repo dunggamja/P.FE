@@ -11,8 +11,8 @@ namespace Battle
         enum EnumCommandAbort
         {
             None,
-            PendingOnly, // 대기 중인 명령만 중단.
-            All,         // 모든 명령 중단.
+            PendingOnly,    // 대기 중인 명령만 중단.
+            IncludeRunning, // 실행중인 명령 포함.
         }
         
         Int64            m_owner_id      = 0;
@@ -48,18 +48,25 @@ namespace Battle
             // IsAbort = false;
         }
 
+        
+
         public bool PushCommand(Command _command)
         {
             m_command_queue.Enqueue(_command);
 
             switch (_command)
             {
-                // 명령 중단처리.
+                // 중단 명령이 왔을 경우에 대한 처리.
                 case Command_Abort command_abort:
-                    m_command_abort = (command_abort.IsPendingOnly) 
-                                    ?  EnumCommandAbort.PendingOnly 
-                                    :  EnumCommandAbort.All;
+                {
+                    var abort_type = (command_abort.IsPendingOnly) 
+                                    ?  (int)EnumCommandAbort.PendingOnly 
+                                    :  (int)EnumCommandAbort.IncludeRunning;
+
+                    // 큰 값을 유지함.
+                    m_command_abort = (EnumCommandAbort)Math.Max((int)m_command_abort, abort_type);                                
                     break;
+                }
             }
 
             return true;
@@ -88,6 +95,7 @@ namespace Battle
             // 명령 중단 처리.
             if (m_command_abort != EnumCommandAbort.None)   
             {
+                // 명령 중단 처리에 성공하면 중단 처리 상태 초기화.
                 if (AbortCommand(m_command_abort))
                     m_command_abort = EnumCommandAbort.None;                
             }
@@ -111,7 +119,7 @@ namespace Battle
         {
             switch (_command_abort)
             {
-                case EnumCommandAbort.All:
+                case EnumCommandAbort.IncludeRunning:
                 {
                     // 현재 실행중인 명령 중단.
                     var running  = PopCommand();

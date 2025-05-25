@@ -10,6 +10,7 @@ namespace Battle
         public Int64                ID              { get; private set; }
 
         public (int x, int y)       Cell            { get; private set; }
+        public (int x, int y)       Cell_Prev       { get; private set; }
         // public ITarget              Target          { get; }
         public EntityBlackBoard     BlackBoard      { get; }
         public ISkill               Skill           { get; } 
@@ -21,14 +22,16 @@ namespace Battle
         public int                  PathZOCFaction  => GetFaction();
         public AIManager            AIManager       { get; private set; }
 
-        public bool                 IsCommandAbort { get; private set; }
         public CommandManager       CommandManager  { get; private set; }    
 
+        // public bool                 IsCommandAbort { get; private set; }
         // public bool                 IsCommandDirty { get; private set; }
 
 
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+
+        
 
 
 
@@ -37,6 +40,7 @@ namespace Battle
             ID              = _id;
             // Target          = null;
             Cell            = (0, 0);
+            Cell_Prev       = Cell;
                  
             BlackBoard      = new EntityBlackBoard();
             Skill           = new BattleSkill();
@@ -47,7 +51,9 @@ namespace Battle
             AIManager       = new AIManager();
             CommandManager  = new CommandManager();
 
-            IsCommandAbort  = false;
+
+
+            // IsCommandAbort  = false;
 
             // IsCommandDirty  = false;
             // CommandManager = new CommandManager();
@@ -66,7 +72,6 @@ namespace Battle
             Inventory.Initialize(this);
             AIManager.Initialize(this);
             CommandManager.Initialize(this);
-            UpdateCellPosition(Cell.x, Cell.y, true);
 
             EventDispatchManager.Instance.AttachReceiver(this);
 
@@ -112,10 +117,7 @@ namespace Battle
         //     IsCommandDirty = _is_dirty;
         // }
 
-        public void SetCommandAbort(bool _is_abort)
-        {
-            IsCommandAbort = _is_abort;
-        }
+    
    
 
     }
