@@ -73,7 +73,7 @@ namespace Battle
                 Position = (_x, _y);
             }
 
-            public void SetData(ScoreResult _o)
+            public void CopyFrom(ScoreResult _o)
             {
                 TargetID = _o.TargetID;
                 WeaponID = _o.WeaponID;
@@ -190,7 +190,7 @@ namespace Battle
                         if (target_entity.IsDead)
                             continue;     
 
-                        // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.// 혼돈같은 상태이상도 있을수 있고... NPC인데 아군도 있을 수 있고...
+                        // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.
                         if (target_entity.GetFaction() == owner_entity.GetFaction())
                             continue;
 
@@ -213,7 +213,7 @@ namespace Battle
                             if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
                             {
                                 // 높은 점수 셋팅.
-                                owner_blackboard.Score_Attack.SetData(current_score);                            
+                                owner_blackboard.Score_Attack.CopyFrom(current_score);                            
                                 owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                             }
 

@@ -8,15 +8,7 @@ namespace Battle
 {
     public partial class Entity 
     {
-        // public EnumCommandOwner GetCommandOwner()
-        // {
-        //     return (EnumCommandOwner)BlackBoard.GetValue(EnumEntityBlackBoard.CommandOwner);
-        // }
-
-        // public void SetCommandOwner(EnumCommandOwner _command_owner)
-        // {
-        //     BlackBoard.SetValue(EnumEntityBlackBoard.CommandOwner, (int)_command_owner);
-        // }
+       
 
         public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
         {
@@ -136,17 +128,17 @@ namespace Battle
             return false;
         }
 
-        public bool IsEnableCommandProgress(int _faction)
+        public EnumCommandPriority GetCommandPriority()
         {
-            // TODO: 진영 체크하는 부분 삭제하자...
-            //       LOOP 돌면서 찾기 위해서 만들어 놨는데 최적화 하면 필요없을 코드임.
-            // 진영이 다르면 행동 불가능.
-            if (GetFaction() != _faction)
-                return false;
+            if (IsEnableCommandProgress() == false)
+                return EnumCommandPriority.None;
 
-            return IsEnableCommandProgress();
+            if (GetCommandProgressState() == EnumCommandProgressState.Progress)
+                return EnumCommandPriority.Critical;
+
+            // TODO: 행동 우선순위...;
+            return EnumCommandPriority.Normal;
         }
-
         
 
 

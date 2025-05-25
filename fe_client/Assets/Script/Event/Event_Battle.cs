@@ -35,22 +35,37 @@ namespace Battle
 
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
-        public float TopScore          { get; private set; } = 0;
-        public Int64 TopScore_EntityID { get; private set; } = 0;
+        public int                    Faction      { get; private set; } = 0;
+        public EnumCommandPriority    Priority     { get; private set; } = EnumCommandPriority.None;
 
-        public void TryTopScore(Int64 _entity_id, float _score)
+
+        public float                  Out_Score    { get; private set; } = 0;
+        public Int64                  Out_EntityID { get; private set; } = 0;
+
+        
+
+        public void TrySetScore(Int64 _entity_id, float _score)
         {
-            if (TopScore < _score)
+            if (Out_Score < _score)
             {
-                TopScore          = _score;
-                TopScore_EntityID = _entity_id;
+                Out_Score    = _score;
+                Out_EntityID = _entity_id;
             }
+        }
+
+        public Battle_AI_Command_DecisionEvent Set(int _faction, EnumCommandPriority _priority)
+        {
+            Faction  = _faction;
+            Priority = _priority;
+            return this;
         }
 
         public void Reset()
         {
-            TopScore          = 0;
-            TopScore_EntityID = 0;
+            Faction           = 0;
+            Priority          = EnumCommandPriority.None;
+            Out_Score          = 0;
+            Out_EntityID = 0;
         }
 
         public void Release()

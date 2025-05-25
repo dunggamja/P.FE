@@ -3,12 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.SmartFormat.PersistentVariables;
 
 
 namespace Battle
 {
     public class BattleSystem_Command_Progress : BattleSystem//, IEventReceiver
     {
+
+        // private HashSet<Int64>                     m_command_progress  = new (10);
+
+        private HashSet<Int64> m_entity_progress  = new (10);
+
+        private List<Int64>    m_entity_completed = new (10);
 
         // Command m_command_progress = null;
 
@@ -35,43 +42,54 @@ namespace Battle
 
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            // 요거를 각 엔티티별로 돌리도록 변경해야 겠다. 
+            // 쌓여있는 명령을 각 유닛들에게 전달합니다.
+            while (BattleSystemManager.Instance.PeekCommand() != null)
+            {
+                var command = BattleSystemManager.Instance.PopCommand();
+                if (command == null)
+                    continue;
+
+                var entity = EntityManager.Instance.GetEntity(command.OwnerID);
+                if (entity == null)
+                    continue;
+
+                entity.CommandManager.PushCommand(command);           
+
+                // 명령 처리 중인 유닛 목록에 추가.
+                m_entity_progress.Add(command.OwnerID);
+            }
+
+            // 명령 처리가 완료된 유닛 목록. 
+            m_entity_completed.Clear();
+
+            // 모든 엔티티들의 명령을 처리.
+            foreach (var entity_id in m_entity_progress)
+            {
+                var entity = EntityManager.Instance.GetEntity(entity_id);
+                if (entity == null)
+                    continue;
+
+                // 명령 처리.
+                entity.CommandManager.Update();     
+
+                // 명령이 완료되었는지 체크.
+                if (entity.CommandManager.PeekCommand() == null)
+                    m_entity_completed.Add(entity_id);
+            }
+
+            // 명령 처리가 완료된 유닛은 목록에서 제거합니다.
+            foreach (var entity_id in m_entity_completed)
+                m_entity_progress.Remove(entity_id);
 
 
-            // // command queue가 모두 종료될 때 까지 돌아봅시다.
-            // var command  = BattleSystemManager.Instance.PeekCommand();
-            // if (command != null)
-            // {
-            //     // 이건 CommandManager 안으로...
-            //     // if (command.Update() == EnumState.Finished)
-            //     // {
-            //     //     // command가 완료되면 pop 처리.
-            //     //     CommandManager.Instance.PopCommand();
-            //     // }
-
-            //     // // 행동을 진행 중인 상태인지 체크합니다.
-            //     // var entity           = EntityManager.Instance.GetEntity(command.OwnerID);
-            //     // var command_progress = (entity != null && entity.GetCommandProgressState() == EnumCommandProgressState.Progress);
-            //     // if (command_progress)
-            //     // {
-            //     //     // 행동이 이어지고 있다면 넣어준다.
-            //     //     BattleSystemManager.Instance.BlackBoard.InsertCommandProgressEntity(command.OwnerID);                                          
-            //     // }
-            //     // else
-            //     // {
-            //     //     // 행동이 완료되었다면 빼준다.
-            //     //     BattleSystemManager.Instance.BlackBoard.RemoveCommandProgressEntity(command.OwnerID);
-            //     // }
-            // }
- 
-            // queue가 모두 비었으면 종료처리.
-            // return CommandManager.Instance.PeekCommand() == null;
-            return true;
+            // 모든 유닛들의 행동이 완료되었다면 종료.
+            return m_entity_progress.Count == 0;
         }
 
         protected override void OnExit(IBattleSystemParam _param)
         {
-
+            m_entity_progress.Clear();
+            m_entity_completed.Clear();
         }        
     }
 }

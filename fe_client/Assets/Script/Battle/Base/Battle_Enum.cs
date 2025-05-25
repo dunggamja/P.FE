@@ -187,11 +187,26 @@ namespace Battle
         // Done,     // 행동 종료
     }
 
+    // 행동 상태.
     public enum EnumCommandProgressState 
     {
         None,
         Progress,
         Done,
         Invalid,
+    }
+
+    // 의사결정 우선순위.
+    public enum EnumCommandPriority
+    {
+        None,
+                
+        // 우선순위. 높을수록 우선순위가 높음.
+        Low,
+        Normal,
+        High,
+
+        // 시스템 상 우선해서 처리해야 하는 경우
+        Critical, 
     }
 }

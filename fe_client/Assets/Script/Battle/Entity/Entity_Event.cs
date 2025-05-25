@@ -60,32 +60,19 @@ namespace Battle
             if (IsDead)
                 return;
 
-            // 다른 진영의 턴이면 아무 것도 하지 않는다.
-            var faction = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
-            if (faction != GetFaction())
+            // 진영이 다름.
+            if (_event.Faction != GetFaction())
                 return;
 
-            // 플레이어 턴이면 AI Update 할 일이 없겠지?
-            // TODO: 혼란 상태 등은 나중에 따로 처리.
-            var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
-            if (commander_type == EnumCommanderType.Player)
+            // 행동 우선순위가 다름.
+            if (_event.Priority != GetCommandPriority())
                 return;
-
-            // 사용할 일이 없을 거 같아서 주석처리.
-            // // 현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자.
-            // var command_progress_id = BattleSystemManager.Instance.BlackBoard.PeekCommandProgressEntity();
-            // if (command_progress_id > 0 && command_progress_id != ID)
-            // {
-            //     // 이런 경우가 잇나.?
-            //     Debug.Log($"현재 명령을 진행중인 유닛이 있다면 해당 유닛의 처리가 끝날때까지 기다리자. {command_progress_id}");
-            //     return;
-            // }
             
             // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
             AIManager.Update(this);
 
             // event param에 등록.
-            _event.TryTopScore(ID, GetAIScoreMax().score);
+            _event.TrySetScore(ID, GetAIScoreMax().score);
         }
 
         // void OnReceiveEvent_Battle_Entity_MoveEvent(Battle_Entity_MoveEvent _event)

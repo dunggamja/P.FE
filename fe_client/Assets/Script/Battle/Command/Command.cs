@@ -10,12 +10,14 @@ namespace Battle
     /// </summary>
     public abstract class Command
     {
+        public Int64     ID      { get; private set; }
         public Int64     OwnerID { get; private set; }
         public EnumState State   { get; private set; }
 
         protected Command(Int64 _owner_id)
         {
-            OwnerID = _owner_id;
+            ID      = Util.GenerateID();
+            OwnerID = _owner_id;    
         }
 
         public Entity Owner => EntityManager.Instance.GetEntity(OwnerID);

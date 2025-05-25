@@ -8,15 +8,15 @@ using UnityEngine;
 public class EventDispatchManager : SingletonMono<EventDispatchManager>
 {
     // HashSet<IEventReceiver>                       m_receivers          = new();
-    Dictionary<System.Type, List<IEventReceiver>> m_receivers_by_type  = new();
-    List<IEventParam>                             m_update_event_queue = new();
+    Dictionary<System.Type, List<IEventReceiver>> m_receivers_by_type  = new(20);
+    List<IEventParam>                             m_update_event_queue = new(10);
+    List<IEventParam>                             m_dispatched_list    = new(10);
     
     
-    Dictionary<Type, EventReceiverAttribute[]>    m_cached_attribute   = new();
+    Dictionary<Type, EventReceiverAttribute[]>    m_cached_attribute   = new(20);
 
-    List<IEventParam>                             m_cached_event_queue = new();
+    // List<IEventParam>                             m_cached_event_queue = new();
 
-    List<IEventParam>                             m_dispatched_list  = new();
 
     EventReceiverAttribute[] TryGetAttribute(Type _type)
     {
@@ -40,9 +40,10 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         // m_receivers.Clear();
         m_receivers_by_type.Clear();
         m_update_event_queue.Clear();
-        m_cached_attribute.Clear();
-        m_cached_event_queue.Clear();
         m_dispatched_list.Clear();
+
+        m_cached_attribute.Clear();
+        // m_cached_event_queue.Clear();
     }
 
     public void AttachReceiver(IEventReceiver _receiver)
@@ -152,16 +153,6 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
             return;
 
         m_update_event_queue.Add(_event);
-
-        // var event_type = _event.GetType();
-
-        // if (!m_update_event_queue.TryGetValue(event_type, out var value))
-        // {
-        //     value = new List<IEventParam>();
-        //     m_update_event_queue.Add(event_type, value);
-        // }
-
-        // value.Add(_event);
     }
 
 
@@ -169,17 +160,19 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     {
         // 큐를 복사합시다.
         var list_event = ListPool<IEventParam>.Acquire();
+
         list_event.AddRange(m_update_event_queue);
 
         // 큐 클리어.
         m_update_event_queue.Clear();
 
+        // 이벤트 디스패치.
         foreach (var e in list_event)
         {
             DispatchEvent(e);
         }
 
-        // 사용 완료했으면 클리어.
+        // 
         ListPool<IEventParam>.Return(list_event);
     }
 

@@ -42,28 +42,28 @@ namespace Battle
         protected override void OnEnter(IBattleSystemParam _param)
         {
            //EventDispatchManager.Instance.DispatchEvent(new SituationUpdatedEvent(EnumSituationType.BattleSystem_Turn_Changed, _param));
-        }
-
-
-        protected override bool OnUpdate(IBattleSystemParam _param)
-        {
-
-            ++m_turn_update_count;
 
             if (Turn_Cur == 0 && Faction_Cur == 0)
             {
                 // 턴이 셋팅되지 않았을 때 초기화 처리.
                 UpdateTurnAndFaction(1, 0);
             }
+        }
 
-            // 다음에 행동할 진영을 찾아야 하는지 체크.
-            var turn    = Turn_Cur;
-            var faction = Faction_Cur;
 
-            if (Check_Faction_Complete(faction))
-            {                
-                (var result, var next_faction) = FindNextFaction(faction);
-                if  (result)
+        protected override bool OnUpdate(IBattleSystemParam _param)
+        {
+            ++m_turn_update_count;
+
+            // 현재 진영의 행동이 완료되었는지 체크.
+            if (Check_Faction_Turn_Done(Faction_Cur))
+            {      
+                // 턴, 진영 변경 처리.
+                var turn    = Turn_Cur;
+                var faction = Faction_Cur;
+
+                (var success, var next_faction) = FindNextFaction(faction);
+                if  (success)
                 {
                     // 다음에 행동할 진영을 셋팅.
                     faction = next_faction;
@@ -116,11 +116,23 @@ namespace Battle
         }
 
 
-        bool Check_Faction_Complete(int _current_faction)
+        bool Check_Faction_Turn_Done(int _current_faction)
         {
-            // 진영내의 유닛 중 행동을 하지 않은 유닛이 있는지 체크.
-            // TODO: 일단 모든 Entity 순회... ㅠㅠ
-            var active_unit  = EntityManager.Instance.Find(e => e.IsEnableCommandProgress(_current_faction));
+            bool Verify_Entity_Turn_Progress(Entity _entity)
+            {
+                // 진영 체크.
+                if (_entity.GetFaction() != _current_faction)
+                    return false;
+
+                // 행동 완료 체크.
+                if (_entity.IsEnableCommandProgress() == false)
+                    return false;
+
+                return true;
+            }
+
+            // 진영내의 유닛 중 행동이 가능한 유닛이 있다면 아직 턴 종료시점이 아닌 것.
+            var active_unit  = EntityManager.Instance.Find(Verify_Entity_Turn_Progress);
             if (active_unit != null)
                 return false;
 
@@ -145,8 +157,7 @@ namespace Battle
 
             // 이벤트 디스팻치.
             if (Faction_Cur != Faction_Prev) 
-            {  
-                
+            {                  
                 EventDispatchManager.Instance.UpdateEvent(ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.BattleSystem_Faction_Changed));
             }
 

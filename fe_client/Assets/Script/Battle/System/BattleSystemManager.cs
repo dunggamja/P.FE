@@ -25,7 +25,9 @@ namespace Battle
         private List<BattleSystem>                 m_update_system     = new();
         private int                                m_system_index      = 0;
         private Dictionary<int, EnumCommanderType> m_faction_commander = new ();
+
         private Queue<Command>                     m_command_queue     = new (10);
+        
 
 
 
@@ -38,8 +40,8 @@ namespace Battle
 
             // 턴 진행
             m_update_system.Add(new BattleSystem_Turn());       
-            // 명령 생성
-            m_update_system.Add(new BattleSystem_Command_Dispatch());    
+            // 의사 결정
+            m_update_system.Add(new BattleSystem_Decision_Making());    
             // 명령 처리
             m_update_system.Add(new BattleSystem_Command_Progress());
 

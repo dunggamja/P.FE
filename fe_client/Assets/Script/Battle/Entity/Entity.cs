@@ -45,6 +45,7 @@ namespace Battle
             PathVehicle     = new PathVehicle_Basic();
             Inventory       = new Inventory();
             AIManager       = new AIManager();
+            CommandManager  = new CommandManager();
 
             IsCommandAbort  = false;
 
@@ -64,12 +65,14 @@ namespace Battle
         {
             Inventory.Initialize(this);
             AIManager.Initialize(this);
-            // CommandManager.Initialize(this);
-            // PathNodeManager.Setup(CellPosition);
+            CommandManager.Initialize(this);
             UpdateCellPosition(Cell.x, Cell.y, true);
-            //PathVehicle.Setup(Cell.CellToPosition());
-            
+
             EventDispatchManager.Instance.AttachReceiver(this);
+
+
+            //PathNodeManager.Setup(CellPosition);
+            //PathVehicle.Setup(Cell.CellToPosition());            
         }
 
         public void Reset()
@@ -91,7 +94,7 @@ namespace Battle
 
             StatusManager.Status.SetPoint(EnumUnitPoint.HP, new_hp);
 
-            //Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
+            Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
         }
 
         public int GetFaction()

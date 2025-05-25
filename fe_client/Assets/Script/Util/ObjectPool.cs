@@ -62,11 +62,13 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         // if (m_inuse.Contains(_obj) == false)
         //     return;
 
+        _obj.Reset();
+
+        
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
         if (m_pool.Count >= m_max_count)
             return;        
         
-        _obj.Reset();
 
         // m_inuse.Remove(_obj);
         m_pool.Push(_obj);
@@ -96,11 +98,12 @@ public static class ListPool<T>
         if (list == null)
             return;
 
+        list.Clear();
+
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
         if (m_pool.Count >= m_max_count)
             return;
 
-        list.Clear();
         m_pool.Push(list);
     }
 }
@@ -128,11 +131,12 @@ public static class HashSetPool<T>
         if (hashSet == null)
             return;
 
+        hashSet.Clear();
+
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
         if (m_pool.Count >= m_max_count)
             return;
 
-        hashSet.Clear();
         m_pool.Push(hashSet);
     }
 }
@@ -151,7 +155,7 @@ public static class DictionaryPool<TKey, TValue>
 
     public static Dictionary<TKey, TValue> Acquire()
     {
-        var dict = m_pool.Count > 0 ? m_pool.Pop() : new Dictionary<TKey, TValue>();
+        var    dict = m_pool.Count > 0 ? m_pool.Pop() : new Dictionary<TKey, TValue>();
         return dict;
     }
 
@@ -159,14 +163,43 @@ public static class DictionaryPool<TKey, TValue>
     {
         if (dict == null)
             return;
+        
+        dict.Clear();
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
         if (m_pool.Count >= m_max_count)
             return;
 
-        dict.Clear();
         m_pool.Push(dict);
     }
 }
 
+
+
+public static class QueuePool<T>
+{
+    private static readonly Stack<Queue<T>> m_pool = new();
+    private static int m_max_count = 5;
+
+
+    public static Queue<T> Acquire()
+    {
+        var    queue = m_pool.Count > 0 ? m_pool.Pop() : new Queue<T>();
+        return queue;
+    }
+
+    public static void Return(Queue<T> queue)
+    {
+        if (queue == null)
+            return;
+
+        queue.Clear();
+
+        // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
+        if (m_pool.Count >= m_max_count)
+            return;
+
+        m_pool.Push(queue);
+    }
+}
 

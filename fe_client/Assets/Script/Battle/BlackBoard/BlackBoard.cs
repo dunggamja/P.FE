@@ -86,30 +86,30 @@ namespace Battle
 
     public class BattleBlackBoard : BlackBoard<EnumBattleBlackBoard>
     {
-        private HashSet<Int64>   CommandProgress_Entities { get; set; } = new ();
+        // private HashSet<Int64>   CommandProgress_Entities { get; set; } = new ();
 
-        public void InsertCommandProgressEntity(Int64 _entity_id)
-        {
-            if (!CommandProgress_Entities.Contains(_entity_id))
-                 CommandProgress_Entities.Add(_entity_id);
-        }
+        // public void InsertCommandProgressEntity(Int64 _entity_id)
+        // {
+        //     if (!CommandProgress_Entities.Contains(_entity_id))
+        //          CommandProgress_Entities.Add(_entity_id);
+        // }
 
-        public void RemoveCommandProgressEntity(Int64 _entity_id)
-        {
-            CommandProgress_Entities.Remove(_entity_id);
-        }
+        // public void RemoveCommandProgressEntity(Int64 _entity_id)
+        // {
+        //     CommandProgress_Entities.Remove(_entity_id);
+        // }
 
-        public Int64 PeekCommandProgressEntity()
-        {
-            return 0 < CommandProgress_Entities.Count ? CommandProgress_Entities.First() : 0;
-        }
+        // public Int64 PeekCommandProgressEntity()
+        // {
+        //     return 0 < CommandProgress_Entities.Count ? CommandProgress_Entities.First() : 0;
+        // }
 
         
 
         public override void Reset()
         {
             base.Reset();
-            CommandProgress_Entities.Clear();
+            // CommandProgress_Entities.Clear();
         }
     }
 }

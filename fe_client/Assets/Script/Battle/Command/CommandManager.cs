@@ -11,7 +11,9 @@ namespace Battle
         Int64          m_owner_id      = 0;
         Queue<Command> m_command_queue = new (10);
 
-        public bool    IsAbort { get; set; }
+        Entity Owner => EntityManager.Instance.GetEntity(m_owner_id);
+
+        // public bool    IsAbort { get; set; }
 
 
         // protected override void Init()
@@ -19,17 +21,17 @@ namespace Battle
         //     base.Init();
         // }
 
-        public void Initialize(int _owner_id)
+        public void Initialize(IOwner _owner)
         {
-            m_owner_id = _owner_id;
-            IsAbort    = false;
+            m_owner_id = _owner.ID;
             m_command_queue.Clear();
+            // IsAbort    = false;
         }
 
         public void Clear()
         {
             m_command_queue.Clear();
-            IsAbort = false;
+            // IsAbort = false;
         }
 
         public bool PushCommand(Command _command)
@@ -54,25 +56,22 @@ namespace Battle
 
             return m_command_queue.Peek();
         }
+
+
+        public void Update()
+        {
+            // 현재 실행할 명령.
+            var command  = PeekCommand();
+            if (command == null)
+                return;
+
+            // 명령 실행.
+            if (command.Update() == EnumState.Finished)
+            {
+                // command가 완료되면 pop 처리.
+                PopCommand();
+            }
+        }
     }
 }
 
-public static class QueuePool<T>
-{
-    private static readonly Stack<Queue<T>> m_pool = new();
-
-    public static Queue<T> Acquire()
-    {
-        var queue = m_pool.Count > 0 ? m_pool.Pop() : new Queue<T>();
-        return queue;
-    }
-
-    public static void Release(Queue<T> queue)
-    {
-        if (queue == null)
-            return;
-
-        queue.Clear();
-        m_pool.Push(queue);
-    }
-}
