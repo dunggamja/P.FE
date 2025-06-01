@@ -136,8 +136,8 @@ namespace Battle
             }
 
 
-            attacker.UpdateCellPosition(0, 0, EnumCellOccupyEvent.Enter, true);
-            defender.UpdateCellPosition(2, 3, EnumCellOccupyEvent.Enter, true);
+            attacker.UpdateCellPosition(0, 0, EnumCellPositionEvent.Enter, true);
+            defender.UpdateCellPosition(2, 3, EnumCellPositionEvent.Enter, true);
 
 
             WorldObjectManager.Instance.CreateObject(attacker.ID).Forget();

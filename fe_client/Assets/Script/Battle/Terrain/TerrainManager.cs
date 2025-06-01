@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    [EventReceiver(typeof(Battle_Cell_OccupyEvent))]
+    [EventReceiver(typeof(Battle_Cell_PositionEvent))]
     public class TerrainMapManager : Singleton<TerrainMapManager>, IEventReceiver
     {
 
@@ -31,13 +31,13 @@ namespace Battle
         {
             switch (_event)
             {
-                case Battle_Cell_OccupyEvent cell_event:
+                case Battle_Cell_PositionEvent cell_event:
                     OnReceiveEvent_CellPositionEvent(cell_event);
                     break;
             }
         }
 
-        void OnReceiveEvent_CellPositionEvent(Battle_Cell_OccupyEvent _event)
+        void OnReceiveEvent_CellPositionEvent(Battle_Cell_PositionEvent _event)
         {
              if (TerrainMap == null)
                 return;
@@ -47,7 +47,7 @@ namespace Battle
            
 
             // 위치&ZOC 갱신.
-            if (_event.IsEnter)
+            if (_event.IsOccupy)
             {
                 TerrainMap.BlockManager.AddEntity(_event.EntityID, _event.Cell.x,  _event.Cell.y);
                 TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell.x,  _event.Cell.y);

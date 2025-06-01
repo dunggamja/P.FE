@@ -160,7 +160,7 @@ namespace Battle
                     owner_weapon.Equip(e.ID);
                     
                     // 최대 이동 거리. 
-                    var move_distance = (is_moveable) ? owner_status.GetBuffedUnitStatus(EnumUnitStatus.Movement) : 0;
+                    var move_distance = (is_moveable) ? owner_entity.PathMoveRange : 0;
 
                     // 무기 사정거리. (최소/최대)
                     var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
@@ -301,7 +301,7 @@ namespace Battle
 
             // 이동거리 점수 셋팅.
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
-            var distance_max     = _owner.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+            var distance_max     = _owner.PathMoveRange;
             _score.SetScore(ScoreResult.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중 / 회피 점수 셋팅.
@@ -392,7 +392,7 @@ namespace Battle
             if (_terrain_map == null || _path_owner == null)
                 return;
 
-            // 콜백 함수를 줄이기 위해... 따로 클래스 작성.
+            // 콜백
             var visitor            = ObjectPool<CollectTargetVisitor>.Acquire();
             visitor.TerrainMap     = _terrain_map;
             visitor.PathOwner      = _path_owner;

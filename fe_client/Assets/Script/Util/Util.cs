@@ -71,5 +71,6 @@ public static partial class Util
         return result;
     }
 
-    public static Vector3 CellToPosition(this (int x, int y) _cell) => new Vector3(_cell.x, 0f, _cell.y);
+    public static Vector3        CellToPosition(this (int x, int y) _cell) => new Vector3(_cell.x, 0f, _cell.y);
+    public static (int x, int y) PositionToCell(this Vector3 _position)    => ((int)_position.x, (int)_position.z);
 }

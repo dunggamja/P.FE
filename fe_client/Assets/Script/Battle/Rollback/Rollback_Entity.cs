@@ -29,7 +29,7 @@ namespace Battle
                 entity.UpdateCellPosition(
                     Position.x,
                     Position.y,
-                    EnumCellOccupyEvent.Change,
+                    EnumCellPositionEvent.Move,
                     true);
             }
         }

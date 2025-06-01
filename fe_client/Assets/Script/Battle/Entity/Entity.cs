@@ -19,7 +19,10 @@ namespace Battle
         public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
         public int                  PathAttribute   { get; private set; }
-        public int                  PathZOCFaction  => GetFaction();
+        public int                  PathZOCFaction    => GetFaction();
+        public (int x, int y)       PathBasePosition { get; private set; } 
+        public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+
         public AIManager            AIManager       { get; private set; }
 
         public CommandManager       CommandManager  { get; private set; }    
@@ -37,19 +40,20 @@ namespace Battle
 
         protected Entity(Int64 _id)
         {
-            ID              = _id;
-            // Target          = null;
-            Cell            = (0, 0);
-            Cell_Prev       = Cell;
+            ID                = _id;
+            // Target            = null;
+            Cell              = (0, 0);
+            Cell_Prev         = Cell;
+            PathBasePosition = Cell;
                  
-            BlackBoard      = new EntityBlackBoard();
-            Skill           = new BattleSkill();
-            StatusManager   = new BattleStatusManager(this);
-            PathNodeManager = new PathNodeManager();
-            PathVehicle     = new PathVehicle_Basic();
-            Inventory       = new Inventory();
-            AIManager       = new AIManager();
-            CommandManager  = new CommandManager();
+            BlackBoard        = new EntityBlackBoard();
+            Skill             = new BattleSkill();
+            StatusManager     = new BattleStatusManager(this);
+            PathNodeManager   = new PathNodeManager();
+            PathVehicle       = new PathVehicle_Basic();
+            Inventory         = new Inventory();
+            AIManager         = new AIManager();
+            CommandManager    = new CommandManager();
 
 
 

@@ -101,10 +101,12 @@ public interface IAIUpdater
 
 public interface IPathOwner 
 {
-    PathNodeManager  PathNodeManager { get; }
-    PathVehicle      PathVehicle     { get; }
-    int              PathAttribute   { get; }
-    int              PathZOCFaction  { get; }
+    PathNodeManager  PathNodeManager   { get; }
+    PathVehicle      PathVehicle       { get; }
+    int              PathAttribute     { get; }
+    int              PathZOCFaction    { get; }
+    (int x, int y)   PathBasePosition  { get; }
+    int              PathMoveRange     { get; }
 }
 
 // public interface IItem

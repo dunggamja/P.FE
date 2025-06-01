@@ -74,7 +74,7 @@ namespace Battle
         }
     }
 
-    public class Battle_Cell_OccupyEvent : IEventParam
+    public class Battle_Cell_PositionEvent : IEventParam
     {
         // 셀 점유 이벤트.
 
@@ -85,19 +85,19 @@ namespace Battle
         public Int64               EntityID        { get; private set; } = 0;
         public int                 Faction         { get; private set; } = 0;
         public (int x, int y)      Cell            { get; private set; } = (0, 0);
-        public bool                IsEnter         { get; private set; } = false;
+        public bool                IsOccupy        { get; private set; } = false;  // 
         
 
-        public Battle_Cell_OccupyEvent Set(
+        public Battle_Cell_PositionEvent Set(
             Int64               _entity_id, 
             int                 _faction,
             (int x, int y)      _cell,
-            bool                _is_enter)
+            bool                _is_occupy)
         {
             EntityID        = _entity_id;
             Faction         = _faction;
             Cell            = _cell;
-            IsEnter         = _is_enter;
+            IsOccupy        = _is_occupy;
             return this;
         }
 
@@ -106,12 +106,12 @@ namespace Battle
             EntityID        = 0;
             Faction         = 0;
             Cell            = (0, 0);  
-            IsEnter         = false;
+            IsOccupy         = false;
         }
 
         public void Release()
         {
-            ObjectPool<Battle_Cell_OccupyEvent>.Return(this);
+            ObjectPool<Battle_Cell_PositionEvent>.Return(this);
         }
     }
 

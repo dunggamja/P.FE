@@ -180,8 +180,21 @@ public class PathNodeManager //: IPathNodeManager
         
         var list_path_node = ListPool<PathNode>.Acquire();
 
-        PathAlgorithm.PathFind(ref list_path_node, TerrainMap, _path_owner, (int)_from_position.x, (int)_from_position.z, (int)_dest_position.x, (int)_dest_position.z);        
+        // 경로 찾기.
+        PathAlgorithm.PathFind(
+            ref list_path_node, 
+            TerrainMap, 
+            _path_owner, 
+            _from_position.PositionToCell(), 
+            _dest_position.PositionToCell(),
+            PathAlgorithm.PathFindOption.EMPTY
+                .SetMoveRange(
+                    true,
+                    _path_owner.PathMoveRange, 
+                    _path_owner.PathBasePosition)
+            );        
 
+        // 복사.
         m_list_path_node.Clear();
         foreach (var node in list_path_node)
             m_list_path_node.Enqueue(node);

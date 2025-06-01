@@ -210,11 +210,12 @@ namespace Battle
         Critical, 
     }
 
-    public enum EnumCellOccupyEvent
+    public enum EnumCellPositionEvent
     {
-        Enter,  // 신규 등장
-        Leave,  // 소멸
+        Enter,  // 등장
+        Exit,  // 소멸
+        Move, // 이동
 
-        Change, // 이동
+        // MAX = 32,
     }
 }
