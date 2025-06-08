@@ -7,6 +7,8 @@ using UnityEditor.Build.Pipeline;
 using UnityEngine;
 
 
+
+
 struct VFXAttributeVector3
 {
     public Vector3 value_start;
@@ -150,8 +152,79 @@ struct VFXAttributeFloat
 }
 
 
+
+
+
 public class VFXObject : MonoBehaviour
 {
+
+
+    public class Param : IPoolObject
+    {
+        public string     VFXName           { get; set; } = string.Empty;
+        public Transform  VFXRoot           { get; set; } = null;
+        public Vector3    Position          { get; set; } = default;
+        public Quaternion Rotation          { get; set; } = default;
+        public float      Scale             { get; set; } = 1f;
+
+        public (Transform target, EnumVFXAttachmentType attachment_type) 
+        FollowTarget { get; set; } = (null, EnumVFXAttachmentType.World);
+
+        public virtual void Reset()
+        {
+            VFXName      = string.Empty;
+            VFXRoot      = null;
+            Position     = default;
+            Rotation     = default;
+            Scale        = 1f;
+            FollowTarget = (null, EnumVFXAttachmentType.World);
+        }
+
+        public Param SetVFXName(string _vfx_name)
+        {
+            VFXName = _vfx_name;
+            return this;
+        }
+
+        public Param SetVFXRoot(Transform _vfx_root)
+        {
+            VFXRoot = _vfx_root;
+            return this;
+        }
+
+        public Param SetPosition(Vector3 _position)
+        {
+            Position = _position;
+            return this;
+        }
+
+        public Param SetRotation(Quaternion _rotation)
+        {
+            Rotation = _rotation;
+            return this;
+        }
+
+        public Param SetScale(float _scale)
+        {
+            Scale = _scale;
+            return this;
+        }
+
+        public Param SetFollowTarget(Transform _target, EnumVFXAttachmentType _attachment_type)
+        {
+            FollowTarget = (_target, _attachment_type);
+            return this;
+        }
+
+        public virtual void Apply(VFXObject _vfx_object)
+        {
+            _vfx_object.SetParent(VFXRoot);
+            _vfx_object.SetPosition(Position);
+            _vfx_object.SetRotation(Rotation);
+            _vfx_object.SetScale(Scale);
+        }
+    }
+
     public Int64              
     SerialNumber   { get; private set; } = 0;
     
@@ -180,20 +253,12 @@ public class VFXObject : MonoBehaviour
 
     public void OnCreate(
         Int64      _serial_number,
-        string     _vfx_name, 
-        Transform  _parent,
-        Vector3    _position,
-        Quaternion _rotation,
-        float      _scale)
+        Param _param)
     {
         SerialNumber = _serial_number;
-        VFXName      = _vfx_name;
+        VFXName      = _param.VFXName;
 
-
-        SetParent(_parent);
-        SetPosition(_position);
-        SetRotation(_rotation);
-        SetScale(_scale);
+        _param.Apply(this);
 
         UpdateTransform(true);
     }
@@ -260,6 +325,12 @@ public class VFXObject : MonoBehaviour
     public void SetScale(float _scale, float _time = 0f)
     {
         m_scale.SetData(Scale, _scale, _time);
+    }
+
+    public virtual void FillColor(Color _color_start, Color _color_end)
+    {
+        // 
+        throw new NotImplementedException();
     }
     
 }

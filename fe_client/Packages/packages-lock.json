@@ -288,6 +288,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "jp.lilxyzw.liltoon": {
+      "version": "https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "efeba15cdcc35f87ef3a77997b7d4d6647df548b"
+    },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
       "depth": 0,

@@ -74,3 +74,36 @@ using UnityEngine;
     }
 
 
+    public class VFX_ColorEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+        public Int64 
+        ID { get; private set; }
+
+        public Color StartColor { get; private set; }
+        public Color EndColor   { get; private set; }
+
+        public void Release()
+        {
+            // ObjectPooling...
+            ObjectPool<VFX_ColorEvent>.Return(this);        
+        }
+
+        public void Reset()
+        {
+            ID         = 0;
+            StartColor = UnityEngine.Color.white;
+            EndColor   = UnityEngine.Color.white;
+        }
+
+        public VFX_ColorEvent Set(Int64 _id, Color _start_color, Color _end_color)
+        {
+            ID         = _id;
+            StartColor = _start_color;
+            EndColor   = _end_color;
+            
+            return this;
+        }
+        
+    }

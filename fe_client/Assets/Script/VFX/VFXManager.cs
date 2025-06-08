@@ -11,18 +11,7 @@ public enum EnumVFXAttachmentType
     Track       // 특정 오브젝트를 추적
 }
 
-struct VFXInstancingParam
-{
-    public Int64      SerialNumber      { get; set; }
-    public string     VFXName           { get; set; }
-    public Transform  VFXRoot           { get; set; }
-    public Vector3    Position          { get; set; }
-    public Quaternion Rotation          { get; set; }
-    public float      Scale             { get; set; }
 
-    public (Transform target, EnumVFXAttachmentType attachment_type) 
-    FollowTarget { get; set; }
-}
 
 
 public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
@@ -71,35 +60,18 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
     }
 
 
-    public Int64 CreateVFXAsync(
-        string                _vfx_name, 
-        Vector3               _position        = default, 
-        Quaternion            _rotation        = default, 
-        float                 _scale           = 1f,   
-        Transform             _target          = null,
-        EnumVFXAttachmentType _attachment_type = EnumVFXAttachmentType.World
-        
-        )
+    public Int64 CreateVFXAsync<T>(T _param) where T : VFXObject.Param, new()
     {
+        if (_param == null)
+            return 0;
+
         // TODO: 자동 이펙트가 릴리즈 되는 기능 추가.
 
         // 시리얼 넘버 생성.
         var serial_number = GenerateSerial();
 
-        // 파라미터 설정.
-        var param = new VFXInstancingParam()
-        {
-            SerialNumber = serial_number,
-            VFXName      = _vfx_name,
-            VFXRoot      = m_vfx_use_root,
-            Position     = _position,
-            Rotation     = _rotation,
-            Scale        = _scale,
-            FollowTarget = (_target, _attachment_type)
-        };
-
         // 이펙트 생성. (비동기)
-        CreateVFXAsync(param).Forget();
+        CreateVFXAsync(serial_number, _param).Forget();
 
         // 시리얼 넘버 반환.
         return serial_number;
@@ -122,8 +94,12 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
     }
     
 
-    async UniTask<VFXObject> CreateVFXAsync(VFXInstancingParam _param, CancellationToken _cancel_token = default)
+    async UniTask<VFXObject> CreateVFXAsync<T>(Int64 _serial_number, T _param, CancellationToken _cancel_token = default)
+        where T : VFXObject.Param, new()
     {
+        if (_param == null)
+            return null;
+
         // 풀에서 가져오기.
         VFXObject vfx_object = AcquireFromPool(_param.VFXName);
 
@@ -147,26 +123,26 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         }
 
         // 삭제 예정 목록에 있으면 생성하지 않습니다.
-        if (m_vfx_release_list.Contains(_param.SerialNumber))
+        if (m_vfx_release_list.Contains(_serial_number))
         {
-            m_vfx_release_list.Remove(_param.SerialNumber);
+            m_vfx_release_list.Remove(_serial_number);
             ReturnToPool(_param.VFXName, vfx_object);
             return null;
         }
 
         // 레포지토리에 추가.
-        m_vfx_repository.Add(_param.SerialNumber, vfx_object);
+        m_vfx_repository.Add(_serial_number, vfx_object);
 
         // 오브젝트 초기화
         vfx_object.OnCreate(
-            _param.SerialNumber, 
-            _param.VFXName, 
-            _param.VFXRoot,
-            _param.Position,
-            _param.Rotation,
-            _param.Scale);
+            _serial_number, 
+            _param);
 
-        
+
+        // 반환.
+        ObjectPool<T>.Return(_param);
+
+
         return vfx_object;
     }
 

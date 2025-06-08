@@ -7,26 +7,54 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
+
+class DrawMoveRangeVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
+{
+    public TerrainMap     TerrainMap   { get; set; }
+    public IPathOwner     PathOwner    { get; set; }
+    public (int x, int y) Position     { get; set; }
+    public int            MoveDistance { get; set; }
+
+
+    public Int64              VisitorID    { get; set; } = 0;
+    public (int min, int max) WeaponRange  { get; set; } = (0, 0);
+    public List<Int64>        DrawVFXList  { get; set; } = new();
+
+    public void Visit(int x, int y)
+    {}
+
+    public void Reset()
+    {
+        TerrainMap     = null;
+        PathOwner      = null;
+        Position       = default;
+        MoveDistance   = 0;
+        VisitorID      = 0;
+        WeaponRange    = (0, 0);
+        DrawVFXList.Clear();
+    }
+};
+
+class InputParam_Result : IPoolObject
+{
+    public bool                             IsSelect      { get; set; }
+    public bool                             IsCancel      { get; set; }
+    public (bool changed, Vector2    value) MoveDirection { get; set; }
+    // public (bool changed, Vector2Int value) SelectTile    { get; set; }
+
+    public void Reset()
+    {
+        IsSelect      = false;
+        IsCancel      = false;
+        MoveDirection = default;
+        // SelectTile    = default;
+    }
+}
+
+
+
 public class InputHandler_Grid_Select : InputHandler
 {   
-    
-    class InputParam_Result : IPoolObject
-    {
-        public bool                             IsSelect      { get; set; }
-        public bool                             IsCancel      { get; set; }
-        public (bool changed, Vector2    value) MoveDirection { get; set; }
-        // public (bool changed, Vector2Int value) SelectTile    { get; set; }
-
-        public void Reset()
-        {
-            IsSelect      = false;
-            IsCancel      = false;
-            MoveDirection = default;
-            // SelectTile    = default;
-        }
-    }
- 
-    
     
     const string VFX_SELECT_NAME    = AssetName.TILE_SELECTION;
 
@@ -43,6 +71,8 @@ public class InputHandler_Grid_Select : InputHandler
     Int64                   SelectedEntityID           { get; set; } = 0; 
     // (int x, int y)          SelectedEntityBasePosition { get; set; } = (0, 0);
 
+    DrawMoveRangeVisitor    DrawMoveRangeVisitor       { get; set; } = new();
+
     
 
 
@@ -55,7 +85,9 @@ public class InputHandler_Grid_Select : InputHandler
     protected override void OnStart()
     {
         // 이펙트 생성.
-        VFX_Select_ID = VFXManager.Instance.CreateVFXAsync(VFX_SELECT_NAME); 
+        var vfx_param = ObjectPool<VFXObject.Param>.Acquire().SetVFXName(VFX_SELECT_NAME);
+
+        VFX_Select_ID = VFXManager.Instance.CreateVFXAsync(vfx_param); 
         //.ContinueWith(OnCompleteVFXTask);
 
         // // 이펙트 삭제 예정 목록에 추가.
@@ -75,6 +107,8 @@ public class InputHandler_Grid_Select : InputHandler
 
         // 타일 이동.
         OnUpdate_Tile_Move();
+
+        OnUpdate_DrawMoveRange();
 
 
         ObjectPool<InputParam_Result>.Return(input_result);
@@ -210,16 +244,11 @@ public class InputHandler_Grid_Select : InputHandler
                 var faction        = entity.GetFaction();
                 var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
-                // // TESTCODE:            
-                // GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(entity_id));
-
-
                 switch(commander_type)
                 {                 
                     case EnumCommanderType.Player:
                     {
                         SelectedEntityID           = entity_id;
-                        // SelectedEntityBasePosition = entity.Cell;
                     }
                     break;  
 
@@ -315,6 +344,50 @@ public class InputHandler_Grid_Select : InputHandler
             (SelectTile_X, SelectTile_Y), 
             _is_immediate: false, 
             _is_plan: true);
+
+        
+    }
+
+    void OnUpdate_DrawMoveRange()
+    {
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+        if (terrain_map == null)
+        {
+            Debug.LogError("TerrainMapManager.Instance.TerrainMap is null");
+            return;
+        }
+
+        // 선택된 타일의 엔티티 ID.
+        Int64 tile_entity_id = terrain_map.BlockManager.FindEntityID(SelectTile_X, SelectTile_Y);
+        
+        // 이동 범위 표시 엔티티 ID.
+        Int64 draw_entity_id = SelectedEntityID > 0 ? SelectedEntityID : tile_entity_id;
+
+        
+
+        // if (draw_entity_id > 0)
+        // {
+        //     if (DrawMoveRangeVisitor.VisitorID != draw_entity_id)
+        //     {
+        //         DrawMoveRangeVisitor.Reset();
+
+        //         var entity = EntityManager.Instance.GetEntity(draw_entity_id);
+        //         if (entity != null)
+        //         {
+        //             DrawMoveRangeVisitor.TerrainMap = terrain_map;
+        //             DrawMoveRangeVisitor.PathOwner = entity;
+        //             DrawMoveRangeVisitor.VisitorID = draw_entity_id;
+        //             DrawMoveRangeVisitor.Position  = entity.PathBasePosition;
+        //         }
+
+        //     }
+        // }
+        // else
+        // {
+
+        // }
+
+
     }
 
     private void MoveSelcectedTile(int _x, int _y)
