@@ -34,8 +34,8 @@ public abstract class InputHandler
     public enum EnumState
     {
         None,
-        Start,   // 시작
         Update,  // 반복
+        Pause,   // 일시정지
         Finish,  // 종료
     }
 
@@ -58,6 +58,10 @@ public abstract class InputHandler
     protected abstract void OnStart();
     protected abstract bool OnUpdate();
     protected abstract void OnFinish();
+    protected abstract void OnPause();
+    protected abstract void OnResume();
+
+    public bool IsUpdate      => State == EnumState.Update || State == EnumState.Pause;
 
 
     protected void SetChildHandler(InputHandler _child_handler)
@@ -68,7 +72,7 @@ public abstract class InputHandler
 
     public bool Update()
     {
-        if (State != EnumState.Update)
+        if (IsUpdate == false)
         {
             OnStart();
             State = EnumState.Update;
@@ -80,11 +84,27 @@ public abstract class InputHandler
         // 자식 핸들러가 있으면 그걸 먼저 처리.        
         if (ChildHandler != null)
         {
+            if (State == EnumState.Update)
+            {
+                // 일시정지.
+                State = EnumState.Pause;
+                OnPause();
+            }
+
             if (ChildHandler.Update())
-                ChildHandler = null;
+            {
+                ChildHandler = null;                
+            }           
         }
         else
         {
+            if (State == EnumState.Pause)   
+            {
+                // 재개.
+                State = EnumState.Update;
+                OnResume();
+            }
+
             if (OnUpdate())
             {
                 State = EnumState.Finish;
@@ -93,7 +113,7 @@ public abstract class InputHandler
 
         
 
-        if (State != EnumState.Update)
+        if (IsUpdate == false)
         {
             OnFinish();
             State = EnumState.Finish;
@@ -107,7 +127,7 @@ public abstract class InputHandler
 
     public void Abort()
     {
-        if (State == EnumState.Update)
+        if (IsUpdate)
         {
             if (ChildHandler != null)
             {

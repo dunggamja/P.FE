@@ -202,4 +202,14 @@ public class InputHandler_UI_Menu : InputHandler
         // √ ±‚»≠.
         Reset();
     }
+
+    protected override void OnPause()
+    {
+        // throw new NotImplementedException();
+    }
+
+    protected override void OnResume()
+    {
+        // throw new NotImplementedException();
+    }
 }

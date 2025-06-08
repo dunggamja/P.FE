@@ -32,15 +32,16 @@ public class InputHandler_Grid_Select : InputHandler
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
-    int                     SelectTile_X      { get; set; } = 0;
-    int                     SelectTile_Y      { get; set; } = 0;
-
-
-    bool                    IsFinish          { get; set; } = false;                
-    float                   MoveTile_LastTime { get; set; } = 0f;
-    Vector2Int              MoveDirection     { get; set; } = Vector2Int.zero;    
-    Int64                   VFX_Select_ID     { get; set; } = 0;
-    Int64                   SelectedEntityID  { get; set; } = 0; 
+    int                     SelectTile_X               { get; set; } = 0;
+    int                     SelectTile_Y               { get; set; } = 0;
+         
+         
+    bool                    IsFinish                   { get; set; } = false;                
+    float                   MoveTile_LastTime          { get; set; } = 0f;
+    Vector2Int              MoveDirection              { get; set; } = Vector2Int.zero;    
+    Int64                   VFX_Select_ID              { get; set; } = 0;
+    Int64                   SelectedEntityID           { get; set; } = 0; 
+    // (int x, int y)          SelectedEntityBasePosition { get; set; } = (0, 0);
 
     
 
@@ -87,15 +88,26 @@ public class InputHandler_Grid_Select : InputHandler
         
         VFXManager.Instance.ReserveReleaseVFX(VFX_Select_ID);
         
-        IsFinish          = false;
-        VFX_Select_ID     = 0;
-        MoveTile_LastTime = 0f; 
-        MoveDirection     = Vector2Int.zero;
-        SelectedEntityID  = 0;
+        IsFinish                   = false;
+        VFX_Select_ID              = 0;
+        MoveTile_LastTime          = 0f; 
+        MoveDirection              = Vector2Int.zero;
+        SelectedEntityID           = 0;
+        // SelectedEntityBasePosition = (0, 0);
 
 
         // SelectTile_X      = 0;
         // SelectTile_Y      = 0;
+    }
+
+    protected override void OnPause()
+    {
+        // throw new NotImplementedException();
+    }
+
+    protected override void OnResume()
+    {
+        // throw new NotImplementedException();
     }
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
@@ -206,7 +218,8 @@ public class InputHandler_Grid_Select : InputHandler
                 {                 
                     case EnumCommanderType.Player:
                     {
-                        SelectedEntityID = entity_id;
+                        SelectedEntityID           = entity_id;
+                        // SelectedEntityBasePosition = entity.Cell;
                     }
                     break;  
 
@@ -233,7 +246,27 @@ public class InputHandler_Grid_Select : InputHandler
     {
         if (SelectedEntityID > 0)
         {
-            SelectedEntityID = 0;
+            var entity = EntityManager.Instance.GetEntity(SelectedEntityID);
+            if (entity != null)
+            {
+                var select_tile   = (SelectTile_X, SelectTile_Y);
+                var base_position = entity.PathBasePosition;
+
+                if (select_tile != base_position)
+                {
+                    MoveTile_LastTime = Time.time;
+                    MoveSelcectedTile(base_position.x, base_position.y);
+                    MoveSelectedEntity(
+                        SelectedEntityID, 
+                        base_position, 
+                        _is_immediate: true, 
+                        _is_plan: false);
+                }
+                else
+                {
+                    SelectedEntityID = 0;
+                }
+            }
         }
     }
 
@@ -268,49 +301,60 @@ public class InputHandler_Grid_Select : InputHandler
         if (is_time_passed == false)
             return;
 
-        // 이동 시간 갱신.
-        MoveTile_LastTime = Time.time;
-
         // 타일 이동.
         SelectTile_X += MoveDirection.x;
         SelectTile_Y += MoveDirection.y;
 
-        var VFX_Position = new Vector3(SelectTile_X, 0f, SelectTile_Y);
+        // 이동 시간 갱신.
+        MoveTile_LastTime = Time.time;
 
-        
+        MoveSelcectedTile(SelectTile_X, SelectTile_Y);
+
+        MoveSelectedEntity(
+            SelectedEntityID, 
+            (SelectTile_X, SelectTile_Y), 
+            _is_immediate: false, 
+            _is_plan: true);
+    }
+
+    private void MoveSelcectedTile(int _x, int _y)
+    {
+        SelectTile_X = _x;
+        SelectTile_Y = _y;
 
         // 이펙트 위치 이동.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFX_TransformEvent>.Acquire()
             .SetID(VFX_Select_ID)
-            .SetPosition(VFX_Position)                
+            .SetPosition((SelectTile_X, SelectTile_Y).CellToPosition())                
+        );       
+    }
+
+    private void MoveSelectedEntity(Int64 _entity_id, (int x, int y) _cell, bool _is_immediate, bool _is_plan)
+    {
+        if (_entity_id == 0)
+            return;
+
+
+        // 기존 이동명령 중단.
+        BattleSystemManager.Instance.PushCommand(
+            new Command_Abort
+            (
+                _entity_id,
+                _is_pending_only: true
+            )
         );
 
-        // 유닛 이동
-        if (SelectedEntityID > 0)
-        {
-            
-            // 기존 이동명령 중단.
-            BattleSystemManager.Instance.PushCommand(
-                new Command_Abort
-                (
-                    SelectedEntityID,
-                    _is_pending_only: true
-                )
-            );
-
-            // 이동 명령 추가.
-            BattleSystemManager.Instance.PushCommand(
-                new Command_Move
-                (
-                    SelectedEntityID,
-                    (SelectTile_X, SelectTile_Y),
-
-                    _is_immediate: false,
-                    _is_plan:      true
-                )
-            );
-        }
+        // 이동 명령 추가.
+        BattleSystemManager.Instance.PushCommand(
+            new Command_Move
+            (
+                _entity_id,
+                _cell,
+                _is_immediate,
+                _is_plan
+            )
+        );
     }
 
     // private void OnCompleteVFXTask(VFXObject _vfx_object)

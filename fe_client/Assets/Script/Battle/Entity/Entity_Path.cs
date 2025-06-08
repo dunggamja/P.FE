@@ -8,17 +8,16 @@ namespace Battle
     public partial class Entity 
     {
         public void UpdateCellPosition(
-            int                   _x, 
-            int                   _y,
+            (int x, int y)        _cell,
             EnumCellPositionEvent _cell_position_event,
-            bool                  _is_immediatly_move = false,
-            bool                  _is_path_completed  = false)
+            bool                  _is_immediatly_move,
+            bool                  _is_plan)
         {
             // 이전 위치.            
             Cell_Prev = Cell;
             
             // 새 위치.
-            Cell        = (_x, _y);
+            Cell        = _cell;
 
             var position_cur  = Cell.CellToPosition();
             var position_prev = PathVehicle.Position;
@@ -50,8 +49,8 @@ namespace Battle
                     _is_occupy: true));
             }
 
-            //
-            if (_is_path_completed)
+            // 이동 완료시 기준 위치 갱신.
+            if (_is_plan == false)
             {
                 PathBasePosition = Cell;
             }

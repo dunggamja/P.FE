@@ -80,9 +80,11 @@ namespace Battle
                 
                 // 좌표 이동 처리.
                 if (m_failed_path_find == false)
-                    Owner.UpdateCellPosition(m_cell_to.x, m_cell_to.y
-                    , EnumCellPositionEvent.Move
-                    , m_is_immediate);
+                    Owner.UpdateCellPosition(
+                          m_cell_to
+                        , EnumCellPositionEvent.Move
+                        , m_is_immediate
+                        , m_is_plan);
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 

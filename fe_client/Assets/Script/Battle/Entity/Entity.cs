@@ -44,7 +44,7 @@ namespace Battle
             // Target            = null;
             Cell              = (0, 0);
             Cell_Prev         = Cell;
-            PathBasePosition = Cell;
+            PathBasePosition  = Cell;
                  
             BlackBoard        = new EntityBlackBoard();
             Skill             = new BattleSkill();

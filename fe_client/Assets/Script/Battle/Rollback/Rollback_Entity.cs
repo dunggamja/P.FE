@@ -27,10 +27,10 @@ namespace Battle
             if (entity != null)
             {
                 entity.UpdateCellPosition(
-                    Position.x,
-                    Position.y,
+                    Position,
                     EnumCellPositionEvent.Move,
-                    true);
+                    _is_immediatly_move: true,
+                    _is_plan: false);
             }
         }
     }
@@ -70,7 +70,7 @@ namespace Battle
 
         public override void Undo()
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
     }
 
