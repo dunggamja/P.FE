@@ -55,25 +55,32 @@ public class Inventory
         return false;
     }
 
-    public List<Item> CollectItem(Func<Item, bool> _func_condition)
+    public void CollectItem(ref List<Item> _list_result, Func<Item, bool> _func_condition)
     {
-        var list_result = new List<Item>(10);
+        if (_list_result == null)
+            return;
 
         if (_func_condition != null)
         {
             foreach(var e in m_repository_list)
             {
                 if (_func_condition(e))
-                    list_result.Add(e);
+                    _list_result.Add(e);
             }
         }
-
-        return list_result;
     }
 
-    public List<Item> CollectItemByType(EnumItemType _item_type)
+    public void CollectItemByType(ref List<Item> _list_result, EnumItemType _item_type)
     {
-        return CollectItem((e) => e.ItemType == _item_type);
+        CollectItem(ref _list_result, (e) => e.ItemType == _item_type);
+    }
+
+    public void ForEachItem(Action<Item> _action)
+    {
+        foreach(var e in m_repository_list)
+        {
+            _action(e);
+        }
     }
 
 

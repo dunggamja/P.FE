@@ -122,26 +122,29 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             }
         }
 
-        // 삭제 예정 목록에 있으면 생성하지 않습니다.
+        // 삭제 예정 목록에 있으면 생성 취소.
         if (m_vfx_release_list.Contains(_serial_number))
         {
-            m_vfx_release_list.Remove(_serial_number);
+            // m_vfx_release_list.Remove(_serial_number);
             ReturnToPool(_param.VFXName, vfx_object);
-            return null;
+
+            vfx_object = null;
+        }
+        else
+        {
+            // 레포지토리에 추가.
+            m_vfx_repository.Add(_serial_number, vfx_object);
+
+            // 오브젝트 초기화
+            vfx_object.OnCreate(
+                _serial_number, 
+                _param);
         }
 
-        // 레포지토리에 추가.
-        m_vfx_repository.Add(_serial_number, vfx_object);
-
-        // 오브젝트 초기화
-        vfx_object.OnCreate(
-            _serial_number, 
-            _param);
 
 
         // 반환.
         ObjectPool<T>.Return(_param);
-
 
         return vfx_object;
     }

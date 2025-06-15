@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class Weapon : IWeapon
+    public partial class Weapon : IWeapon, IPoolObject
     {
         public Int64 OwnerID { get; private set; } = 0;
         public Int64 ItemID  { get; private set; } = 0;
@@ -57,8 +57,11 @@ namespace Battle
             return item_object.HasWeaponAttribute(_attribute_type);
         }
 
-        
-
+        public void Reset()
+        {
+            OwnerID = 0;
+            ItemID  = 0;
+        }
     }
 }
 

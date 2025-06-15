@@ -154,7 +154,11 @@ namespace Battle
             if (is_attackable)
             {
                 // 소유 중인 무기들로 테스트 전투를 돌립니다.
-                foreach(var e in owner_inventory.CollectItemByType(EnumItemType.Weapon))
+
+                var list_weapon = ListPool<Item>.Acquire();
+                owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
+
+                foreach(var e in list_weapon)
                 {
                     // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
                     owner_weapon.Equip(e.ID);
@@ -198,9 +202,7 @@ namespace Battle
                         {
                             // 점수 계산.
                             var current_score = ObjectPool<ScoreResult>.Acquire();
-                            if (current_score == null)
-                                continue;
-
+                
                             Score_Calculate(ref current_score, owner_entity, target_entity);
 
                             // 위치 셋팅.
@@ -219,15 +221,12 @@ namespace Battle
 
                             ObjectPool<ScoreResult>.Return(current_score);
                         }
-                        // finally
-                        // {
-                            
-
-                        // }
                     }
 
                     ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(list_collect_target);
                 }
+
+                ListPool<Item>.Return(list_weapon);
             }
 
             // 무기 원상 복구.

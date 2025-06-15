@@ -252,7 +252,7 @@ public class VFXObject : MonoBehaviour
     
 
     public void OnCreate(
-        Int64      _serial_number,
+        Int64 _serial_number,
         Param _param)
     {
         SerialNumber = _serial_number;
@@ -261,6 +261,8 @@ public class VFXObject : MonoBehaviour
         _param.Apply(this);
 
         UpdateTransform(true);
+
+        gameObject.name = $"{VFXName}_{SerialNumber}";        
     }
 
     public void OnRelease()
