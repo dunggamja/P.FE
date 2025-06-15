@@ -43,6 +43,16 @@ class MoveRangeVisitor : PathAlgorithm.IFloodFillVisitor
                     continue;
                 }
 
+                // ¸Ê ¹üÀ§ Ã¼Å©.
+                if (TerrainMap != null)
+                {
+                    if (weapon_x < 0 || weapon_y < 0)
+                        continue;
+
+                    if (TerrainMap.Height <= weapon_y || TerrainMap.Width <= weapon_x)
+                        continue;
+                }
+
                 List_Weapon.Add((weapon_x, weapon_y));
             }
         }
@@ -475,8 +485,8 @@ public class InputHandler_Grid_Select : InputHandler
         foreach(var e in _list_move)
         {
             var param = ObjectPool<VFXShape.Param>.Acquire()
-                .FillColor(Color.red, Color.red)
-                .SetVFXName(AssetName.TILE_EFFECT)
+                // .FillColor(Color.red, Color.red)
+                .SetVFXName(AssetName.TILE_EFFECT_BLUE)
                 .SetPosition(e.CellToPosition());
 
             var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
@@ -490,8 +500,8 @@ public class InputHandler_Grid_Select : InputHandler
                 continue;
 
             var param = ObjectPool<VFXShape.Param>.Acquire()
-                .FillColor(Color.blue, Color.blue)
-                .SetVFXName(AssetName.TILE_EFFECT)
+                // .FillColor(Color.blue, Color.blue)
+                .SetVFXName(AssetName.TILE_EFFECT_RED)
                 .SetPosition(e.CellToPosition());
 
             var vfx_id = VFXManager.Instance.CreateVFXAsync(param);

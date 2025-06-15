@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5098489410421485928}
-  - component: {fileID: 1241670642559531345}
+  - component: {fileID: 8258121051113738970}
   m_Layer: 0
   m_Name: tile_effect_blue
   m_TagString: Untagged
@@ -65,7 +65,7 @@ Transform:
   - {fileID: 8976895154943209567}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1241670642559531345
+--- !u!114 &8258121051113738970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,9 +74,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6784897650704759726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a862eac145644dc29434527a2ca5a7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 15415dc26d6094114b4c99f4116a837c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rectangles:
+  - {fileID: 6178465176666213914}
 --- !u!1 &9054784480720439659
 GameObject:
   m_ObjectHideFlags: 0

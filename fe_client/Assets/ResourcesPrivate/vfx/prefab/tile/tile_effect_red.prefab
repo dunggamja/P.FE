@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8194422066127358416}
-  - component: {fileID: -993382988195687595}
+  - component: {fileID: -7531298926061207842}
   m_Layer: 0
   m_Name: tile_effect_red
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   - {fileID: 4853132397653455297}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-993382988195687595
+--- !u!114 &-7531298926061207842
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,9 +42,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 944833951977324389}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a862eac145644dc29434527a2ca5a7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 15415dc26d6094114b4c99f4116a837c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rectangles:
+  - {fileID: 7729794973473175792}
 --- !u!1 &6216234333110196085
 GameObject:
   m_ObjectHideFlags: 0

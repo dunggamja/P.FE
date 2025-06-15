@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2014123922106116378}
-  - component: {fileID: 1051228399621201106}
+  - component: {fileID: 2555743389740339184}
   m_Layer: 0
   m_Name: tile_effect_green
   m_TagString: Untagged
@@ -65,7 +65,7 @@ Transform:
   - {fileID: 8965070950551747241}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1051228399621201106
+--- !u!114 &2555743389740339184
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,9 +74,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7921242160885767738}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a862eac145644dc29434527a2ca5a7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 15415dc26d6094114b4c99f4116a837c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rectangles:
+  - {fileID: 3815771566964753164}
 --- !u!1 &8520748592572308954
 GameObject:
   m_ObjectHideFlags: 0
