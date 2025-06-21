@@ -138,7 +138,9 @@ public class InputHandler_Grid_Select : InputHandler
     protected override void OnStart()
     {
         // ÀÌÆåÆ® »ý¼º.
-        var vfx_param = ObjectPool<VFXObject.Param>.Acquire().SetVFXName(AssetName.TILE_SELECTION);
+        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
+            .SetVFXRoot_Default()
+            .SetVFXName(AssetName.TILE_SELECTION);
 
         VFX_Select = VFXManager.Instance.CreateVFXAsync(vfx_param); 
         //.ContinueWith(OnCompleteVFXTask);
@@ -486,6 +488,7 @@ public class InputHandler_Grid_Select : InputHandler
         {
             var param = ObjectPool<VFXShape.Param>.Acquire()
                 // .FillColor(Color.red, Color.red)
+                .SetVFXRoot_Default()
                 .SetVFXName(AssetName.TILE_EFFECT_BLUE)
                 .SetPosition(e.CellToPosition());
 
@@ -501,6 +504,7 @@ public class InputHandler_Grid_Select : InputHandler
 
             var param = ObjectPool<VFXShape.Param>.Acquire()
                 // .FillColor(Color.blue, Color.blue)
+                .SetVFXRoot_Default()
                 .SetVFXName(AssetName.TILE_EFFECT_RED)
                 .SetPosition(e.CellToPosition());
 

@@ -34,7 +34,12 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
         try
         {
-            var new_object = await AssetManager.Instance.InstantiateAsync(load_asset_address, null, _cancel_token);
+            // TODO: 요건 임시로 부모 오브젝트 처리... 
+            // 실제로는 씬에 루트 오브젝트가 있어야 할것 같음.
+            var parent_object = this.transform;            
+
+            // 오브젝트 생성.
+            var new_object    = await AssetManager.Instance.InstantiateAsync(load_asset_address, parent_object, _cancel_token);
             
             // 대기 완료 후 처리.
             if (new_object != null)

@@ -186,6 +186,14 @@ public class VFXObject : MonoBehaviour
             return this;
         }
 
+        public Param SetVFXRoot_Default()
+        {
+            // TODO: 임시로 월드 오브젝트 매니저 오브젝트를 루트로 사용.
+            // 실제로는 씬에 루트 오브젝트가 있어야 할것 같음.
+            VFXRoot = WorldObjectManager.Instance.transform;
+            return this;
+        }
+
         public Param SetVFXRoot(Transform _vfx_root)
         {
             VFXRoot = _vfx_root;
@@ -293,17 +301,33 @@ public class VFXObject : MonoBehaviour
     void UpdateTransform(bool _on_create = false)
     {
         if (_on_create)
+        {
+            // 오브젝트 OFF
             gameObject.SetActive(false);
 
-
-        transform.SetParent(Parent);
-        transform.localPosition = Position;
-        transform.localRotation = Rotation;
-        transform.localScale    = Vector3.one * Scale;
-
-
-        if (_on_create)
+            // Transform 설정.
+            transform.SetParent(Parent);
+            transform.localPosition = Position;
+            transform.localRotation = Rotation;
+            transform.localScale    = Vector3.one * Scale;
+        
+            // 오브젝트 ON
             gameObject.SetActive(true);
+        }
+        else
+        {
+            if (transform.parent != Parent)
+                transform.SetParent(Parent);
+
+            if (transform.localPosition != Position)
+                transform.localPosition  = Position;
+
+            if (transform.localRotation != Rotation)
+                transform.localRotation  = Rotation;
+
+            if (transform.localScale != Vector3.one * Scale)
+                transform.localScale  = Vector3.one * Scale;
+        }
 
     }
 
