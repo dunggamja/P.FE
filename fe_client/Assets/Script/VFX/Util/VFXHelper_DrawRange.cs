@@ -119,7 +119,7 @@ namespace Battle.MoveRange
     public List<Int64>   VFXList          { get; private set; } = new List<Int64>();
     MoveRangeVisitor     MoveRangeVisitor { get; set; }         = new();
 
-    public void DrawRange(int _draw_flag, Int64 _entityID, (int x, int y) _target_position = default)
+    public void DrawRange(int _draw_flag, Int64 _entityID)
     {
       // 이미 그려져있으면 처리하지 않는다.
       if (DrawFlag == _draw_flag && DrawEntityID == _entityID)

@@ -28,18 +28,11 @@ public class InputHandler_UI_Menu : InputHandler
     {
         private HandlerContext() { }
 
-        public Int64 GUI_ID { get; private set; } = 0;
+        
 
-        public HandlerContext SetGUI(Int64 _gui_id)
+        public static HandlerContext Create()
         {
-            GUI_ID = _gui_id;
-            return this;
-        }
-
-        public static HandlerContext Create(Int64 _gui_id)
-        {
-            return new HandlerContext()
-                .SetGUI(_gui_id);
+            return new HandlerContext();
         }
     }
 
@@ -52,23 +45,39 @@ public class InputHandler_UI_Menu : InputHandler
 
 
 
-    public bool IsFinish          { get; private set; } = false;
-    Vector2Int  MoveDirection     { get; set; }         = Vector2Int.zero; 
-    float       MoveMenu_LastTime { get; set; }         = 0f;
-    Int64       GUI_ID            { get; set; }         = 0;
+    public bool  IsFinish           { get; private set; } = false;
+    Vector2Int   MoveDirection      { get; set; }         = Vector2Int.zero; 
+    float        MoveInput_LastTime { get; set; }         = 0f;
+    
+    Stack<Int64> Stack_GUI          { get; set; } = new();
+
+    Int64 FocusGUI => Stack_GUI.Count > 0 ? Stack_GUI.Peek() : 0;
 
 
     void Reset()
     {
         IsFinish      = false;
         MoveDirection = Vector2Int.zero;
-        GUI_ID        = 0;
+        Stack_GUI.Clear();
+        // GUI_ID        = 0;
+    }
+
+    public void Push_GUI(Int64 _gui_id)
+    {
+        Stack_GUI.Push(_gui_id);
+    }
+
+    public void Close_FocusGUI()
+    {
+        if (Stack_GUI.Count > 0)
+        {
+            var gui_id = Stack_GUI.Pop();
+            GUIManager.Instance.CloseUI(gui_id);
+        }
     }
 
     protected override void OnStart()
     {
-        Reset();
-
         var context = Context as HandlerContext;
         if (context == null)
         {
@@ -76,7 +85,7 @@ public class InputHandler_UI_Menu : InputHandler
             return;
         }
 
-        GUI_ID = context.GUI_ID;
+        // GUI_ID = context.GUI_ID;
         //Debug.LogWarning($"InputHandler_UI_Menu OnStart, GUI_ID: {GUI_ID}");
     }
 
@@ -88,9 +97,13 @@ public class InputHandler_UI_Menu : InputHandler
         OnUpdate_Input_Process(input_result);
 
         OnUpdate_Menu_Move();
-
-
         ObjectPool<InputParam_Result>.Return(input_result);
+
+        // 메뉴가 없으면 종료.
+        if (Stack_GUI.Count == 0)
+        {
+            IsFinish = true;
+        }
 
         return IsFinish;
     }
@@ -144,13 +157,12 @@ public class InputHandler_UI_Menu : InputHandler
 
     private void OnUpdate_Input_Process_Select()
     {
-        // TODO: 메뉴가 생기면 선택 처리.
-        IsFinish = true;
+
     }
 
     private void OnUpdate_Input_Process_Cancel()
     {
-        IsFinish = true;
+        Close_FocusGUI();
     }
 
     private void OnUpdate_Input_Process_Move(Vector2 _move_direction)
@@ -180,24 +192,28 @@ public class InputHandler_UI_Menu : InputHandler
             return;
         
         // 이동 시간이 지났는지 확인.
-        var is_time_passed = (Time.time - MoveMenu_LastTime > MOVE_INTERVAL);
+        var is_time_passed = (Time.time - MoveInput_LastTime > MOVE_INTERVAL);
         if (is_time_passed == false)
             return;
 
         // 이동 시간 갱신.
-        MoveMenu_LastTime = Time.time;
+        MoveInput_LastTime = Time.time;
 
         // 이동 방향 이벤트 발생.
         EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<GUI_Menu_MoveEvent>.Acquire().Set(GUI_ID, MoveDirection));
+            ObjectPool<GUI_Menu_MoveEvent>.Acquire().Set(FocusGUI, MoveDirection));
     }
 
     protected override void OnFinish()
     {
         //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
 
-        // 메뉴 닫기.
-        GUIManager.Instance.CloseUI(GUI_ID);
+        // 열려있는 메뉴 닫기.
+        while (Stack_GUI.Count > 0)
+        {
+            var gui_id = Stack_GUI.Pop();
+            GUIManager.Instance.CloseUI(gui_id);
+        }
 
         // 초기화.
         Reset();

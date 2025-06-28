@@ -22,6 +22,13 @@ MonoBehaviour:
     - gui
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ffbbc8f3f3bd4f9a99f7427f011981b
+    m_Address: gui/page/unit_command_attack
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}
   m_SchemaSet:

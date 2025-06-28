@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 
@@ -32,6 +33,18 @@ public abstract class GUIPage : GUIBase
     static public Int64 GenerateID()
     {
         return ++s_id_generator;
+    }
+
+    CanvasGroup m_root_canvas_group = null;
+    CanvasGroup RootCanvasGroup
+    {
+        get
+        {
+            if (m_root_canvas_group == null)
+                m_root_canvas_group = GetComponent<CanvasGroup>();
+
+            return m_root_canvas_group;
+        }
     }
     
 
@@ -69,6 +82,8 @@ public abstract class GUIPage : GUIBase
         gameObject.name = $"[{ID}] {GUIName}";
         gameObject.SetActive(true);
 
+        Show();
+
         return true;
     }
 
@@ -92,6 +107,33 @@ public abstract class GUIPage : GUIBase
         }
     }
 
+    public void Show()
+    {
+        if (RootCanvasGroup != null)
+        {
+            RootCanvasGroup
+                .DOFade(1, 0.1f)
+                .From(0f)
+                .SetEase(Ease.OutQuad)
+                .SetLink(gameObject)
+                .SetUpdate(true);
+        }
+    }
+
+    public void Hide()
+    {
+        if (RootCanvasGroup != null)
+        {
+            RootCanvasGroup
+                .DOFade(0f, 0.1f)                
+                .SetEase(Ease.OutQuad)
+                .SetLink(gameObject)
+                .SetUpdate(true);
+        }
+
+        // 비활성화도 할것인지는 아직 미정.
+    }
+
     protected abstract void OnOpen(GUIOpenParam _param);
 
     protected abstract void OnClose();
@@ -103,6 +145,8 @@ public abstract class GUIPage : GUIBase
         try
         {
             OnClose();
+
+            Hide();
             
             // TODO: 이것은 임시로 추후 비동기 처리를 위해 넣은 코드임.
             await UniTask.Delay(100, cancellationToken: _token);
@@ -130,4 +174,8 @@ public abstract class GUIPage : GUIBase
     }
     
 
+    async UniTask ShowAsync(CancellationToken _token)
+    {
+        
+    }
 }

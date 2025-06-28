@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4077908396603447459}
   - component: {fileID: 521948723680035397}
   - component: {fileID: 4132410380368091412}
-  - component: {fileID: 5680753093084107681}
+  - component: {fileID: 7237930284039591286}
   m_Layer: 5
-  m_Name: gui_unit_command
+  m_Name: gui_unit_command_attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_grid_menu_root_rect: {fileID: 7857596298850832298}
   m_grid_menu_root: {fileID: 2588463696998401211}
   m_grid_menu_item: {fileID: 8070555996107411289, guid: aab75ba42822940eb9dcb5ae58504d24, type: 3}
---- !u!225 &5680753093084107681
+--- !u!225 &7237930284039591286
 CanvasGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

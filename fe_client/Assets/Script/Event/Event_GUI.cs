@@ -45,12 +45,12 @@ public class GUI_Menu_SelectEvent : IEventParam
 
     public GUI_Menu_SelectEvent Set(Int64 _gui_id)
     {
-        GUI_ID        = _gui_id;
+        GUI_ID  = _gui_id;
         return this;
     }
 
     public void Reset()
     {
-        GUI_ID        = 0;
+        GUI_ID  = 0;
     }
 }

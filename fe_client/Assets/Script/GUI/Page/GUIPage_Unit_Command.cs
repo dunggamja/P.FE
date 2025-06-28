@@ -5,7 +5,10 @@ using R3;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-[EventReceiver(typeof(GUI_Menu_MoveEvent))]
+[EventReceiver(
+    typeof(GUI_Menu_MoveEvent), 
+    typeof(GUI_Menu_SelectEvent)
+    )]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 {
     public class PARAM : GUIOpenParam
@@ -90,6 +93,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             case GUI_Menu_MoveEvent menu_move_event:
                 OnReceiveEvent_GUI_Menu_MoveEvent(menu_move_event);
+                break;
+
+            case GUI_Menu_SelectEvent menu_select_event:
+                OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
                 break;
         }
         // throw new NotImplementedException();
@@ -194,15 +201,14 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     // 메뉴 이동 이벤트 수신.
     void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
     {
-        // Debug.Log($"OnReceiveEvent_GUI_Menu_Move: {_event.MoveDirection}");
-        if (_event == null)
+        if (_event == null || _event.GUI_ID != ID)
             return;
 
+        // 이동 방향이 없으면 종료.
         if (_event.MoveDirection.y  == 0)
-        {
-            // 이동 방향이 없으면 종료.
             return;
-        }
+
+        
         var add_index = _event.MoveDirection.y > 0 ? -1 : +1;
         var cur_index = m_selected_index_subject.Value;
         var new_index = cur_index + add_index;
@@ -211,6 +217,34 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 이동 방향에 따라서 메뉴 아이템 선택.
         
         SetSelectedIndex(new_index);
+    }
+
+    void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        // 선택 이벤트 처리.
+        var cur_index = m_selected_index_subject.Value;
+        if (cur_index < 0 || m_menu_item_datas.Length <= cur_index)
+            return;
+
+
+
+        var menu_type = m_menu_item_datas[cur_index].MenuType;
+
+        switch (menu_type)
+        {
+            case MENU_ITEM_DATA.EnumMenuType.Attack:
+                break;
+            case MENU_ITEM_DATA.EnumMenuType.Wait:
+                break;
+            case MENU_ITEM_DATA.EnumMenuType.Skill:
+                break;
+            case MENU_ITEM_DATA.EnumMenuType.Item:
+                break;                
+        }
+        
     }
 
 }

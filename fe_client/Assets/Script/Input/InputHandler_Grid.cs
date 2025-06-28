@@ -199,7 +199,9 @@ public class InputHandler_Grid_Select : InputHandler
 
             // TESTCODE:            
             var gui_id        = GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
-            var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create(gui_id));
+            var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
+
+            input_handler.Push_GUI(gui_id);
 
             //Debug.LogWarning($"InputHandler_Grid_Select OnUpdate_Input_Process_Select, gui_id: {gui_id}");
             SetChildHandler(input_handler);
@@ -334,29 +336,17 @@ public class InputHandler_Grid_Select : InputHandler
         Int64 draw_entity_id = SelectedEntityID > 0 ? SelectedEntityID : tile_entity_id;
 
         BattleSystemManager.Instance.DrawRange.DrawRange(
-            _draw_flag: (int)Battle.MoveRange.EnumDrawFlag.MoveRange | (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
-            _entityID: draw_entity_id,
-            _target_position: (SelectTile_X, SelectTile_Y));
+            _draw_flag: 
+                  (int)Battle.MoveRange.EnumDrawFlag.MoveRange 
+                | (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
 
-        // if (MoveRangeVisitor.VisitorID != draw_entity_id)
-        // {
-        //     // 이동 범위 초기화.
-        //     MoveRangeVisitor.Reset();
+            _entityID:    
+                draw_entity_id);
 
-        //     // 이동 범위를 계산할 오브젝트.
-        //     var draw_entity_object = EntityManager.Instance.GetEntity(draw_entity_id);
-        //     if (draw_entity_object != null)
-        //     {                
-        //         // 이동 범위 계산.
-        //         PathAlgorithm.FloodFill(
-        //             MoveRangeVisitor.SetData(terrain_map, draw_entity_object));
-        //     }
-
-
-        //     // 이동 범위 이펙트 삭제 후 재생성.
-        //     ReleaseMoveRangeVFX();
-        //     CreateMoveRangeVFX(MoveRangeVisitor.List_Move, MoveRangeVisitor.List_Weapon);
-        // }
+        if (draw_entity_id == 0)
+        {
+            BattleSystemManager.Instance.DrawRange.Clear();
+        }
     }
 
     private void MoveSelcectedTile(int _x, int _y)
@@ -399,49 +389,6 @@ public class InputHandler_Grid_Select : InputHandler
         );
     }
 
-    // void CreateMoveRangeVFX(
-    //     HashSet<(int x, int y)> _list_move, 
-    //     HashSet<(int x, int y)> _list_weapon)
-    // {
-    //     foreach(var e in _list_move)
-    //     {
-    //         var param = ObjectPool<VFXShape.Param>.Acquire()
-    //             // .FillColor(Color.red, Color.red)
-    //             .SetVFXRoot_Default()
-    //             .SetVFXName(AssetName.TILE_EFFECT_BLUE)
-    //             .SetPosition(e.CellToPosition());
-
-    //         var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
-    //         // List_VFX_MoveRange.Add(vfx_id);
-    //     }
-
-    //     foreach(var e in _list_weapon)
-    //     {
-    //         // 이동 범위에 포함된 타일은 제외.
-    //         if (_list_move.Contains(e))
-    //             continue;
-
-    //         var param = ObjectPool<VFXShape.Param>.Acquire()
-    //             // .FillColor(Color.blue, Color.blue)
-    //             .SetVFXRoot_Default()
-    //             .SetVFXName(AssetName.TILE_EFFECT_RED)
-    //             .SetPosition(e.CellToPosition());
-
-    //         var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
-    //         // List_VFX_MoveRange.Add(vfx_id);
-    //     }
-
-    // }
-
-    // void ReleaseMoveRangeVFX()
-    // {
-    //     // foreach(var vfx_id in List_VFX_MoveRange)
-    //     // {
-    //     //     VFXManager.Instance.ReserveReleaseVFX(vfx_id);
-    //     // }
-    //     // List_VFX_MoveRange.Clear();
-    // }
-
 
     void ReleaseVFX()
     {
@@ -449,18 +396,8 @@ public class InputHandler_Grid_Select : InputHandler
         VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
         VFX_Select = 0;
 
-        BattleSystemManager.Instance.DrawRange.Clear();
-
-        // 이동 범위 이펙트 삭제.
-        // ReleaseMoveRangeVFX();        
+        // 이동 범위 표시 초기화.
+        BattleSystemManager.Instance.DrawRange.Clear();   
     }
 
-    // private void OnCompleteVFXTask(VFXObject _vfx_object)
-    // {
-    //     // if (CancelTokenSource != null)
-    //     // {
-    //     //     CancelTokenSource.Dispose();
-    //     //     CancelTokenSource = null;
-    //     // }
-    // }
 }
