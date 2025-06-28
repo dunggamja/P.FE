@@ -7,89 +7,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-
-class MoveRangeVisitor : PathAlgorithm.IFloodFillVisitor
-{
-    public TerrainMap         TerrainMap   { get; set; }
-    public IPathOwner         PathOwner    { get; set; }
-    public (int x, int y)     Position     { get; set; }
-    public int                MoveDistance { get; set; }
-    public Int64              VisitorID    { get; set; } = 0;
-    public (int min, int max) WeaponRange  { get; set; } = (0, 0);
-
-    public HashSet<(int x, int y)> List_Move   { get; set; } = new();
-    public HashSet<(int x, int y)> List_Weapon { get; set; } = new();
-
-    public void Visit(int _visit_x, int _visit_y)
-    {
-        List_Move.Add((_visit_x, _visit_y));
-
-        
-        var weapon_range_min = WeaponRange.min;
-        var weapon_range_max = WeaponRange.max;
-
-        // 무기 사거리 범위.
-         for(int x = -weapon_range_max; x <= weapon_range_max; ++x)
-        {
-            for(int y = -weapon_range_max; y <= weapon_range_max; ++y)
-            {
-                var weapon_x = _visit_x + x;
-                var weapon_y = _visit_y + y;
-
-                // 무기 사거리 체크
-                var distance = PathAlgorithm.Distance(_visit_x, _visit_y, weapon_x, weapon_y);
-                if (distance < weapon_range_min || weapon_range_max < distance)
-                {
-                    continue;
-                }
-
-                // 맵 범위 체크.
-                if (TerrainMap != null)
-                {
-                    if (weapon_x < 0 || weapon_y < 0)
-                        continue;
-
-                    if (TerrainMap.Height <= weapon_y || TerrainMap.Width <= weapon_x)
-                        continue;
-                }
-
-                List_Weapon.Add((weapon_x, weapon_y));
-            }
-        }
-    }
-
-
-    public MoveRangeVisitor SetData(TerrainMap _terrain, Entity _entity_object)
-    {
-        if (_entity_object != null)
-        {
-            TerrainMap   = _terrain;
-            PathOwner    = _entity_object;
-            Position     = _entity_object.PathBasePosition;
-
-            MoveDistance = _entity_object.PathMoveRange;
-            WeaponRange  = _entity_object.GetWeaponRange();
-            VisitorID    = _entity_object.ID;
-        }
-
-        return this;
-    }
-
-    public MoveRangeVisitor Reset()
-    {
-        TerrainMap     = null;
-        PathOwner      = null;
-        Position       = default;
-        MoveDistance   = 0;
-        VisitorID      = 0;
-        WeaponRange    = (0, 0);
-        List_Move.Clear();
-        List_Weapon.Clear();
-
-        return this;
-    }
-};
-
 class InputParam_Result : IPoolObject
 {
     public bool                             IsSelect      { get; set; }
@@ -123,8 +40,6 @@ public class InputHandler_Grid_Select : InputHandler
     Int64                   VFX_Select         { get; set; } = 0;
     Int64                   SelectedEntityID   { get; set; } = 0; 
 
-    MoveRangeVisitor        MoveRangeVisitor   { get; set; } = new();
-    List<Int64>             List_VFX_MoveRange { get; set; } = new();
 
     
 
@@ -175,14 +90,13 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnFinish()
     {
+        ReleaseVFX();
         
-        VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
-        
-        IsFinish                   = false;
-        VFX_Select              = 0;
-        MoveTile_LastTime          = 0f; 
-        MoveDirection              = Vector2Int.zero;
-        SelectedEntityID           = 0;
+        IsFinish          = false;
+        VFX_Select        = 0;
+        MoveTile_LastTime = 0f; 
+        MoveDirection     = Vector2Int.zero;
+        SelectedEntityID  = 0;
         // SelectedEntityBasePosition = (0, 0);
 
 
@@ -419,25 +333,30 @@ public class InputHandler_Grid_Select : InputHandler
         // 이동 범위 표시 엔티티 ID.
         Int64 draw_entity_id = SelectedEntityID > 0 ? SelectedEntityID : tile_entity_id;
 
-        if (MoveRangeVisitor.VisitorID != draw_entity_id)
-        {
-            // 이동 범위 초기화.
-            MoveRangeVisitor.Reset();
+        BattleSystemManager.Instance.DrawRange.DrawRange(
+            _draw_flag: (int)Battle.MoveRange.EnumDrawFlag.MoveRange | (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _entityID: draw_entity_id,
+            _target_position: (SelectTile_X, SelectTile_Y));
 
-            // 이동 범위를 계산할 오브젝트.
-            var draw_entity_object = EntityManager.Instance.GetEntity(draw_entity_id);
-            if (draw_entity_object != null)
-            {                
-                // 이동 범위 계산.
-                PathAlgorithm.FloodFill(
-                    MoveRangeVisitor.SetData(terrain_map, draw_entity_object));
-            }
+        // if (MoveRangeVisitor.VisitorID != draw_entity_id)
+        // {
+        //     // 이동 범위 초기화.
+        //     MoveRangeVisitor.Reset();
+
+        //     // 이동 범위를 계산할 오브젝트.
+        //     var draw_entity_object = EntityManager.Instance.GetEntity(draw_entity_id);
+        //     if (draw_entity_object != null)
+        //     {                
+        //         // 이동 범위 계산.
+        //         PathAlgorithm.FloodFill(
+        //             MoveRangeVisitor.SetData(terrain_map, draw_entity_object));
+        //     }
 
 
-            // 이동 범위 이펙트 삭제 후 재생성.
-            ReleaseMoveRangeVFX();
-            CreateMoveRangeVFX(MoveRangeVisitor.List_Move, MoveRangeVisitor.List_Weapon);
-        }
+        //     // 이동 범위 이펙트 삭제 후 재생성.
+        //     ReleaseMoveRangeVFX();
+        //     CreateMoveRangeVFX(MoveRangeVisitor.List_Move, MoveRangeVisitor.List_Weapon);
+        // }
     }
 
     private void MoveSelcectedTile(int _x, int _y)
@@ -480,49 +399,48 @@ public class InputHandler_Grid_Select : InputHandler
         );
     }
 
-    void CreateMoveRangeVFX(
-        HashSet<(int x, int y)> _list_move, 
-        HashSet<(int x, int y)> _list_weapon)
-    {
-        foreach(var e in _list_move)
-        {
-            var param = ObjectPool<VFXShape.Param>.Acquire()
-                // .FillColor(Color.red, Color.red)
-                .SetVFXRoot_Default()
-                .SetVFXName(AssetName.TILE_EFFECT_BLUE)
-                .SetPosition(e.CellToPosition());
+    // void CreateMoveRangeVFX(
+    //     HashSet<(int x, int y)> _list_move, 
+    //     HashSet<(int x, int y)> _list_weapon)
+    // {
+    //     foreach(var e in _list_move)
+    //     {
+    //         var param = ObjectPool<VFXShape.Param>.Acquire()
+    //             // .FillColor(Color.red, Color.red)
+    //             .SetVFXRoot_Default()
+    //             .SetVFXName(AssetName.TILE_EFFECT_BLUE)
+    //             .SetPosition(e.CellToPosition());
 
-            var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
-            List_VFX_MoveRange.Add(vfx_id);
-        }
+    //         var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
+    //         // List_VFX_MoveRange.Add(vfx_id);
+    //     }
 
-        foreach(var e in _list_weapon)
-        {
-            // 이동 범위에 포함된 타일은 제외.
-            if (_list_move.Contains(e))
-                continue;
+    //     foreach(var e in _list_weapon)
+    //     {
+    //         // 이동 범위에 포함된 타일은 제외.
+    //         if (_list_move.Contains(e))
+    //             continue;
 
-            var param = ObjectPool<VFXShape.Param>.Acquire()
-                // .FillColor(Color.blue, Color.blue)
-                .SetVFXRoot_Default()
-                .SetVFXName(AssetName.TILE_EFFECT_RED)
-                .SetPosition(e.CellToPosition());
+    //         var param = ObjectPool<VFXShape.Param>.Acquire()
+    //             // .FillColor(Color.blue, Color.blue)
+    //             .SetVFXRoot_Default()
+    //             .SetVFXName(AssetName.TILE_EFFECT_RED)
+    //             .SetPosition(e.CellToPosition());
 
-            var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
-            List_VFX_MoveRange.Add(vfx_id);
-        }
+    //         var vfx_id = VFXManager.Instance.CreateVFXAsync(param);
+    //         // List_VFX_MoveRange.Add(vfx_id);
+    //     }
 
-    }
+    // }
 
-    void ReleaseMoveRangeVFX()
-    {
-        foreach(var vfx_id in List_VFX_MoveRange)
-        {
-            VFXManager.Instance.ReserveReleaseVFX(vfx_id);
-        }
-
-        List_VFX_MoveRange.Clear();
-    }
+    // void ReleaseMoveRangeVFX()
+    // {
+    //     // foreach(var vfx_id in List_VFX_MoveRange)
+    //     // {
+    //     //     VFXManager.Instance.ReserveReleaseVFX(vfx_id);
+    //     // }
+    //     // List_VFX_MoveRange.Clear();
+    // }
 
 
     void ReleaseVFX()
@@ -531,8 +449,10 @@ public class InputHandler_Grid_Select : InputHandler
         VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
         VFX_Select = 0;
 
+        BattleSystemManager.Instance.DrawRange.Clear();
+
         // 이동 범위 이펙트 삭제.
-        ReleaseMoveRangeVFX();        
+        // ReleaseMoveRangeVFX();        
     }
 
     // private void OnCompleteVFXTask(VFXObject _vfx_object)

@@ -82,7 +82,6 @@ namespace Battle
 
         public void Update(IOwner _owner)
         {
-         
             foreach((var type, var ai) in m_repository)
             {
                 ai.Update(_owner);

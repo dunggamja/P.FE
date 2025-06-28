@@ -29,50 +29,50 @@ namespace Battle
         }
     }
 
-    public class Battle_AI_Command_DecisionEvent : IEventParam
-    {
-        // AI 명령 결정 이벤트.
+    // public class Battle_AI_Command_DecisionEvent : IEventParam
+    // {
+    //     // AI 명령 결정 이벤트.
 
-        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+    //     public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
-        public int                    Faction      { get; private set; } = 0;
-        public EnumCommandPriority    Priority     { get; private set; } = EnumCommandPriority.None;
+    //     public int                    Faction      { get; private set; } = 0;
+    //     public EnumCommandPriority    Priority     { get; private set; } = EnumCommandPriority.None;
 
 
-        public float                  Out_Score    { get; private set; } = 0;
-        public Int64                  Out_EntityID { get; private set; } = 0;
+    //     public float                  Out_Score    { get; private set; } = 0;
+    //     public Int64                  Out_EntityID { get; private set; } = 0;
 
         
 
-        public void TrySetScore(Int64 _entity_id, float _score)
-        {
-            if (Out_Score < _score)
-            {
-                Out_Score    = _score;
-                Out_EntityID = _entity_id;
-            }
-        }
+    //     public void TrySetScore(Int64 _entity_id, float _score)
+    //     {
+    //         if (Out_Score < _score)
+    //         {
+    //             Out_Score    = _score;
+    //             Out_EntityID = _entity_id;
+    //         }
+    //     }
 
-        public Battle_AI_Command_DecisionEvent Set(int _faction, EnumCommandPriority _priority)
-        {
-            Faction  = _faction;
-            Priority = _priority;
-            return this;
-        }
+    //     public Battle_AI_Command_DecisionEvent Set(int _faction, EnumCommandPriority _priority)
+    //     {
+    //         Faction  = _faction;
+    //         Priority = _priority;
+    //         return this;
+    //     }
 
-        public void Reset()
-        {
-            Faction           = 0;
-            Priority          = EnumCommandPriority.None;
-            Out_Score          = 0;
-            Out_EntityID = 0;
-        }
+    //     public void Reset()
+    //     {
+    //         Faction           = 0;
+    //         Priority          = EnumCommandPriority.None;
+    //         Out_Score          = 0;
+    //         Out_EntityID = 0;
+    //     }
 
-        public void Release()
-        {
-            ObjectPool<Battle_AI_Command_DecisionEvent>.Return(this);
-        }
-    }
+    //     public void Release()
+    //     {
+    //         ObjectPool<Battle_AI_Command_DecisionEvent>.Return(this);
+    //     }
+    // }
 
     public class Battle_Cell_PositionEvent : IEventParam
     {

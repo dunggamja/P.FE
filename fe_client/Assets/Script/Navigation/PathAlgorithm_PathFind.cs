@@ -28,7 +28,7 @@ public static partial class PathAlgorithm
     class MoveRangeCheck : IFloodFillVisitor, IPoolObject
     {
         public TerrainMap              TerrainMap   { get; set; }  
-        public IPathOwner              PathOwner    { get; set; }  
+        public IPathOwner              Visitor    { get; set; }  
         public (int x, int y)          Position     { get; set; }  
         public int                     MoveDistance { get; set; }
 
@@ -108,7 +108,7 @@ public static partial class PathAlgorithm
         {
             move_range_check = ObjectPool<MoveRangeCheck>.Acquire();
             move_range_check.TerrainMap   = _terrain_map;
-            move_range_check.PathOwner    = _path_owner;
+            move_range_check.Visitor    = _path_owner;
             move_range_check.Position     = _option.MoveRange.base_pos;
             move_range_check.MoveDistance = _option.MoveRange.range;
             PathAlgorithm.FloodFill(move_range_check);
@@ -278,7 +278,7 @@ public static partial class PathAlgorithm
     public interface IFloodFillVisitor
     {
         TerrainMap     TerrainMap   { get; }
-        IPathOwner     PathOwner    { get; }
+        IPathOwner     Visitor      { get; }
         (int x, int y) Position     { get; }
         int            MoveDistance { get; }
 
@@ -311,7 +311,7 @@ public static partial class PathAlgorithm
 
             // 내가 점유가능한 위치에서만 Visit을 실행합니다. 
             var call_visit = (item.x == _visitor.Position.x && item.y == _visitor.Position.y)
-                           || Verify_Movecost(_visitor.TerrainMap, _visitor.PathOwner, (item.x, item.y), _is_occupancy:true).result;
+                           || Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (item.x, item.y), _is_occupancy:true).result;
                                     
             if (call_visit)
                 _visitor.Visit(item.x, item.y);
@@ -340,7 +340,7 @@ public static partial class PathAlgorithm
                     // Debug.Log($"FloodFill, x:{x}, y:{y}");
 
                     // 통과 가능한 지역인지 체크합니다.
-                    (var moveable, var move_cost) = Verify_Movecost(_visitor.TerrainMap, _visitor.PathOwner, (x, y), _is_occupancy:false);
+                    (var moveable, var move_cost) = Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (x, y), _is_occupancy:false);
                     if (!moveable)
                         continue;
 

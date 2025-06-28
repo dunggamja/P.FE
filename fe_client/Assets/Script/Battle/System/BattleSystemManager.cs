@@ -22,11 +22,14 @@ namespace Battle
         public bool IsProgress => State == EnumState.Progress;
         public bool IsFinished => State == EnumState.Finished;
 
-        private List<BattleSystem>                 m_update_system     = new();
-        private int                                m_system_index      = 0;
-        private Dictionary<int, EnumCommanderType> m_faction_commander = new ();
+        private List<BattleSystem>                 m_update_system          = new();
+        private int                                m_system_index           = 0;
+        private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
 
-        private Queue<Command>                     m_command_queue     = new (10);
+        private Queue<Command>                     m_command_queue          = new (10);
+
+
+        public MoveRange.VFXHelper_DrawRange       DrawRange { get; private set; } = new();
         
 
 
@@ -62,6 +65,8 @@ namespace Battle
 
             m_faction_commander.Clear();
             m_command_queue.Clear();
+            
+            DrawRange.Clear();
         }
 
         public void SetData(IBattleSystemParam _param)

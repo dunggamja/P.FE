@@ -113,8 +113,6 @@ public partial class InputManager : SingletonMono<InputManager>
         // InputHandler 업데이트 처리...
         if (m_input_handler != null)
             m_input_handler.Update();
-
-        
     }
 
     protected override void OnRelease(bool _is_shutdown)
@@ -123,23 +121,6 @@ public partial class InputManager : SingletonMono<InputManager>
     }
 
 
-    // public void AddInputParam(InputParam _input_param)
-    // {
-    //     m_queue_input_param.Enqueue(_input_param);
-    // }
-
-    // public void StackHandler(InputHandler _input_handler)
-    // {
-    //     m_stack_input_handler.Push(_input_handler);
-    // }
-
-
-    // void PopHandler()
-    // {
-    //     if (m_stack_input_handler.Count > 1)
-    //         m_stack_input_handler.Pop();        
-    // }
-
-
+    
 
 }

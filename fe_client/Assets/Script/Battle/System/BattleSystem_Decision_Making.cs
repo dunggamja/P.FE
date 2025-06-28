@@ -6,10 +6,65 @@ using UnityEngine.SocialPlatforms.Impl;
 
 namespace Battle
 {
+
+        class Entity_Score_Calculator
+        {
+            public int                 Faction      { get; private set; } = 0;
+            public EnumCommandPriority Priority     { get; private set; } = EnumCommandPriority.None;
+   
+            public float               BestScore    { get; private set; } = 0;
+            public Int64               BestEntityID { get; private set; } = 0;
+
+            public void Reset()
+            {
+                Faction      = 0;
+                Priority     = EnumCommandPriority.None;
+                BestScore    = 0;
+                BestEntityID = 0;
+            }
+
+            public void SetData(int _faction, EnumCommandPriority _priority)
+            {
+                Faction      = _faction;
+                Priority     = _priority;
+            }
+
+
+            public void OnUpdate_Entity_Command_Score(Entity _entity)
+            {
+                // 죽었으면 암것도 안함.
+                if (_entity.IsDead)
+                    return;
+
+                // 진영이 다름.
+                if (Faction != _entity.GetFaction())
+                    return;
+
+                // 행동 우선순위가 다름.
+                if (Priority != _entity.GetCommandPriority())
+                    return;
+                
+                // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
+                _entity.AIManager.Update(_entity);
+
+                var entity_score = _entity.GetAIScoreMax().score;
+                if (entity_score > BestScore)
+                {
+                    BestScore      = entity_score;
+                    BestEntityID   = _entity.ID;
+                }
+            }
+        }
+
+
     public partial class BattleSystem_Decision_Making : BattleSystem//, IEventReceiver
     {
         // 의사결정 우선순위.
         static readonly EnumCommandPriority[] s_list_priority = (EnumCommandPriority[])Enum.GetValues(typeof(EnumCommandPriority));
+
+
+        // 행동 점수 계산기.
+        Entity_Score_Calculator  m_entity_score_calculator = new Entity_Score_Calculator();
 
         public BattleSystem_Decision_Making() : base(EnumSystem.BattleSystem_Decision_Making)
         {
@@ -78,19 +133,19 @@ namespace Battle
             if (_priority == EnumCommandPriority.None)
                 return false;
 
-            // AI 갱신 이벤트
-            var ai_update_event = ObjectPool<Battle_AI_Command_DecisionEvent>.Acquire();
 
-            // 진영, 우선순위 셋팅.
-            ai_update_event.Set(_faction, _priority);
+            m_entity_score_calculator.Reset();
+            m_entity_score_calculator.SetData(_faction, _priority);
 
-            // AI Update Event Dispatch
-            EventDispatchManager.Instance.UpdateEvent(ai_update_event);
+            // 모든 엔티티에 대해서 명령 점수를 계산한다.
+            EntityManager.Instance.Loop(m_entity_score_calculator.OnUpdate_Entity_Command_Score);
 
-            if (0 < ai_update_event.Out_EntityID)
+
+
+            if (0 < m_entity_score_calculator.BestEntityID)
             { 
                 // 
-                var entity_id      = ai_update_event.Out_EntityID;
+                var entity_id      = m_entity_score_calculator.BestEntityID;
                 var entity_object  = EntityManager.Instance.GetEntity(entity_id);
                 if (entity_object != null)
                 {

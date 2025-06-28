@@ -31,3 +31,26 @@ public class GUI_Menu_MoveEvent : IEventParam
         MoveDirection = Vector2Int.zero;
     }
 }
+
+public class GUI_Menu_SelectEvent : IEventParam
+{
+    public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+    public Int64      GUI_ID        { get; private set; }
+
+    public void Release()
+    {
+        ObjectPool<GUI_Menu_SelectEvent>.Return(this);
+    }
+
+    public GUI_Menu_SelectEvent Set(Int64 _gui_id)
+    {
+        GUI_ID        = _gui_id;
+        return this;
+    }
+
+    public void Reset()
+    {
+        GUI_ID        = 0;
+    }
+}

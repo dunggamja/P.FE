@@ -313,7 +313,7 @@ namespace Battle
         class CollectTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
         {
             public TerrainMap     TerrainMap     { get; set; }  
-            public IPathOwner     PathOwner      { get; set; }  
+            public IPathOwner     Visitor      { get; set; }  
             public (int x, int y) Position       { get; set; }  
             public int            MoveDistance   { get; set; }             
             public int            WeaponRangeMin { get; set; }
@@ -330,7 +330,7 @@ namespace Battle
             public void Reset()
             {
                 TerrainMap     = null;
-                PathOwner      = null;
+                Visitor      = null;
                 Position       = (0, 0);
                 MoveDistance   = 0;
                 WeaponRangeMin = 0;
@@ -394,7 +394,7 @@ namespace Battle
             // ฤÝน้
             var visitor            = ObjectPool<CollectTargetVisitor>.Acquire();
             visitor.TerrainMap     = _terrain_map;
-            visitor.PathOwner      = _path_owner;
+            visitor.Visitor      = _path_owner;
             visitor.Position       = (_x, _y);
             visitor.MoveDistance   = _move_distance;
             visitor.WeaponRangeMax = _weapon_range_max;

@@ -46,6 +46,7 @@ public abstract class InputHandler
     
     public EnumState    State        { get; private set; } = EnumState.None;
     public InputHandler ChildHandler { get; private set; } = null; 
+    // public bool         IsAbort      { get; protected set; } = false;
     
     public readonly InputHandlerContext Context = null;
 
@@ -93,24 +94,22 @@ public abstract class InputHandler
 
             if (ChildHandler.Update())
             {
-                ChildHandler = null;                
+                // 자식 핸들러 종료 시                
+                
+                // 재개.
+                State = EnumState.Update;
+                OnResume();        
+
+                ChildHandler = null;        
             }           
         }
         else
         {
-            if (State == EnumState.Pause)   
-            {
-                // 재개.
-                State = EnumState.Update;
-                OnResume();
-            }
-
             if (OnUpdate())
             {
                 State = EnumState.Finish;
             }
         }
-
         
 
         if (IsUpdate == false)

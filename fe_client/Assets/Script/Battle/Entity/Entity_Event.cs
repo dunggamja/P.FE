@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Battle
 {
     [EventReceiver(
-        typeof(Battle_Situation_UpdateEvent),
-        typeof(Battle_AI_Command_DecisionEvent)
+        typeof(Battle_Situation_UpdateEvent)
+        //,
+        // typeof(Battle_AI_Command_DecisionEvent)
         // typeof(Battle_Entity_MoveEvent)
         )]
     public partial class Entity
@@ -23,10 +24,10 @@ namespace Battle
                     
                     
                     break;
-                case Battle_AI_Command_DecisionEvent ai_update_event:
-                    // AI 갱신
-                    OnReceiveEvent_Battle_AI_Command_DecisionEvent(ai_update_event);
-                    break;
+                // case Battle_AI_Command_DecisionEvent ai_update_event:
+                //     // AI 갱신
+                //     OnReceiveEvent_Battle_AI_Command_DecisionEvent(ai_update_event);
+                //     break;
 
                 // case Battle_Entity_MoveEvent entity_move_event:
                 //     // 이동 이벤트
@@ -54,26 +55,26 @@ namespace Battle
         }   
 
 
-        void OnReceiveEvent_Battle_AI_Command_DecisionEvent(Battle_AI_Command_DecisionEvent _event)
-        {
-            // 죽었으면 암것도 안함.
-            if (IsDead)
-                return;
+        // void OnReceiveEvent_Battle_AI_Command_DecisionEvent(Battle_AI_Command_DecisionEvent _event)
+        // {
+        //     // 죽었으면 암것도 안함.
+        //     if (IsDead)
+        //         return;
 
-            // 진영이 다름.
-            if (_event.Faction != GetFaction())
-                return;
+        //     // 진영이 다름.
+        //     if (_event.Faction != GetFaction())
+        //         return;
 
-            // 행동 우선순위가 다름.
-            if (_event.Priority != GetCommandPriority())
-                return;
+        //     // 행동 우선순위가 다름.
+        //     if (_event.Priority != GetCommandPriority())
+        //         return;
             
-            // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
-            AIManager.Update(this);
+        //     // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
+        //     AIManager.Update(this);
 
-            // event param에 등록.
-            _event.TrySetScore(ID, GetAIScoreMax().score);
-        }
+        //     // event param에 등록.
+        //     _event.TrySetScore(ID, GetAIScoreMax().score);
+        // }
 
         // void OnReceiveEvent_Battle_Entity_MoveEvent(Battle_Entity_MoveEvent _event)
         // {
