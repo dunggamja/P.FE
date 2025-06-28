@@ -60,13 +60,11 @@ public class Inventory
         if (_list_result == null)
             return;
 
-        if (_func_condition != null)
+        
+        foreach(var e in m_repository_list)
         {
-            foreach(var e in m_repository_list)
-            {
-                if (_func_condition(e))
-                    _list_result.Add(e);
-            }
+            if (_func_condition == null || _func_condition(e))
+                _list_result.Add(e);
         }
     }
 

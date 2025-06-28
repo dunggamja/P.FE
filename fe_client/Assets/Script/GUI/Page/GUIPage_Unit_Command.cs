@@ -31,7 +31,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         }
     }
 
-    class MENU_ITEM_DATA
+    struct MENU_ITEM_DATA
     {
         public enum EnumMenuType
         {
@@ -42,8 +42,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             Wait,
         }
 
-        public int          Index { get; private set; } = 0;
-        public EnumMenuType MenuType { get; private set; } = EnumMenuType.None;
+        public int          Index    { get; private set; }
+        public EnumMenuType MenuType { get; private set; }
         // public string       Text  { get; private set; } = "";
         public MENU_ITEM_DATA(int _index, EnumMenuType _type)
         {
@@ -51,18 +51,32 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             MenuType = _type;
         }
 
-        public (string table, string key) GetLocalizeKey()
+        public LocalizeKey GetLocalizeKey()
         {
+            var table = string.Empty;
+            var key   = string.Empty;
+
             switch (MenuType)
             {
-                // TODO: 언어별 대응을 하려면 어떻께 해야 할까?
-                case EnumMenuType.Attack: return ("localization_base", "ui_menu_attack");
-                case EnumMenuType.Wait:   return ("localization_base", "ui_menu_wait");
-                case EnumMenuType.Skill:  return ("localization_base", "ui_menu_skill");
-                case EnumMenuType.Item:   return ("localization_base", "ui_menu_item");                
+                case EnumMenuType.Attack: 
+                    table = "localization_base";
+                    key   = "ui_menu_attack";                    
+                    break;
+                case EnumMenuType.Wait:  
+                    table = "localization_base";
+                    key   = "ui_menu_wait";
+                    break;
+                // case EnumMenuType.Skill: 
+                //     table = "localization_base";
+                //     key   = "ui_menu_skill";
+                //     break;
+                // case EnumMenuType.Item:  
+                //     table = "localization_base";
+                //     key   = "ui_menu_item";
+                //     break;
             }
 
-            return ("", "");
+            return new LocalizeKey(table, key);
         }
     }
 
@@ -80,11 +94,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private GUIElement_Grid_Item_MenuText m_grid_menu_item;
 
 
-    private Int64                       m_entity_id = 0;           
-    private MENU_ITEM_DATA[]            m_menu_item_datas;
-    private (bool init, Vector2 value)  m_grid_menu_padding = (false, Vector2.zero);
-
-    private BehaviorSubject<int>        m_selected_index_subject    = new(0);
+    private Int64                         m_entity_id = 0;           
+    private MENU_ITEM_DATA[]              m_menu_item_datas;
+    private (bool init, Vector2 value)    m_grid_menu_padding      = (false, Vector2.zero);  
+    private BehaviorSubject<int>          m_selected_index_subject = new(0);
 
 
     public void OnReceiveEvent(IEventParam _event)
@@ -113,16 +126,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
         // 레이아웃 갱신
         UpdateLayout();
-
-
-        // var entity = EntityManager.Instance.Find(_param.EntityID);
-        
-        // var entity = Battle.EntityManager.Instance.Find(_param);
-        // if (entity == null)
-        // {
-        //     Debug.LogError($"Entity not found: {_param.EntityID}");
-        //     return;
-        // }
     }
 
     protected override void OnClose()
@@ -151,8 +154,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 메뉴 아이템 생성.
         for (int i = 0; i < m_menu_item_datas.Length; i++)
         {
-            var (table, key) = m_menu_item_datas[i].GetLocalizeKey();
-            var text_subject = LocalizationManager.Instance.GetTextObservable(table, key);
+            var localizeKey  = m_menu_item_datas[i].GetLocalizeKey();
+            var text_subject = LocalizationManager.Instance.GetTextObservable(localizeKey.Table, localizeKey.Key);
 
             // TODO: 오브젝트 풀링하는게 더 좋을까?
             var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);

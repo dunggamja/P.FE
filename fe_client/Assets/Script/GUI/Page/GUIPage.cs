@@ -174,8 +174,4 @@ public abstract class GUIPage : GUIBase
     }
     
 
-    async UniTask ShowAsync(CancellationToken _token)
-    {
-        
-    }
 }
