@@ -26,11 +26,20 @@ public class GUIOpenParam
 public abstract class GUIPage : GUIBase
 {
     
-    public Int64        ID            { get; private set; } = 0;
-    public bool         IsInitialized { get; private set; } = false;
-    public EnumGUIType  GUIType       { get; private set; } = EnumGUIType.None;
-    public string       GUIName       { get; private set; } = "";
+    public Int64        ID             { get; private set; } = 0;
+    public bool         IsInitialized  { get; private set; } = false;
+    public EnumGUIType  GUIType        { get; private set; } = EnumGUIType.None;
+    public string       GUIName        { get; private set; } = "";
     public bool         IsInputEnabled { get; private set; } = false;
+    public bool         IsInputFocused { get; private set; } = false;
+
+    public bool         IsInputFocusing
+    {
+        get
+        {
+            return ID == GUIManager.Instance.GetInputFocusGUI();
+        }
+    }
 
     static private Int64 s_id_generator = 0;
     static public Int64 GenerateID()
@@ -52,6 +61,10 @@ public abstract class GUIPage : GUIBase
 
     private Tween m_do_show = null;
     private Tween m_do_hide = null;
+    public  bool  IsVisible { get; private set; } = false;
+    private bool  IsShowing => m_do_show != null && m_do_show.IsPlaying();
+    private bool  IsHiding  => m_do_hide != null && m_do_hide.IsPlaying();
+    
     
 
     bool OnPreProcess_Open(GUIOpenParam _param)
@@ -94,18 +107,26 @@ public abstract class GUIPage : GUIBase
         return true;
     }
 
-
-
-
     public void Open(GUIOpenParam _param)
-    {        
+    { 
+        IsClosing = false;
+
         OnPreProcess_Open(_param);
         
         OnOpen(_param);
+
+
+        // 포커스 처리.
+        if (IsInputFocusing)
+        {
+             SetInputFocus(true);
+        }
     }
 
     public void Close()
     {
+        IsClosing = true;
+
         OnCloseAsync(this.GetCancellationTokenOnDestroy()).Forget();
 
         if (this is IEventReceiver)
@@ -117,19 +138,20 @@ public abstract class GUIPage : GUIBase
     public void Show()
     {
         // 표시 처리중
-        if (m_do_show != null && m_do_show.IsPlaying())
+        if (IsShowing)
         {
             return;
         }
 
         // 숨김 처리중
-        if (m_do_hide != null)
+        if (IsHiding)
         {
-            if (m_do_hide.IsPlaying())
-                m_do_hide.Kill();        
-                
+            m_do_hide.Kill();
             m_do_hide = null;
         }
+
+        // 표시 상태.
+        IsVisible = true;
 
         if (RootCanvasGroup != null)
         {
@@ -146,20 +168,20 @@ public abstract class GUIPage : GUIBase
     public void Hide()
     {
         // 숨김 처리중
-        if (m_do_hide != null && m_do_hide.IsPlaying())
+        if (IsHiding)
         {
             return;
         }
 
         // 표시 처리중
-        if (m_do_show != null)
+        if (IsShowing)
         {
-            if (m_do_show.IsPlaying())
-                m_do_show.Kill();        
-
+            m_do_show.Kill();
             m_do_show = null;
         }
-        
+
+        // 숨김 상태.
+        IsVisible = false;        
 
         if (RootCanvasGroup != null)
         {
@@ -180,14 +202,32 @@ public abstract class GUIPage : GUIBase
 
     protected abstract void OnPostProcess_Close();
 
-    // public abstract void Process_InputEvent(IEventParam _event);
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        // 포커스 처리.
+        SetInputFocus(IsInputFocusing);
+    }
+
+    // protected virtual void OnFocus(Int64 _focus_gui)
+    // {
+    // }
+    
 
     async UniTask OnCloseAsync(CancellationToken _token)
     {
         try
         {
+            
+
+            // 포커스 해제.
+            SetInputFocus(false);
+
+            // 페이지 닫기.
             OnClose();
 
+            // 페이지 숨기기.
             Hide();
             
             // TODO: 이것은 임시로 추후 비동기 처리를 위해 넣은 코드임.
@@ -209,11 +249,25 @@ public abstract class GUIPage : GUIBase
                 Destroy(this.gameObject);
             }            
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            
+            Debug.LogError($"GUIPage: OnCloseAsync failed. {GUIName}, e:{e.Message}");
         }
     }
+
+    public void SetInputFocus(bool _focused)
+    {
+        // 동일한 상태면 처리하지 않음.
+        if (IsInputFocused == _focused)
+            return;
+        
+        IsInputFocused = _focused;
+
+        OnInputFocusChanged(_focused);
+    }
+
+    protected virtual void OnInputFocusChanged(bool _focused) { }
     
+
 
 }

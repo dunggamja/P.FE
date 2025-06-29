@@ -147,9 +147,12 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             localize_key.Key);
 
           // 
-          var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
+          //for (int k = 0; k < 10; k++)
+          //{
+            var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
+            clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
+          //}
        
-          clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
         //   clonedItem.gameObject.SetActive(true);
       }
 

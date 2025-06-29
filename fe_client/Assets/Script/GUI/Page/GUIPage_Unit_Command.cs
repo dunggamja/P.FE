@@ -172,9 +172,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
             
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
-
-            // clonedItem.SetText(m_menu_item_datas[i].GetMenuText());
-            // clonedItem.gameObject.SetActive(true);
         }
 
         // 초기 선택 인덱스 설정 (0번 인덱스 선택)
@@ -256,7 +253,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id)
                     );
 
-                // TODO: 현재 페이지 닫기?
+                // TODO: 현재 페이지 닫기?                
             }
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Wait:
@@ -267,6 +264,23 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;                
         }
         
+    }
+
+
+    protected override void OnInputFocusChanged(bool _focused)
+    {
+        base.OnInputFocusChanged(_focused);
+
+        if (_focused)
+        {
+            // 포커스 처리.
+            Show();
+        }
+        else
+        {
+            // 포커스 해제.
+            Hide();
+        }
     }
 
 }

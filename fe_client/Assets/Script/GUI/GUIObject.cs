@@ -47,6 +47,8 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
     //     transform.localScale    = m_init_local_scale;
     // }
 
+    protected bool IsClosing { get; set; } = false;
+
     virtual protected void Awake()
     {
         StartLoop().Forget();
@@ -64,14 +66,21 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         {
             while (true)
             {
-                // UI 갱신 120프레임
-                await UniTask.WaitForSeconds(1f/120f);
+                // UI 갱신 60프레임 - CancellationToken 추가
+                await UniTask.WaitForSeconds(1f/60f);
+
+                // 닫기 처리중.
+                if (IsClosing)
+                    break;
+
+                // 여기서 cancel 체크?
                 OnLoop();
             } 
         }
         catch (OperationCanceledException)
         {
-            Debug.LogWarning("Task was cancelled");
+            // GameObject가 파괴되면 여기서 Task 종료
+            Debug.LogWarning($"[{gameObject.name}] Task was cancelled");
         }
     }
 

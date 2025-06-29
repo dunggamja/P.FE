@@ -24,7 +24,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         if (!m_cached_attribute.TryGetValue(_type, out var _attributes))
         {
             // EventReceiverAttributes만 선택해서 배열로 만들어줍니다. 
-            _attributes = System.Attribute.GetCustomAttributes(_type)
+            _attributes = System.Attribute.GetCustomAttributes(_type, true)
             .Where(e => e is EventReceiverAttribute)
             .Select(e => e as EventReceiverAttribute)
             .ToArray();
