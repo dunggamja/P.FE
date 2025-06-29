@@ -79,7 +79,14 @@ public class InputHandler_Grid_Select : InputHandler
         OnUpdate_Tile_Move();
 
         // 이동 범위 표시.
-        OnUpdate_DrawMoveRange();
+        Update_DrawMoveRange();
+
+        // 
+        // if (GUIManager.Instance.GetInputFocusGUI() > 0)
+        // {
+        //     var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
+        //     SetChildHandler(input_handler);
+        // }
 
 
         ObjectPool<InputParam_Result>.Return(input_result);
@@ -111,7 +118,7 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnResume()
     {
-        // throw new NotImplementedException();
+        // throw new NotImplementedException();        
     }
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
@@ -193,18 +200,19 @@ public class InputHandler_Grid_Select : InputHandler
 
         if (SelectedEntityID > 0)
         {
+            // 유닛 커맨드 UI 열기.
+            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
+            
+            
             //var entity         = EntityManager.Instance.GetEntity(SelectedEntityID);
             //var faction        = entity?.GetFaction() ?? 0;
             //var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
-            // TESTCODE:            
-            var gui_id        = GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
-            var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
-
-            input_handler.Push_GUI(gui_id);
+            //var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
+            // input_handler.Push_GUI(gui_id);
 
             //Debug.LogWarning($"InputHandler_Grid_Select OnUpdate_Input_Process_Select, gui_id: {gui_id}");
-            SetChildHandler(input_handler);
+            //SetChildHandler(input_handler);
         }
         else
         {
@@ -227,7 +235,7 @@ public class InputHandler_Grid_Select : InputHandler
                     case EnumCommanderType.None:
                     case EnumCommanderType.AI:
                     {
-                        // TODO: 상태창 열기.
+                        // TODO: 상태창 열기. or 공격범위 표시.
                     }
                     break;
                 }
@@ -320,7 +328,7 @@ public class InputHandler_Grid_Select : InputHandler
         
     }
 
-    void OnUpdate_DrawMoveRange()
+    void Update_DrawMoveRange()
     {
         var terrain_map = TerrainMapManager.Instance.TerrainMap;
         if (terrain_map == null)

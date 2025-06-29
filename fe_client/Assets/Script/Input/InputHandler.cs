@@ -65,7 +65,7 @@ public abstract class InputHandler
     public bool IsUpdate      => State == EnumState.Update || State == EnumState.Pause;
 
 
-    protected void SetChildHandler(InputHandler _child_handler)
+    public void SetChildHandler(InputHandler _child_handler)
     {
         ChildHandler = _child_handler;
     }

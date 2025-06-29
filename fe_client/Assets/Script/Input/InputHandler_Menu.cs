@@ -49,31 +49,39 @@ public class InputHandler_UI_Menu : InputHandler
     Vector2Int   MoveDirection      { get; set; }         = Vector2Int.zero; 
     float        MoveInput_LastTime { get; set; }         = 0f;
     
-    Stack<Int64> Stack_GUI          { get; set; } = new();
+    // Stack<Int64> Stack_GUI          { get; set; } = new();
 
-    Int64 FocusGUI => Stack_GUI.Count > 0 ? Stack_GUI.Peek() : 0;
+    Int64 FocusGUI
+    {
+        get
+        {
+            return GUIManager.Instance.GetInputFocusGUI();
+        }
+    }
 
 
     void Reset()
     {
         IsFinish      = false;
         MoveDirection = Vector2Int.zero;
-        Stack_GUI.Clear();
+        // Stack_GUI.Clear();
         // GUI_ID        = 0;
     }
 
-    public void Push_GUI(Int64 _gui_id)
-    {
-        Stack_GUI.Push(_gui_id);
-    }
+    // public void Push_GUI(Int64 _gui_id)
+    // {
+    //     Stack_GUI.Push(_gui_id);
+    // }
 
-    public void Close_FocusGUI()
+    public bool Close_FocusGUI()
     {
-        if (Stack_GUI.Count > 0)
+        if (FocusGUI > 0)
         {
-            var gui_id = Stack_GUI.Pop();
-            GUIManager.Instance.CloseUI(gui_id);
+            GUIManager.Instance.CloseUI(FocusGUI);        
+            return true;
         }
+
+        return false;
     }
 
     protected override void OnStart()
@@ -99,11 +107,13 @@ public class InputHandler_UI_Menu : InputHandler
         OnUpdate_Menu_Move();
         ObjectPool<InputParam_Result>.Return(input_result);
 
+
         // 메뉴가 없으면 종료.
-        if (Stack_GUI.Count == 0)
+        if (FocusGUI == 0)
         {
             IsFinish = true;
-        }
+        }      
+
 
         return IsFinish;
     }
@@ -157,7 +167,12 @@ public class InputHandler_UI_Menu : InputHandler
 
     private void OnUpdate_Input_Process_Select()
     {
+        var gui_id = FocusGUI;
+        if (gui_id == 0)
+            return;
 
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<GUI_Menu_SelectEvent>.Acquire().Set(gui_id));
     }
 
     private void OnUpdate_Input_Process_Cancel()
@@ -208,12 +223,12 @@ public class InputHandler_UI_Menu : InputHandler
     {
         //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
 
-        // 열려있는 메뉴 닫기.
-        while (Stack_GUI.Count > 0)
+        // 열려있는 GUI 모두 닫아줍시다.
+        while(Close_FocusGUI())
         {
-            var gui_id = Stack_GUI.Pop();
-            GUIManager.Instance.CloseUI(gui_id);
+            // 루프 돌면서 닫아줍시다.
         }
+
 
         // 초기화.
         Reset();

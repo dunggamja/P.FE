@@ -24,7 +24,11 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             "gui/page/unit_command_attack", 
 
             // gui type
-            EnumGUIType.Screen)             
+            EnumGUIType.Screen,
+
+            // is input enabled
+            true
+            )             
         { 
             EntityID = _entity_id;  
         }
@@ -47,6 +51,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             ItemID   = _item_id;
         }
     }
+
+    
 
 
     [SerializeField]
@@ -76,7 +82,6 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         m_entity_id = param?.EntityID ?? 0;
 
         UpdateMenuItems();
-        // throw new System.NotImplementedException();
     }
 
     protected override void OnClose()
@@ -94,7 +99,12 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
     public void OnReceiveEvent(IEventParam _event)
     {
-        // throw new System.NotImplementedException();
+        switch (_event)
+        {
+            case GUI_Menu_MoveEvent menu_move_event:
+                OnReceiveEvent_GUI_Menu_MoveEvent(menu_move_event);
+                break;
+        }
     }
 
     void UpdateMenuItems()
@@ -123,28 +133,51 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
       }
 
 
-      // // 메뉴 아이템 생성.
-      // for (int i = 0; i < m_menu_item_datas.Count; i++)
-      // {
-      //     var (table, key) = m_menu_item_datas[i].GetLocalizeKey();
-      //     var text_subject = LocalizationManager.Instance.GetTextObservable(table, key);
+      // 메뉴 아이템 생성.      
+      for (int i = 0, item_index = 0; i < m_menu_item_datas.Count; i++)
+      {
+          var item_id = m_menu_item_datas[i].ItemID;
+          var item  = owner.Inventory.GetItem(item_id);
+          if (item == null)
+            continue;          
 
-      //     // TODO: 오브젝트 풀링하는게 더 좋을까?
-      //     var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
-          
-      //     clonedItem.Initialize(i, m_selected_index_subject, text_subject);
+          var localize_key = item.GetLocalizeKey();
+          var text_subject = LocalizationManager.Instance.GetTextObservable(
+            localize_key.Table, 
+            localize_key.Key);
 
-      //     // clonedItem.SetText(m_menu_item_datas[i].GetMenuText());
-      //     clonedItem.gameObject.SetActive(true);
-      // }
+          // 
+          var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
+       
+          clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
+        //   clonedItem.gameObject.SetActive(true);
+      }
 
+      // 초기 선택 인덱스 설정 (0번 인덱스 선택)
+      m_selected_index_subject.OnNext(0);
     }
 
-    void UpdateLayout()
+
+    // 메뉴 이동 이벤트 수신.
+    void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
     {
-        // throw new System.NotImplementedException();
+        if (_event == null || _event.GUI_ID != ID)
+            return;
 
+        // 이동 방향이 없으면 종료.
+        if (_event.MoveDirection.y  == 0)
+            return;
 
+        
+        // 이동 방향에 따라서 메뉴 아이템 선택.
+        var add_index = _event.MoveDirection.y > 0 ? -1 : +1;
+        var cur_index = m_selected_index_subject.Value;
+        var new_index = cur_index + add_index;
 
+        // 인덱스 범위 체크.
+        new_index     = Math.Clamp(new_index, 0, m_menu_item_datas.Count - 1);
+        
+        // 인덱스 변경.
+        m_selected_index_subject.OnNext(new_index);
     }
 }

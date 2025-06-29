@@ -7,7 +7,7 @@ public partial class InputManager
     // [InputBinding("Grid_Move")]
     public void OnGrid_Move(InputAction.CallbackContext _context)
     {
-        var input_handler_context = GetCurrentInputHandlerContext();
+        var input_handler_context = GetFocusInputHandlerContext();
         if (input_handler_context == null)
         {
             Debug.LogError("InputHandlerContext is null");
@@ -51,7 +51,7 @@ public partial class InputManager
 
     public void OnGrid_Select(InputAction.CallbackContext _context)
     {
-        var input_handler_context = GetCurrentInputHandlerContext();
+        var input_handler_context = GetFocusInputHandlerContext();
         if (input_handler_context == null)
         {
             Debug.LogError("InputHandlerContext is null");
@@ -74,7 +74,7 @@ public partial class InputManager
     // [InputBinding("Grid_Cancel")]
     public void OnGrid_Cancel(InputAction.CallbackContext _context)
     {
-        var input_handler_context = GetCurrentInputHandlerContext();
+        var input_handler_context = GetFocusInputHandlerContext();
         if (input_handler_context == null)
         {
             Debug.LogError("InputHandlerContext is null");

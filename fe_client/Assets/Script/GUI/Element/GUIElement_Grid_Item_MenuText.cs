@@ -43,6 +43,8 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         {
             m_text.text = text;
         });
+
+        gameObject.SetActive(true);
     }
 
 

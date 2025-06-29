@@ -9,15 +9,17 @@ using UnityEngine;
 
 public class GUIOpenParam
 {
-    public Int64             ID      { get; private set; }
-    public string            GUIName { get; private set; }
-    public EnumGUIType       GUIType { get; private set; }
+    public Int64             ID             { get; private set; }
+    public string            GUIName        { get; private set; }
+    public EnumGUIType       GUIType        { get; private set; }
+    public bool              IsInputEnabled { get; private set; } = false;
 
-    protected GUIOpenParam(Int64 _id, string _gui_name, EnumGUIType _gui_type)
+    protected GUIOpenParam(Int64 _id, string _gui_name, EnumGUIType _gui_type, bool _is_input_enabled = false)
     {
-        ID      = _id;
-        GUIName = _gui_name;
-        GUIType = _gui_type;
+        ID             = _id;
+        GUIName        = _gui_name;
+        GUIType        = _gui_type;
+        IsInputEnabled = _is_input_enabled;
     }
 }
 
@@ -28,6 +30,7 @@ public abstract class GUIPage : GUIBase
     public bool         IsInitialized { get; private set; } = false;
     public EnumGUIType  GUIType       { get; private set; } = EnumGUIType.None;
     public string       GUIName       { get; private set; } = "";
+    public bool         IsInputEnabled { get; private set; } = false;
 
     static private Int64 s_id_generator = 0;
     static public Int64 GenerateID()
@@ -72,9 +75,10 @@ public abstract class GUIPage : GUIBase
 
         gameObject.SetActive(false);
 
-        ID            = _param.ID;
-        GUIType       = _param.GUIType;
-        GUIName       = _param.GUIName;
+        ID             = _param.ID;
+        GUIType        = _param.GUIType;
+        GUIName        = _param.GUIName;
+        IsInputEnabled = _param.IsInputEnabled;
         
 
         IsInitialized = true;
@@ -139,6 +143,8 @@ public abstract class GUIPage : GUIBase
     protected abstract void OnClose();
 
     protected abstract void OnPostProcess_Close();
+
+    // public abstract void Process_InputEvent(IEventParam _event);
 
     async UniTask OnCloseAsync(CancellationToken _token)
     {

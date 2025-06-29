@@ -17,9 +17,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
         private PARAM(Int64 _entity_id) 
         : base(
-            GUIPage.GenerateID(),    // id      
-            "gui/page/unit_command", // asset path
-            EnumGUIType.Screen)      // gui type
+            // id      
+            GUIPage.GenerateID(),    
+
+            // asset path
+            "gui/page/unit_command", 
+
+            // gui type
+            EnumGUIType.Screen,      
+
+            // is input enabled
+            true                     
+            )      
         { 
             EntityID = _entity_id;  
         }
@@ -76,9 +85,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 //     break;
             }
 
-            return new LocalizeKey(table, key);
+            return LocalizeKey.Create(table, key);
         }
     }
+
+    
 
 
     [SerializeField]
@@ -163,11 +174,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
 
             // clonedItem.SetText(m_menu_item_datas[i].GetMenuText());
-            clonedItem.gameObject.SetActive(true);
+            // clonedItem.gameObject.SetActive(true);
         }
 
         // 초기 선택 인덱스 설정 (0번 인덱스 선택)
-        SetSelectedIndex(0);
+        m_selected_index_subject.OnNext(0);
     }
 
     private void UpdateLayout()
@@ -194,11 +205,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         }
     }
 
-    // 인덱스 변경 메서드
-    public void SetSelectedIndex(int index)
-    {
-        m_selected_index_subject.OnNext(index);
-    }
+    // // 인덱스 변경 메서드
+    // public void SetSelectedIndex(int index)
+    // {
+    //     m_selected_index_subject.OnNext(index);
+    // }
 
     
     // 메뉴 이동 이벤트 수신.
@@ -212,14 +223,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             return;
 
         
+        // 이동 방향에 따라서 메뉴 아이템 선택.
         var add_index = _event.MoveDirection.y > 0 ? -1 : +1;
         var cur_index = m_selected_index_subject.Value;
         var new_index = cur_index + add_index;
 
-        new_index = Math.Clamp(new_index, 0, m_menu_item_datas.Length - 1);
-        // 이동 방향에 따라서 메뉴 아이템 선택.
+        // 인덱스 범위 체크.
+        new_index     = Math.Clamp(new_index, 0, m_menu_item_datas.Length - 1);
         
-        SetSelectedIndex(new_index);
+        // 인덱스 변경.
+        m_selected_index_subject.OnNext(new_index);
     }
 
     void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
@@ -231,8 +244,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         var cur_index = m_selected_index_subject.Value;
         if (cur_index < 0 || m_menu_item_datas.Length <= cur_index)
             return;
-
-
 
         var menu_type = m_menu_item_datas[cur_index].MenuType;
 

@@ -5,10 +5,15 @@ public struct LocalizeKey
     public readonly string Table;
     public readonly string Key;
 
-    public LocalizeKey(string table, string key)
+    private LocalizeKey(string table, string key)
     {
         Table = table;
         Key   = key;
+    }
+
+    public static LocalizeKey Create(string table, string key)
+    {
+        return new LocalizeKey(table, key);
     }
 
     // // 값 기반 비교를 위한 Equals와 GetHashCode 오버라이드

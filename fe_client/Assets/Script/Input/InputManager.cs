@@ -27,37 +27,36 @@ public partial class InputManager : SingletonMono<InputManager>
 
     InputHandler        m_input_handler         = null;     
 
-    InputHandler        GetCurrentInputHandler()
+    public InputHandler FocusInputHandler
     {
-        var    input_handler  = m_input_handler;
-        while (input_handler != null)
-        {   
-            if (input_handler.ChildHandler == null)
-                break;
+        get
+        {
+            var    input_handler  = m_input_handler;
+            while (input_handler != null)
+            {   
+                if (input_handler.ChildHandler == null)
+                    break;
 
-            input_handler = input_handler.ChildHandler;
+                input_handler = input_handler.ChildHandler;
+            }
+
+            return input_handler;
         }
-
-        return input_handler;
     }
 
-    EnumInputHandlerType GetCurrentInputHandlerType()
+    EnumInputHandlerType FocusInputHandlerType
     {
-        var    input_handler  = m_input_handler;
-        while (input_handler != null)
-        {   
-            if (input_handler.ChildHandler == null)
-                break;
-
-            input_handler = input_handler.ChildHandler;
+        get
+        {
+            
+            var    input_handler  = FocusInputHandler;
+            return input_handler?.HandlerType ?? EnumInputHandlerType.None;
         }
-
-        return input_handler?.HandlerType ?? EnumInputHandlerType.None;
     }
 
-    InputHandlerContext GetCurrentInputHandlerContext()
+    InputHandlerContext GetFocusInputHandlerContext()
     {
-        var input_handler = GetCurrentInputHandler();
+        var input_handler = FocusInputHandler;
         return input_handler?.Context ?? null;
     }
 
@@ -101,11 +100,21 @@ public partial class InputManager : SingletonMono<InputManager>
     {
         base.OnLoop(); 
 
+        // UI 입력이 필요한 상황일 경우 Handler 변경.
+        if (GUIManager.Instance.HasInputFocusGUI() 
+        &&  FocusInputHandlerType != EnumInputHandlerType.UI_Menu)
+        {
+            // TODO: Child 보다는 FSM이 나을거 같음...
+            var ui_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
+            FocusInputHandler?.SetChildHandler(ui_handler);
+        }
+
+
         // InputAction의 Map 변경 처리...
         if (m_player_input != null)
         {
             var prev_input_map_name  = m_player_input.currentActionMap?.name ?? string.Empty;
-            var cur_input_map_name   = GetInputMapName(GetCurrentInputHandlerType());
+            var cur_input_map_name   = GetInputMapName(FocusInputHandlerType);
             if (prev_input_map_name != cur_input_map_name)
                 m_player_input.SwitchCurrentActionMap(cur_input_map_name);
         }

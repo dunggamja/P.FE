@@ -19,6 +19,8 @@ public class GUIManager : SingletonMono<GUIManager>
 
     Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
     Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // 이름, serial number
+
+    List<Int64>                        m_input_enable_gui_stack  = new();
     AsyncOperationTracker              m_async_operation_tracker = new();
 
 
@@ -79,6 +81,10 @@ public class GUIManager : SingletonMono<GUIManager>
                     m_active_gui_by_name.Add(_param.GUIName, list_gui_id);
                 }
                 list_gui_id.Add(_param.ID);
+
+                // 입력 가능한 UI 스택에 추가.
+                if (_param.IsInputEnabled)
+                    m_input_enable_gui_stack.Add(_param.ID);
             }
 
             Transform _ui_root = null;
@@ -141,6 +147,10 @@ public class GUIManager : SingletonMono<GUIManager>
                 // 이름에 해당하는 UI 목록에 추가.
                 if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id))
                     list_gui_id.Remove(_param.ID);
+
+                // 입력 가능한 UI 스택에서 제거.
+                if (m_input_enable_gui_stack.Contains(_param.ID))
+                    m_input_enable_gui_stack.Remove(_param.ID);
             }
         }
         
@@ -170,6 +180,10 @@ public class GUIManager : SingletonMono<GUIManager>
                 if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var list_gui_id))
                     list_gui_id.Remove(_id);
 
+                // 입력 가능한 UI 스택에서 제거.
+                if (m_input_enable_gui_stack.Contains(_id))
+                    m_input_enable_gui_stack.Remove(_id);
+
                 // UI 닫기 처리.
                 gui_object.Close();
             }
@@ -187,6 +201,21 @@ public class GUIManager : SingletonMono<GUIManager>
 
         return false;
     }
+
+    public Int64 GetInputFocusGUI()
+    {
+        if (m_input_enable_gui_stack.Count == 0)
+            return 0;
+        
+        return m_input_enable_gui_stack[m_input_enable_gui_stack.Count - 1];
+    }
+
+    public bool HasInputFocusGUI()
+    {
+        return GetInputFocusGUI() > 0;
+    }
+
+
 
 
 }

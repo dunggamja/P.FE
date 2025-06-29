@@ -53,5 +53,11 @@ public partial class Item
     }
 
 
+    public LocalizeKey GetLocalizeKey()
+    {
+        return LocalizeKey.Create(string.Empty, string.Empty);
+    }
+
+
     
 }
