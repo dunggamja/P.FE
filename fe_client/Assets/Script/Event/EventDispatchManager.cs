@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 
 public class EventDispatchManager : SingletonMono<EventDispatchManager>
@@ -131,10 +132,19 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         var event_type = _event.GetType();
         if (m_receivers_by_type.TryGetValue(event_type, out var receivers))
         {
-            foreach (var e in receivers)
+            if (receivers != null)
             {
-                if (e != null)
-                    e.OnReceiveEvent(_event);
+                var temp_receivers = ListPool<IEventReceiver>.Acquire();
+                temp_receivers.AddRange(receivers);
+
+                // 이벤트 디스패치 처리.
+                foreach (var e in temp_receivers)
+                {
+                    if (e != null)
+                        e.OnReceiveEvent(_event);
+                }
+
+                ListPool<IEventReceiver>.Return(temp_receivers);
             }
         }
 

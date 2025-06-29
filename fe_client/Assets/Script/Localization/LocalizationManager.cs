@@ -22,6 +22,9 @@ public class LocalizationManager : Singleton<LocalizationManager>
 
     public Observable<string> GetTextObservable(string _table, string _key)
     {
+        if (string.IsNullOrEmpty(_table) || string.IsNullOrEmpty(_key))
+            return Observable.Return(string.Empty);
+
         return Observable.Create<string>(observer =>
         {
             GetTextAsync(_table, _key).ContinueWith(text =>

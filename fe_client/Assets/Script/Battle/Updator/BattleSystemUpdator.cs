@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 
@@ -17,6 +18,9 @@ namespace Battle
 
             // 프로파일링을 위해 임시 처리
             // Debug.unityLogger.logEnabled = false;
+
+            // DOTween 로그 레벨 설정 - Init()을 사용하여 올바르게 설정
+            DOTween.Init(false, false, LogBehaviour.ErrorsOnly);
 
             // 지형 시스템 초기화
             Test_BattleSystem_Setup_Terrain();

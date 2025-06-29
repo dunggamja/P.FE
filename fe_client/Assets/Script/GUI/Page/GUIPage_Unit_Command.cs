@@ -250,6 +250,14 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         switch (menu_type)
         {
             case MENU_ITEM_DATA.EnumMenuType.Attack:
+            {
+                // 공격 GUI 열기.
+                GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id)
+                    );
+
+                // TODO: 현재 페이지 닫기?
+            }
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Wait:
                 break;

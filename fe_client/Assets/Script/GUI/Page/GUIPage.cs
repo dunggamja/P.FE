@@ -49,6 +49,9 @@ public abstract class GUIPage : GUIBase
             return m_root_canvas_group;
         }
     }
+
+    private Tween m_do_show = null;
+    private Tween m_do_hide = null;
     
 
     bool OnPreProcess_Open(GUIOpenParam _param)
@@ -113,8 +116,24 @@ public abstract class GUIPage : GUIBase
 
     public void Show()
     {
+        // 钎矫 贸府吝
+        if (m_do_show != null && m_do_show.IsPlaying())
+        {
+            return;
+        }
+
+        // 见辫 贸府吝
+        if (m_do_hide != null)
+        {
+            if (m_do_hide.IsPlaying())
+                m_do_hide.Kill();        
+                
+            m_do_hide = null;
+        }
+
         if (RootCanvasGroup != null)
         {
+            m_do_show = 
             RootCanvasGroup
                 .DOFade(1, 0.1f)
                 .From(0f)
@@ -126,8 +145,25 @@ public abstract class GUIPage : GUIBase
 
     public void Hide()
     {
+        // 见辫 贸府吝
+        if (m_do_hide != null && m_do_hide.IsPlaying())
+        {
+            return;
+        }
+
+        // 钎矫 贸府吝
+        if (m_do_show != null)
+        {
+            if (m_do_show.IsPlaying())
+                m_do_show.Kill();        
+
+            m_do_show = null;
+        }
+        
+
         if (RootCanvasGroup != null)
         {
+            m_do_hide = 
             RootCanvasGroup
                 .DOFade(0f, 0.1f)                
                 .SetEase(Ease.OutQuad)
