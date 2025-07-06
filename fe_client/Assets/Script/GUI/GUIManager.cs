@@ -19,7 +19,9 @@ public class GUIManager : SingletonMono<GUIManager>
 
     Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
     Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // 이름, serial number
-    List<Int64>                        m_input_gui_stack         = new();
+    List<Int64>                        m_focus_gui_stack         = new();
+
+
 
     AsyncOperationTracker              m_async_operation_tracker = new();
 
@@ -59,6 +61,32 @@ public class GUIManager : SingletonMono<GUIManager>
         // 취소 토큰 추적.  
         m_async_operation_tracker.TrackOperation(_param.ID, cts);
 
+        
+        {
+            // UI 열기 전 포커스 된 GUI ID
+            var prev_focus_gui = GetInputFocusGUI();
+
+            // 활성화된 UI 목록에 추가.
+            m_active_gui.Add(_param.ID, null);
+
+            // 이름에 해당하는 UI 목록에 추가.
+            if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id) == false)
+            {
+                list_gui_id = new HashSet<Int64>(); 
+                m_active_gui_by_name.Add(_param.GUIName, list_gui_id);
+            }
+            list_gui_id.Add(_param.ID);
+
+            // 입력 가능한 UI 스택에 추가.
+            if (_param.IsInputEnabled)
+            {
+                m_focus_gui_stack.Add(_param.ID);
+            }
+
+            // UI 열기 전 포커싱되었던 GUI 처리.
+            Process_ChangeFocusGUI(prev_focus_gui);
+        }
+
         // UI 열기.
         OpenUIAsync(_param, cts.Token).Forget();
 
@@ -70,25 +98,7 @@ public class GUIManager : SingletonMono<GUIManager>
     {
         try
         {
-            // 활성화된 UI 목록에 추가.
-            {
-                m_active_gui.Add(_param.ID, null);
-
-                // 이름에 해당하는 UI 목록에 추가.
-                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id) == false)
-                {
-                    list_gui_id = new HashSet<Int64>(); 
-                    m_active_gui_by_name.Add(_param.GUIName, list_gui_id);
-                }
-                list_gui_id.Add(_param.ID);
-
-                // 입력 가능한 UI 스택에 추가.
-                if (_param.IsInputEnabled)
-                {
-                    m_input_gui_stack.Add(_param.ID);
-                }
-            }
-
+            
             Transform _ui_root = null;
 
              switch(_param.GUIType)
@@ -137,23 +147,14 @@ public class GUIManager : SingletonMono<GUIManager>
 
             // UI 열기.
             gui_page.Open(_param);            
+
+            
         }
         catch (Exception e)
         {
             Debug.LogError($"GUIManager: OpenUIAsync canceled. {_param.GUIName}, e:{e.Message}");
 
-            {
-                // 취소 시 목록 제거.
-                m_active_gui.Remove(_param.ID);
-
-                // 이름에 해당하는 UI 목록에 추가.
-                if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id))
-                    list_gui_id.Remove(_param.ID);
-
-                // 입력 가능한 UI 스택에서 제거.
-                if (m_input_gui_stack.Contains(_param.ID))
-                    m_input_gui_stack.Remove(_param.ID);
-            }
+            CloseUI(_param.ID);
         }
         
     }
@@ -171,6 +172,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public void CloseUI(Int64 _id)
     {
+        // 컨테이너 제거 처리.
         if (m_active_gui.TryGetValue(_id, out var gui_object))
         {
             if (gui_object != null)
@@ -183,16 +185,51 @@ public class GUIManager : SingletonMono<GUIManager>
                     list_gui_id.Remove(_id);
 
                 // 입력 가능한 UI 스택에서 제거.
-                if (m_input_gui_stack.Contains(_id))
-                    m_input_gui_stack.Remove(_id);
+                if (m_focus_gui_stack.Contains(_id))
+                    m_focus_gui_stack.Remove(_id);
 
                 // UI 닫기 처리.
                 gui_object.Close();
             }
+
         }
 
         // 취소 토큰에 대해서도 처리.
         m_async_operation_tracker.TryCancelOperation(_id);
+
+        // 
+        Process_ChangeFocusGUI(GetInputFocusGUI());
+    }
+
+    // 레포지토리 변경 후 처리.
+    void Process_ChangeFocusGUI(Int64 _gui_id)
+    {
+        if (_gui_id == 0)
+            return;
+
+        var focus_gui = GetGUIPage(_gui_id);
+        if (focus_gui != null)
+        {
+            var is_focus = (GetInputFocusGUI() == _gui_id);
+            if (is_focus)
+            {
+                // 포커스 처리.
+                focus_gui.SetInputFocus(true);
+            }
+            else
+            {
+                // 포커스 해제.
+                focus_gui.SetInputFocus(false);
+            }
+        }
+    }
+
+    public GUIPage GetGUIPage(Int64 _id)
+    {
+        if (m_active_gui.TryGetValue(_id, out var gui_object))
+            return gui_object;
+        
+        return null;
     }
 
 
@@ -206,16 +243,21 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public Int64 GetInputFocusGUI()
     {
-        if (m_input_gui_stack.Count == 0)
+        if (m_focus_gui_stack.Count == 0)
             return 0;
         
-        return m_input_gui_stack[m_input_gui_stack.Count - 1];
+        return m_focus_gui_stack[m_focus_gui_stack.Count - 1];
     }
 
     public bool  HasInputFocusGUI()
     {
         return GetInputFocusGUI() > 0;
     }
+
+
+
+
+
 
     // bool InsertInputGUI(Int64 _id)
     // {

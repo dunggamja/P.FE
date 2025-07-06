@@ -202,13 +202,13 @@ public abstract class GUIPage : GUIBase
 
     protected abstract void OnPostProcess_Close();
 
-    protected override void OnLoop()
-    {
-        base.OnLoop();
+    // protected override void OnLoop()
+    // {
+    //     base.OnLoop();
 
-        // 器目胶 贸府.
-        SetInputFocus(IsInputFocusing);
-    }
+    //     // 器目胶 贸府.
+    //     // SetInputFocus(IsInputFocusing);
+    // }
 
     // protected virtual void OnFocus(Int64 _focus_gui)
     // {
@@ -219,8 +219,6 @@ public abstract class GUIPage : GUIBase
     {
         try
         {
-            
-
             // 器目胶 秦力.
             SetInputFocus(false);
 
@@ -267,6 +265,8 @@ public abstract class GUIPage : GUIBase
     }
 
     protected virtual void OnInputFocusChanged(bool _focused) { }
+
+    
     
 
 
