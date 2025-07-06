@@ -85,15 +85,15 @@ namespace Battle
     {
       None = 0,
   
-      Might_Physics  , // 힘
-      Might_Magic    , // 마력
-      Hit            , // 명중
-      Critical       , // 치명
-      Weight         , // 무게
-      Dodge          , // 회피
-      Dodge_Critical , // 필살회피
-      Range          , // 사거리
-      Range_Min      , // 사거리. (최소)
+      Might_Physics   = 1, // 힘
+      Might_Magic     = 2, // 마력
+      Hit             = 3, // 명중
+      Critical        = 4, // 치명
+      Weight          = 5, // 무게
+      Dodge           = 6, // 회피
+      Dodge_Critical  = 7, // 필살회피
+      Range           = 8, // 사거리
+      Range_Min       = 9, // 사거리. (최소)
     }
 
 

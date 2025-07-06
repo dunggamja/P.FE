@@ -19,7 +19,11 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 215443562496
-    m_Localized: "\uD14C\uC2A4\uD2B8\uB85C\uCEEC\uB77C\uC774\uC9D5"
+    m_Localized: Iron Sword
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834214520086528
+    m_Localized: Standard Sword
     m_Metadata:
       m_Items: []
   references:

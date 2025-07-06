@@ -16,7 +16,11 @@ MonoBehaviour:
   m_TableCollectionNameGuidString: 95ef37a24657242f297ae93075644055
   m_Entries:
   - m_Id: 215443562496
-    m_Key: test_key
+    m_Key: weapon_sword_1_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834214520086528
+    m_Key: weapon_sword_1_desc
     m_Metadata:
       m_Items: []
   m_Metadata:
