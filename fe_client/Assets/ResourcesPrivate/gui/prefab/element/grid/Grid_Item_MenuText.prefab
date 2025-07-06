@@ -65,10 +65,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u3139\u3147\u3147"
+  m_text: "\u3147\u3139\u3147\u3139\u3147"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2a457ee91c2dd40e4aa52509eb596a6f, type: 2}
-  m_sharedMaterial: {fileID: -5922057813950897486, guid: 2a457ee91c2dd40e4aa52509eb596a6f, type: 2}
+  m_sharedMaterial: {fileID: -5381920052588107441, guid: 2a457ee91c2dd40e4aa52509eb596a6f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
