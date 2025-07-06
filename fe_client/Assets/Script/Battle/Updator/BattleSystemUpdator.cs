@@ -10,11 +10,16 @@ namespace Battle
 
     public class BattleSystemUpdator : SingletonMono<BattleSystemUpdator>
     {
+
+        public bool IsInitialized { get; private set; } = false;
+
         protected override float LoopInterval => Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
 
         protected override void OnInitialize()
         {
             base.OnInitialize();
+
+            IsInitialized = false;
 
             // 프로파일링을 위해 임시 처리
             // Debug.unityLogger.logEnabled = false;
@@ -22,16 +27,19 @@ namespace Battle
             // DOTween 로그 레벨 설정 - Init()을 사용하여 올바르게 설정
             DOTween.Init(false, false, LogBehaviour.ErrorsOnly);
 
-            // 지형 시스템 초기화
-            Test_BattleSystem_Setup_Terrain();
 
-            // 유닛 생성 & 능력치 셋팅.
-            Test_BattleSystem_Setup_Unit();
+            // 게임 데이터 초기화.
+            Initialize_GameData().Forget();
         }
+
+        
 
         protected override void OnLoop()
         {
             base.OnLoop();
+
+            if (IsInitialized == false)
+                return;
 
             BattleSystemManager.Instance.Update();
         }
@@ -41,6 +49,21 @@ namespace Battle
         // {
         //     base.Start();
         // }
+
+        async UniTask Initialize_GameData()
+        {
+            // 시트 데이터 로드.
+            await DataManager.Instance.LoadSheetData();
+
+            // 지형 시스템 초기화
+            Test_BattleSystem_Setup_Terrain();
+
+            // 유닛 생성 & 능력치 셋팅.
+            Test_BattleSystem_Setup_Unit();
+
+            IsInitialized = true;
+        }
+
 
 
         void Test_BattleSystem_Setup_Terrain()

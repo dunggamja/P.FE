@@ -26,6 +26,14 @@ MonoBehaviour:
     m_Localized: Standard Sword
     m_Metadata:
       m_Items: []
+  - m_Id: 2837995475427328
+    m_Localized: Critical Sword
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2838023984111616
+    m_Localized: Kill Sword
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

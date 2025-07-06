@@ -23,6 +23,14 @@ MonoBehaviour:
     m_Key: weapon_sword_1_desc
     m_Metadata:
       m_Items: []
+  - m_Id: 2838023984111616
+    m_Key: weapon_sword_2_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2837995475427328
+    m_Key: weapon_sword_2_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

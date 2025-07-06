@@ -42,9 +42,12 @@ public class WorldObject : MonoBehaviour
     }
 
     public void SetPositionData(Vector3 _position, Vector3 _position_prev, float _position_time)
-    {
-        m_position      = _position;
-        m_position_prev = _position_prev;
+    { 
+        // 월드 오브젝트의 크기를 고려하여 위치 보정
+        var half_size   = new Vector3(1f, 0f, 1f) * 0.5f;
+        
+        m_position      = _position + half_size;
+        m_position_prev = _position_prev + half_size;
         m_position_time = _position_time;
     }
 
