@@ -66,8 +66,8 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         {
             while (true)
             {
-                // UI 갱신 60프레임 - CancellationToken 추가
-                await UniTask.WaitForSeconds(1f/60f);
+                // UI 갱신 30프레임 - CancellationToken 추가
+                await UniTask.WaitForSeconds(1f/30f);
 
                 // 닫기 처리중.
                 if (IsClosing)

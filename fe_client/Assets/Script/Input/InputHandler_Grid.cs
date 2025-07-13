@@ -349,7 +349,10 @@ public class InputHandler_Grid_Select : InputHandler
                 | (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
 
             _entityID:    
-                draw_entity_id);
+                draw_entity_id,
+                
+            _use_base_position: 
+                true);
 
         if (draw_entity_id == 0)
         {

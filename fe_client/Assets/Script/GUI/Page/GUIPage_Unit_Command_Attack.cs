@@ -50,6 +50,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             Index    = _index;
             ItemID   = _item_id;
         }
+        
+        static public MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0, 0);
     }
 
     
@@ -71,6 +73,18 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     private Int64                         m_entity_id              = 0;           
     private List<MENU_ITEM_DATA>          m_menu_item_datas        = new();
     private BehaviorSubject<int>          m_selected_index_subject = new(0);
+
+    private MENU_ITEM_DATA SelectedItemData
+    {
+        get
+        {
+            var cur_index = m_selected_index_subject.Value;
+            if (cur_index < 0 || cur_index >= m_menu_item_datas.Count)
+                return MENU_ITEM_DATA.Empty;
+
+            return m_menu_item_datas[cur_index];
+        }
+    }
 
 
 
@@ -103,6 +117,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         {
             case GUI_Menu_MoveEvent menu_move_event:
                 OnReceiveEvent_GUI_Menu_MoveEvent(menu_move_event);
+                break;
+
+            case GUI_Menu_SelectEvent menu_select_event:
+                OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
                 break;
         }
     }
@@ -182,5 +200,22 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         
         // 인덱스 변경.
         m_selected_index_subject.OnNext(new_index);
+    }
+
+    void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        // 선택 아이템 처리.
+        //var select_item = SelectedItemData;
+
+
+
+
+        // // 선택 아이템 처리.
+        // var item = EntityManager.Instance.GetEntity(m_entity_id)?.Inventory.GetItem(item_id);
+        // if (item == null)
+        //     return;
     }
 }

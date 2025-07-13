@@ -24,35 +24,37 @@ namespace Battle
 
             PathVehicle.Setup(position_cur, position_prev);
 
-            // 이전 위치 셀 점유 해제. 
-            if (_cell_position_event == EnumCellPositionEvent.Exit
-            ||  _cell_position_event == EnumCellPositionEvent.Move)
-            {
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
-                    ID,
-                    PathZOCFaction,
-                    Cell_Prev,
-                    _is_occupy: false));
-            }
+            
 
-
-            // 새로운 위치 셀 점유.
-            if (_cell_position_event == EnumCellPositionEvent.Enter
-            ||  _cell_position_event == EnumCellPositionEvent.Move)
-            {
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
-                    ID,
-                    PathZOCFaction,
-                    Cell,
-                    _is_occupy: true));
-            }
-
-            // 이동 완료시 기준 위치 갱신.
+            // 실제 이동되었을 경우 처리.
             if (_is_plan == false)
             {
                 PathBasePosition = Cell;
+
+                // 이전 위치 셀 점유 해제. 
+                if (_cell_position_event == EnumCellPositionEvent.Exit
+                ||  _cell_position_event == EnumCellPositionEvent.Move)
+                {
+                    EventDispatchManager.Instance.UpdateEvent(
+                        ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
+                        ID,
+                        PathZOCFaction,
+                        Cell_Prev,
+                        _is_occupy: false));
+                }
+
+
+                // 새로운 위치 셀 점유.
+                if (_cell_position_event == EnumCellPositionEvent.Enter
+                ||  _cell_position_event == EnumCellPositionEvent.Move)
+                {
+                    EventDispatchManager.Instance.UpdateEvent(
+                        ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
+                        ID,
+                        PathZOCFaction,
+                        Cell,
+                        _is_occupy: true));
+                }
             }
 
 

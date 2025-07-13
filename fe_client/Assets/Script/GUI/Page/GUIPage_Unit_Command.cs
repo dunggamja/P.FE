@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using R3;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using Battle;
 
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
@@ -75,18 +76,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     table = "localization_base";
                     key   = "ui_menu_wait";
                     break;
-                // case EnumMenuType.Skill: 
-                //     table = "localization_base";
-                //     key   = "ui_menu_skill";
-                //     break;
-                // case EnumMenuType.Item:  
-                //     table = "localization_base";
-                //     key   = "ui_menu_item";
-                //     break;
             }
 
             return LocalizeKey.Create(table, key);
         }
+
+        public static MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0, EnumMenuType.None);
     }
 
     
@@ -109,6 +104,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private MENU_ITEM_DATA[]              m_menu_item_datas;
     private (bool init, Vector2 value)    m_grid_menu_padding      = (false, Vector2.zero);  
     private BehaviorSubject<int>          m_selected_index_subject = new(0);
+
+    private MENU_ITEM_DATA SelectedItemData
+    {
+        get
+        {
+            var cur_index = m_selected_index_subject.Value;
+            if (cur_index < 0 || cur_index >= m_menu_item_datas.Length)
+                return MENU_ITEM_DATA.Empty;
+
+            return m_menu_item_datas[cur_index];
+        }
+    }
 
 
     public void OnReceiveEvent(IEventParam _event)
@@ -139,8 +146,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         UpdateLayout();
     }
 
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        // 범위 표시.
+        UpdateDrawRange();
+    }
+
     protected override void OnClose()
     {
+        // 범위 표시 해제.
+        BattleSystemManager.Instance.DrawRange.Clear();
     }
 
     protected override void OnPostProcess_Close()
@@ -230,6 +247,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         
         // 인덱스 변경.
         m_selected_index_subject.OnNext(new_index);
+
+        // 범위 표시.
+        UpdateDrawRange();
     }
 
     void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
@@ -237,14 +257,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // 선택 이벤트 처리.
-        var cur_index = m_selected_index_subject.Value;
-        if (cur_index < 0 || m_menu_item_datas.Length <= cur_index)
-            return;
-
-        var menu_type = m_menu_item_datas[cur_index].MenuType;
-
-        switch (menu_type)
+        // 선택 이벤트 처리.        
+        switch (SelectedItemData.MenuType)
         {
             case MENU_ITEM_DATA.EnumMenuType.Attack:
             {
@@ -252,17 +266,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 GUIManager.Instance.OpenUI(
                     GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id)
                     );
-
-                // TODO: 현재 페이지 닫기?                
             }
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Wait:
+            case MENU_ITEM_DATA.EnumMenuType.Wait:                
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Skill:
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Item:
                 break;                
         }
+
         
     }
 
@@ -273,14 +286,32 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
         if (_focused)
         {
-            // 포커스 처리.
+            // 포커싱.
             Show();
         }
         else
         {
-            // 포커스 해제.
+            // 포커싱 해제.
             Hide();
         }
+    }
+
+    private void UpdateDrawRange()
+    {
+        int draw_flag = 0;
+        switch (SelectedItemData.MenuType)
+        {
+            case MENU_ITEM_DATA.EnumMenuType.Attack:
+                draw_flag = (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+                break;
+        }
+
+        // 범위 표시.
+        BattleSystemManager.Instance.DrawRange.DrawRange(
+            _draw_flag: draw_flag,
+            _entityID: m_entity_id,
+            _use_base_position: false);
+
     }
 
 }

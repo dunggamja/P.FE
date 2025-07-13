@@ -25,6 +25,8 @@ namespace Battle.MoveRange
       public HashSet<(int x, int y)> List_Move   { get; set; } = new();
       public HashSet<(int x, int y)> List_Weapon { get; set; } = new();
 
+
+
       public void Visit(int _visit_x, int _visit_y)
       {
           List_Move.Add((_visit_x, _visit_y));
@@ -69,7 +71,9 @@ namespace Battle.MoveRange
       public MoveRangeVisitor SetData(
         int          _draw_flag,
         TerrainMap   _terrain, 
-        Entity       _entity_object)
+        Entity       _entity_object,
+        bool         _use_base_position,
+        Int64        _use_weapon_id)
       {
           DrawFlag     = _draw_flag;
           TerrainMap   = _terrain;
@@ -78,7 +82,9 @@ namespace Battle.MoveRange
           {
               Visitor    = _entity_object;
               VisitorID    = _entity_object.ID;
-              Position     = _entity_object.PathBasePosition;
+              Position     = (_use_base_position) 
+                           ? _entity_object.PathBasePosition 
+                           : _entity_object.Cell;
 
               if ((DrawFlag & (int)EnumDrawFlag.MoveRange) != 0)
               {
@@ -87,7 +93,7 @@ namespace Battle.MoveRange
 
               if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
               {
-                WeaponRange  = _entity_object.GetWeaponRange();
+                WeaponRange  = _entity_object.GetWeaponRange(_use_weapon_id);
               }
           }
 
@@ -116,13 +122,22 @@ namespace Battle.MoveRange
 
     public int           DrawFlag         { get; private set; } = 0;
     public Int64         DrawEntityID     { get; private set; } = 0;
+    public bool          UseBasePosition  { get; private set; } = false;
+    public Int64         UseWeaponID      { get; private set; } = 0;
     public List<Int64>   VFXList          { get; private set; } = new List<Int64>();
     MoveRangeVisitor     MoveRangeVisitor { get; set; }         = new();
 
-    public void DrawRange(int _draw_flag, Int64 _entityID)
+
+    public void DrawRange(int   _draw_flag
+                        , Int64 _entityID
+                        , bool  _use_base_position
+                        , Int64 _use_weapon_id = 0)
     {
-      // 이미 그려져있으면 처리하지 않는다.
-      if (DrawFlag == _draw_flag && DrawEntityID == _entityID)
+      // 이미 동일한 Param으로 그려져있으면 처리하지 않는다.
+      if (DrawFlag        == _draw_flag 
+      &&  DrawEntityID    == _entityID
+      &&  UseBasePosition == _use_base_position
+      &&  UseWeaponID     == _use_weapon_id)
         return;
 
       Clear();
@@ -131,15 +146,22 @@ namespace Battle.MoveRange
       if (_draw_flag == 0 || _entityID == 0)
         return;
 
-      DrawFlag     = _draw_flag;
-      DrawEntityID = _entityID;
+      DrawFlag        = _draw_flag;
+      DrawEntityID    = _entityID;
+      UseBasePosition = _use_base_position;
+      UseWeaponID     = _use_weapon_id;
 
       var terrain_map   = TerrainMapManager.Instance.TerrainMap;
       var entity_object = EntityManager.Instance.GetEntity(DrawEntityID);
 
       // 탐색.
       PathAlgorithm.FloodFill(
-        MoveRangeVisitor.SetData(_draw_flag, terrain_map, entity_object));
+        MoveRangeVisitor.SetData(
+          _draw_flag, 
+          terrain_map, 
+          entity_object, 
+          UseBasePosition, 
+          UseWeaponID));
 
 
       // 이동 범위 표시.
