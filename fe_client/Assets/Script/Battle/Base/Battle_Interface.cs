@@ -20,15 +20,15 @@ namespace Battle
     /// <summary>
     /// 무기
     /// </summary>
-    public interface IWeapon
-    {
-        Int64 OwnerID { get; }
-        Int64 ItemID  { get; }
-        int  GetStatus(EnumWeaponStatus _status_type);
-        bool HasAttribute(EnumWeaponAttribute _attribute_type);
-        void Equip(Int64 _item_id);
-        void Unequip();
-    }
+    // public interface IWeapon
+    // {
+    //     Int64 OwnerID { get; }
+    //     Int64 ItemID  { get; }
+    //     int  GetStatus(EnumWeaponStatus _status_type);
+    //     bool HasAttribute(EnumWeaponAttribute _attribute_type);
+    //     void Equip(Int64 _item_id);
+    //     void Unequip();
+    // }
 
     /// <summary>
     /// 지형효과

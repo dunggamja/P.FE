@@ -27,7 +27,7 @@ namespace Battle
         // };
 
         /// <summary> 무기 상성관계 체크. </summary>
-        public static EnumAdvantageState Calculate_Advantage(IWeapon _source, IWeapon _target)
+        public static EnumAdvantageState Calculate_Advantage(Weapon _source, Weapon _target)
         {
             // TODO: 무기 상서에 따른 명중률 보정은 일단 제거해봅니다. 
             // foreach ((var advantage, var disadvantage) in s_default_advantage)

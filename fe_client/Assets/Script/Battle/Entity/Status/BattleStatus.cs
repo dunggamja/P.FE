@@ -17,7 +17,7 @@ namespace Battle
         public IOwner         Owner   { get; private set; }
         public IStatus        Status  { get; private set; }
         public IBuff          Buff    { get; private set; }
-        public IWeapon        Weapon  { get; private set; }
+        public Weapon         Weapon  { get; private set; }
         public ITerrain       Terrain { get; private set; }
         //public IBlackBoard    BlackBoard    { get; }
         //public IActionCounter ActionCounter { get; }
@@ -46,7 +46,7 @@ namespace Battle
             return buff_value.Calculate(status);
         }
 
-        public int GetBuffedWeaponStatus(IWeapon _weapon, EnumWeaponStatus _weapon_status, EnumSituationType _situation_type = EnumSituationType.None)
+        public int GetBuffedWeaponStatus(Weapon _weapon, EnumWeaponStatus _weapon_status, EnumSituationType _situation_type = EnumSituationType.None)
         {
             var status     = _weapon.GetStatus(_weapon_status);
 

@@ -49,7 +49,7 @@ public partial class Item
             return false;
         
         // 동일한 아이템 장착.
-        var owner_weapon = owner_entity.StatusManager.Weapon as Weapon;
+        var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon == null || owner_weapon.ItemID == ID)
             return false;
         
@@ -68,7 +68,7 @@ public partial class Item
             return false;
 
         // 다른 아이템 해제.
-        var owner_weapon = owner_entity.StatusManager.Weapon as Weapon;
+        var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon == null || owner_weapon.ItemID != ID)
             return false;
 
@@ -85,7 +85,7 @@ public partial class Item
             return false;
 
         // 아이템 장착.
-        var owner_weapon  = owner_entity.StatusManager.Weapon as Weapon;
+        var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon != null)                                    
             owner_weapon.Equip(ID);
 
@@ -100,7 +100,7 @@ public partial class Item
             return false;
 
         // 아이템 장착.
-        var owner_weapon  = owner_entity.StatusManager.Weapon as Weapon;
+        var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon != null)                                    
             owner_weapon.Unequip();
             

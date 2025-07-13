@@ -104,7 +104,7 @@ public partial class InputManager : SingletonMono<InputManager>
         if (GUIManager.Instance.HasInputFocusGUI() 
         &&  FocusInputHandlerType != EnumInputHandlerType.UI_Menu)
         {
-            // TODO: Child 보다는 FSM이 나을거 같음...
+            // TODO: Child 보다는 FSM으로?
             var ui_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
             FocusInputHandler?.SetChildHandler(ui_handler);
         }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DataManager : Singleton<DataManager>
 {
-    public bool IsLoaded { get; private set; } = false;
+    
 
     public sheet_weapon WeaponSheet { get; private set; }
 
@@ -17,6 +17,9 @@ public class DataManager : Singleton<DataManager>
     public async UniTask LoadSheetData()
     {
         WeaponSheet = await AssetManager.Instance.LoadAssetAsync<sheet_weapon>(AssetName.SHEET_WEAPON);
+
+        
+        WeaponSheet.Initialize();     
     }
 }
 

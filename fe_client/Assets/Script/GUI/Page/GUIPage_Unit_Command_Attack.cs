@@ -141,7 +141,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
           if (item == null)
             continue;          
 
-          var localize_key = item.GetLocalizeKey();
+          var localize_key = item.GetLocalizeName();
           var text_subject = LocalizationManager.Instance.GetTextObservable(
             localize_key.Table, 
             localize_key.Key);

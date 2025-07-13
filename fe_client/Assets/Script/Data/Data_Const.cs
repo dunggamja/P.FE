@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public static class AssetName
@@ -13,5 +14,10 @@ public static class AssetName
 
     public const string SHEET_WEAPON     = "sheet/weapon";
 
+}
 
+public static class Data_Const
+{
+    public const Int32 KIND_WEAPON_SWORD_IRON = 1;
+    public const Int32 KIND_WEAPON_SWORD_KILL = 2;
 }

@@ -11,7 +11,7 @@ public partial class Item
     private Int32 m_count_cur = 0;
     private Int32 m_count_max = 0;
 
-    public Item(Int64 _id, Int32 _kind)
+    private Item(Int64 _id, Int32 _kind)
     {
         m_id   = _id;
         m_kind = _kind;
@@ -53,9 +53,49 @@ public partial class Item
     }
 
 
-    public LocalizeKey GetLocalizeKey()
+    public LocalizeKey GetLocalizeName()
     {
-        return LocalizeKey.Create(string.Empty, string.Empty);
+        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeName(Kind);
+        return LocalizeKey.Create(table, key);
+    }
+
+    public LocalizeKey GetLocalizeDesc()
+    {
+        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeDesc(Kind);
+        return LocalizeKey.Create(table, key);
+    }
+
+    public static Item Create(Int64 _id, Int32 _kind)
+    {
+        var item      = new Item(_id, _kind);
+
+        var status    = DataManager.Instance.WeaponSheet.GetStatus(item.Kind);
+        var attribute = DataManager.Instance.WeaponSheet.GetAttribute(item.Kind);
+
+        // 무기 스탯 설정
+        if (status != null)
+        {
+            item.SetWeaponStatus(EnumWeaponStatus.Might_Physics,  status.PHYSICS);
+            item.SetWeaponStatus(EnumWeaponStatus.Might_Magic,    status.MAGIC);
+            item.SetWeaponStatus(EnumWeaponStatus.Hit,            status.HIT);
+            item.SetWeaponStatus(EnumWeaponStatus.Critical,       status.CRITICAL);
+            item.SetWeaponStatus(EnumWeaponStatus.Weight,         status.WEIGHT);
+            item.SetWeaponStatus(EnumWeaponStatus.Dodge,          status.DODGE);
+            item.SetWeaponStatus(EnumWeaponStatus.Dodge_Critical, status.DODGE_CRITICAL);
+            item.SetWeaponStatus(EnumWeaponStatus.Range,          status.RANGE);
+            item.SetWeaponStatus(EnumWeaponStatus.Range_Min,      status.RANGE_MIN);
+        }
+
+        // 무기 속성 설정.
+        if (attribute != null)
+        {
+            foreach (var e in attribute)
+            {
+                item.SetWeaponAttribute((EnumWeaponAttribute)e.ATTRIBUTE, true);
+            }
+        }
+
+        return item;
     }
 
 
