@@ -371,8 +371,7 @@ public static partial class PathAlgorithm
         if (_terrain_map == null || _path_owner == null)
             return (false, 0);
         
-        if (_cell.x < 0 || _cell.y < 0 ||
-            _terrain_map.Width <= _cell.x || _terrain_map.Height <= _cell.y)
+        if (_terrain_map.IsInBound(_cell.x, _cell.y) == false)
             return (false, 0);  
   
         // ZOC에 막히는지 체크합니다. (목표지점은 완전히 비어있어야 함.)

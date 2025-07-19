@@ -252,8 +252,9 @@ namespace Battle
             var hit_rate           = 0f;
             var dodge_rate         = 0f;                    
             
-            // 테스트 전투를 돌려서 계산을 해본다.                   
-            CombatSystemManager.Instance.Setup(CombatParam_Plan.Cached.Set(_owner, _target));
+            // 테스트 전투를 돌려서 계산을 해본다.      
+            var combat_param = ObjectPool<CombatParam_Plan>.Acquire().Set(_owner, _target);
+            CombatSystemManager.Instance.Setup(combat_param);
 
             // 
             while (!CombatSystemManager.Instance.IsFinished)
@@ -307,6 +308,7 @@ namespace Battle
             _score.SetScore(ScoreResult.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
             _score.SetScore(ScoreResult.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
+            ObjectPool<CombatParam_Plan>.Return(combat_param);
         }
 
 

@@ -70,10 +70,11 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 전 스킬 사용.
-            if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Start)
-                    );
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Situation_UpdateEvent>
+                .Acquire()
+                .Set(EnumSituationType.CombatSystem_Damage_Start, _param.IsPlan)
+                );
         }
 
         protected override bool OnUpdate(ICombatSystemParam _param)
@@ -127,10 +128,11 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
-            if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.CombatSystem_Damage_Finish)
-                    );
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Situation_UpdateEvent>
+                .Acquire()
+                .Set(EnumSituationType.CombatSystem_Damage_Finish, _param.IsPlan)
+                );
         }
 
 

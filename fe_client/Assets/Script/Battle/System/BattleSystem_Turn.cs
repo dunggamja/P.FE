@@ -158,12 +158,20 @@ namespace Battle
             // 이벤트 디스팻치.
             if (Faction_Cur != Faction_Prev) 
             {                  
-                EventDispatchManager.Instance.UpdateEvent(ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.BattleSystem_Faction_Changed));
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Situation_UpdateEvent>
+                    .Acquire()
+                    .Set(EnumSituationType.BattleSystem_Faction_Changed, false)
+                    );
             }
 
             if (Turn_Cur != Turn_Prev) 
             {
-                EventDispatchManager.Instance.UpdateEvent(ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.BattleSystem_Turn_Changed));
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Situation_UpdateEvent>
+                    .Acquire()
+                    .Set(EnumSituationType.BattleSystem_Turn_Changed, false)
+                    );
             }    
         }
 

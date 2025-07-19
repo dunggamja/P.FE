@@ -223,6 +223,12 @@ namespace Battle
             BlockManager = new TerrainBlockManager(_width, _height, 16);
         }
 
+
+        public bool IsInBound(int _x, int _y)
+        {
+            return 0 <= _x && _x < Width && 0 <= _y && _y < Height;
+        }
+
         // TODO: SAVE/LOAD
 
 

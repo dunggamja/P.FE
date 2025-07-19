@@ -194,10 +194,11 @@ namespace Battle
             DefenderData.SetData(defender.ID, EnumCombatTurn.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);
 
             // 공/방 돌입전 턴 관련 스킬 사용할 것이 있다면 여기서 사용.
-            if (!_param.IsPlan)
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Situation_UpdateEvent>.Acquire().Set(EnumSituationType.CombatSystem_Turn_Start)
-                    );
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Situation_UpdateEvent>
+                .Acquire()
+                .Set(EnumSituationType.CombatSystem_Turn_Start, _param.IsPlan)
+                );
         }
 
         /// <summary>

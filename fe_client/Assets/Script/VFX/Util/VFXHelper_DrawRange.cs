@@ -53,13 +53,9 @@ namespace Battle.MoveRange
                   }
 
                   // ¸Ê ¹üÀ§ Ã¼Å©.
-                  if (TerrainMap != null)
+                  if (TerrainMap != null && TerrainMap.IsInBound(weapon_x, weapon_y) == false)
                   {
-                      if (weapon_x < 0 || weapon_y < 0)
-                          continue;
-
-                      if (TerrainMap.Height <= weapon_y || TerrainMap.Width <= weapon_x)
-                          continue;
+                    continue;
                   }
 
                   List_Weapon.Add((weapon_x, weapon_y));

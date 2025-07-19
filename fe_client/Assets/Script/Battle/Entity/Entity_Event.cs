@@ -42,6 +42,13 @@ namespace Battle
             if (_event == null)
                 return;
 
+            if (_event.IsPlan)
+            {
+                // TODO: 현재로서는 플랜 모드일 때는 아무것도 안함.
+                // 각 스킬별로 Plan 모드 처리가 필요할까?
+                return;
+            }
+
             if (_event.Situation == EnumSituationType.BattleSystem_Turn_Changed)
             {
                 // 턴이 변경되었을 때.

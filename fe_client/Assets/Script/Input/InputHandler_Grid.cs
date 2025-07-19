@@ -263,7 +263,6 @@ public class InputHandler_Grid_Select : InputHandler
 
                 if (select_tile != base_position)
                 {
-                    MoveTile_LastTime = Time.time;
                     MoveSelcectedTile(base_position.x, base_position.y);
                     MoveSelectedEntity(
                         SelectedEntityID, 
@@ -311,14 +310,12 @@ public class InputHandler_Grid_Select : InputHandler
             return;
 
         // 타일 이동.
-        SelectTile_X += MoveDirection.x;
-        SelectTile_Y += MoveDirection.y;
+        var new_position_x = SelectTile_X + MoveDirection.x;
+        var new_position_y = SelectTile_Y + MoveDirection.y;
 
-        // 이동 시간 갱신.
-        MoveTile_LastTime = Time.time;
+        MoveSelcectedTile(new_position_x, new_position_y);
 
-        MoveSelcectedTile(SelectTile_X, SelectTile_Y);
-
+        // 선택된 유닛 이동 처리.
         MoveSelectedEntity(
             SelectedEntityID, 
             (SelectTile_X, SelectTile_Y), 
@@ -362,8 +359,17 @@ public class InputHandler_Grid_Select : InputHandler
 
     private void MoveSelcectedTile(int _x, int _y)
     {
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+        if (terrain_map != null && terrain_map.IsInBound(_x, _y) == false)
+        {
+            return;
+        }
+
         SelectTile_X = _x;
         SelectTile_Y = _y;
+
+        // 이동 시간 갱신.
+        MoveTile_LastTime = Time.time;
 
         // 이펙트 위치 이동.
         EventDispatchManager.Instance.UpdateEvent(

@@ -31,19 +31,28 @@ public class BaseContainer
         return 0 != GetValue(_key, _is_plan);
     }
 
-    public void SetValue(int _key, int _value)
+    public void SetValue(int _key, int _value, bool _is_plan = false)
     {
-        if (m_real_values.ContainsKey(_key))
+        if (_is_plan)
         {
-            m_real_values[_key] = _value;
+            // 계획용 값 셋팅.
+            PushPlanValue(_key, _value);
         }
         else
         {
-            m_real_values.Add(_key, _value);
+            // 진짜 값 셋팅.
+            if (m_real_values.ContainsKey(_key))
+            {
+                m_real_values[_key] = _value;
+            }
+            else
+            {
+                m_real_values.Add(_key, _value);
+            }
         }
     }
 
-    public void SetValue(int _key, bool _value) => SetValue(_key, _value ? 1 : 0);
+    public void SetValue(int _key, bool _value, bool _is_plan = false) => SetValue(_key, _value ? 1 : 0, _is_plan);
 
 
     public void PushPlanValue(int _key, int _value)

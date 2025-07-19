@@ -12,7 +12,7 @@ namespace Battle
         bool   IsPlan   { get; }
     }
 
-    public class CombatParam_Plan : ICombatSystemParam
+    public class CombatParam_Plan : ICombatSystemParam, IPoolObject
     {
         public Entity Attacker { get; private set; }
         public Entity Defender { get; private set; }
@@ -29,12 +29,12 @@ namespace Battle
             return this;
         }
 
-        public CombatParam_Plan Reset()
+        public void Reset()
         {
             Attacker = null;
             Defender = null;
-            return this;
         }
+
     }
 
     public class CombatParam : ICombatSystemParam

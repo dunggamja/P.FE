@@ -15,7 +15,7 @@ namespace Battle
 
         public Int64          ID      => m_id;
         public IOwner         Owner   { get; private set; }
-        public IStatus        Status  { get; private set; }
+        public UnitStatus     Status  { get; private set; }
         public IBuff          Buff    { get; private set; }
         public Weapon         Weapon  { get; private set; }
         public ITerrain       Terrain { get; private set; }

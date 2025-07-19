@@ -24,7 +24,7 @@ namespace Battle
         };
 
         // <summary> 무기 특효관계 체크 </summary>
-        public static bool Calculate_Effectiveness(Weapon _source, IStatus _target)
+        public static bool Calculate_Effectiveness(Weapon _source, UnitStatus _target)
         {
             foreach ((var weapon_attribute, var target_attribute) in s_default_effectiveness)
             {
