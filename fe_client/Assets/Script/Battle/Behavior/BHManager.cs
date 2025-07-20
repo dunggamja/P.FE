@@ -1,51 +1,66 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+// using System;
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
 
 
-namespace Battle
-{
-    public interface IBHParam
-    {
-        public bool    IsPlan { get; }
-        public IOwner  Owner  { get; }
-        public ITarget Target { get; }
-    }
+// namespace Battle
+// {
+//     public interface IBHParam
+//     {
+//         public bool    IsPlan { get; }
+//         // public IOwner  Owner  { get; }
+//         public ITarget Target { get; }
+//     }
+//     public interface IBHCondition
+//     {
+//         public abstract bool IsValid(IBHParam _param);
+//     }
 
-    public class BHManager
-    {
+//     public interface IBHEffect
+//     {
+//         public abstract void Apply(IBHParam _param);
+//     }
 
-        private List<BHCondition> m_conditions = new List<BHCondition>();
-        private List<BHEffect>    m_effects    = new List<BHEffect>();
+//     public class BHManager
+//     {
 
-        public void AddCondition(BHCondition _condition)
-        {
-            m_conditions.Add(_condition);
-        }
+//         private List<IBHCondition> m_conditions = new List<IBHCondition>();
+//         private List<IBHEffect>    m_effects    = new List<IBHEffect>();
 
-        public void AddEffect(BHEffect _effect)
-        {
-            m_effects.Add(_effect);
-        }
+//         public void AddCondition(IBHCondition _condition)
+//         {
+//             m_conditions.Add(_condition);
+//         }
 
-        public bool IsValid(IBHParam _param)
-        {
-            foreach (var condition in m_conditions)
-            {
-                if (!condition.IsValid(_param))
-                    return false;
-            }
+//         public void AddEffect(IBHEffect _effect)
+//         {
+//             m_effects.Add(_effect);
+//         }
 
-            return true;
-        }
+//         public bool IsValid(IBHParam _param)
+//         {
+//             foreach (var condition in m_conditions)
+//             {
+//                 if (!condition.IsValid(_param))
+//                     return false;
+//             }
 
-        public void Apply(IBHParam _param)
-        {
-            foreach (var effect in m_effects)
-            {
-                effect.Apply(_param);
-            }
-        }
-    }
-}
+//             return true;
+//         }
+
+//         public void Apply(IBHParam _param)
+//         {
+//             foreach (var effect in m_effects)
+//             {
+//                 effect.Apply(_param);
+//             }
+//         }
+
+//         public void Clear()
+//         {
+//             m_conditions.Clear();
+//             m_effects.Clear();
+//         }
+//     }
+// }

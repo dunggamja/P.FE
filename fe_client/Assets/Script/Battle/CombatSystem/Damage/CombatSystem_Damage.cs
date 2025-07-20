@@ -111,12 +111,16 @@ namespace Battle
             Result_Damage       *= (WeaponEffectiveness) ? EFFECTIVE_DAMAGE_MULTIPLIER : 1;
             Result_Damage       *= (Result_Critical)     ? CRITICAL_DAMAGE_MULTIPLIER  : 1;
 
-            // 데미지 적용 여기서 한다.
-            if (!_param.IsPlan)
-            {
-                target.ApplyDamage(Result_Damage);
-            }
 
+            // 데미지 적용.
+            target.ApplyDamage(Result_Damage, _param.IsPlan);
+
+            // 로그 적용.
+            _param.PushLog(new CombatLog(
+                CombatLog.EnumLogType.Damage,
+                    dealer.ID,
+                    target.ID,
+                    Result_Damage));
 
             // 1 Tick에 완료 처리.
             return true;
@@ -124,8 +128,8 @@ namespace Battle
 
         protected override void OnExit(ICombatSystemParam _param)
         {
-            var dealer = GetDealer(_param);
-            var target = GetTarget(_param);
+            // var dealer = GetDealer(_param);
+            // var target = GetTarget(_param);
 
             // 공격 후 스킬 사용.
             EventDispatchManager.Instance.UpdateEvent(

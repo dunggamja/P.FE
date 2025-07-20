@@ -30,6 +30,7 @@ namespace Battle
         None = 0,
 
         HP,
+        HP_Max,
         EXP,
     }
 

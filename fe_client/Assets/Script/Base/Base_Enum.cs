@@ -8,7 +8,8 @@ public enum EnumSystem
 {
     None,
     CombatSystem_Turn,                // (전투씬), 공/방 턴  관리
-    CombatSystem_Damage,              // (전투씬), 데미지 처리.
+    CombatSystem_Damage,              // (전투씬), 데미지 관리
+    // CombatSystem_Effect,              // (전투씬), 데미지 처리
      
     BattleSystem_Turn,                // (전투필드),  턴   진행    
     BattleSystem_Decision_Making,     // (전투필드),  유닛들 의사결정.

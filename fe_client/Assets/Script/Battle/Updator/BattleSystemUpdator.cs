@@ -107,6 +107,7 @@ namespace Battle
                 var defender_status = defender.StatusManager.Status as UnitStatus;
 
                 attacker_status.SetPoint(EnumUnitPoint.HP, 22);
+                attacker_status.SetPoint(EnumUnitPoint.HP_Max, 22);
                 attacker_status.SetStatus(EnumUnitStatus.Strength, 6);
                 attacker_status.SetStatus(EnumUnitStatus.Skill, 5);
                 attacker_status.SetStatus(EnumUnitStatus.Speed, 7);
@@ -118,6 +119,7 @@ namespace Battle
 
 
                 defender_status.SetPoint(EnumUnitPoint.HP, 22);
+                defender_status.SetPoint(EnumUnitPoint.HP_Max, 22);
                 defender_status.SetStatus(EnumUnitStatus.Strength, 6);
                 defender_status.SetStatus(EnumUnitStatus.Skill, 5);
                 defender_status.SetStatus(EnumUnitStatus.Speed, 7);

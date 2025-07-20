@@ -59,6 +59,54 @@ namespace Battle
 
         return (range_min.num, range_max.num);
      }
+
+
+    public void ApplyDamage(int _damage, bool _is_plan = false)
+    {
+        if (_damage <= 0)
+            return;          
+
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP, _is_plan);
+        var new_hp = cur_hp - _damage;
+
+        SetPoint(EnumUnitPoint.HP, new_hp, _is_plan);
+    }
+
+    public void ApplyHeal(int _heal, bool _is_plan = false)
+    {
+        if (_heal <= 0)
+            return;
+
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP, _is_plan);
+        var new_hp = cur_hp + _heal;
+
+        SetPoint(EnumUnitPoint.HP, new_hp, _is_plan);
+    }
+
+    void SetPoint(EnumUnitPoint _point_type, int _value, bool _is_plan = false)
+    {
+        // 포인트 값 보정.
+        var new_value = CorrectPoint(_point_type, _value, _is_plan);
+
+        // 포인트 값 적용.
+        StatusManager.Status.SetPoint(_point_type, new_value, _is_plan);
+    }
+
+    int CorrectPoint(EnumUnitPoint _point_type, int _value, bool _is_plan = false)
+    {
+        var min_value = 0;
+        var max_value = _value;
+
+        switch (_point_type)
+        {
+            case EnumUnitPoint.HP:
+                min_value = 0;
+                max_value = StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max, _is_plan);
+                break;
+        }
+
+        return Math.Clamp(_value, min_value, max_value);
+    }
     
   }
 }

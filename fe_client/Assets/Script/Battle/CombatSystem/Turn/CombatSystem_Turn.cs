@@ -118,10 +118,12 @@ namespace Battle
         private TurnData       AttackerData { get; set; }         = new TurnData();
         private TurnData       DefenderData { get; set; }         = new TurnData();
 
+     
+
         public CombatSystem_Turn() : base(EnumSystem.CombatSystem_Turn)
         { }
 
-        public bool IsCombatTurn(Int64 _id)
+        public bool IsCurrentTurn(Int64 _id)
         {
             var turn_data = GetTurnDataBySide(CombatTurn);
             if (turn_data == null)

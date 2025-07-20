@@ -91,21 +91,6 @@ namespace Battle
 
 
 
-
-        public void ApplyDamage(int _damage/*, bool _is_plan = false*/)
-        {
-            if (_damage <= 0)
-                return;
-
-            
-            var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
-            var new_hp = Math.Max(0, cur_hp - _damage);
-
-            StatusManager.Status.SetPoint(EnumUnitPoint.HP, new_hp);
-
-            // Debug.Log($"GetDamaged, ID:{ID}, HP:{new_hp}");
-        }
-
         public int GetFaction()
         {
             return BlackBoard.GetValue(EnumEntityBlackBoard.Faction);

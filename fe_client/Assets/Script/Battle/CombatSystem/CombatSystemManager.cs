@@ -21,6 +21,12 @@ namespace Battle
         public bool IsFinished => State == EnumState.Finished;
 
 
+        // public CombatSystem_Effect EffectSystem => GetSystem(EnumSystem.CombatSystem_Effect) as CombatSystem_Effect;
+        // public CombatSystem_Damage DamageSystem => GetSystem(EnumSystem.CombatSystem_Damage) as CombatSystem_Damage;
+        // public CombatSystem_Turn   TurnSystem   => GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
+
+
+
         protected override void Init()
         {
             base.Init();
@@ -31,6 +37,7 @@ namespace Battle
 
             var turn_sytem   = new CombatSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
             var damage_sytem = new CombatSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+            // var effect_sytem = new CombatSystem_Effect(); m_repository.Add((int)effect_sytem.SystemType, effect_sytem);
 
             foreach (var e in m_repository.Values)
                 e.Init();
@@ -65,18 +72,12 @@ namespace Battle
                 return true;
             }
 
-            // 데미지 계산.
+            // 데미지 
             UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
 
-            // 계획은 턴이 종료될 때 까지 보여준다.
-            if (!Param.IsPlan)
-            {
-                // 공격자/방어자 중 1명이 죽었으면 종료 처리.
-                if (Param.Attacker.IsDead || Param.Defender.IsDead)
-                    return true;
-            }
-
-            
+            // 죽음 체크
+            if (Param.IsPlan == false && Check_Dead())
+                return true;            
 
             return false;
         }
@@ -143,5 +144,21 @@ namespace Battle
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
         public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
 
+
+        bool Check_Dead()
+        {
+
+            var attacker_hp = Param.Attacker
+                            .StatusManager
+                            .Status
+                            .GetPoint(EnumUnitPoint.HP, Param.IsPlan);
+
+            var defender_hp = Param.Defender
+                            .StatusManager
+                            .Status
+                            .GetPoint(EnumUnitPoint.HP, Param.IsPlan);
+
+            return (attacker_hp <= 0 || defender_hp <= 0);
+        }
     }
 }
