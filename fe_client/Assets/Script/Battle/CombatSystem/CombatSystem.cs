@@ -55,6 +55,15 @@ namespace Battle
             m_logs.Add(_log);
         }
 
+        public void CopyLogs(ref List<CombatLog> _logs)
+        {
+            if (_logs == null)
+                return;
+
+            _logs.Clear();
+            _logs.AddRange(m_logs);
+        }
+
 
         public CombatParam_Plan Set(Entity _attacker, Entity _defender)
         {

@@ -151,12 +151,12 @@ namespace Battle
             var attacker_hp = Param.Attacker
                             .StatusManager
                             .Status
-                            .GetPoint(EnumUnitPoint.HP, Param.IsPlan);
+                            .GetPoint(EnumUnitPoint.HP);//, Param.IsPlan);
 
             var defender_hp = Param.Defender
                             .StatusManager
                             .Status
-                            .GetPoint(EnumUnitPoint.HP, Param.IsPlan);
+                            .GetPoint(EnumUnitPoint.HP);//, Param.IsPlan);
 
             return (attacker_hp <= 0 || defender_hp <= 0);
         }

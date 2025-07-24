@@ -73,7 +73,7 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
                 .Acquire()
-                .Set(EnumSituationType.CombatSystem_Damage_Start, _param.IsPlan)
+                .Set(EnumSituationType.CombatSystem_Damage_Start)
                 );
         }
 
@@ -113,7 +113,7 @@ namespace Battle
 
 
             // 데미지 적용.
-            target.ApplyDamage(Result_Damage, _param.IsPlan);
+            target.ApplyDamage(Result_Damage);//, _param.IsPlan);
 
             // 로그 적용.
             _param.PushLog(new CombatLog(
@@ -135,7 +135,7 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
                 .Acquire()
-                .Set(EnumSituationType.CombatSystem_Damage_Finish, _param.IsPlan)
+                .Set(EnumSituationType.CombatSystem_Damage_Finish)//, _param.IsPlan)
                 );
         }
 

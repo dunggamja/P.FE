@@ -61,38 +61,38 @@ namespace Battle
      }
 
 
-    public void ApplyDamage(int _damage, bool _is_plan = false)
+    public void ApplyDamage(int _damage)//, bool _is_plan = false)
     {
         if (_damage <= 0)
             return;          
 
-        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP, _is_plan);
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);//, _is_plan);
         var new_hp = cur_hp - _damage;
 
-        SetPoint(EnumUnitPoint.HP, new_hp, _is_plan);
+        SetPoint(EnumUnitPoint.HP, new_hp);//, _is_plan);
     }
 
-    public void ApplyHeal(int _heal, bool _is_plan = false)
+    public void ApplyHeal(int _heal)//, bool _is_plan = false)
     {
         if (_heal <= 0)
             return;
 
-        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP, _is_plan);
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);//, _is_plan);
         var new_hp = cur_hp + _heal;
 
-        SetPoint(EnumUnitPoint.HP, new_hp, _is_plan);
+        SetPoint(EnumUnitPoint.HP, new_hp);//, _is_plan);
     }
 
-    void SetPoint(EnumUnitPoint _point_type, int _value, bool _is_plan = false)
+    void SetPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
     {
         // 포인트 값 보정.
-        var new_value = CorrectPoint(_point_type, _value, _is_plan);
+        var new_value = CorrectPoint(_point_type, _value);//, _is_plan);
 
         // 포인트 값 적용.
-        StatusManager.Status.SetPoint(_point_type, new_value, _is_plan);
+        StatusManager.Status.SetPoint(_point_type, new_value);//, _is_plan);
     }
 
-    int CorrectPoint(EnumUnitPoint _point_type, int _value, bool _is_plan = false)
+    int CorrectPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
     {
         var min_value = 0;
         var max_value = _value;
@@ -101,7 +101,7 @@ namespace Battle
         {
             case EnumUnitPoint.HP:
                 min_value = 0;
-                max_value = StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max, _is_plan);
+                max_value = StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max);//, _is_plan);
                 break;
         }
 

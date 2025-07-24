@@ -199,7 +199,7 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
                 .Acquire()
-                .Set(EnumSituationType.CombatSystem_Turn_Start, _param.IsPlan)
+                .Set(EnumSituationType.CombatSystem_Turn_Start)//, _param.IsPlan)
                 );
         }
 
