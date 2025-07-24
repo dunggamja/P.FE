@@ -13,7 +13,7 @@ public class EntitySnapshot
     public StatusManagerSnapshot    StatusManager { get; private set; } = new();
     public InventorySnapshot        Inventory     { get; private set; } = new();
 
-    public static EntitySnapshot Create(Entity _entity)
+    // public static EntitySnapshot Create(Entity _entity)
     // public List<BuffSnapshot> Buffs { get; set; }
     
 
