@@ -14,7 +14,7 @@ namespace Battle
         // public ITarget              Target          { get; }
         public EntityBlackBoard     BlackBoard      { get; }
         public ISkill               Skill           { get; } 
-        public BattleStatusManager  StatusManager   { get; } 
+        public StatusManager        StatusManager   { get; } 
         public Inventory            Inventory       { get; }
         public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
@@ -48,7 +48,7 @@ namespace Battle
                  
             BlackBoard        = new EntityBlackBoard();
             Skill             = new BattleSkill();
-            StatusManager     = new BattleStatusManager(this);
+            StatusManager     = new StatusManager(this);
             PathNodeManager   = new PathNodeManager();
             PathVehicle       = new PathVehicle_Basic();
             Inventory         = new Inventory();

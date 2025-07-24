@@ -9,27 +9,27 @@ namespace Battle
     
 
 
-    public class BattleStatusManager 
+    public class StatusManager 
     {
-        Int64 m_id = 0;
+        // Int64 m_id = 0;
 
-        public Int64          ID      => m_id;
+        // public Int64          ID      => m_id;
         public IOwner         Owner   { get; private set; }
         public UnitStatus     Status  { get; private set; }
-        public IBuff          Buff    { get; private set; }
+        public BuffMananger   Buff    { get; private set; }
         public Weapon         Weapon  { get; private set; }
-        public ITerrain       Terrain { get; private set; }
+        // public ITerrain       Terrain { get; private set; }
         //public IBlackBoard    BlackBoard    { get; }
         //public IActionCounter ActionCounter { get; }
 
-        public BattleStatusManager(Entity _owner)
+        public StatusManager(Entity _owner)
         {
-            m_id    = _owner.ID;
+            // m_id    = _owner.ID;
             Owner   = _owner;
             Status  = new UnitStatus();
             Buff    = new BuffMananger();
             Weapon  = new Weapon(_owner.ID, 0);
-            Terrain = null;
+            // Terrain = null;
         }
 
         public int GetBuffedUnitStatus(EnumUnitStatus _unit_status, EnumSituationType _situation_type = EnumSituationType.None)

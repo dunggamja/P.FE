@@ -246,7 +246,7 @@ public struct Buff
     }
 }
 
-public class BuffMananger : IBuff
+public class BuffMananger //: IBuff
 {
     Dictionary<long, Buff>                m_list_buff              = new Dictionary<long, Buff>();
     Dictionary<BuffTarget, HashSet<long>> m_list_buff_id_by_target = new Dictionary<BuffTarget, HashSet<long>>();
@@ -316,7 +316,7 @@ public class BuffMananger : IBuff
     
 
 
-    #region IBuff Interface
+    // #region IBuff Interface
     public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
     {
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
@@ -326,7 +326,7 @@ public class BuffMananger : IBuff
     {
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Target, _status));
     }
-    #endregion IBuff Interface
+    // #endregion IBuff Interface
 }
 
 

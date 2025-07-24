@@ -72,11 +72,11 @@ public interface IEffect
 /// <summary>
 /// 버프 연산
 /// </summary>
-public interface IBuff
-{
-    BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
-    BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
-}
+// public interface IBuff
+// {
+//     BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
+//     BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
+// }
 
 
 /// <summary>
