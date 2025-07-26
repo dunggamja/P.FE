@@ -69,7 +69,16 @@ namespace Battle
         {
             m_repository.Reset();
         }
-        
+
+        public BlackBoardSnapshot Save()
+        {
+            return BlackBoardSnapshot.Create(m_repository.Save());
+        }
+
+        public void Load(BlackBoardSnapshot _snapshot)
+        {
+            m_repository.Load(_snapshot.Values);
+        }
     }
 
     public class EntityBlackBoard : BlackBoard<EnumEntityBlackBoard>

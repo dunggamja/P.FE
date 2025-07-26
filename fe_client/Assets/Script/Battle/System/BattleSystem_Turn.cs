@@ -161,7 +161,7 @@ namespace Battle
                 EventDispatchManager.Instance.UpdateEvent(
                     ObjectPool<Battle_Situation_UpdateEvent>
                     .Acquire()
-                    .Set(EnumSituationType.BattleSystem_Faction_Changed)//, false)
+                    .Set(EnumSituationType.BattleSystem_Faction_Changed, false)
                     );
             }
 
@@ -170,7 +170,7 @@ namespace Battle
                 EventDispatchManager.Instance.UpdateEvent(
                     ObjectPool<Battle_Situation_UpdateEvent>
                     .Acquire()
-                    .Set(EnumSituationType.BattleSystem_Turn_Changed)//, false)
+                    .Set(EnumSituationType.BattleSystem_Turn_Changed, false)
                     );
             }    
         }

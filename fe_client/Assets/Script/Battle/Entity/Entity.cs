@@ -13,7 +13,7 @@ namespace Battle
         public (int x, int y)       Cell_Prev       { get; private set; }
         // public ITarget              Target          { get; }
         public EntityBlackBoard     BlackBoard      { get; }
-        public ISkill               Skill           { get; } 
+        public BattleSkill          Skill           { get; } 
         public StatusManager        StatusManager   { get; } 
         public Inventory            Inventory       { get; }
         public PathNodeManager      PathNodeManager { get; } 
@@ -26,10 +26,6 @@ namespace Battle
         public AIManager            AIManager       { get; private set; }
 
         public CommandManager       CommandManager  { get; private set; }    
-
-        // public bool                 IsCommandAbort { get; private set; }
-        // public bool                 IsCommandDirty { get; private set; }
-
 
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -106,6 +102,43 @@ namespace Battle
         //     IsCommandDirty = _is_dirty;
         // }
 
+        public EntitySnapshot Save()
+        {
+            return EntitySnapshot.Create(
+                ID,
+                Cell,
+                Cell_Prev,
+
+                BlackBoard.Save(),
+                StatusManager.Save(),
+                Inventory.Save(),
+
+                PathVehicle.Save(),
+                PathAttribute,
+                PathBasePosition
+            );
+        }
+
+        public void Load(EntitySnapshot _snapshot)
+        {
+            ID        = _snapshot.ID;
+            Cell      = _snapshot.Cell;
+            Cell_Prev = _snapshot.Cell_Prev;
+
+            BlackBoard.Load(_snapshot.BlackBoard);
+            StatusManager.Load(_snapshot.StatusManager);
+            Inventory.Load(_snapshot.Inventory);
+
+            PathVehicle.Load(_snapshot.PathVehicle);
+            PathAttribute    = _snapshot.PathAttribute;
+            PathBasePosition = _snapshot.PathBasePosition;
+
+            // Save/Load 에서 제외된 데이터
+            // Skill,
+            // AIManager,
+            // CommandManager,
+            // PathNodeManager,
+        }
     
    
 

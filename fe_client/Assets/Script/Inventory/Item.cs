@@ -17,13 +17,19 @@ public partial class Item
         m_kind = _kind;
     }
 
+    public Item()
+    { }
 
-    public long         ID           => m_id;
-    public int          Kind         => m_kind;
-    public EnumItemType ItemType     => EnumItemType.Weapon;    
-    public int          CurCount     => m_count_cur;             
-    public int          MaxCount     => m_count_max;       
-    public bool         IsDisposable => true;
+
+    public  long          ID           => m_id;
+    public  int           Kind         => m_kind;
+    public  EnumItemType  ItemType     => EnumItemType.Weapon;    
+    public  int           CurCount     => m_count_cur;             
+    public  int           MaxCount     => m_count_max;       
+    public  bool          IsDisposable => true;
+
+    private BaseContainer m_status    = new BaseContainer();
+    private BaseContainer m_attribute = new BaseContainer();
 
     public bool IsEnableAction(IOwner owner, EnumItemActionType _action)
     {
@@ -98,6 +104,25 @@ public partial class Item
         return item;
     }
 
+    public ItemSnapshot Save()
+    {
+        return ItemSnapshot.Create(
+            ID,
+            Kind,
+            CurCount,
+            MaxCount,
+            m_status.Save(),
+            m_attribute.Save()
+        );
+    }
 
-    
+    public void Load(ItemSnapshot _snapshot)
+    {
+        m_id        = _snapshot.ID;
+        m_kind      = _snapshot.Kind;
+        m_count_cur = _snapshot.Count;
+        m_count_max = _snapshot.MaxCount;
+        m_status.Load(_snapshot.Status);
+        m_attribute.Load(_snapshot.Attribute);
+    }
 }

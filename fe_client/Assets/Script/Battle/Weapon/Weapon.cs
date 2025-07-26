@@ -62,6 +62,17 @@ namespace Battle
             OwnerID = 0;
             ItemID  = 0;
         }
+
+        public WeaponSnapshot Save()
+        {
+            return WeaponSnapshot.Create(OwnerID, ItemID);
+        }
+
+        public void Load(WeaponSnapshot _snapshot)
+        {
+            OwnerID = _snapshot.OwnerID;
+            ItemID  = _snapshot.ItemID;
+        }
     }
 }
 

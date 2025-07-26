@@ -158,6 +158,22 @@ namespace Battle
         {
             return GetBuffedUnitStatus(EnumUnitStatus.Resistance);
         }
+
+        public StatusManagerSnapshot Save()
+        {
+            return StatusManagerSnapshot.Create(
+                Status.Save(),
+                Buff.Save(),
+                Weapon.Save()
+            );
+        }
+
+        public void Load(StatusManagerSnapshot _snapshot)
+        {
+            Status.Load(_snapshot.UnitStatus);
+            Buff.Load(_snapshot.BuffManager);
+            Weapon.Load(_snapshot.Weapon);
+        }
     }
 
 }

@@ -8,28 +8,24 @@ using UnityEngine;
 public partial class Item 
 {
 
-    BaseContainer m_weapon_status    = new BaseContainer();
-    BaseContainer m_weapon_attribute = new BaseContainer();
-
-
     public int  GetWeaponStatus(EnumWeaponStatus _status_type)
     {
-        return m_weapon_status.GetValue((int)_status_type);
+        return m_status.GetValue((int)_status_type);
     }
 
     public bool HasWeaponAttribute(EnumWeaponAttribute _attribute_type)
     {
-        return m_weapon_attribute.HasValue((int)_attribute_type);
+        return m_attribute.HasValue((int)_attribute_type);
     }
 
     public void SetWeaponStatus(EnumWeaponStatus _status_type, int _value)
     {
-        m_weapon_status.SetValue((int)_status_type, _value);
+        m_status.SetValue((int)_status_type, _value);
     }
 
     public void SetWeaponAttribute(EnumWeaponAttribute _attribute_type, bool _value)
     {
-        m_weapon_attribute.SetValue((int)_attribute_type, _value);
+        m_attribute.SetValue((int)_attribute_type, _value);
     }   
 
 

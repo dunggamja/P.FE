@@ -9,13 +9,13 @@ namespace Battle
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
         public EnumSituationType      Situation   { get; private set; }  = EnumSituationType.None;
-        // public bool                   IsPlan      { get; private set; }  = false;
+        public bool                   IsPlan      { get; private set; }  = false;
         // public ISystemParam       SystemParam { get; private set; }   
 
-        public Battle_Situation_UpdateEvent Set(EnumSituationType _situation_type)//, bool _is_plan)
+        public Battle_Situation_UpdateEvent Set(EnumSituationType _situation_type, bool _is_plan)
         {
             Situation   = _situation_type;
-            // IsPlan      = _is_plan;
+            IsPlan      = _is_plan;
             // SystemParam = _system_param;
             return this;
         }
@@ -23,7 +23,7 @@ namespace Battle
         public void Reset()
         {
             Situation = EnumSituationType.None;
-            // IsPlan    = false;
+            IsPlan    = false;
         }
 
         public void Release()

@@ -15,7 +15,7 @@ namespace Battle
     //     }
     // }
 
-    public class BattleSkill : ISkill
+    public class BattleSkill //: ISkill
     {
         // 
         // 타이밍이 맞을 때  발동.

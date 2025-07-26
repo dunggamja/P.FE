@@ -16,20 +16,20 @@ public class BlackBoardSnapshot
     }
 }
 
-public class EntityBlackBoardSnapshot
-{
-    public BlackBoardSnapshot BlackBoard { get; set; } = new();
+// public class EntityBlackBoardSnapshot
+// {
+//     public BlackBoardSnapshot BlackBoard { get; set; } = new();
 
-    // ai_attack.score_result
+//     // ai_attack.score_result
 
-    public static EntityBlackBoardSnapshot Create(
-        BlackBoardSnapshot _black_board)
-    {
-        var snapshot        = new EntityBlackBoardSnapshot();
-        snapshot.BlackBoard = _black_board;
-        return snapshot;
-    }
-}
+//     public static EntityBlackBoardSnapshot Create(
+//         BlackBoardSnapshot _black_board)
+//     {
+//         var snapshot        = new EntityBlackBoardSnapshot();
+//         snapshot.BlackBoard = _black_board;
+//         return snapshot;
+//     }
+// }
 
 
 
@@ -42,14 +42,14 @@ public class UnitStatusSnapshot
 
 
     public static UnitStatusSnapshot Create(
-        IEnumerable<(int key, int value)> _point,
-        IEnumerable<(int key, int value)> _status,
-        IEnumerable<(int key, int value)> _attribute)
+        ContainerSnapshot _point,
+        ContainerSnapshot _status,
+        ContainerSnapshot _attribute)
     {
         var snapshot       = new UnitStatusSnapshot();
-        snapshot.Point     = ContainerSnapshot.Create(_point);
-        snapshot.Status    = ContainerSnapshot.Create(_status);
-        snapshot.Attribute = ContainerSnapshot.Create(_attribute);
+        snapshot.Point     = _point;
+        snapshot.Status    = _status;
+        snapshot.Attribute = _attribute;
         return snapshot;
     }
 }
@@ -57,6 +57,14 @@ public class UnitStatusSnapshot
 public class BuffManagerSnapshot
 {
     public List<Buff> Buffs { get; set; } = new();
+
+    public static BuffManagerSnapshot Create(
+        IEnumerable<Buff> _buffs)
+    {
+        var snapshot   = new BuffManagerSnapshot();
+        snapshot.Buffs = new List<Buff>(_buffs);
+        return snapshot;
+    }
 }
 
 public class WeaponSnapshot

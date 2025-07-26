@@ -7,9 +7,9 @@ namespace Battle
 {
     public partial class CombatSystem_Damage : CombatSystem
     {
-        const int ADVANTAGE_HIT               = 20;
-        const int CRITICAL_DAMAGE_MULTIPLIER  = 3;
-        const int EFFECTIVE_DAMAGE_MULTIPLIER = 2;
+        const int   ADVANTAGE_HIT               = 20;
+        const float CRITICAL_DAMAGE_MULTIPLIER  = 2f;
+        const float EFFECTIVE_DAMAGE_MULTIPLIER = 1.5f;
 
 
         // // 요건 사용 안 할 거 같은...?
@@ -66,14 +66,14 @@ namespace Battle
         {
             Release();
 
-            var dealer = GetDealer(_param);
-            var target = GetTarget(_param);
+            //var dealer = GetDealer(_param);
+            //var target = GetTarget(_param);
 
             // 공격 전 스킬 사용.
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
                 .Acquire()
-                .Set(EnumSituationType.CombatSystem_Damage_Start)
+                .Set(EnumSituationType.CombatSystem_Damage_Start, _param.IsPlan)
                 );
         }
 
@@ -95,6 +95,7 @@ namespace Battle
 
             if (_param.IsPlan)
             {
+                // 계획시는 랜덤 관련 처리를 하지 않는다.
                 Result_Hit           = true;                
                 Result_Critical      = false;
                 Result_Damage        = Calculate_Damage(_param);
@@ -108,9 +109,11 @@ namespace Battle
             }
 
             // 크리티컬 & 특효 적용
-            Result_Damage       *= (WeaponEffectiveness) ? EFFECTIVE_DAMAGE_MULTIPLIER : 1;
-            Result_Damage       *= (Result_Critical)     ? CRITICAL_DAMAGE_MULTIPLIER  : 1;
+            if (WeaponEffectiveness)
+                Result_Damage = (int)(Result_Damage * EFFECTIVE_DAMAGE_MULTIPLIER);
 
+            if (Result_Critical)
+                Result_Damage = (int)(Result_Damage * CRITICAL_DAMAGE_MULTIPLIER);
 
             // 데미지 적용.
             target.ApplyDamage(Result_Damage);//, _param.IsPlan);
@@ -135,7 +138,7 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
                 .Acquire()
-                .Set(EnumSituationType.CombatSystem_Damage_Finish)//, _param.IsPlan)
+                .Set(EnumSituationType.CombatSystem_Damage_Finish, _param.IsPlan)
                 );
         }
 
@@ -146,7 +149,7 @@ namespace Battle
             // 명중률 = 명중 - 회피
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
-
+ 
             // 스탯  & 버프 계산.
             var hit        = dealer.StatusManager.Calc_Hit();
             var dodge      = target.StatusManager.Calc_Dodge();
@@ -267,10 +270,6 @@ namespace Battle
 
             return weapon_effectiveness;
         }
-
-
-
-       
 
     }
 

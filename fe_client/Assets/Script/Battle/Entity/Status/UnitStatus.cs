@@ -40,5 +40,21 @@ namespace Battle
         {
             m_attribute_repository.SetValue((int)_attribute_type, _value);//, _is_plan);
         }
+
+        public UnitStatusSnapshot Save()
+        {
+            return UnitStatusSnapshot.Create(
+                m_point_repository.Save(),
+                m_status_repository.Save(), 
+                m_attribute_repository.Save()
+                );
+        }
+
+        public void Load(UnitStatusSnapshot _snapshot)
+        {
+            m_point_repository.Load(_snapshot.Point);
+            m_status_repository.Load(_snapshot.Status);
+            m_attribute_repository.Load(_snapshot.Attribute);
+        }
     }
 }

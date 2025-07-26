@@ -97,5 +97,30 @@ public class BaseContainer
         m_real_values.Clear();
         // m_stack_for_planning.Clear();
     }
+
+    public ContainerSnapshot Save()
+    {
+        var values = ListPool<(int, int)>.Acquire();
+        foreach (var item in m_real_values)
+        {
+            values.Add((item.Key, item.Value));
+        }
+
+
+        var snapshot = ContainerSnapshot.Create(values);
+
+        ListPool<(int, int)>.Return(values);
+
+        return snapshot;
+    }
+
+    public void Load(ContainerSnapshot _snapshot)
+    {
+        m_real_values.Clear();
+        foreach (var item in _snapshot.Values)
+        {
+            m_real_values.Add(item.key, item.value);
+        }
+    }
         
 }

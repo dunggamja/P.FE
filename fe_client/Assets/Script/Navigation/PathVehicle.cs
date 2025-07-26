@@ -80,4 +80,22 @@ public abstract class PathVehicle
         return _vector;
     }
 
+    public PathVehicleSnapshot Save()
+    {
+        return PathVehicleSnapshot.Create(
+            m_position_prev, 
+            m_position, 
+            m_velocity, 
+            m_max_speed
+            );
+    }
+
+    public void Load(PathVehicleSnapshot _snapshot)
+    {
+        m_position_prev = _snapshot.PositionPrev;
+        m_position      = _snapshot.Position;
+        m_velocity      = _snapshot.Velocity;
+        m_max_speed     = _snapshot.MaxSpeed;
+    }
+
 }

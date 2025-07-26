@@ -327,6 +327,22 @@ public class BuffMananger //: IBuff
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Target, _status));
     }
     // #endregion IBuff Interface
+
+    public BuffManagerSnapshot Save()
+    {
+        return BuffManagerSnapshot.Create(m_list_buff.Values);
+    }
+
+    public void Load(BuffManagerSnapshot _snapshot)
+    {
+        m_list_buff.Clear();
+        m_list_buff_id_by_target.Clear();
+
+        foreach (var buff in _snapshot.Buffs)
+        {
+            AddBuff(buff);
+        }
+    }
 }
 
 

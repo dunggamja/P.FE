@@ -82,10 +82,10 @@ public interface IEffect
 /// <summary>
 /// 스킬
 /// </summary>
-public interface ISkill
-{
-    bool UseSkill(EnumSituationType _situation, IOwner _owner);
-}
+// public interface ISkill
+// {
+//     bool UseSkill(EnumSituationType _situation, IOwner _owner);
+// }
 
 
 public interface IAIUpdater 

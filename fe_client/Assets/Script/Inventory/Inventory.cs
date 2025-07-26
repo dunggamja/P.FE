@@ -102,4 +102,36 @@ public class Inventory
         return true;
     }
 
+    public InventorySnapshot Save()
+    {
+        var items = ListPool<ItemSnapshot>.Acquire();
+
+        // æ∆¿Ã≈€ Ω∫≥¿º¶ ª˝º∫.
+        foreach(var e in m_repository_list)
+        {
+            items.Add(e.Save());
+        }
+
+        var snapshot = InventorySnapshot.Create(items);
+
+        // π›»Ø.
+        ListPool<ItemSnapshot>.Return(items);
+
+        return snapshot;
+    }
+
+    public void Load(InventorySnapshot _snapshot)
+    {
+        m_repository.Clear();
+        m_repository_list.Clear();
+
+        foreach (var e in _snapshot.Items)
+        {
+            var item = new Item();
+            item.Load(e);
+
+            
+            AddItem(item);
+        }
+    }
 }
