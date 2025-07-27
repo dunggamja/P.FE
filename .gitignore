@@ -37,3 +37,7 @@ fe_client/Lofelt.NiceVibrations.Editor.csproj
 fe_client/MoreMountains.Tools.csproj
 fe_client/MoreMountains.Tools.Editor.csproj
 fe_client/VFavorites.csproj
+fe_client/MagicaCloth2Example.csproj
+fe_client/MagicaCloth2UPMImporterShaderGraph.csproj
+fe_client/MagicaClothV2.csproj
+fe_client/MagicaClothV2.Editor.csproj
