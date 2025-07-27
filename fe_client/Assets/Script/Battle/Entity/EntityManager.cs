@@ -96,5 +96,38 @@ namespace Battle
         //     }
         // }
 
+        void Clear()
+        {
+            m_repository_by_id.Clear();
+        }
+
+
+
+        public EntityManager_IO Save()
+        {
+            var snapshot = new EntityManager_IO();
+
+            foreach(var e in m_repository_by_id.Values)
+            {
+                snapshot.Entities.Add(e.Save());
+            }
+
+            return snapshot;
+        }
+
+        public void Load(EntityManager_IO _snapshot)
+        {
+            Clear();
+
+            foreach(var e in _snapshot.Entities)
+            {
+                var entity = CreateEntity(e.ID);
+                if (entity != null)
+                    entity.Load(e);
+                // else
+                //     Debug.LogError($"Entity not found: {e.ID}");
+            }
+        }
+
     }
 }

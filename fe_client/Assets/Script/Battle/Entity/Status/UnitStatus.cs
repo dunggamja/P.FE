@@ -41,16 +41,17 @@ namespace Battle
             m_attribute_repository.SetValue((int)_attribute_type, _value);//, _is_plan);
         }
 
-        public UnitStatusSnapshot Save()
+        public UnitStatus_IO Save()
         {
-            return UnitStatusSnapshot.Create(
-                m_point_repository.Save(),
-                m_status_repository.Save(), 
-                m_attribute_repository.Save()
-                );
+            return new UnitStatus_IO()
+            {
+                Point     = m_point_repository.Save(),
+                Status    = m_status_repository.Save(), 
+                Attribute = m_attribute_repository.Save()
+            };
         }
 
-        public void Load(UnitStatusSnapshot _snapshot)
+        public void Load(UnitStatus_IO _snapshot)
         {
             m_point_repository.Load(_snapshot.Point);
             m_status_repository.Load(_snapshot.Status);

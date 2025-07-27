@@ -118,12 +118,12 @@ namespace Battle
             // 데미지 적용.
             target.ApplyDamage(Result_Damage);//, _param.IsPlan);
 
-            // 로그 적용.
-            _param.PushLog(new CombatLog(
-                CombatLog.EnumLogType.Damage,
-                    dealer.ID,
-                    target.ID,
-                    Result_Damage));
+            // // 로그 적용.
+            // _param.PushLog(new CombatLog(
+            //     CombatLog.EnumLogType.Damage,
+            //         dealer.ID,
+            //         target.ID,
+            //         Result_Damage));
 
             // 1 Tick에 완료 처리.
             return true;

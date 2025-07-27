@@ -328,12 +328,15 @@ public class BuffMananger //: IBuff
     }
     // #endregion IBuff Interface
 
-    public BuffManagerSnapshot Save()
+    public BuffManager_IO Save()
     {
-        return BuffManagerSnapshot.Create(m_list_buff.Values);
+        return new BuffManager_IO()
+        {
+            Buffs = new List<Buff>(m_list_buff.Values)
+        };
     }
 
-    public void Load(BuffManagerSnapshot _snapshot)
+    public void Load(BuffManager_IO _snapshot)
     {
         m_list_buff.Clear();
         m_list_buff_id_by_target.Clear();

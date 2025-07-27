@@ -159,16 +159,17 @@ namespace Battle
             return GetBuffedUnitStatus(EnumUnitStatus.Resistance);
         }
 
-        public StatusManagerSnapshot Save()
+        public StatusManager_IO Save()
         {
-            return StatusManagerSnapshot.Create(
-                Status.Save(),
-                Buff.Save(),
-                Weapon.Save()
-            );
+            return new StatusManager_IO()
+            {
+                UnitStatus  = Status.Save(),
+                BuffManager = Buff.Save(),
+                Weapon      = Weapon.Save()
+            };
         }
 
-        public void Load(StatusManagerSnapshot _snapshot)
+        public void Load(StatusManager_IO _snapshot)
         {
             Status.Load(_snapshot.UnitStatus);
             Buff.Load(_snapshot.BuffManager);

@@ -7,34 +7,52 @@ using UnityEngine;
 
 public static partial class Util
 {
-    const  long   ID_DIGIT        = 1_000_000_000_000_000_000;
-    const  long   ID_SEC_DIGIT    = 100_000;
-    const  long   ID_DAY_DIGIT    = 1_000;
-    const  long   ID_YEAR_DIGIT   = 100;
-    const  long   ID_TIME_DIGIT   = ID_SEC_DIGIT * ID_DAY_DIGIT * ID_YEAR_DIGIT;
-    const  long   ID_SERIAL_DIGIT = ID_DIGIT / ID_TIME_DIGIT;
+    const  long   ID_DIGIT        = 1_000_000_000_000_000_000; // 10 ^ 18
+    const  long   ID_SEC_DIGIT    = 100_000; // 10 ^ 5
+    const  long   ID_DAY_DIGIT    = 1_000;   // 10 ^ 3
+    const  long   ID_YEAR_DIGIT   = 100;     // 10 ^ 2
+    const  long   ID_TIME_DIGIT   = ID_SEC_DIGIT * ID_DAY_DIGIT * ID_YEAR_DIGIT; // 10 ^ 10
+    const  long   ID_SERIAL_DIGIT = ID_DIGIT / ID_TIME_DIGIT; // 10 ^ 8
     
-    static long   s_last_generated_id = 0;
+    static long   s_last_generated_time   = 0;
+    static long   s_last_generated_serial = 0;
+    static long   s_last_generated_id     = 0;
     public static long GenerateID() 
     {
-        
+        // 현재 시간 가져오기
         var   utc_now  = DateTime.UtcNow;
         Int64 utc_year = utc_now.Year % ID_YEAR_DIGIT;
         Int64 utc_day  = utc_now.DayOfYear;
         Int64 utc_sec  = (Int64)utc_now.TimeOfDay.TotalSeconds;
 
+        // 현재 시간을 초 단위로 변환
         Int64 generate_time =
         utc_year * (ID_SEC_DIGIT * ID_DAY_DIGIT) + 
         utc_day  * (ID_SEC_DIGIT) +
         utc_sec;
 
-        // 시간이 바뀌었는지 체크해봅시다.
-        if ((s_last_generated_id / ID_SERIAL_DIGIT) != generate_time)
+
+
+        // 시간이 바뀌었다면 time, serial 값 초기화.
+        if (s_last_generated_time != generate_time)
         {
-            s_last_generated_id = generate_time * ID_SERIAL_DIGIT;
+            s_last_generated_time   = generate_time;
+            s_last_generated_serial = 0;
         }
 
-        return ++s_last_generated_id;
+        // ID 생성
+        long gen_id = (s_last_generated_time * ID_SERIAL_DIGIT) + (++s_last_generated_serial);
+
+        // // 이전 아이디보다 작은 경우 증가
+        // if  (gen_id < s_last_generated_id)
+        // {
+        //      gen_id = s_last_generated_id + 1;
+        // }
+
+        // 이전 아이디 업데이트
+        s_last_generated_id = gen_id;
+
+        return gen_id;
     }
     
     // public static void InitializeGenerateID(Int64 _last_generated_id) => s_last_generated_id = _last_generated_id;

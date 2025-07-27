@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Battle
@@ -27,7 +28,6 @@ namespace Battle
         private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
 
         private Queue<Command>                     m_command_queue          = new (10);
-
 
         public MoveRange.VFXHelper_DrawRange       DrawRange { get; private set; } = new();
         
@@ -200,5 +200,37 @@ namespace Battle
         }
 
 
+        public BattleSystemManager_IO Save()
+        {
+            var turn = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+
+            List<(int, EnumCommanderType)> faction_commander = new();
+            foreach(var e in m_faction_commander)
+                faction_commander.Add((e.Key, e.Value));
+
+
+            return new BattleSystemManager_IO()
+            {
+                Turn             = turn?.Save() ?? null,
+                BlackBoard       = BlackBoard.Save(),
+                FactionCommander = faction_commander
+            };
+        }
+
+        public void Load(BattleSystemManager_IO _io)
+        {
+            if (_io.Turn != null)
+            {
+                var turn  = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+                if (turn != null)
+                    turn.Load(_io.Turn);
+            }
+
+            BlackBoard.Load(_io.BlackBoard);
+
+            m_faction_commander.Clear();
+            foreach(var e in _io.FactionCommander)
+                m_faction_commander.Add(e.Item1, e.Item2);
+        }
     }
 }

@@ -98,23 +98,22 @@ public class BaseContainer
         // m_stack_for_planning.Clear();
     }
 
-    public ContainerSnapshot Save()
+    public BaseContainer_IO Save()
     {
-        var values = ListPool<(int, int)>.Acquire();
+        var values = new List<(int, int)>();
         foreach (var item in m_real_values)
         {
             values.Add((item.Key, item.Value));
         }
 
 
-        var snapshot = ContainerSnapshot.Create(values);
-
-        ListPool<(int, int)>.Return(values);
-
-        return snapshot;
+        return new BaseContainer_IO()
+        {
+            Values = values
+        };
     }
 
-    public void Load(ContainerSnapshot _snapshot)
+    public void Load(BaseContainer_IO _snapshot)
     {
         m_real_values.Clear();
         foreach (var item in _snapshot.Values)

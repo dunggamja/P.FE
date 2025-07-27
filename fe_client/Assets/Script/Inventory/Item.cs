@@ -104,19 +104,20 @@ public partial class Item
         return item;
     }
 
-    public ItemSnapshot Save()
+    public Item_IO Save()
     {
-        return ItemSnapshot.Create(
-            ID,
-            Kind,
-            CurCount,
-            MaxCount,
-            m_status.Save(),
-            m_attribute.Save()
-        );
+        return new Item_IO()
+        {
+            ID        = ID,
+            Kind      = Kind,
+            Count     = CurCount,
+            MaxCount  = MaxCount,
+            Status    = m_status.Save(),
+            Attribute = m_attribute.Save()
+        };
     }
 
-    public void Load(ItemSnapshot _snapshot)
+    public void Load(Item_IO _snapshot)
     {
         m_id        = _snapshot.ID;
         m_kind      = _snapshot.Kind;

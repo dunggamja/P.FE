@@ -70,12 +70,15 @@ namespace Battle
             m_repository.Reset();
         }
 
-        public BlackBoardSnapshot Save()
+        public BlackBoard_IO Save()
         {
-            return BlackBoardSnapshot.Create(m_repository.Save());
+            return new BlackBoard_IO()
+            {
+                Values = m_repository.Save()
+            };
         }
 
-        public void Load(BlackBoardSnapshot _snapshot)
+        public void Load(BlackBoard_IO _snapshot)
         {
             m_repository.Load(_snapshot.Values);
         }

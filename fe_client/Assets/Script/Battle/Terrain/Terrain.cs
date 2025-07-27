@@ -79,39 +79,53 @@ public struct TerrainBlock
     int            m_block_x;
     int            m_block_y;
     int            m_block_size;
-    Dictionary<Int64, (int x, int y)> m_entities;
+    Int64[,]       m_cell_data;
 
     public TerrainBlock(int _x, int _y, int _size)
     {
         m_block_x    = _x;
         m_block_y    = _y;
         m_block_size = _size;
-        m_entities   = new(10);
+        m_cell_data  = new Int64[_size, _size];
     }
 
-    public void SetEntity(Int64 _id, int _x, int _y)
+    public void SetCellData(int _x, int _y, Int64 _data)
     {
-        if (m_entities.ContainsKey(_id))    
-            m_entities[_id] = (_x, _y);
-        else
-            m_entities.Add(_id, (_x, _y));
+        m_cell_data[_x % m_block_size, _y % m_block_size] = _data;
     }
 
-    public void RemoveEntity(Int64 _id)
+    public void RemoveCellData(int _x, int _y)
     {
-        m_entities.Remove(_id);
+        m_cell_data[_x % m_block_size, _y % m_block_size] = 0;
     }
 
-    public Int64 FindEntity(int _x, int _y)
+    public Int64 GetCellData(int _x, int _y)
     {
-        foreach((var id, var position) in m_entities)
-        {
-            if (position.x == _x && position.y == _y)
-                return id;
-        }
-
-        return 0;
+        return m_cell_data[_x % m_block_size, _y % m_block_size];
     }
+
+    public bool HasBitIndex(int _x, int _y, int _bit_index)
+    {
+        var     cell_data = GetCellData(_x, _y);        
+        return (cell_data & (1L << _bit_index)) != 0;
+    }
+
+    public void SetBitIndex(int _x, int _y, int _bit_index)
+    {
+        var cell_data  = GetCellData(_x, _y);
+        cell_data     |= 1L << _bit_index;
+
+        SetCellData(_x, _y, cell_data);
+    }
+
+    public void RemoveBitIndex(int _x, int _y, int _bit_index)
+    {
+        var cell_data = GetCellData(_x, _y);
+        cell_data    &= ~(1L << _bit_index);
+
+        SetCellData(_x, _y, cell_data);
+    }
+
 }
 
 
@@ -152,53 +166,63 @@ public class TerrainBlockManager
         return (block_x, block_y);
     }
 
-    public Int64 FindEntityID(int _x, int _y)
+    public void SetCellData(int _x, int _y, Int64 _data)
+    {
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
+        if (block_x < 0 || block_y < 0)
+            return;
+
+        m_blocks[block_x, block_y].SetCellData(_x, _y, _data);
+    }
+
+    public void RemoveCellData(int _x, int _y)
+    {
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
+        if (block_x < 0 || block_y < 0)
+            return;
+
+        m_blocks[block_x, block_y].RemoveCellData(_x, _y);
+    }
+
+    public Int64 GetCellData(int _x, int _y)
     {
         (var block_x, var block_y) = FindBlockIndex(_x, _y);
         if (block_x < 0 || block_y < 0)
             return 0;
 
-        return m_blocks[block_x, block_y].FindEntity(_x, _y);
+        return m_blocks[block_x, block_y].GetCellData(_x, _y);
     }
 
-    // void RefreshEntity(Int64 _entity_id, int _from_x, int _from_y, int _to_x, int _to_y)
-    // {
-    //     (var block_from_x, var block_from_y) = FindBlockIndex(_from_x, _from_y);
-    //     (var block_to_x,   var block_to_y)   = FindBlockIndex(_to_x, _to_y);
-    //     // 블록이 변경되었으면 이전 블록에서 제거.
-    //     if (block_from_x != block_to_x && block_from_y != block_to_y)
-    //     {
-    //         if (0 <= block_from_x && 0 <= block_from_y)
-    //         {
-    //             m_blocks[block_from_x, block_from_y].RemoveEntity(_entity_id);
-    //         }
-    //     }        
-    //     // 블록 위치 갱신.
-    //     if (0 <= block_to_x && 0 <= block_to_y)
-    //     {
-    //         m_blocks[block_to_x, block_to_y].SetEntity(_entity_id, _to_x, _to_y);
-    //     }
-    // }
-    
-    public void RemoveEntity(Int64 _entity_id, int _from_x, int _from_y)
+
+    public bool HasBitIndex(int _x, int _y, int _bit_index)
     {
-        (var block_x, var block_y) = FindBlockIndex(_from_x, _from_y);
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
+        if (block_x < 0 || block_y < 0)
+            return false;
+
+        return m_blocks[block_x, block_y].HasBitIndex(_x, _y, _bit_index);
+    }
+
+    public void SetBitIndex(int _x, int _y, int _bit_index)
+    {
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
         if (block_x < 0 || block_y < 0)
             return;
 
-        m_blocks[block_x, block_y].RemoveEntity(_entity_id);            
+        m_blocks[block_x, block_y].SetBitIndex(_x, _y, _bit_index);
     }
 
-    public void AddEntity(Int64 _entity_id, int _to_x, int _to_y)
+    public void RemoveBitIndex(int _x, int _y, int _bit_index)
     {
-        (var block_x, var block_y) = FindBlockIndex(_to_x, _to_y);
+        (var block_x, var block_y) = FindBlockIndex(_x, _y);
         if (block_x < 0 || block_y < 0)
             return;
 
-        m_blocks[block_x, block_y].SetEntity(_entity_id, _to_x, _to_y);            
+        m_blocks[block_x, block_y].RemoveBitIndex(_x, _y, _bit_index);
     }
-
 }
+
+
 
 namespace Battle
 {
@@ -208,9 +232,12 @@ namespace Battle
         public int Height { get; private set; }
 
         // public TerrainCollision    Collision    { get; private set; }
+        const int BLOCK_SIZE = 8;
+
+        // zoc, attribute 도 블록을 이용하도록 해볼까??;;
         public Terrain_ZOC         ZOC          { get; private set; }
         public Terrain_Attribute   Attribute    { get; private set; }
-        public TerrainBlockManager BlockManager { get; private set; }
+        public TerrainBlockManager EntityManager { get; private set; }
 
         public void Initialize(int _width, int _height)
         {
@@ -218,9 +245,11 @@ namespace Battle
             Height       = _height;
 
             // Collision    = new TerrainCollision(_width, _height);
-            ZOC          = new Terrain_ZOC(_width, _height);
-            Attribute    = new Terrain_Attribute(_width, _height);
-            BlockManager = new TerrainBlockManager(_width, _height, 16);
+            ZOC          = new Terrain_ZOC(_width, _height, BLOCK_SIZE);
+            Attribute    = new Terrain_Attribute(_width, _height, BLOCK_SIZE);
+
+            // 8x8 블록 단위로 관리.
+            EntityManager = new TerrainBlockManager(_width, _height, BLOCK_SIZE);
         }
 
 

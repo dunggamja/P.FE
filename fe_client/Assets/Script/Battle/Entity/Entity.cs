@@ -102,24 +102,23 @@ namespace Battle
         //     IsCommandDirty = _is_dirty;
         // }
 
-        public EntitySnapshot Save()
+        public Entity_IO Save()
         {
-            return EntitySnapshot.Create(
-                ID,
-                Cell,
-                Cell_Prev,
-
-                BlackBoard.Save(),
-                StatusManager.Save(),
-                Inventory.Save(),
-
-                PathVehicle.Save(),
-                PathAttribute,
-                PathBasePosition
-            );
+            return new Entity_IO()
+            {
+                ID               = ID,
+                Cell             = Cell,
+                Cell_Prev        = Cell_Prev,
+                BlackBoard       = BlackBoard.Save(),
+                StatusManager    = StatusManager.Save(),
+                Inventory        = Inventory.Save(),
+                PathVehicle      = PathVehicle.Save(),
+                PathAttribute    = PathAttribute,
+                PathBasePosition = PathBasePosition
+            };
         }
 
-        public void Load(EntitySnapshot _snapshot)
+        public void Load(Entity_IO _snapshot)
         {
             ID        = _snapshot.ID;
             Cell      = _snapshot.Cell;

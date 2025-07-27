@@ -102,9 +102,9 @@ public class Inventory
         return true;
     }
 
-    public InventorySnapshot Save()
+    public Inventory_IO Save()
     {
-        var items = ListPool<ItemSnapshot>.Acquire();
+        var items = new List<Item_IO>();
 
         // æ∆¿Ã≈€ Ω∫≥¿º¶ ª˝º∫.
         foreach(var e in m_repository_list)
@@ -112,15 +112,13 @@ public class Inventory
             items.Add(e.Save());
         }
 
-        var snapshot = InventorySnapshot.Create(items);
-
-        // π›»Ø.
-        ListPool<ItemSnapshot>.Return(items);
-
-        return snapshot;
+        return new Inventory_IO()
+        {
+            Items = items
+        };  
     }
 
-    public void Load(InventorySnapshot _snapshot)
+    public void Load(Inventory_IO _snapshot)
     {
         m_repository.Clear();
         m_repository_list.Clear();

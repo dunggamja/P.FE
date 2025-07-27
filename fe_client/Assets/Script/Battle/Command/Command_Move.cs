@@ -10,19 +10,26 @@ namespace Battle
         
         // List<PathNode>  m_path_node       = new ();
         // int             m_path_node_index = 0;
-        (int x, int y)  m_cell_to          = (0, 0); 
-        bool            m_is_immediate     = false;
-        bool            m_is_plan          = false;
-        bool            m_failed_path_find = false;
+        (int x, int y)        m_cell_to          = (0, 0); 
+        EnumCellPositionEvent m_cell_event       = EnumCellPositionEvent.Enter;
+        bool                  m_is_immediate     = false;
+        bool                  m_execute_command  = false;
+        bool                  m_is_plan          = false;
+        bool                  m_failed_path_find = false;
+
 
         public Command_Move(
-          Int64          _owner_id
-        , (int x, int y) _cell_to
-        , bool           _is_immediate = false
-        , bool           _is_plan      = false)
+          Int64                 _owner_id
+        , (int x, int y)        _cell_to
+        , EnumCellPositionEvent _cell_event
+        , bool                  _execute_command
+        , bool                  _is_immediate    = false
+        , bool                  _is_plan         = false)
             : base(_owner_id)
         {
             m_cell_to          = _cell_to;
+            m_cell_event       = _cell_event;
+            m_execute_command  = _execute_command;
             m_is_immediate     = _is_immediate;
             m_is_plan          = _is_plan;
             m_failed_path_find = false;
@@ -82,14 +89,14 @@ namespace Battle
                 if (m_failed_path_find == false)
                     Owner.UpdateCellPosition(
                           m_cell_to
-                        , EnumCellPositionEvent.Move
+                        , m_cell_event
                         , m_is_immediate
                         , m_is_plan);
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
                 // 행동 플래그 처리.
-                if (m_is_plan == false)
+                if (m_execute_command)
                     Owner.SetCommandDone(EnumCommandFlag.Move);
             }
         }

@@ -46,7 +46,7 @@ namespace Battle
 
                 // 새로운 위치 셀 점유.
                 if (_cell_position_event == EnumCellPositionEvent.Enter
-                ||  _cell_position_event == EnumCellPositionEvent.Move)
+                 || _cell_position_event == EnumCellPositionEvent.Move)
                 {
                     EventDispatchManager.Instance.UpdateEvent(
                         ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(

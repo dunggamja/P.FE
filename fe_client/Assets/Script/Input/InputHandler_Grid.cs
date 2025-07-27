@@ -30,15 +30,14 @@ public class InputHandler_Grid_Select : InputHandler
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
-    int                     SelectTile_X       { get; set; } = 0;
-    int                     SelectTile_Y       { get; set; } = 0;
+    (int x, int y)          SelectCursor              { get; set; } = (0, 0);         
          
-         
-    bool                    IsFinish           { get; set; } = false;                
-    float                   MoveTile_LastTime  { get; set; } = 0f;
-    Vector2Int              MoveDirection      { get; set; } = Vector2Int.zero;    
-    Int64                   VFX_Select         { get; set; } = 0;
-    Int64                   SelectedEntityID   { get; set; } = 0; 
+    bool                    IsFinish                  { get; set; } = false;                
+    float                   MoveTile_LastTime         { get; set; } = 0f;
+    Vector2Int              MoveDirection             { get; set; } = Vector2Int.zero;    
+    Int64                   VFX_Select                { get; set; } = 0;
+    Int64                   CommandEntityID           { get; set; } = 0; 
+    // (int x, int y)          CommandEntityBasePosition { get; set; } = (0, 0);
 
 
     
@@ -99,14 +98,11 @@ public class InputHandler_Grid_Select : InputHandler
     {
         ReleaseVFX();
         
-        IsFinish          = false;
-        VFX_Select        = 0;
-        MoveTile_LastTime = 0f; 
-        MoveDirection     = Vector2Int.zero;
-        SelectedEntityID  = 0;
-        // SelectedEntityBasePosition = (0, 0);
-
-
+        IsFinish                  = false;
+        VFX_Select                = 0;
+        MoveTile_LastTime         = 0f; 
+        MoveDirection             = Vector2Int.zero;
+        CommandEntityID           = 0;
         // SelectTile_X      = 0;
         // SelectTile_Y      = 0;
     }
@@ -198,83 +194,30 @@ public class InputHandler_Grid_Select : InputHandler
             return;
         }
 
-        if (SelectedEntityID > 0)
+        if (CommandEntityID > 0)
         {
             // 유닛 커맨드 UI 열기.
-            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(SelectedEntityID));
-            
-            
-            //var entity         = EntityManager.Instance.GetEntity(SelectedEntityID);
-            //var faction        = entity?.GetFaction() ?? 0;
-            //var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
-
-            //var input_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
-            // input_handler.Push_GUI(gui_id);
-
-            //Debug.LogWarning($"InputHandler_Grid_Select OnUpdate_Input_Process_Select, gui_id: {gui_id}");
-            //SetChildHandler(input_handler);
+            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(CommandEntityID));
         }
         else
         {
-
-            var entity_id = terrain_map.BlockManager.FindEntityID(SelectTile_X, SelectTile_Y);
+            var entity_id = terrain_map.EntityManager.GetCellData(SelectCursor.x, SelectCursor.y);
             if (entity_id > 0)
             {
-                var entity         = EntityManager.Instance.GetEntity(entity_id);
-                var faction        = entity.GetFaction();
-                var commander_type = BattleSystemManager.Instance.GetFactionCommanderType(faction);
-
-                switch(commander_type)
-                {                 
-                    case EnumCommanderType.Player:
-                    {
-                        SelectedEntityID           = entity_id;
-                    }
-                    break;  
-
-                    case EnumCommanderType.None:
-                    case EnumCommanderType.AI:
-                    {
-                        // TODO: 상태창 열기. or 공격범위 표시.
-                    }
-                    break;
-                }
+                SelectEntity(entity_id);
             }
             else
             {
-                //InputManager.Instance.StackHandler(EnumInputHandlerType.UI_Menu);
+                // TODO: 시스템 메뉴 열어야 할듯?
             }
-
         }
-
-
-        return;
     }
 
     void OnUpdate_Input_Process_Cancel()
     {
-        if (SelectedEntityID > 0)
+        if (CommandEntityID > 0)
         {
-            var entity = EntityManager.Instance.GetEntity(SelectedEntityID);
-            if (entity != null)
-            {
-                var select_tile   = (SelectTile_X, SelectTile_Y);
-                var base_position = entity.PathBasePosition;
-
-                if (select_tile != base_position)
-                {
-                    MoveSelcectedTile(base_position.x, base_position.y);
-                    MoveSelectedEntity(
-                        SelectedEntityID, 
-                        base_position, 
-                        _is_immediate: true, 
-                        _is_plan: false);
-                }
-                else
-                {
-                    SelectedEntityID = 0;
-                }
-            }
+           Process_Cancel_CommandEntity();
         }
     }
 
@@ -310,19 +253,16 @@ public class InputHandler_Grid_Select : InputHandler
             return;
 
         // 타일 이동.
-        var new_position_x = SelectTile_X + MoveDirection.x;
-        var new_position_y = SelectTile_Y + MoveDirection.y;
+        var new_position_x = SelectCursor.x + MoveDirection.x;
+        var new_position_y = SelectCursor.y + MoveDirection.y;
 
-        MoveSelcectedTile(new_position_x, new_position_y);
+        MoveSelcectCurosr(new_position_x, new_position_y);
 
         // 선택된 유닛 이동 처리.
         MoveSelectedEntity(
-            SelectedEntityID, 
-            (SelectTile_X, SelectTile_Y), 
-            _is_immediate: false, 
-            _is_plan: true);
-
-        
+            CommandEntityID, 
+            SelectCursor,
+            _is_immediate: false);
     }
 
     void Update_DrawMoveRange()
@@ -335,10 +275,10 @@ public class InputHandler_Grid_Select : InputHandler
         }
 
         // 선택된 타일의 엔티티 ID.
-        Int64 tile_entity_id = terrain_map.BlockManager.FindEntityID(SelectTile_X, SelectTile_Y);
+        Int64 tile_entity_id = terrain_map.EntityManager.GetCellData(SelectCursor.x, SelectCursor.y);
         
         // 이동 범위 표시 엔티티 ID.
-        Int64 draw_entity_id = SelectedEntityID > 0 ? SelectedEntityID : tile_entity_id;
+        Int64 draw_entity_id = CommandEntityID > 0 ? CommandEntityID : tile_entity_id;
 
         BattleSystemManager.Instance.DrawRange.DrawRange(
             _draw_flag: 
@@ -357,7 +297,7 @@ public class InputHandler_Grid_Select : InputHandler
         }
     }
 
-    private void MoveSelcectedTile(int _x, int _y)
+    private void MoveSelcectCurosr(int _x, int _y)
     {
         var terrain_map = TerrainMapManager.Instance.TerrainMap;
         if (terrain_map != null && terrain_map.IsInBound(_x, _y) == false)
@@ -365,8 +305,7 @@ public class InputHandler_Grid_Select : InputHandler
             return;
         }
 
-        SelectTile_X = _x;
-        SelectTile_Y = _y;
+        SelectCursor = (_x, _y);
 
         // 이동 시간 갱신.
         MoveTile_LastTime = Time.time;
@@ -375,11 +314,14 @@ public class InputHandler_Grid_Select : InputHandler
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFX_TransformEvent>.Acquire()
             .SetID(VFX_Select)
-            .SetPosition((SelectTile_X, SelectTile_Y).CellToPosition())                
+            .SetPosition(SelectCursor.CellToPosition())                
         );       
     }
 
-    private void MoveSelectedEntity(Int64 _entity_id, (int x, int y) _cell, bool _is_immediate, bool _is_plan)
+    private void MoveSelectedEntity(
+        Int64          _entity_id,
+        (int x, int y) _cell,
+        bool           _is_immediate)
     {
         if (_entity_id == 0)
             return;
@@ -400,8 +342,11 @@ public class InputHandler_Grid_Select : InputHandler
             (
                 _entity_id,
                 _cell,
-                _is_immediate,
-                _is_plan
+                EnumCellPositionEvent.Enter,
+
+                _is_immediate:    _is_immediate, // 즉시 이동 여부.
+                _execute_command: false,         // 명령 상태 처리. 
+                _is_plan:         true           // 좌표 점유 처리.
             )
         );
     }
@@ -416,5 +361,91 @@ public class InputHandler_Grid_Select : InputHandler
         // 이동 범위 표시 초기화.
         BattleSystemManager.Instance.DrawRange.Clear();   
     }
+
+    void SelectEntity(Int64 _entity_id)
+    {
+        var entity  = EntityManager.Instance.GetEntity(_entity_id);                
+        if (entity == null)
+            return;
+
+        var faction            = entity.GetFaction();
+        var commander_type     = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+        bool is_enable_command = entity.HasCommandEnable() && commander_type == EnumCommanderType.Player;
+        if  (is_enable_command)
+        {
+            SetCommandEntity(_entity_id);
+        }
+        else
+        {
+            // TODO: 상태창 열기. or 공격범위 표시.
+        }
+    }
+
+
+    void SetCommandEntity(Int64 _entity_id)
+    {
+        var entity  = EntityManager.Instance.GetEntity(_entity_id);                
+        if (entity == null)
+            return;
+
+        // 명령을 내릴 유닛 선택.
+        CommandEntityID = _entity_id;
+
+        // 셀 점유 상태 임시 해제.
+        entity.UpdateCellPosition
+        (
+            entity.Cell,
+            EnumCellPositionEvent.Exit,
+            _is_immediatly_move: false,
+            _is_plan: false
+        );
+    }
+
+    void Process_Cancel_CommandEntity()
+    {
+        if (CommandEntityID == 0)
+            return;
+
+        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+        if (entity != null)
+        {
+            var base_position  = entity.PathBasePosition;
+            if (base_position == SelectCursor)
+            {
+                CommandEntityID = 0;
+
+                // 셀 점유 상태 원복.
+                entity.UpdateCellPosition
+                (
+                    base_position,
+                    EnumCellPositionEvent.Enter,
+                    _is_immediatly_move: false,
+                    _is_plan: false
+                );
+
+                return;
+            }
+            else
+            {
+                // 커서 이동.
+                MoveSelcectCurosr(base_position.x, base_position.y);
+
+                // 명령 중이던 캐릭터 원래 위치로 복귀.    
+                MoveSelectedEntity(
+                    CommandEntityID, 
+                    base_position, 
+                    _is_immediate: true);
+            }
+        }
+        else
+        {
+            // 에러 상황
+            Debug.LogError($"Process_Cancel_CommandEntity: entity is null: {CommandEntityID}");
+            CommandEntityID = 0;
+        }
+
+    }
+
+
 
 }

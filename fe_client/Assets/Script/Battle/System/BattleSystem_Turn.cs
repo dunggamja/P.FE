@@ -175,7 +175,24 @@ namespace Battle
             }    
         }
 
-        
+
+        public BattleSystem_Turn_IO Save()
+        {
+            return new BattleSystem_Turn_IO()
+            {
+                TurnUpdateCount = m_turn_update_count,
+                QueueTurn       = (int[])m_queue_turn.Clone(),
+                QueueFaction    = (int[])m_queue_faction.Clone(),
+            };
+        }
+
+        public void Load(BattleSystem_Turn_IO _io)
+        {
+            m_turn_update_count = _io.TurnUpdateCount;
+            m_queue_turn        = (int[])_io.QueueTurn.Clone();
+            m_queue_faction     = (int[])_io.QueueFaction.Clone();
+        }
+
     }
 
 }

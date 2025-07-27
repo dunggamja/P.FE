@@ -1,28 +1,33 @@
 using System;
 using System.Collections.Generic;
+using Battle;
 using UnityEngine;
 
 
 public class GameSnapshot
 {
-    public Int64  ID          { get; private set; }
-    public string Description { get; private set; }
-    public float  Timestamp   { get; private set; }
+    public Int64  ID             { get; private set; } = 0;
+    // public bool   IsFullSnapshot { get; private set; } = false;
     
     // 엔티티 상태들
-    public Dictionary<Int64, EntitySnapshot> EntityStates { get; private set; }
+    public EntityManager_IO       EntityManager       { get; private set; } = new();
+
+    public BattleSystemManager_IO BattleSystemManager { get; private set; } = new();
     
-    // 시스템 상태들
-    // public BattleSystemSnapshot BattleSystemState { get; private set; }
-    // public CombatSystemSnapshot CombatSystemState { get; private set; }
-    
-    public GameSnapshot(Int64 id, string description)
+
+    public static GameSnapshot Save()
     {
-        ID = id;
-        Description = description;
-        Timestamp = Time.time;
-        EntityStates = new Dictionary<Int64, EntitySnapshot>();
-        // BattleSystemState = new BattleSystemSnapshot();
-        // CombatSystemState = new CombatSystemSnapshot();
+        var snapshot                 = new GameSnapshot();
+        snapshot.ID                  = Util.GenerateID();
+        snapshot.EntityManager       = Battle.EntityManager.Instance.Save();
+        snapshot.BattleSystemManager = Battle.BattleSystemManager.Instance.Save();
+
+        return snapshot;
+    }
+
+    public static void Load(GameSnapshot _snapshot)
+    {
+        Battle.EntityManager.Instance.Load(_snapshot.EntityManager);
+        Battle.BattleSystemManager.Instance.Load(_snapshot.BattleSystemManager);
     }
 }

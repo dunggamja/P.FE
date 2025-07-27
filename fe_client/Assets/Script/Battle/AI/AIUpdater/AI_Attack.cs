@@ -367,7 +367,7 @@ namespace Battle
                         VisitList.Add((x, y));
                         
                         // 타겟 추가. (대상 id, 공격 위치 x, 공격 위치 y)
-                        var entity_id = TerrainMap.BlockManager.FindEntityID(x, y);
+                        var entity_id = TerrainMap.EntityManager.GetCellData(x, y);
                         if (entity_id > 0)
                         {
                             CollectTargets.Add((entity_id, _visit_x, _visit_y));

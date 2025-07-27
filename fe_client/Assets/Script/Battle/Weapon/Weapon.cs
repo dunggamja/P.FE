@@ -63,12 +63,16 @@ namespace Battle
             ItemID  = 0;
         }
 
-        public WeaponSnapshot Save()
+        public Weapon_IO Save()
         {
-            return WeaponSnapshot.Create(OwnerID, ItemID);
+            return new Weapon_IO()
+            {
+                OwnerID = OwnerID,
+                ItemID  = ItemID
+            };
         }
 
-        public void Load(WeaponSnapshot _snapshot)
+        public void Load(Weapon_IO _snapshot)
         {
             OwnerID = _snapshot.OwnerID;
             ItemID  = _snapshot.ItemID;

@@ -49,12 +49,12 @@ namespace Battle
             // 위치&ZOC 갱신.
             if (_event.IsOccupy)
             {
-                TerrainMap.BlockManager.AddEntity(_event.EntityID, _event.Cell.x,  _event.Cell.y);
+                TerrainMap.EntityManager.SetCellData(_event.Cell.x,  _event.Cell.y, _event.EntityID);
                 TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell.x,  _event.Cell.y);
             }
             else
             {
-                TerrainMap.BlockManager.RemoveEntity(_event.EntityID, _event.Cell.x, _event.Cell.y);
+                TerrainMap.EntityManager.RemoveCellData(_event.Cell.x, _event.Cell.y);
                 TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);                
             }
         }

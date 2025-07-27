@@ -1,32 +1,38 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
 using UnityEngine;
 
 
-public class Terrain_Attribute : Terrain
+public class Terrain_Attribute : TerrainBlockManager
 {
-    public Terrain_Attribute(int _width, int _height)
-    : base(_width, _height)
+    public Terrain_Attribute(int _width, int _height, int _block_size)
+    : base(_width, _height, _block_size)
     {
     }
 
-    public bool HasAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+    public Int64 GetAttribute(int _x, int _y)
     {
-        return HasAttribute(_x, _y, (int)_attribute_type);
+        return GetCellData(_x, _y);
+    }
+
+    public bool HasAttribute(int _x, int _y, EnumTerrainAttribute _attribute_type)
+    {
+        return HasBitIndex(_x, _y, (int)_attribute_type);
     }
 
     public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
     {
-        SetAttribute(_x, _y, (int)_attribute_type);
+        SetBitIndex(_x, _y, (int)_attribute_type);
     }
 
     public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
     {
-        RemoveAttribute(_x, _y, (int)_attribute_type);
+        RemoveBitIndex(_x, _y, (int)_attribute_type);
     }
 
-    public static int Calculate_MoveCost(int _path_owner_attribute, int _terrain_attribute)
+    public static int Calculate_MoveCost(int _path_owner_attribute, Int64 _terrain_attribute)
     {
         // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯? ScriptableObject...
         // move_cost == 0, 이동 불가
