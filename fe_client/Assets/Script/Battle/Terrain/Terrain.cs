@@ -234,7 +234,7 @@ namespace Battle
         // public TerrainCollision    Collision    { get; private set; }
         const int BLOCK_SIZE = 8;
 
-        // zoc, attribute 도 블록을 이용하도록 해볼까??;;
+
         public Terrain_ZOC         ZOC          { get; private set; }
         public Terrain_Attribute   Attribute    { get; private set; }
         public TerrainBlockManager EntityManager { get; private set; }
@@ -259,6 +259,7 @@ namespace Battle
         }
 
         // TODO: SAVE/LOAD
+        //       블록단위로 저장/로드를 만들어야 겠다 생각하다가 작업을 뭔가 해버렸다. 
 
 
 

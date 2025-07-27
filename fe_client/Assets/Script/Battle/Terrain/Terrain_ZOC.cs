@@ -37,7 +37,7 @@ public class Terrain_ZOC
         var new_value = m_faction_zoc[_faction].GetCellData(_x, _y) + 1;
         m_faction_zoc[_faction].SetCellData(_x, _y, new_value);
 
-        Debug.Log($"IncreaseZOC: {_faction}, {_x}, {_y}, {new_value}");
+        // Debug.Log($"IncreaseZOC: {_faction}, {_x}, {_y}, {new_value}");
     }
 
     public void DecreaseZOC(int _faction, int _x, int _y)
@@ -54,7 +54,7 @@ public class Terrain_ZOC
         var new_value = m_faction_zoc[_faction].GetCellData(_x, _y) - 1;
         m_faction_zoc[_faction].SetCellData(_x, _y, new_value);
 
-        Debug.Log($"DecreaseZOC: {_faction}, {_x}, {_y}, {new_value}");
+        // Debug.Log($"DecreaseZOC: {_faction}, {_x}, {_y}, {new_value}");
     }
 
     public bool IsBlockedZOC(int _x, int _y, int _faction_ignore)
