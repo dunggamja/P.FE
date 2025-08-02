@@ -78,5 +78,12 @@ namespace Battle
             ItemID  = _snapshot.ItemID;
         }
     }
+
+    public class Weapon_IO
+    {
+        public Int64 OwnerID { get; set; }
+        public Int64 ItemID  { get; set; }
+
+    }
 }
 

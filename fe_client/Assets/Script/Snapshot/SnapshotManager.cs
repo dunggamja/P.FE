@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SnapshotManager : Singleton<SnapshotManager>
 {
     private Dictionary<Int64, GameSnapshot> m_snapshots = new();

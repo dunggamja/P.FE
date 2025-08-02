@@ -127,3 +127,17 @@ public partial class Item
         m_attribute.Load(_snapshot.Attribute);
     }
 }
+
+
+public class Item_IO
+{
+    public Int64        ID        { get; set; } = 0;
+    public Int32        Kind      { get; set; } = 0;
+    public Int32        Count     { get; set; } = 0;
+    public Int32        MaxCount  { get; set; } = 0;
+
+    public BaseContainer_IO Status    { get; set; } = new();
+    public BaseContainer_IO Attribute { get; set; } = new();
+
+}
+

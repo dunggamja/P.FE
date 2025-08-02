@@ -124,5 +124,11 @@ namespace Battle
             // CommandProgress_Entities.Clear();
         }
     }
+
+
+    public class BlackBoard_IO
+    {
+        public BaseContainer_IO Values { get; set; } = new();
+    }
 }
 

@@ -177,6 +177,15 @@ namespace Battle
         }
     }
 
+
+    public class StatusManager_IO
+    {
+        public UnitStatus_IO  UnitStatus  { get; set; } = new();
+        public BuffManager_IO BuffManager { get; set; } = new();
+        public Weapon_IO      Weapon      { get; set; } = new();
+
+    }
+
 }
 
 /*

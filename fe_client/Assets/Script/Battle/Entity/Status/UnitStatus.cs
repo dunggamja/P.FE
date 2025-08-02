@@ -58,4 +58,11 @@ namespace Battle
             m_attribute_repository.Load(_snapshot.Attribute);
         }
     }
+
+    public class UnitStatus_IO
+    {
+        public BaseContainer_IO Point     { get; set; } = new();
+        public BaseContainer_IO Status    { get; set; } = new();
+        public BaseContainer_IO Attribute { get; set; } = new();
+    }
 }

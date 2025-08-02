@@ -10,8 +10,6 @@ namespace Battle
     {
         // Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
 
-
-
         public IBattleSystemParam  Param          { get; private set; }
         public EnumState           State          { get; private set; }
                        
@@ -219,12 +217,9 @@ namespace Battle
 
         public void Load(BattleSystemManager_IO _io)
         {
-            if (_io.Turn != null)
-            {
-                var turn  = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
-                if (turn != null)
-                    turn.Load(_io.Turn);
-            }
+            var turn_system = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
+            turn_system?.Load(_io.Turn);
+               
 
             BlackBoard.Load(_io.BlackBoard);
 
@@ -232,5 +227,14 @@ namespace Battle
             foreach(var e in _io.FactionCommander)
                 m_faction_commander.Add(e.Item1, e.Item2);
         }
+    }
+
+    public class BattleSystemManager_IO
+    {
+    public BattleSystem_Turn_IO Turn             { get; set; } = null;
+    public BlackBoard_IO        BlackBoard       { get; set; } = null;
+
+    public List<(int, Battle.EnumCommanderType)> 
+                                FactionCommander { get; set; } = null;                              
     }
 }

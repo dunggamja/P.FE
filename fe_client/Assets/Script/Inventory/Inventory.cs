@@ -133,3 +133,17 @@ public class Inventory
         }
     }
 }
+
+
+public class Inventory_IO
+{
+    public List<Item_IO> Items { get; set; } = new();
+
+    public static Inventory_IO Create(
+        IEnumerable<Item_IO> _items)
+    {
+        var snapshot   = new Inventory_IO();
+        snapshot.Items = new List<Item_IO>(_items);
+        return snapshot;
+    }
+}

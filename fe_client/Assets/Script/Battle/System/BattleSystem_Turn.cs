@@ -188,6 +188,9 @@ namespace Battle
 
         public void Load(BattleSystem_Turn_IO _io)
         {
+            if (_io == null)
+                return;
+
             m_turn_update_count = _io.TurnUpdateCount;
             m_queue_turn        = (int[])_io.QueueTurn.Clone();
             m_queue_faction     = (int[])_io.QueueFaction.Clone();
@@ -195,5 +198,14 @@ namespace Battle
 
     }
 
+
+
+
+    public class BattleSystem_Turn_IO
+    {
+    public int   TurnUpdateCount { get; set; } = 0;
+    public int[] QueueTurn       { get; set; } = new int[2];
+    public int[] QueueFaction    { get; set; } = new int[2];
+    }
 }
 

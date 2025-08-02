@@ -346,6 +346,13 @@ public class BuffMananger //: IBuff
             AddBuff(buff);
         }
     }
+
+
+}
+
+public class BuffManager_IO
+{
+    public List<Buff> Buffs { get; set; } = new();
 }
 
 

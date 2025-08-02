@@ -117,17 +117,29 @@ namespace Battle
 
         public void Load(EntityManager_IO _snapshot)
         {
+
             Clear();
 
             foreach(var e in _snapshot.Entities)
             {
-                var entity = CreateEntity(e.ID);
+                var entity = GetEntity(e.ID);
+                if (entity == null)
+                {
+                    entity = CreateEntity(e.ID);
+                }
+
                 if (entity != null)
-                    entity.Load(e);
-                // else
-                //     Debug.LogError($"Entity not found: {e.ID}");
+                    entity.Load(e);                
+                else
+                    Debug.LogError($"Entity not found: {e.ID}");
             }
         }
 
+    }
+
+
+    public class EntityManager_IO
+    {
+        public List<Entity_IO> Entities { get; private set; } = new();    
     }
 }
