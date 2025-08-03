@@ -45,26 +45,26 @@ namespace Battle
 
     public class BattleLogManager : Singleton<BattleLogManager>
     {
-        private List<BattleLog> m_logs = new();
+        public List<BattleLog> Logs { get; private set; } = new();
 
         public void AddLog(EnumBattleLogType _log_type, Int64 _entity_id, int _value)
         {
-            m_logs.Add(BattleLog.Create(_log_type, _entity_id, _value));
+            Logs.Add(BattleLog.Create(_log_type, _entity_id, _value));
         }
 
         public void AddLog(BattleLog _log)
         {
-            m_logs.Add(_log);
+            Logs.Add(_log);
         }
 
         public void Clear()
         {
-            m_logs.Clear();
+            Logs.Clear();
         }
 
         public BattleLogManager_IO Save()
         {            
-            return new BattleLogManager_IO { Logs = new List<BattleLog>(m_logs) };
+            return new BattleLogManager_IO { Logs = new List<BattleLog>(Logs) };
         }
 
         public void Load(BattleLogManager_IO _io)
@@ -72,8 +72,8 @@ namespace Battle
             if (_io == null)
                 return;
 
-            m_logs.Clear();
-            m_logs.AddRange(_io.Logs);
+            Logs.Clear();
+            Logs.AddRange(_io.Logs);
         }
     }
 

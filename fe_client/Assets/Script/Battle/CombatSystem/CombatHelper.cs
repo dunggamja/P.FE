@@ -37,6 +37,11 @@ namespace Battle
 
             ObjectPool<CombatParam_Plan>.Return(combat_param);
 
+            BattleLogManager.Instance.Logs.ForEach(log => 
+            {
+                Debug.Log($"{log.LogType} {log.EntityID} {log.Value}");
+            });
+
             Debug.Log("GameSnapshot.Load() Start");
             GameSnapshot.Load(snapshot);
             Debug.Log("GameSnapshot.Load() End");

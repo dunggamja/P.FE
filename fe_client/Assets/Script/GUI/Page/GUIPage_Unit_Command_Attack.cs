@@ -210,8 +210,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         var list_entities = EntityManager.Instance.Collect(e => true);
         if (list_entities.Count >= 2)
         {
-            var attacker = list_entities[0];
-            var defender = list_entities[1];
+            var attacker = list_entities[1];
+            var defender = list_entities[0];
 
             CombatHelper.Run_Plan(attacker.ID, defender.ID, SelectedItemData.ItemID);
         }

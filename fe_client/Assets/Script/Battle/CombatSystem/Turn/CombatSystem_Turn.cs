@@ -64,13 +64,13 @@ namespace Battle
             bool HasNextTurn()
             {
                 // 행동 횟수가 남아 있는지 체크.
-                return m_turn_count + 1 < m_turn_count_max;
+                return m_turn_count < m_turn_count_max;
             }
 
             public void Reset()
             {
                 m_id                 = 0;
-                m_turn_value      = 0;
+                m_turn_value         = 0;
                 m_turn_count         = 0;
                 m_turn_count_max     = 0;
 
@@ -83,27 +83,25 @@ namespace Battle
 
             public bool IsRemainTurn()
             {
+                // 여유 턴이 없으면 종료.
+                if (HasNextTurn() == false)
+                    return false;
+
                 // 공격 횟수가 남아 있음.
-                if (IsRemainAttackCount())
-                    return true;
+                if (IsRemainAttackCount() == false)
+                    return false;
 
-                // 여유 턴이 있는지 체크.
-                if (HasNextTurn())
-                    return true;
-
-                return false;
+                return true;
             }
 
             public void ProcessTurn()
             {
-                if (IsRemainAttackCount())
+                // 공격 횟수 증가.
+                ++m_attack_count;
+
+                // 공격 횟수가 소진되었으면 턴 증가.
+                if (IsRemainAttackCount() == false)
                 {
-                    // 공격 횟수가 남아 있음.
-                    ++m_attack_count;
-                }
-                else
-                {
-                    // 해당턴의 공격 완료, 다음 턴으로 넘어감
                     ++m_turn_count;
                     ++m_turn_value;
                     m_attack_count       = 0;
