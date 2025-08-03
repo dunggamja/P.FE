@@ -17,7 +17,9 @@ namespace Battle
                                 .Acquire()
                                 .Set(attacker, target);
 
+            Debug.Log("GameSnapshot.Save() Start");
             var snapshot = GameSnapshot.Save();
+            Debug.Log("GameSnapshot.Save() End");
 
             // 전투 예측 실행.
             CombatSystemManager.Instance.Setup(combat_param);
@@ -35,7 +37,9 @@ namespace Battle
 
             ObjectPool<CombatParam_Plan>.Return(combat_param);
 
+            Debug.Log("GameSnapshot.Load() Start");
             GameSnapshot.Load(snapshot);
+            Debug.Log("GameSnapshot.Load() End");
         }
     }
 }

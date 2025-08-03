@@ -61,15 +61,20 @@ namespace Battle
      }
 
 
-    public void ApplyDamage(int _damage)//, bool _is_plan = false)
+    public void ApplyDamage(int _damage)
     {
-        if (_damage <= 0)
-            return;          
+        // 데미지 값 보정.
+        _damage = Math.Max(0, _damage);
 
-        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);//, _is_plan);
+        
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
         var new_hp = cur_hp - _damage;
 
-        SetPoint(EnumUnitPoint.HP, new_hp);//, _is_plan);
+        // 데미지 적용.
+        SetPoint(EnumUnitPoint.HP, new_hp);
+
+        // 로그 적재.
+        BattleLogManager.Instance.AddLog(EnumBattleLogType.Damage, ID, _damage);
     }
 
     public void ApplyHeal(int _heal)//, bool _is_plan = false)

@@ -207,6 +207,17 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
+        var list_entities = EntityManager.Instance.Collect(e => true);
+        if (list_entities.Count >= 2)
+        {
+            var attacker = list_entities[0];
+            var defender = list_entities[1];
+
+            CombatHelper.Run_Plan(attacker.ID, defender.ID, SelectedItemData.ItemID);
+        }
+
+
+
         // 선택 아이템 처리.
         //var select_item = SelectedItemData;
 

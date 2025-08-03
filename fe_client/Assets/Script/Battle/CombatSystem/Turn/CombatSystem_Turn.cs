@@ -26,7 +26,7 @@ namespace Battle
             Int64          m_id;
             EnumCombatTurn m_turn_type;
 
-            int            m_turn_sequence;      // 행동 순서
+            int            m_turn_value;         // 행동 순서
             int            m_turn_count;         // 행동 횟수
             int            m_turn_count_max;     // 최대 행동 횟수
                            
@@ -36,22 +36,22 @@ namespace Battle
 
             
 
-            public void SetData(Int64 _id, EnumCombatTurn _turn_type, int _turn_sequence, int _turn_count, int _attack_count)
+            public void SetData(Int64 _id, EnumCombatTurn _turn_type, int _turn_value, int _turn_count, int _attack_count)
             {
                 m_id               = _id;
                 m_turn_type        = _turn_type;
-                m_turn_sequence    = _turn_sequence;
+                m_turn_value       = _turn_value;
                 m_turn_count_max   = _turn_count;
                 m_attack_count_max = _attack_count;
             }
 
             public Int64 ID           => m_id;
-            public int   TurnSequence => m_turn_sequence;   
+            public int   TurnValue    => m_turn_value;   
             public bool  IsAttacker   => m_turn_type == EnumCombatTurn.Attacker;
             public bool  IsDefender   => m_turn_type == EnumCombatTurn.Defender;
 
 
-            public void  AddTurnSequence(int _value)     => m_turn_sequence      += _value;
+            public void  AddTurnSequence(int _value)     => m_turn_value      += _value;
             public void  AddMaxTurnCount(int _value)     => m_turn_count_max     += _value;
             public void  AddExtraAttackCount(int _value) => m_attack_count_extra += _value;
 
@@ -70,7 +70,7 @@ namespace Battle
             public void Reset()
             {
                 m_id                 = 0;
-                m_turn_sequence      = 0;
+                m_turn_value      = 0;
                 m_turn_count         = 0;
                 m_turn_count_max     = 0;
 
@@ -105,13 +105,17 @@ namespace Battle
                 {
                     // 해당턴의 공격 완료, 다음 턴으로 넘어감
                     ++m_turn_count;
-                    ++m_turn_sequence;
+                    ++m_turn_value;
                     m_attack_count       = 0;
                     m_attack_count_extra = 0;
                 }
 
             }
         }
+
+
+        // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
+        const int ADD_EXTRA_TURN_SPEED = 5; 
 
 
         public  EnumCombatTurn CombatTurn   { get; private set; } = EnumCombatTurn.None;
@@ -177,8 +181,6 @@ namespace Battle
             var defender_turn_sequence = defender.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, defender, EnumBuffStatus.System_TurnSequence).Calculate(0);
 
             // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
-            const int ADD_EXTRA_TURN_SPEED = 5; 
-
             var attacker_speed      = attacker.StatusManager.Calc_Speed();
             var defender_speed      = defender.StatusManager.Calc_Speed();
             var attacker_turn_count = (attacker_speed - defender_speed) >= ADD_EXTRA_TURN_SPEED ? 2 : 1;
@@ -215,7 +217,7 @@ namespace Battle
             {
                 // 1. 공격자의 행동순서 값이 방어자의 값 이하.
                 // 2. 방어자에게 남아있는 행동 횟수가 없음.
-                var is_attacker_turn = AttackerData.TurnSequence <= DefenderData.TurnSequence;
+                var is_attacker_turn = AttackerData.TurnValue <= DefenderData.TurnValue;
                 if (is_attacker_turn || !defender_has_remain_turn)
                 {
                     // 공격자 턴

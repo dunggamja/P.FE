@@ -5,39 +5,38 @@ using UnityEngine;
 
 namespace Battle
 {
+    public enum EnumBattleLogType
+    {
+        None = 0,
+
+        Battle_Turn_Start = 1,
+        Battle_Turn_End,
+
+
+        Combat_Turn_Start,
+        Combat_Turn_End,
+
+        Damage,
+        Heal,
+        Guard,
+        Evade,
+    }
 
     public struct BattleLog
     {
-        public enum EnumLogType
-        {
-            None = 0,
+        
 
-            Battle_Turn_Start = 1,
-            Battle_Turn_End,
-
-
-            Combat_Turn_Start = 1000,
-            Combat_Turn_End,
-
-            Combat_Attack,
-            Combat_Heal,
-            Combat_Guard,
-            Combat_Evade,
-        }
-
-        public EnumLogType LogType  { get; private set; }
-        public Int64       ActorID  { get; private set; }
-        public Int64       TargetID { get; private set; }
-        public int         Value    { get; private set; }
+        public EnumBattleLogType LogType  { get; private set; }
+        public Int64             EntityID { get; private set; }
+        public int               Value    { get; private set; }
 
 
-        public static BattleLog Create(EnumLogType _log_type, Int64 _actor_id, Int64 _target_id, int _value)
+        public static BattleLog Create(EnumBattleLogType _log_type, Int64 _entity_id, int _value)
         {
             return new BattleLog 
             { 
                 LogType  = _log_type, 
-                ActorID  = _actor_id, 
-                TargetID = _target_id, 
+                EntityID = _entity_id, 
                 Value    = _value 
             };
         }
@@ -47,6 +46,11 @@ namespace Battle
     public class BattleLogManager : Singleton<BattleLogManager>
     {
         private List<BattleLog> m_logs = new();
+
+        public void AddLog(EnumBattleLogType _log_type, Int64 _entity_id, int _value)
+        {
+            m_logs.Add(BattleLog.Create(_log_type, _entity_id, _value));
+        }
 
         public void AddLog(BattleLog _log)
         {
