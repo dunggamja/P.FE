@@ -13,6 +13,12 @@ namespace Battle
             
             var attacker     = EntityManager.Instance.GetEntity(_attacker_id);
             var target       = EntityManager.Instance.GetEntity(_target_id);  
+
+            if (attacker == null || target == null)
+                return;
+
+            
+
             var combat_param = ObjectPool<CombatParam_Plan>
                                 .Acquire()
                                 .Set(attacker, target);
@@ -20,6 +26,9 @@ namespace Battle
             Debug.Log("GameSnapshot.Save() Start");
             var snapshot = GameSnapshot.Save();
             Debug.Log("GameSnapshot.Save() End");
+
+            // 무기 장착.
+            attacker.StatusManager.Weapon.Equip(_weapon_id);
 
             // 전투 예측 실행.
             CombatSystemManager.Instance.Setup(combat_param);

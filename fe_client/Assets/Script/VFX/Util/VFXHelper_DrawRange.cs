@@ -12,103 +12,102 @@ namespace Battle.MoveRange
     AttackRange = 1 << 1,  // 무기 범위
   }
   
-  class MoveRangeVisitor : PathAlgorithm.IFloodFillVisitor
+  public class MoveRangeVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
   {
-      public int                DrawFlag     { get; set; } = 0;
-      public TerrainMap         TerrainMap   { get; set; }
-      public IPathOwner         Visitor      { get; set; }
-      public (int x, int y)     Position     { get; set; }
-      public int                MoveDistance { get; set; }
-      public Int64              VisitorID    { get; set; } = 0;
-      public (int min, int max) WeaponRange  { get; set; } = (0, 0);
+    public int                DrawFlag     { get; set; } = 0;
+    public TerrainMap         TerrainMap   { get; set; }
+    public IPathOwner         Visitor      { get; set; }
+    public (int x, int y)     Position     { get; set; }
+    public int                MoveDistance { get; set; }
+    public Int64              VisitorID    { get; set; } = 0;
+    public (int min, int max) WeaponRange  { get; set; } = (0, 0);
 
-      public HashSet<(int x, int y)> List_Move   { get; set; } = new();
-      public HashSet<(int x, int y)> List_Weapon { get; set; } = new();
+    public HashSet<(int x, int y)> List_Move   { get; set; } = new();
+    public HashSet<(int x, int y)> List_Weapon { get; set; } = new();
 
 
 
-      public void Visit(int _visit_x, int _visit_y)
-      {
-          List_Move.Add((_visit_x, _visit_y));
+    public void Visit(int _visit_x, int _visit_y)
+    {
+        List_Move.Add((_visit_x, _visit_y));
 
-          
-          var weapon_range_min = WeaponRange.min;
-          var weapon_range_max = WeaponRange.max;
+        
+        var weapon_range_min = WeaponRange.min;
+        var weapon_range_max = WeaponRange.max;
 
-          
+        
 
-          // 무기 사거리 범위.
-          for(int x = -weapon_range_max; x <= weapon_range_max; ++x)
-          {
-              for(int y = -weapon_range_max; y <= weapon_range_max; ++y)
-              {
-                  var weapon_x = _visit_x + x;
-                  var weapon_y = _visit_y + y;
+        // 무기 사거리 범위.
+        for(int x = -weapon_range_max; x <= weapon_range_max; ++x)
+        {
+            for(int y = -weapon_range_max; y <= weapon_range_max; ++y)
+            {
+                var weapon_x = _visit_x + x;
+                var weapon_y = _visit_y + y;
 
-                  // 무기 사거리 체크
-                  var distance = PathAlgorithm.Distance(_visit_x, _visit_y, weapon_x, weapon_y);
-                  if (distance < weapon_range_min || weapon_range_max < distance)
-                  {
-                      continue;
-                  }
-
-                  // 맵 범위 체크.
-                  if (TerrainMap != null && TerrainMap.IsInBound(weapon_x, weapon_y) == false)
-                  {
+                // 무기 사거리 체크
+                var distance = PathAlgorithm.Distance(_visit_x, _visit_y, weapon_x, weapon_y);
+                if (distance < weapon_range_min || weapon_range_max < distance)
+                {
                     continue;
-                  }
+                }
 
-                  List_Weapon.Add((weapon_x, weapon_y));
-              }
-          }
-      }
+                // 맵 범위 체크.
+                if (TerrainMap != null && TerrainMap.IsInBound(weapon_x, weapon_y) == false)
+                {
+                  continue;
+                }
+
+                List_Weapon.Add((weapon_x, weapon_y));
+            }
+        }
+    }
 
 
-      public MoveRangeVisitor SetData(
-        int          _draw_flag,
-        TerrainMap   _terrain, 
-        Entity       _entity_object,
-        bool         _use_base_position,
-        Int64        _use_weapon_id)
-      {
-          DrawFlag     = _draw_flag;
-          TerrainMap   = _terrain;
+    public MoveRangeVisitor SetData(
+      int          _draw_flag,
+      TerrainMap   _terrain, 
+      Entity       _entity_object,
+      bool         _use_base_position,
+      Int64        _use_weapon_id)
+    {
+        DrawFlag     = _draw_flag;
+        TerrainMap   = _terrain;
 
-          if (_entity_object != null)
-          {
-              Visitor    = _entity_object;
-              VisitorID    = _entity_object.ID;
-              Position     = (_use_base_position) 
-                           ? _entity_object.PathBasePosition 
-                           : _entity_object.Cell;
+        if (_entity_object != null)
+        {
+            Visitor    = _entity_object;
+            VisitorID    = _entity_object.ID;
+            Position     = (_use_base_position) 
+                          ? _entity_object.PathBasePosition 
+                          : _entity_object.Cell;
 
-              if ((DrawFlag & (int)EnumDrawFlag.MoveRange) != 0)
-              {
-                MoveDistance = _entity_object.PathMoveRange;
-              }
+            if ((DrawFlag & (int)EnumDrawFlag.MoveRange) != 0)
+            {
+              MoveDistance = _entity_object.PathMoveRange;
+            }
 
-              if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
-              {
-                WeaponRange  = _entity_object.GetWeaponRange(_use_weapon_id);
-              }
-          }
+            if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
+            {
+              WeaponRange  = _entity_object.GetWeaponRange(_use_weapon_id);
+            }
+        }
 
-          return this;
-      }
+        return this;
+    }
 
-      public MoveRangeVisitor Reset()
-      {
-          TerrainMap     = null;
-          Visitor      = null;
-          Position       = default;
-          MoveDistance   = 0;
-          VisitorID      = 0;
-          WeaponRange    = (0, 0);
-          List_Move.Clear();
-          List_Weapon.Clear();
+    public void Reset()
+    {
+        TerrainMap     = null;
+        Visitor        = null;
+        Position       = default;
+        MoveDistance   = 0;
+        VisitorID      = 0;
+        WeaponRange    = (0, 0);
+        List_Move.Clear();
+        List_Weapon.Clear();
+    }
 
-          return this;
-      }
   };
 
 

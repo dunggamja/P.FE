@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Battle;
+using Battle.MoveRange;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -96,6 +97,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         m_entity_id = param?.EntityID ?? 0;
 
         UpdateMenuItems();
+    }
+
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        UpdateDrawRange();
     }
 
     protected override void OnClose()
@@ -207,26 +215,52 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        var list_entities = EntityManager.Instance.Collect(e => true);
-        if (list_entities.Count >= 2)
-        {
-            var attacker = list_entities[1];
-            var defender = list_entities[0];
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+        if (terrain_map == null)
+            return;
 
-            CombatHelper.Run_Plan(attacker.ID, defender.ID, SelectedItemData.ItemID);
+        var move_range_visitor = ObjectPool<MoveRangeVisitor>.Acquire();
+        move_range_visitor.SetData(
+            _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _terrain:           TerrainMapManager.Instance.TerrainMap,
+            _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
+            _use_base_position: false,
+            _use_weapon_id:     SelectedItemData.ItemID
+        );
+
+        PathAlgorithm.FloodFill(move_range_visitor);
+
+        Int64 target_entity_id = 0;
+        foreach (var pos in move_range_visitor.List_Weapon)
+        {
+            target_entity_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
+            if (target_entity_id > 0)
+                break;
         }
 
+        ObjectPool<MoveRangeVisitor>.Return(move_range_visitor);
 
+        if (target_entity_id > 0)
+        {      
+            Debug.Log($"target_entity_id: {target_entity_id}");
+            // 전투 예측 UI 열기    
+            // GUIManager.Instance.OpenUI(
+            //     GUIPage_Unit_Command_Attack_Preview.PARAM.Create(m_entity_id, target_entity_id)
+            //     );
+        }
+    }
 
-        // 선택 아이템 처리.
-        //var select_item = SelectedItemData;
+    void UpdateDrawRange()
+    {
+        var select_item_id = SelectedItemData.ItemID;
 
-
-
-
-        // // 선택 아이템 처리.
-        // var item = EntityManager.Instance.GetEntity(m_entity_id)?.Inventory.GetItem(item_id);
-        // if (item == null)
-        //     return;
+        // 무기 범위를 그려줍니다.
+        BattleSystemManager.Instance.DrawRange.DrawRange
+        (
+            (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _entityID:          m_entity_id,
+            _use_base_position: false,
+            _use_weapon_id:     select_item_id
+        );
     }
 }

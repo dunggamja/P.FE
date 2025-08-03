@@ -9,7 +9,7 @@ using UnityEngine.UI;
     typeof(GUI_Menu_MoveEvent), 
     typeof(GUI_Menu_SelectEvent)
     )]
-public class GUIPage_Unit_Command_Attack_Target : GUIPage, IEventReceiver
+public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 {
     public class PARAM : GUIOpenParam
     {
@@ -21,7 +21,7 @@ public class GUIPage_Unit_Command_Attack_Target : GUIPage, IEventReceiver
             GUIPage.GenerateID(),           
 
             // asset path
-            "gui/page/unit_command_attack_target", 
+            "gui/page/unit_command_attack_preview", 
 
             // gui type
             EnumGUIType.Screen,
