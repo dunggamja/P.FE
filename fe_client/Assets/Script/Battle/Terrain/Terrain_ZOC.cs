@@ -97,4 +97,53 @@ public class Terrain_ZOC
         
     //     return false;
     // }
+
+    public Terrain_ZOC_IO Save()
+    {
+        var zoc = new Terrain_ZOC_IO 
+        { 
+            Width = m_width, 
+            Height = m_height, 
+            BlockSize = m_block_size, 
+            ZOC = new Dictionary<int, TerrainBlockManager_IO>()
+        };
+
+        foreach(var (faction, zoc_array) in m_faction_zoc)
+        {
+            zoc.ZOC.Add(faction, zoc_array.Save());
+        }
+        return zoc;
+    }
+
+    public void Load(Terrain_ZOC_IO _io)
+    {
+        m_width      = _io.Width;
+        m_height     = _io.Height;
+        m_block_size = _io.BlockSize;
+
+        foreach(var (faction, zoc_array) in _io.ZOC)
+        {
+            if (m_faction_zoc.TryGetValue(faction, out var terrain) == false)
+            {
+                terrain = new TerrainBlockManager(m_width, m_height, m_block_size);
+                m_faction_zoc.Add(faction, terrain);
+            }
+            terrain.Load(zoc_array);
+        }
+
+        foreach(var (faction, _) in m_faction_zoc)
+        {
+            if (!_io.ZOC.ContainsKey(faction))
+                m_faction_zoc.Remove(faction);
+        }
+    }
+}
+
+public class Terrain_ZOC_IO
+{
+    public int Width { get; set; }  
+    public int Height { get; set; }
+    public int BlockSize { get; set; }
+    public Dictionary<int, TerrainBlockManager_IO> ZOC { get; set; }
+
 }

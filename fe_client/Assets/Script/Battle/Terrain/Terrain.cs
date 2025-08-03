@@ -5,73 +5,73 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 
-public abstract class Terrain
-{
-    int    m_width;
-    int    m_height;
-    int[,] m_attribute;
+// public abstract class Terrain
+// {
+//     int    m_width;
+//     int    m_height;
+//     int[,] m_attribute;
 
-    protected Terrain(int _width, int _height)
-    {
-        m_width     = _width;
-        m_height    = _height;
+//     protected Terrain(int _width, int _height)
+//     {
+//         m_width     = _width;
+//         m_height    = _height;
 
-        m_attribute = new int[_width, _height];       
-    }
+//         m_attribute = new int[_width, _height];       
+//     }
 
-    public int  GetAttribute(int _x, int _y)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return 0;
+//     public int  GetAttribute(int _x, int _y)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return 0;
 
-        return m_attribute[_x, _y];
-    }
+//         return m_attribute[_x, _y];
+//     }
 
-    protected bool HasAttribute(int _x, int _y, int _attribute_type)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return false;
+//     protected bool HasAttribute(int _x, int _y, int _attribute_type)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return false;
 
-        return (m_attribute[_x, _y] & (1 << _attribute_type)) != 0;
-    }
+//         return (m_attribute[_x, _y] & (1 << _attribute_type)) != 0;
+//     }
 
-    protected void SetAttribute(int _x, int _y, int _attribute_type)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return;
+//     protected void SetAttribute(int _x, int _y, int _attribute_type)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return;
 
-        m_attribute[_x, _y] |= (1 << _attribute_type);
-    }
+//         m_attribute[_x, _y] |= (1 << _attribute_type);
+//     }
 
-    protected void RemoveAttribute(int _x, int _y, int _attribute_type)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return;
+//     protected void RemoveAttribute(int _x, int _y, int _attribute_type)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return;
 
-        m_attribute[_x, _y] &= ~(1 << _attribute_type);
-    }
+//         m_attribute[_x, _y] &= ~(1 << _attribute_type);
+//     }
 
-    public void OverwriteAttribute(int _x, int _y, int _attribute)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return;
+//     public void OverwriteAttribute(int _x, int _y, int _attribute)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return;
 
-        m_attribute[_x, _y] = _attribute;
-    }
+//         m_attribute[_x, _y] = _attribute;
+//     }
 
-    public void ClearAttribute(int _x, int _y)
-    {
-        if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
-            return;
+//     public void ClearAttribute(int _x, int _y)
+//     {
+//         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
+//             return;
 
-        m_attribute[_x, _y] = 0;
-    }
+//         m_attribute[_x, _y] = 0;
+//     }
 
-    public void ClearAll()
-    {
-        Array.Clear(m_attribute, 0, m_attribute.Length);
-    }
-}
+//     public void ClearAll()
+//     {
+//         Array.Clear(m_attribute, 0, m_attribute.Length);
+//     }
+// }
 
 
 public struct TerrainBlock
@@ -126,7 +126,35 @@ public struct TerrainBlock
         SetCellData(_x, _y, cell_data);
     }
 
+    public TerrainBlock_IO Save()
+    {
+        return new TerrainBlock_IO 
+        { 
+            BlockX    = m_block_x, 
+            BlockY    = m_block_y, 
+            BlockSize = m_block_size, 
+            CellData  = (Int64[,])m_cell_data.Clone()
+        };
+
+    }
+
+    public void Load(TerrainBlock_IO _io)
+    {
+        m_block_x    = _io.BlockX;
+        m_block_y    = _io.BlockY;
+        m_block_size = _io.BlockSize;
+        m_cell_data  = (Int64[,])_io.CellData.Clone();
+    }
 }
+
+public class TerrainBlock_IO
+{
+    public int      BlockX    { get; set; }
+    public int      BlockY    { get; set; }
+    public int      BlockSize { get; set; }
+    public Int64[,] CellData  { get; set; }
+}
+
 
 
 public class TerrainBlockManager
@@ -220,6 +248,46 @@ public class TerrainBlockManager
 
         m_blocks[block_x, block_y].RemoveBitIndex(_x, _y, _bit_index);
     }
+
+
+    public TerrainBlockManager_IO Save()
+    {
+        var blocks = new TerrainBlock_IO[m_blocks.GetLength(0), m_blocks.GetLength(1)];
+
+        for(int y = 0; y < m_blocks.GetLength(1); ++y)
+        {
+            for(int x = 0; x < m_blocks.GetLength(0); ++x)
+            {
+                blocks[x, y] = m_blocks[x, y].Save();
+            }
+        }
+
+        return new TerrainBlockManager_IO 
+        { 
+            BlockSize = m_block_size, 
+            Blocks    = blocks
+        };
+    }
+
+    public void Load(TerrainBlockManager_IO _io)
+    {
+        m_block_size = _io.BlockSize;
+        m_blocks     = new TerrainBlock[m_blocks.GetLength(0), m_blocks.GetLength(1)];
+
+        for(int y = 0; y < m_blocks.GetLength(1); ++y)
+        {
+            for(int x = 0; x < m_blocks.GetLength(0); ++x)
+            {
+                m_blocks[x, y].Load(_io.Blocks[x, y]);
+            }
+        }
+    }
+}
+
+public class TerrainBlockManager_IO
+{
+    public int BlockSize { get; set; }
+    public TerrainBlock_IO[,] Blocks { get; set; }
 }
 
 
@@ -261,9 +329,35 @@ namespace Battle
         // TODO: SAVE/LOAD
         //       블록단위로 저장/로드를 만들어야 겠다 생각하다가 작업을 뭔가 해버렸다. 
 
+        public TerrainMap_IO Save()
+        {
+            return new TerrainMap_IO 
+            { 
+                Width         = Width, 
+                Height        = Height, 
+                ZOC           = ZOC.Save(), 
+                Attribute     = Attribute.Save(), 
+                EntityManager = EntityManager.Save() 
+            };
+        }
 
-
+        public void Load(TerrainMap_IO _io)
+        {
+            Width        = _io.Width;
+            Height       = _io.Height;
+            ZOC.Load(_io.ZOC);
+            Attribute.Load(_io.Attribute);
+            EntityManager.Load(_io.EntityManager);
+        }
     }
 
+    public class TerrainMap_IO
+    {
+        public int                    Width         { get; set; }
+        public int                    Height        { get; set; }
+        public Terrain_ZOC_IO         ZOC           { get; set; }
+        public TerrainBlockManager_IO Attribute     { get; set; }
+        public TerrainBlockManager_IO EntityManager { get; set; }
+    }
     
 }

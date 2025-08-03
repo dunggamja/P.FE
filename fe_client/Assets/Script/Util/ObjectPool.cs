@@ -5,11 +5,46 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public interface IPoolObject
 {
     void Reset();
 }
+
+// public class ObjectPoolWrapper<T> : IDisposable, IPoolObject where T : IPoolObject, new() 
+// {
+//     public T    Value      { get; private set; }
+//     public bool IsDisposed { get; private set; }
+
+//     public ObjectPoolWrapper()
+//     {
+//         IsDisposed = false;
+//     }
+
+//     public void Reset()
+//     {
+//         Value      = default;
+//         IsDisposed = false;
+//     }
+
+//     public static ObjectPoolWrapper<T> Acquire()
+//     {
+//         var pool_object        = ObjectPool<ObjectPoolWrapper<T>>.Acquire();
+//         pool_object.Value      = ObjectPool<T>.Acquire();
+//         pool_object.IsDisposed = false;
+
+//         return pool_object;
+//     }
+
+
+//     public void Dispose()
+//     {
+//         ObjectPool<T>.Return(Value);
+//         IsDisposed = true;
+//     }
+// }
+
 
 // TODO: MonoBehaviour(GameObject)에 대한 풀링 처리 필요...
 

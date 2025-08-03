@@ -23,4 +23,7 @@ public static partial class Util
          return (_success_rate < 1f) ? random < _success_rate : true;
     }
 
+    public static MyRandom_IO RandomSave() => s_random.Save();
+    public static void RandomLoad(MyRandom_IO _io) => s_random.Load(_io);
+
 }

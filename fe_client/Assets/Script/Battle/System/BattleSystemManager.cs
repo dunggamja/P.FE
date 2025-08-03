@@ -226,6 +226,11 @@ namespace Battle
             m_faction_commander.Clear();
             foreach(var e in _io.FactionCommander)
                 m_faction_commander.Add(e.Item1, e.Item2);
+
+
+            // 나머지는 그냥 초기화 처리.
+            m_command_queue.Clear();
+            DrawRange.Clear();
         }
     }
 

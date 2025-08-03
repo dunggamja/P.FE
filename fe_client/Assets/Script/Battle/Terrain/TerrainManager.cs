@@ -58,5 +58,24 @@ namespace Battle
                 TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);                
             }
         }
+
+        public TerrainMapManager_IO Save()
+        {
+            return new TerrainMapManager_IO 
+            { 
+                TerrainMap = TerrainMap.Save() 
+            };
+        }
+
+        public void Load(TerrainMapManager_IO _io)
+        {
+            TerrainMap.Load(_io.TerrainMap);
+        }
+    }
+
+
+    public class TerrainMapManager_IO
+    {
+        public TerrainMap_IO TerrainMap { get; set; }
     }
 }

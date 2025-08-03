@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Battle
@@ -110,6 +111,7 @@ namespace Battle
             foreach(var e in m_repository_by_id.Values)
             {
                 snapshot.Entities.Add(e.Save());
+                snapshot.ActiveID.Add(e.ID);
             }
 
             return snapshot;
@@ -117,22 +119,52 @@ namespace Battle
 
         public void Load(EntityManager_IO _snapshot)
         {
+            if (_snapshot == null)
+                return;
 
-            Clear();
+
 
             foreach(var e in _snapshot.Entities)
             {
                 var entity = GetEntity(e.ID);
                 if (entity == null)
                 {
-                    entity = CreateEntity(e.ID);
+                    entity = Entity.Create(e.ID);
+                    AddEntity(entity);
                 }
 
                 if (entity != null)
-                    entity.Load(e);                
-                else
-                    Debug.LogError($"Entity not found: {e.ID}");
+                    entity.Load(e);    
             }
+
+            // 스냅샷에 포함이 안 된 항목들은 제거해줍시다.
+            {
+                var list_delete =  ListPool<Int64>.Acquire();
+                foreach((var id, var e) in m_repository_by_id)
+                {
+                    if (!_snapshot.ActiveID.Contains(id))
+                        list_delete.Add(id);
+                }
+                // 삭제.~
+                foreach(var id in list_delete)
+                {
+                    Remove(id);
+
+                    // 오브젝트도 삭제 처리.
+                    WorldObjectManager.Instance.DeleteObject(id);
+                }
+
+                ListPool<Int64>.Return(list_delete);
+            }
+
+            // 오브젝트가 없는 친구들은 만들어 줍시다.
+            foreach(var e in m_repository_by_id.Values)
+            {
+                var world_object = WorldObjectManager.Instance.Seek(e.ID);
+                if (world_object == null)
+                    WorldObjectManager.Instance.CreateObject(e.ID).Forget();
+            }
+
         }
 
     }
@@ -140,6 +172,12 @@ namespace Battle
 
     public class EntityManager_IO
     {
+
+
         public List<Entity_IO> Entities { get; private set; } = new();    
+
+
+        // 현재 생존해 있는 ID 목록
+        public HashSet<Int64>  ActiveID { get; private set; } = new();
     }
 }

@@ -110,4 +110,20 @@ public class MyRandom
         
         return ((Int64)NextInt64() % (maxExclusive - minInclusive)) + minInclusive;
     }
+
+    public MyRandom_IO Save()
+    {
+        return new MyRandom_IO { Seed = mseed, Index = mti };
+    }
+
+    public void Load(MyRandom_IO _io)
+    {
+        SetSeed(_io.Seed, _io.Index);
+    }
 } 
+
+public class MyRandom_IO 
+{
+    public uint Seed  { get; set; }
+    public uint Index { get; set; }
+}

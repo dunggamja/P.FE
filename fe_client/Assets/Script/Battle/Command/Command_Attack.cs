@@ -47,6 +47,7 @@ namespace Battle
             }
 
             // 전투 시스템 셋팅.
+            
             CombatParam.Cache.Reset();
             CombatParam.Cache.Set(Owner, EntityManager.Instance.GetEntity(Target.MainTargetID));
             
