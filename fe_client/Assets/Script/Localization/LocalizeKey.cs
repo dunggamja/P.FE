@@ -16,6 +16,8 @@ public struct LocalizeKey
         return new LocalizeKey(table, key);
     }
 
+    
+
     // // 값 기반 비교를 위한 Equals와 GetHashCode 오버라이드
     // public override bool Equals(object obj)
     // {

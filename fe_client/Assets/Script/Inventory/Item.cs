@@ -59,17 +59,9 @@ public partial class Item
     }
 
 
-    public LocalizeKey GetLocalizeName()
-    {
-        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeName(Kind);
-        return LocalizeKey.Create(table, key);
-    }
 
-    public LocalizeKey GetLocalizeDesc()
-    {
-        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeDesc(Kind);
-        return LocalizeKey.Create(table, key);
-    }
+
+
 
     public static Item Create(Int64 _id, Int32 _kind)
     {
@@ -140,4 +132,3 @@ public class Item_IO
     public BaseContainer_IO Attribute { get; set; } = new();
 
 }
-

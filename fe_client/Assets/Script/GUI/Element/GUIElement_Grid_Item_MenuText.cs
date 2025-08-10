@@ -23,14 +23,11 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         Observable<int>        _subject_select_index,
         Observable<string>     _subject_text)
     {
+        Clear();
         
         m_index = _index;
 
-        m_cursor.gameObject.SetActive(false);
-        
-        // 이전 구독이 있다면 해제
-        m_selected_index_subscription?.Dispose();
-        m_text_subscription?.Dispose();
+        m_cursor.gameObject.SetActive(false);        
         
         // 새로운 구독.
         m_selected_index_subscription = _subject_select_index.Subscribe(i => 
@@ -47,12 +44,21 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         gameObject.SetActive(true);
     }
 
+    void OnDestroy()
+    {
+        // TODO: 이것은 임시 코드임....
+        Clear();
+    }
 
 
-    private void OnDestroy()
+    protected override void Clear()
     {
         m_selected_index_subscription?.Dispose();
         m_text_subscription?.Dispose();
+
+        m_selected_index_subscription = null;
+        m_text_subscription           = null;
+        m_index                       = 0;
     }
 
 

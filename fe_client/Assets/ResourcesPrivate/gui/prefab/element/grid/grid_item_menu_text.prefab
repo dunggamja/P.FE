@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 9143781053487200566}
   - component: {fileID: 8070555996107411289}
   m_Layer: 5
-  m_Name: Grid_Item_MenuText
+  m_Name: grid_item_menu_text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

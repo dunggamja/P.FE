@@ -236,6 +236,8 @@ public abstract class GUIPage : GUIBase
                 gameObject.SetActive(false);    
             }
 
+            // TODO: 하위에 붙은 GUIELement 종료 처리.
+
             OnPostProcess_Close();
 
             IsInitialized = false;

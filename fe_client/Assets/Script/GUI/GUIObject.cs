@@ -90,4 +90,5 @@ public abstract class GUIElement : GUIBase
 {
     // button, scrollview, etc.
     // 아직 잘 모르지만, GUI 내부 객체들을 Element 로 분류해볼 예정.
+    protected abstract void Clear();
 }
