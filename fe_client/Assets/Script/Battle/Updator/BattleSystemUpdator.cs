@@ -108,8 +108,8 @@ namespace Battle
             defender.SetFaction(2);
             defender_2.SetFaction(2);
             
-            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.Player);
-            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.AI);
+            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
+            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
 
 
             var list_attacker = new []{ attacker, attacker_2 };
@@ -180,7 +180,7 @@ namespace Battle
                     _is_plan: false);
 
                 defender.UpdateCellPosition(
-                    (2, 3), 
+                    (2, 4), 
                     EnumCellPositionEvent.Enter, 
                     _is_immediatly_move: true, 
                     _is_plan: false);

@@ -63,13 +63,24 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
 
-    private Int64 m_entity_id = 0;     
-    private Int64 m_target_id = 0;
-    private Int64 m_weapon_id = 0;
+    private Int64 m_entity_id  = 0;     
+    private Int64 m_target_id  = 0;
+    private Int64 m_weapon_id  = 0;
+
+    private Int64 m_vfx_cursor = 0;
 
     public void OnReceiveEvent(IEventParam _event)
     {
-        // throw new NotImplementedException();
+        switch (_event)
+        {
+            case GUI_Menu_MoveEvent menu_move_event:
+                OnReceiveEvent_GUI_Menu_MoveEvent(menu_move_event);
+                break;
+
+            case GUI_Menu_SelectEvent menu_select_event:
+                OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
+                break;
+        }
     }
 
     protected override void OnOpen(GUIOpenParam _param)
@@ -81,6 +92,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         m_target_id = param?.TargetID ?? 0;
         m_weapon_id = param?.WeaponID ?? 0;
 
+        CreateCursorVFX();
 
         UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
 
@@ -98,6 +110,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     protected override void OnClose()
     {
         // throw new NotImplementedException();
+        ReleaseCursorVFX();
     }
 
     protected override void OnPostProcess_Close()
@@ -133,6 +146,18 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             Debug.LogError("CombatHelper.Run_Plan() is null");
             return;
         }
+
+        // 타겟 표시용 이펙트
+        var entity_target = EntityManager.Instance.GetEntity(_target_id);
+        if (entity_target != null)
+        {
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<VFX_TransformEvent>.Acquire()
+                .SetID(m_vfx_cursor)
+                .SetPosition(entity_target.Cell.CellToPosition())                
+            ); 
+        }
+
 
 
         // 공격자 표시.
@@ -194,5 +219,52 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             _use_weapon_id:     m_weapon_id
         );
     }
+
+
+    void CreateCursorVFX()
+    {
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
+        // 이펙트 생성.
+        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
+            .SetVFXRoot_Default()
+            .SetPosition(entity.Cell.CellToPosition())
+            .SetVFXName(AssetName.TILE_SELECTION);
+
+        m_vfx_cursor = VFXManager.Instance.CreateVFXAsync(vfx_param);
+    }
+
+    void ReleaseCursorVFX()
+    {
+        VFXManager.Instance.ReserveReleaseVFX(m_vfx_cursor);
+        m_vfx_cursor = 0;
+    }
+
+
+
+    void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        // 이동 방향이 없으면 종료.
+        if (_event.MoveDirection == Vector2Int.zero)
+            return;
+
+        // 타겟 변경.
+    }
+
+    void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        // 선택 이벤트 처리.
+    }
+
+
 
 }

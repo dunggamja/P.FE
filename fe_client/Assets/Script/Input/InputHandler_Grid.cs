@@ -51,17 +51,7 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnStart()
     {
-        // 이펙트 생성.
-        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
-            .SetVFXRoot_Default()
-            .SetVFXName(AssetName.TILE_SELECTION);
-
-        VFX_Select = VFXManager.Instance.CreateVFXAsync(vfx_param); 
-        //.ContinueWith(OnCompleteVFXTask);
-
-        // // 이펙트 삭제 예정 목록에 추가.
-        // VFXManager.Instance.ReserveReleaseVFX(VFX_Selection);
-
+        CreateTileSelectVFX();
     }
 
     protected override bool OnUpdate()
@@ -109,12 +99,14 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnPause()
     {
-        // throw new NotImplementedException();
+        // 타일 커서 제거.
+        ReleaseTileSelectVFX();
     }
 
     protected override void OnResume()
     {
-        // throw new NotImplementedException();        
+        // 타일 커서 생성
+        CreateTileSelectVFX();
     }
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
@@ -363,8 +355,7 @@ public class InputHandler_Grid_Select : InputHandler
     void ReleaseVFX()
     {
         // 선택 이펙트 삭제.
-        VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
-        VFX_Select = 0;
+        ReleaseTileSelectVFX();
 
         // 이동 범위 표시 초기화.
         BattleSystemManager.Instance.DrawRange.Clear();   
@@ -451,7 +442,25 @@ public class InputHandler_Grid_Select : InputHandler
             Debug.LogError($"Process_Cancel_CommandEntity: entity is null: {CommandEntityID}");
             CommandEntityID = 0;
         }
+    }
 
+
+
+    void CreateTileSelectVFX()
+    {
+        // 이펙트 생성.
+        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
+            .SetVFXRoot_Default()
+            .SetPosition(SelectCursor.CellToPosition())
+            .SetVFXName(AssetName.TILE_SELECTION);
+
+        VFX_Select = VFXManager.Instance.CreateVFXAsync(vfx_param);
+    }
+
+    void ReleaseTileSelectVFX()
+    {
+        VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
+        VFX_Select = 0;
     }
 
 
