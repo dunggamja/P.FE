@@ -19,6 +19,7 @@ namespace Battle.MoveRange
     public IPathOwner         Visitor      { get; set; }
     public (int x, int y)     Position     { get; set; }
     public int                MoveDistance { get; set; }
+    public bool               Occupancy    => true;
     public Int64              VisitorID    { get; set; } = 0;
     public (int min, int max) WeaponRange  { get; set; } = (0, 0);
 

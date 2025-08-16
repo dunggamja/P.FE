@@ -74,7 +74,7 @@ namespace Battle
         SetPoint(EnumUnitPoint.HP, new_hp);
 
         // 로그 적재.
-        BattleLogManager.Instance.AddLog(EnumBattleLogType.Damage, ID, _damage);
+        // BattleLogManager.Instance.AddLog(EnumBattleLogType.Damage, ID, _damage);
     }
 
     public void ApplyHeal(int _heal)//, bool _is_plan = false)

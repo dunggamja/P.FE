@@ -215,7 +215,7 @@ namespace Battle
             };
         }
 
-        public void Load(BattleSystemManager_IO _io)
+        public void Load(BattleSystemManager_IO _io, bool _is_plan)
         {
             var turn_system = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
             turn_system?.Load(_io.Turn);
@@ -231,8 +231,10 @@ namespace Battle
             // 나머지는 그냥 초기화 처리.
             m_command_queue.Clear();
             
-            // 요거는 비주얼적 요소니까 일단 냅둔다.
-            // DrawRange.Clear();
+            if (_is_plan == false)
+            {
+                DrawRange.Clear();
+            }
         }
     }
 

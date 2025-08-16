@@ -117,7 +117,7 @@ namespace Battle
             return snapshot;
         }
 
-        public void Load(EntityManager_IO _snapshot)
+        public void Load(EntityManager_IO _snapshot, bool _is_plan)
         {
             if (_snapshot == null)
                 return;
@@ -137,33 +137,39 @@ namespace Battle
                     entity.Load(e);    
             }
 
-            // 스냅샷에 포함이 안 된 항목들은 제거해줍시다.
+
+            // 계획 모드가 아니면 WorldObject 도 갱신해줍니다.
+            if (_is_plan == false)
             {
-                var list_delete =  ListPool<Int64>.Acquire();
-                foreach((var id, var e) in m_repository_by_id)
+                // 스냅샷에 포함이 안 된 항목들은 제거해줍시다.
                 {
-                    if (!_snapshot.ActiveID.Contains(id))
-                        list_delete.Add(id);
+                    var list_delete =  ListPool<Int64>.Acquire();
+                    foreach((var id, var e) in m_repository_by_id)
+                    {
+                        if (!_snapshot.ActiveID.Contains(id))
+                            list_delete.Add(id);
+                    }
+                    // 삭제.~
+                    foreach(var id in list_delete)
+                    {
+                        Remove(id);
+
+                        // 오브젝트도 삭제 처리.
+                        WorldObjectManager.Instance.DeleteObject(id);
+                    }
+
+                    ListPool<Int64>.Return(list_delete);
                 }
-                // 삭제.~
-                foreach(var id in list_delete)
+
+                // 오브젝트가 없는 친구들은 만들어 줍시다.
+                foreach(var e in m_repository_by_id.Values)
                 {
-                    Remove(id);
-
-                    // 오브젝트도 삭제 처리.
-                    WorldObjectManager.Instance.DeleteObject(id);
+                    var world_object = WorldObjectManager.Instance.Seek(e.ID);
+                    if (world_object == null)
+                        WorldObjectManager.Instance.CreateObject(e.ID).Forget();
                 }
-
-                ListPool<Int64>.Return(list_delete);
             }
 
-            // 오브젝트가 없는 친구들은 만들어 줍시다.
-            foreach(var e in m_repository_by_id.Values)
-            {
-                var world_object = WorldObjectManager.Instance.Seek(e.ID);
-                if (world_object == null)
-                    WorldObjectManager.Instance.CreateObject(e.ID).Forget();
-            }
 
         }
 

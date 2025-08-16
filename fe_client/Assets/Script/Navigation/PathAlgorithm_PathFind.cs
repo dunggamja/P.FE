@@ -28,9 +28,10 @@ public static partial class PathAlgorithm
     class MoveRangeCheck : IFloodFillVisitor, IPoolObject
     {
         public TerrainMap              TerrainMap   { get; set; }  
-        public IPathOwner              Visitor    { get; set; }  
+        public IPathOwner              Visitor      { get; set; }  
         public (int x, int y)          Position     { get; set; }  
         public int                     MoveDistance { get; set; }
+        public bool                    Occupancy    => false;
 
         public HashSet<(int x, int y)> VisitList { get; set; } = new();
 
@@ -108,7 +109,7 @@ public static partial class PathAlgorithm
         {
             move_range_check = ObjectPool<MoveRangeCheck>.Acquire();
             move_range_check.TerrainMap   = _terrain_map;
-            move_range_check.Visitor    = _path_owner;
+            move_range_check.Visitor      = _path_owner;
             move_range_check.Position     = _option.MoveRange.base_pos;
             move_range_check.MoveDistance = _option.MoveRange.range;
             PathAlgorithm.FloodFill(move_range_check);
@@ -117,6 +118,8 @@ public static partial class PathAlgorithm
 
         // 시작 지점을 넣습니다.
         open_list.Add(new Node(_from_cell.x, _from_cell.y, _to_cell.x, _to_cell.y, 0, null));
+
+        Debug.Log($"start:{_from_cell.x}, {_from_cell.y}");
 
         // 남은 거리가 가장 적은 노드를 찾아봅시다.
         Node func_find_minimum_heuristic(List<Node> _list_node)
@@ -147,11 +150,13 @@ public static partial class PathAlgorithm
             // 사용한 노드는 open_list에서 제거 후 close_list에 추가.
             open_list.Remove(item);
             close_list.Add(item);
+            Debug.Log($"close:{item.x}, {item.y}");
 
             // 목표 지점에 도달.
             if ((item.x, item.y) == _to_cell)
             {
                 goal_node = item;
+                Debug.Log($"goal:{item.x}, {item.y}");
                 break;
             }
 
@@ -193,6 +198,7 @@ public static partial class PathAlgorithm
                         open_list.Remove(old_item);
 
                     open_list.Add(new_item);
+                    Debug.Log($"open:{new_item.x}, {new_item.y}");
 
                 }
             }
@@ -218,6 +224,11 @@ public static partial class PathAlgorithm
 
                 // 뒤집어 줘야함.
                 _path_find_list.Reverse();
+            }
+
+            foreach(var e in _path_find_list)
+            {
+                Debug.Log($"path:{e.x}, {e.y}");
             }
 
             return true;
@@ -281,6 +292,7 @@ public static partial class PathAlgorithm
         IPathOwner     Visitor      { get; }
         (int x, int y) Position     { get; }
         int            MoveDistance { get; }
+        bool           Occupancy    { get; }
 
 
         void Visit(int x, int y);
@@ -310,9 +322,10 @@ public static partial class PathAlgorithm
             }            
 
             // 내가 점유가능한 위치에서만 Visit을 실행합니다. 
-            var call_visit = (item.x == _visitor.Position.x && item.y == _visitor.Position.y)
-                           || Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (item.x, item.y), _is_occupancy:true).result;
-                                    
+            var is_start_position = (item.x == _visitor.Position.x && item.y == _visitor.Position.y);
+            var verify_move_cost  = Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (item.x, item.y), _visitor.Occupancy).result;
+
+            var call_visit = (is_start_position) || verify_move_cost;                                    
             if (call_visit)
                 _visitor.Visit(item.x, item.y);
 

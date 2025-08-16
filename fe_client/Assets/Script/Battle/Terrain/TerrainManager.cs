@@ -67,7 +67,7 @@ namespace Battle
             };
         }
 
-        public void Load(TerrainMapManager_IO _io)
+        public void Load(TerrainMapManager_IO _io, bool _is_plan)
         {
             TerrainMap.Load(_io.TerrainMap);
         }

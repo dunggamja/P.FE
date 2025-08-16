@@ -132,16 +132,7 @@ namespace Battle
 
 
             // ÀüÅõ ¿¹Ãø ÈÄ ½º³À¼¦ º¹¿ø
-            GameSnapshot.Load(snapshot);
-
-
-            // BattleLogManager.Instance.Logs.ForEach(log => 
-            // {
-            //     Debug.Log($"{log.LogType} {log.EntityID} {log.Value}");
-            // });
-
-            // Debug.Log("GameSnapshot.Load() Start");
-            // Debug.Log("GameSnapshot.Load() End");
+            GameSnapshot.Load(snapshot, _is_plan: true);
 
             return result;
         }

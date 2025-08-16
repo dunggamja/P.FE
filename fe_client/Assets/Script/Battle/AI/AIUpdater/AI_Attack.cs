@@ -284,9 +284,11 @@ namespace Battle
         class CollectTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
         {
             public TerrainMap     TerrainMap     { get; set; }  
-            public IPathOwner     Visitor      { get; set; }  
+            public IPathOwner     Visitor        { get; set; }  
             public (int x, int y) Position       { get; set; }  
-            public int            MoveDistance   { get; set; }             
+            public int            MoveDistance   { get; set; }   
+            public bool           Occupancy      => true;
+            
             public int            WeaponRangeMin { get; set; }
             public int            WeaponRangeMax { get; set; }
 

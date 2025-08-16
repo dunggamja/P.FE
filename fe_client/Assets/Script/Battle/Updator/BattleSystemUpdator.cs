@@ -87,28 +87,40 @@ namespace Battle
 
         void Test_BattleSystem_Setup_Unit()
         {
-            var attacker_id = Util.GenerateID();
-            var defender_id = Util.GenerateID();
-            var attacker    = Entity.Create(attacker_id);
-            var defender    = Entity.Create(defender_id);
+            var attacker_id  = Util.GenerateID();
+            var attacker_id2 = Util.GenerateID();
+            var defender_id  = Util.GenerateID();
+            var defender_id2 = Util.GenerateID();
+            var attacker     = Entity.Create(attacker_id);
+            var attacker_2   = Entity.Create(attacker_id2);
+            var defender     = Entity.Create(defender_id);
+            var defender_2   = Entity.Create(defender_id2);
 
 
             EntityManager.Instance.AddEntity(attacker);
+            EntityManager.Instance.AddEntity(attacker_2);
             EntityManager.Instance.AddEntity(defender);
+            EntityManager.Instance.AddEntity(defender_2);
 
             // 1. 플레이어 진영, 2: AI 진영.
             attacker.SetFaction(1);
-            defender.SetFaction(2);            
+            attacker_2.SetFaction(1);
+            defender.SetFaction(2);
+            defender_2.SetFaction(2);
+            
             BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.Player);
             BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.AI);
 
 
+            var list_attacker = new []{ attacker, attacker_2 };
+            var list_defender = new []{ defender, defender_2 };
 
-            // 테스트를 위한 임시 능력치 셋팅.
+
+            foreach(var e in list_attacker)
             {
-                var attacker_status = attacker.StatusManager.Status as UnitStatus;
-                var defender_status = defender.StatusManager.Status as UnitStatus;
+                var attacker_status = e.StatusManager.Status as UnitStatus;
 
+                // 능력치 셋팅.
                 attacker_status.SetPoint(EnumUnitPoint.HP, 22);
                 attacker_status.SetPoint(EnumUnitPoint.HP_Max, 22);
                 attacker_status.SetStatus(EnumUnitStatus.Strength, 6);
@@ -120,7 +132,19 @@ namespace Battle
                 attacker_status.SetStatus(EnumUnitStatus.Luck, 5);
                 attacker_status.SetStatus(EnumUnitStatus.Weight, 4);
 
+                // 그라운드 셋팅
+                e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
 
+                // 무기 셋팅.
+                var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_IRON);
+                e.Inventory.AddItem(attacker_weapon);
+                e.StatusManager.Weapon.Equip(attacker_weapon.ID);
+            }
+
+            foreach(var e in list_defender)
+            {
+                // 능력치 셋팅.
+                var defender_status = e.StatusManager.Status as UnitStatus;                
                 defender_status.SetPoint(EnumUnitPoint.HP, 22);
                 defender_status.SetPoint(EnumUnitPoint.HP_Max, 22);
                 defender_status.SetStatus(EnumUnitStatus.Strength, 6);
@@ -132,24 +156,13 @@ namespace Battle
                 defender_status.SetStatus(EnumUnitStatus.Luck, 5);
                 defender_status.SetStatus(EnumUnitStatus.Weight, 4);
 
+                // 그라운드 셋팅.
+                e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
 
-                attacker.SetPathAttribute(EnumPathOwnerAttribute.Ground);
-                defender.SetPathAttribute(EnumPathOwnerAttribute.Ground);
-            }
-
-
-            // 무기 셋팅.
-            {
-                var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_IRON);
+                // 무기 셋팅.
                 var defender_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
-                
-                // 인벤토리에 추가.
-                attacker.Inventory.AddItem(attacker_weapon);
-                defender.Inventory.AddItem(defender_weapon);    
-
-                // 무기 장착.
-                attacker.StatusManager.Weapon.Equip(attacker_weapon.ID);
-                defender.StatusManager.Weapon.Equip(defender_weapon.ID);
+                e.Inventory.AddItem(defender_weapon);
+                e.StatusManager.Weapon.Equip(defender_weapon.ID);
             }
 
             // 유닛 위치 설정.
@@ -160,8 +173,20 @@ namespace Battle
                     _is_immediatly_move: true, 
                     _is_plan: false);
 
+                attacker_2.UpdateCellPosition(
+                    (3, 0), 
+                    EnumCellPositionEvent.Enter, 
+                    _is_immediatly_move: true, 
+                    _is_plan: false);
+
                 defender.UpdateCellPosition(
                     (2, 3), 
+                    EnumCellPositionEvent.Enter, 
+                    _is_immediatly_move: true, 
+                    _is_plan: false);
+
+                defender_2.UpdateCellPosition(
+                    (3, 3), 
                     EnumCellPositionEvent.Enter, 
                     _is_immediatly_move: true, 
                     _is_plan: false);
@@ -170,6 +195,8 @@ namespace Battle
             // 월드 오브젝트 생성.
             WorldObjectManager.Instance.CreateObject(attacker.ID).Forget();
             WorldObjectManager.Instance.CreateObject(defender.ID).Forget();
+            WorldObjectManager.Instance.CreateObject(attacker_2.ID).Forget();
+            WorldObjectManager.Instance.CreateObject(defender_2.ID).Forget();
         }
 
 
