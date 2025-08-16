@@ -243,52 +243,22 @@ namespace Battle
             // 전투 결과 스코어
             _score.Reset();
             _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
-
-            // 공격자/타겟이 입힌 데미지.
-            var damage_dealt_count = 0;
-            var damage_taken_count = 0;                    
-            var damage_dealt       = 0;
-            var damage_taken       = 0;
-            var hit_rate           = 0f;
-            var dodge_rate         = 0f;                    
+           
             
-            // 테스트 전투를 돌려서 계산을 해본다.      
-            var combat_param = ObjectPool<CombatParam_Plan>.Acquire().Set(_owner, _target);
-            CombatSystemManager.Instance.Setup(combat_param);
 
-            // 
-            while (!CombatSystemManager.Instance.IsFinished)
-            {
-                CombatSystemManager.Instance.Update();
+            var result = CombatHelper.Run_Plan(_owner.ID, _target.ID, _owner.StatusManager.Weapon.ItemID);
+            if (result == null)
+                return;
 
-                var system_turn   = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn)   as CombatSystem_Turn;
-                var system_damage = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Damage) as CombatSystem_Damage;
+            var damage_dealt_count = result.Actions.Count(e => e.isAttacker);   
+            var damage_taken_count = result.Actions.Count(e => !e.isAttacker);   
 
-                // 연산 결과.
-                var turn_side   = system_turn.CombatTurn;
-                var turn_damage = system_damage.Result_Damage;
-                var turn_hit    = system_damage.Result_HitRate;
+            var damage_taken       = result.Attacker.HP_Before - result.Attacker.HP_After;
+            var damage_dealt       = result.Defender.HP_Before - result.Defender.HP_After;
 
-                switch (turn_side)
-                {
-                    case CombatSystem_Turn.EnumCombatTurn.Attacker: 
-                    {
-                        damage_dealt += turn_damage; 
-                        hit_rate     += turn_hit;
+            var hit_rate           = Mathf.Clamp01(result.Attacker.HitRate / 100f);
+            var dodge_rate         = Mathf.Clamp01((100 - result.Defender.HitRate) / 100f);
 
-                        ++damage_dealt_count;
-                    }
-                    break;
-                    case CombatSystem_Turn.EnumCombatTurn.Defender: 
-                    {
-                        damage_taken += turn_damage; 
-                        dodge_rate   += 1f - turn_hit;
-
-                        ++damage_taken_count;
-                    }
-                    break;
-                }
-            }
 
             // 공격자/타겟 HP
             var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
@@ -308,7 +278,6 @@ namespace Battle
             _score.SetScore(ScoreResult.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
             _score.SetScore(ScoreResult.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
-            ObjectPool<CombatParam_Plan>.Return(combat_param);
         }
 
 

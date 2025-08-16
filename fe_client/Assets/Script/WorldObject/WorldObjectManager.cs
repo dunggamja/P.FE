@@ -51,7 +51,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
                 var is_error = (duplicate_object != null) || (entity == null);
                 if (is_error)
                 {
-                    Debug.LogError($"error, create object, {_id}"); 
+                    Debug.LogWarning($"error, create object, {_id} - Duplicate: {duplicate_object != null}, Entity null: {entity == null}"); 
                     GameObject.Destroy(new_object);
                     return;
                 }

@@ -49,9 +49,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     
 
     [SerializeField]
-    private GUIElement_Attack_Preview_Unit m_preview_attacker;
+    private GUIElement_Attack_Preview_Unit          m_preview_attacker;
+    [SerializeField]         
+    private GUIElement_Attack_Preview_Unit          m_preview_defender;
     [SerializeField]
-    private GUIElement_Attack_Preview_Unit m_preview_defender;
+    private GridLayoutGroup                         m_grid_attack_root;
+    [SerializeField]
+    private GUIElement_Attack_Preview_Sequence_Grid m_grid_attack_sequence;
 
 
 
@@ -131,7 +135,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         }
 
 
-
+        // 공격자 표시.
         m_preview_attacker.Initialize(
             result.Attacker.EntityID,
             result.Attacker.WeaponID,
@@ -141,6 +145,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Attacker.HP_Before,
             result.Attacker.HP_After);
 
+        // 수비자 표시.
         m_preview_defender.Initialize(
             result.Defender.EntityID,
             result.Defender.WeaponID,
@@ -149,6 +154,30 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Defender.HitRate,
             result.Defender.HP_Before,
             result.Defender.HP_After);
+
+        // 공격 시퀀스 표시.
+        var temp = ListPool<Transform>.Acquire();
+        for (int i = 0; i < m_grid_attack_root.transform.childCount; i++)
+        {
+            temp.Add(m_grid_attack_root.transform.GetChild(i));        
+        }
+
+        for (int i = 0; i < temp.Count; i++)
+        {
+            if (temp[i] != null)
+                GameObject.Destroy(temp[i].gameObject);
+        }
+
+
+        ListPool<Transform>.Return(temp);
+
+        for (int i = 0; i < result.Actions.Count; i++)
+        {
+            var clonedItem = Instantiate(m_grid_attack_sequence, m_grid_attack_root.transform);
+            clonedItem.Initialize(
+                result.Actions[i].isAttacker, 
+                result.Actions[i].Damage);
+        }
     }
 
      void UpdateDrawRange()
@@ -165,4 +194,5 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             _use_weapon_id:     m_weapon_id
         );
     }
+
 }

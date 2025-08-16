@@ -55,6 +55,9 @@ namespace Battle
             // 시트 데이터 로드.
             await DataManager.Instance.LoadSheetData();
 
+            // 현재 시간을 기반으로 시드값 초기화
+            Util.SetRandomSeed((uint)System.DateTime.Now.Ticks);
+
             // 지형 시스템 초기화
             Test_BattleSystem_Setup_Terrain();
 
@@ -96,8 +99,8 @@ namespace Battle
             // 1. 플레이어 진영, 2: AI 진영.
             attacker.SetFaction(1);
             defender.SetFaction(2);            
-            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
-            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
+            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.Player);
+            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.AI);
 
 
 

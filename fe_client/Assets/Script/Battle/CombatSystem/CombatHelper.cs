@@ -91,6 +91,8 @@ namespace Battle
 
                 CombatSystemManager.Instance.Setup(combat_param);
 
+
+                
                 while (CombatSystemManager.Instance.IsFinished == false)
                 {
                     CombatSystemManager.Instance.Update();
@@ -98,7 +100,12 @@ namespace Battle
                     var turn_system   = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
                     var damage_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Damage) as CombatSystem_Damage;
 
-                    var is_attacker_turn = (turn_system   != null) ? turn_system.CombatTurn == CombatSystem_Turn.EnumCombatTurn.Attacker : false;
+                    // 
+                    if (turn_system == null || damage_system == null || turn_system.IsFinished)
+                        break;
+                   
+                    
+                    var is_attacker_turn = turn_system.CombatTurn == CombatSystem_Turn.EnumCombatTurn.Attacker;
                     var damage           = (damage_system != null) ? damage_system.Result_Damage       : 0;
                     var critical_rate    = (damage_system != null) ? (int)(damage_system.Result_CriticalRate * 100) : 0;
                     var hit_rate         = (damage_system != null) ? (int)(damage_system.Result_HitRate * 100) : 0;
@@ -115,7 +122,6 @@ namespace Battle
 
                     result.Actions.Add(Result_Action.Create(is_attacker_turn, damage));
                 }
-
 
                 // 전투 후 HP 셋팅
                 result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);

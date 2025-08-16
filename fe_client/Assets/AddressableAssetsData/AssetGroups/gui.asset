@@ -29,8 +29,22 @@ MonoBehaviour:
     - gui
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aab75ba42822940eb9dcb5ae58504d24
+    m_Address: gui/element/grid_item_menu_text
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b786c4f91916a4afe9496bdbbf9396fc
     m_Address: gui/page/unit_command_attack_preview
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5ea3b2ab6c524a0fa028a926caf2805
+    m_Address: gui/element/grid_item_attack_preview_sequence
     m_ReadOnly: 0
     m_SerializedLabels:
     - gui

@@ -1721,6 +1721,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_preview_attacker: {fileID: 8696657694601553821}
   m_preview_defender: {fileID: 1766803168994068100}
+  m_grid_attack_root: {fileID: 1897675963488299173}
+  m_grid_attack_sequence: {fileID: 5318558272153587510, guid: d5ea3b2ab6c524a0fa028a926caf2805, type: 3}
 --- !u!1 &3513348736532270116
 GameObject:
   m_ObjectHideFlags: 0
