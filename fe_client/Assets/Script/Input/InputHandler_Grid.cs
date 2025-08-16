@@ -196,8 +196,16 @@ public class InputHandler_Grid_Select : InputHandler
 
         if (CommandEntityID > 0)
         {
-            // 유닛 커맨드 UI 열기.
-            GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(CommandEntityID));
+            var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+            if (entity != null && entity.Cell == SelectCursor)
+            {
+                // 유닛 커맨드 UI 열기.
+                GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(CommandEntityID));        
+            }
+            else
+            {
+                // TODO: 이동이라도 시켜줄까?
+            }
         }
         else
         {

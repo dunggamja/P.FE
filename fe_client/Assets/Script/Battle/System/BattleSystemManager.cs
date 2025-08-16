@@ -230,7 +230,9 @@ namespace Battle
 
             // 나머지는 그냥 초기화 처리.
             m_command_queue.Clear();
-            DrawRange.Clear();
+            
+            // 요거는 비주얼적 요소니까 일단 냅둔다.
+            // DrawRange.Clear();
         }
     }
 

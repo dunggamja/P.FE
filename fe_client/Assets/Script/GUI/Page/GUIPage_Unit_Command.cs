@@ -298,6 +298,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     private void UpdateDrawRange()
     {
+        if (IsInputFocused == false)
+            return;
+
         int draw_flag = 0;
         switch (SelectedItemData.MenuType)
         {

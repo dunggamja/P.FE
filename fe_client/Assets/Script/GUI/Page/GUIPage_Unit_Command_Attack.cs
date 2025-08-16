@@ -103,6 +103,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     {
         base.OnLoop();
 
+        
         UpdateDrawRange();
     }
 
@@ -280,6 +281,9 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
     void UpdateDrawRange()
     {
+        if (IsInputFocused == false)
+            return;
+
         var select_item_id = SelectedItemData.ItemID;
 
         // 무기 범위를 그려줍니다.

@@ -84,6 +84,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     }
 
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        UpdateDrawRange();
+    }
+
     protected override void OnClose()
     {
         // throw new NotImplementedException();
@@ -142,5 +149,20 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Defender.HitRate,
             result.Defender.HP_Before,
             result.Defender.HP_After);
+    }
+
+     void UpdateDrawRange()
+    {
+        if (IsInputFocused == false)
+            return;
+
+        // 무기 범위를 그려줍니다.
+        BattleSystemManager.Instance.DrawRange.DrawRange
+        (
+            (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _entityID:          m_entity_id,
+            _use_base_position: false,
+            _use_weapon_id:     m_weapon_id
+        );
     }
 }
