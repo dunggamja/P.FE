@@ -175,8 +175,22 @@ namespace Battle
             var defender = _param.Defender;
 
             // 행동 순서를 계산한다.
-            var attacker_turn_sequence = attacker.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, attacker, EnumBuffStatus.System_TurnSequence).Calculate(0);
-            var defender_turn_sequence = defender.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, defender, EnumBuffStatus.System_TurnSequence).Calculate(0);
+            var attacker_turn_sequence = attacker.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start,
+                    attacker, defender, 
+                    EnumBuffStatus.System_TurnSequence)
+                .Calculate(0);
+
+
+            var defender_turn_sequence = defender.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start,
+                    defender, attacker,
+                    EnumBuffStatus.System_TurnSequence)
+                .Calculate(0);
 
             // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
             var attacker_speed      = attacker.StatusManager.Calc_Speed();
@@ -185,12 +199,39 @@ namespace Battle
             var defender_turn_count = (defender_speed - attacker_speed) >= ADD_EXTRA_TURN_SPEED ? 2 : 1;
 
             // 행동 횟수 관련 버프 적용.
-            attacker_turn_count     = attacker.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, attacker, EnumBuffStatus.System_TurnCount).Calculate(attacker_turn_count);
-            defender_turn_count     = defender.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, defender, EnumBuffStatus.System_TurnCount).Calculate(defender_turn_count);
+            attacker_turn_count     = attacker.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start, 
+                    attacker, defender,
+                    EnumBuffStatus.System_TurnCount)
+                .Calculate(attacker_turn_count);
+
+
+            defender_turn_count     = defender.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start, 
+                    defender, attacker,
+                    EnumBuffStatus.System_TurnCount)
+                .Calculate(defender_turn_count);
 
             // 행동당 공격 횟수를 계산합니다. 
-            var attacker_attack_count = attacker.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, attacker, EnumBuffStatus.System_AttackCount).Calculate(1);
-            var defender_attack_count = defender.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Turn_Start, defender, EnumBuffStatus.System_AttackCount).Calculate(1);
+            var attacker_attack_count = attacker.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start, 
+                    attacker, defender,
+                    EnumBuffStatus.System_AttackCount)
+                .Calculate(1);
+
+            var defender_attack_count = defender.StatusManager
+                .Buff
+                .Collect_Combat(
+                    EnumSituationType.CombatSystem_Turn_Start, 
+                    defender, attacker,
+                    EnumBuffStatus.System_AttackCount)
+                .Calculate(1);
 
             AttackerData.SetData(attacker.ID, EnumCombatTurn.Attacker, attacker_turn_sequence, attacker_turn_count, attacker_attack_count);
             DefenderData.SetData(defender.ID, EnumCombatTurn.Defender, defender_turn_sequence, defender_turn_count, defender_attack_count);

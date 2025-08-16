@@ -19,7 +19,9 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     {
         public Int64 EntityID { get; private set; }
         public Int64 TargetID { get; private set; }
-        private PARAM(Int64 _entity_id, Int64 _target_id) 
+        public Int64 WeaponID { get; private set; }
+
+        private PARAM(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -36,34 +38,20 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         {
             EntityID = _entity_id;
             TargetID = _target_id;
+            WeaponID = _weapon_id;
         }
 
-        static public PARAM Create(Int64 _entity_id, Int64 _target_id)
+        static public PARAM Create(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id)
         {
-            return new PARAM(_entity_id, _target_id);
+            return new PARAM(_entity_id, _target_id, _weapon_id);
         }
     }
     
-    // 표시되어야 하는 데이터, 
-    // 1. 공격 범위, 선택한 대상
-    // 2. 공/방 순서 및 데미지 , 최종 HP 
-    // 3. 명중률, 크리티컬 확률
-    // 4. 선택한 무기
-    // 5. 효과들 표시 (지형, 특성 등 (아군/적군 각각 표시))
 
-    [Serializable]
-    struct PreviewUIBinding
-    {
-        public GUIElement_Terrain_Attribute m_terrain_attribute;
-        public TextMeshProUGUI              m_text_unit_name;
-        public TextMeshProUGUI              m_text_weapon_name;        
-        public TextMeshProUGUI              m_text_damage;
-        public TextMeshProUGUI              m_text_critical;
-        public TextMeshProUGUI              m_text_hit;
-        public Slider                       m_slider_hp;
-        public TextMeshProUGUI              m_text_hp_before;
-        public TextMeshProUGUI              m_text_hp_after;
-    }
+    [SerializeField]
+    private GUIElement_Attack_Preview_Unit m_preview_attacker;
+    [SerializeField]
+    private GUIElement_Attack_Preview_Unit m_preview_defender;
 
 
 
@@ -73,6 +61,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     private Int64 m_entity_id = 0;     
     private Int64 m_target_id = 0;
+    private Int64 m_weapon_id = 0;
 
     public void OnReceiveEvent(IEventParam _event)
     {
@@ -82,9 +71,14 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     protected override void OnOpen(GUIOpenParam _param)
     {
         // throw new NotImplementedException();
+
         var param   = _param as PARAM;
         m_entity_id = param?.EntityID ?? 0;
         m_target_id = param?.TargetID ?? 0;
+        m_weapon_id = param?.WeaponID ?? 0;
+
+
+        UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
 
         // CombatSystemManager.Instance.Setup()
 
@@ -98,5 +92,55 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     protected override void OnPostProcess_Close()
     {
         // throw new NotImplementedException();
+    }
+
+    protected override void OnInputFocusChanged(bool _focused)
+    {
+        base.OnInputFocusChanged(_focused);
+
+        if (_focused)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
+    }
+
+
+    void UpdatePreview(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
+    {
+        var result = CombatHelper.Run_Plan(
+            _attacker_id, 
+            _target_id, 
+            _weapon_id);
+
+
+        if (result == null)
+        {
+            Debug.LogError("CombatHelper.Run_Plan() is null");
+            return;
+        }
+
+
+
+        m_preview_attacker.Initialize(
+            result.Attacker.EntityID,
+            result.Attacker.WeaponID,
+            result.Attacker.Damage,
+            result.Attacker.CriticalRate,
+            result.Attacker.HitRate,
+            result.Attacker.HP_Before,
+            result.Attacker.HP_After);
+
+        m_preview_defender.Initialize(
+            result.Defender.EntityID,
+            result.Defender.WeaponID,
+            result.Defender.Damage,
+            result.Defender.CriticalRate,
+            result.Defender.HitRate,
+            result.Defender.HP_Before,
+            result.Defender.HP_After);
     }
 }

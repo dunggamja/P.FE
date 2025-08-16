@@ -37,11 +37,12 @@ public enum EnumBuffStatus
                           
                           
     System_Damage         = 2001, // 시스템, 데미지
+    // System_Damage_Reduce  = 2002, // 시스템, 데미지 감소
     //System_Damage_Magic   = 2002, // 시스템, 마법 데미지
     System_Critical       = 2006, // 시스템, 필살 확률
-    //System_Dodge_Critical = 2007, // 시스템, 필살 회피 확률
+    // System_Dodge_Critical = 2007, // 시스템, 필살 회피 확률
     System_Hit            = 2008, // 시스템, 명중 확률
-    //System_Dodge          = 2009, // 시스템, 회피 확률
+    System_Dodge          = 2009, // 시스템, 회피 확률
 
 
     System_TurnSequence   = 2100, // 시스템, 행동 순서 
@@ -320,6 +321,23 @@ public class BuffMananger //: IBuff
     public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
     {
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
+    }
+
+    public BuffValue Collect_Combat(
+        EnumSituationType _situation,
+        IOwner _attacker,
+        IOwner _defender,
+        EnumBuffStatus _status) 
+    {
+        var result = BuffValue.Empty;
+
+        // 공격자 버프 계산.
+        result += Collect(_situation, _attacker, _status);
+
+        // 피격자 버프 계산.
+        result += CollectTarget(_situation, _defender, _status);
+
+        return result;
     }
 
     public BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 

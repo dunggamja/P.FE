@@ -118,6 +118,20 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         // throw new System.NotImplementedException();
     }
 
+    protected override void OnInputFocusChanged(bool _focused)
+    {
+        base.OnInputFocusChanged(_focused);
+
+        if (_focused)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
+    }
+
 
     public void OnReceiveEvent(IEventParam _event)
     {
@@ -219,17 +233,26 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         if (terrain_map == null)
             return;
 
+
+        var weapon_id = SelectedItemData.ItemID;
+
+
+        // 공격 범위에 있는 타겟중 1명을 선택합니다.
+
+        // 공격 범위 데이터 셋팅
         var move_range_visitor = ObjectPool<MoveRangeVisitor>.Acquire();
         move_range_visitor.SetData(
             _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
             _use_base_position: false,
-            _use_weapon_id:     SelectedItemData.ItemID
+            _use_weapon_id:     weapon_id
         );
 
+        // 공격 범위 대상 찾기
         PathAlgorithm.FloodFill(move_range_visitor);
 
+        // 처음 걸리는 대상을 선택.
         Int64 target_entity_id = 0;
         foreach (var pos in move_range_visitor.List_Weapon)
         {
@@ -240,13 +263,18 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
         ObjectPool<MoveRangeVisitor>.Return(move_range_visitor);
 
+
+        // 전투 예측 UI를 엽니다.
         if (target_entity_id > 0)
         {      
-            Debug.Log($"target_entity_id: {target_entity_id}");
+            // Debug.Log($"target_entity_id: {target_entity_id}");
+
             // 전투 예측 UI 열기    
-            // GUIManager.Instance.OpenUI(
-            //     GUIPage_Unit_Command_Attack_Preview.PARAM.Create(m_entity_id, target_entity_id)
-            //     );
+            GUIManager.Instance.OpenUI(
+                GUIPage_Unit_Command_Attack_Preview
+                .PARAM
+                .Create(m_entity_id, target_entity_id, weapon_id)
+                );
         }
     }
 

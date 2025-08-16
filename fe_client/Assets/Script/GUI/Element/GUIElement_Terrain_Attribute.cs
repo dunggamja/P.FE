@@ -17,29 +17,26 @@ public class GUIElement_Terrain_Attribute : GUIElement
 
 
     private (int x, int y)  m_terrain_position = (0, 0);
-    private IDisposable     m_terrain_position_subscription;
+    // private IDisposable     m_terrain_position_subscription;
 
-    public void Initialize(
-      BehaviorSubject<(int x, int y)> _subject_terrain_position
-    )
+    public void Initialize((int x, int y) _terrain_position)
     {
         Clear();
 
-        m_terrain_position              = _subject_terrain_position.Value;
-        m_terrain_position_subscription = _subject_terrain_position.Subscribe(position => 
-        {
-            m_terrain_position = position;
-            UpdateText();
-        });
+        m_terrain_position              = _terrain_position;
+        // m_terrain_position_subscription = _subject_terrain_position.Subscribe(position => 
+        // {
+        //     m_terrain_position = position;
+        //     UpdateText();
+        // });
 
         UpdateText();
     }
 
     protected override void Clear()
     {
-        m_terrain_position_subscription?.Dispose();
-
-        m_terrain_position_subscription = null;
+        // m_terrain_position_subscription?.Dispose();
+        // m_terrain_position_subscription = null;
 
         m_text_terrain_name.text = string.Empty;
         m_text_terrain_desc.text = string.Empty;

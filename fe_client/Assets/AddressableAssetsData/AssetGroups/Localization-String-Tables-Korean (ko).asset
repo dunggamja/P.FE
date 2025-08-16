@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6ef8ec9cdbad43aa9713e5ce3c2ebc8
+    m_Address: localization_character_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d3d8a998df89d4b2b8027df58cec1e48
     m_Address: localization_base_ko
     m_ReadOnly: 1

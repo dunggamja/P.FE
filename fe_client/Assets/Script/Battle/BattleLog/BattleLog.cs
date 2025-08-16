@@ -24,8 +24,6 @@ namespace Battle
 
     public struct BattleLog
     {
-        
-
         public EnumBattleLogType LogType  { get; private set; }
         public Int64             EntityID { get; private set; }
         public int               Value    { get; private set; }
@@ -60,6 +58,12 @@ namespace Battle
         public void Clear()
         {
             Logs.Clear();
+        }
+
+        public void CopyLogs(ref List<BattleLog> _logs)
+        {
+            _logs.Clear();
+            _logs.AddRange(Logs);
         }
 
         public BattleLogManager_IO Save()

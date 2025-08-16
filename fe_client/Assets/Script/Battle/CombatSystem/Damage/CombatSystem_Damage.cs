@@ -173,9 +173,13 @@ namespace Battle
             // 스탯  & 버프 계산.
             var hit        = dealer.StatusManager.Calc_Hit();
             var dodge      = target.StatusManager.Calc_Dodge();
-            var buff_value = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Hit) 
-                           + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Hit);
 
+            var buff_hit   = dealer.StatusManager
+                .Buff
+                .Collect_Combat(
+                EnumSituationType.CombatSystem_Damage_Start,
+                dealer, target,
+                EnumBuffStatus.System_Hit);
 
             // // 무기 상성 적용.
             // switch(WeaponAdvantage)
@@ -185,7 +189,7 @@ namespace Battle
             // }
 
             // 100분율 
-            return Math.Max(0, buff_value.Calculate(hit - dodge)) * 0.01f;
+            return Math.Max(0, buff_hit.Calculate(hit - dodge)) * 0.01f;
         }
 
         float Calculate_CriticalRate(ICombatSystemParam _param)
@@ -196,14 +200,23 @@ namespace Battle
 
 
             // 스탯  & 버프 계산.
-            var hit        = dealer.StatusManager.Calc_Critical();
-            var dodge      = target.StatusManager.Calc_DodgeCritical();
-            var buff_value = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Critical) 
-                           + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Critical);
+            var hit      = dealer.StatusManager.Calc_Critical();
+            var dodge    = target.StatusManager.Calc_DodgeCritical();
+            var hit_buff = dealer.StatusManager
+            .Buff
+            .Collect_Combat(
+                EnumSituationType.CombatSystem_Damage_Start,
+                dealer, target,
+                EnumBuffStatus.System_Critical);
+
+
+            // TODO: 피격자의 버프 계산도 필요.
+
+
 
 
             // 100분율 
-            return Math.Max(0, buff_value.Calculate(hit - dodge)) * 0.01f;
+            return Math.Max(0, hit_buff.Calculate(hit - dodge)) * 0.01f;
         }
 
         float Calculate_GuardRate(ICombatSystemParam _param)
@@ -234,9 +247,13 @@ namespace Battle
             var damage_total  = damage_physic + damage_magic;
 
             // 버프 계산.
-            var buff_value     = dealer.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, dealer, EnumBuffStatus.System_Damage) 
-                               + target.StatusManager.Buff.Collect(EnumSituationType.CombatSystem_Damage_Start, target, EnumBuffStatus.System_Damage);
-                               
+            var buff_value     = dealer.StatusManager
+            .Buff
+            .Collect_Combat(
+                EnumSituationType.CombatSystem_Damage_Start,
+                dealer, target,
+                EnumBuffStatus.System_Damage);
+               
             damage_total       = Math.Max(0, buff_value.Calculate(damage_total));
 
             return damage_total;

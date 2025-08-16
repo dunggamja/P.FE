@@ -23,6 +23,10 @@ MonoBehaviour:
     m_Key: ui_menu_wait
     m_Metadata:
       m_Items: []
+  - m_Id: 32995246227841024
+    m_Key: ui_empty
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
