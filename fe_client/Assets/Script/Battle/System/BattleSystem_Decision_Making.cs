@@ -249,7 +249,7 @@ namespace Battle
                     (
                         _entity_id,
                         _damage_score.Position,
-                        _cell_event: EnumCellPositionEvent.Move,
+                        // _cell_event: EnumCellPositionEvent.Move,
                         _execute_command: true
                         //, _is_immediate: true // 일단은 즉시 이동.    
                     ));

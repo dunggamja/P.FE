@@ -42,6 +42,12 @@ namespace Battle
             // TODO : 무기 장착은 나중에 Command_Equip 으로 변경.?
             if (Owner != null)
             {
+                // 공격 유닛 위치 셋팅.
+                Owner.UpdateCellPosition(
+                    Position,
+                    _visual_immediatly: true,
+                    _is_plan: false);
+
                 // 무기 장착.
                 Owner.StatusManager.Weapon.Equip(WeaponID);
             }

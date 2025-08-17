@@ -320,7 +320,26 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // 선택 이벤트 처리.
+
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
+        // Command_Attack
+        // 전투 실행: 공격 명령
+         BattleSystemManager.Instance.PushCommand(
+                    new Command_Attack
+                    (
+                        m_entity_id,
+                        m_target_id,
+                        m_weapon_id,
+                        entity.Cell                        
+                    ));
+
+
+        // 관련 UI들 모두 닫아야함...
+        //GUIManager.Instance.CloseUI(ID);
     }
 
     void OnReceiveEvent_GUI_Menu_ForwardEvent(GUI_Menu_ForwardEvent _event)

@@ -11,6 +11,7 @@ namespace Battle
 
         public (int x, int y)       Cell            { get; private set; }
         public (int x, int y)       Cell_Prev       { get; private set; }
+        public bool                 Cell_Occupied   { get; private set; } = false;
         // public ITarget              Target          { get; }
         public EntityBlackBoard     BlackBoard      { get; }
         public BattleSkill          Skill           { get; } 
@@ -40,6 +41,7 @@ namespace Battle
             // Target            = null;
             Cell              = (0, 0);
             Cell_Prev         = Cell;
+            Cell_Occupied     = false;
             PathBasePosition  = Cell;
                  
             BlackBoard        = new EntityBlackBoard();
@@ -109,6 +111,7 @@ namespace Battle
                 ID               = ID,
                 Cell             = Cell,
                 Cell_Prev        = Cell_Prev,
+                Cell_Occupied    = Cell_Occupied,
                 BlackBoard       = BlackBoard.Save(),
                 StatusManager    = StatusManager.Save(),
                 Inventory        = Inventory.Save(),
@@ -120,9 +123,10 @@ namespace Battle
 
         public void Load(Entity_IO _snapshot)
         {
-            ID        = _snapshot.ID;
-            Cell      = _snapshot.Cell;
-            Cell_Prev = _snapshot.Cell_Prev;
+            ID            = _snapshot.ID;
+            Cell          = _snapshot.Cell;
+            Cell_Prev     = _snapshot.Cell_Prev;
+            Cell_Occupied = _snapshot.Cell_Occupied;
 
             BlackBoard.Load(_snapshot.BlackBoard);
             StatusManager.Load(_snapshot.StatusManager);
@@ -150,6 +154,7 @@ namespace Battle
         public Int64               ID               { get; set; } = 0;
         public (int x, int y)      Cell             { get; set; } = (0, 0);
         public (int x, int y)      Cell_Prev        { get; set; } = (0, 0);
+        public bool                Cell_Occupied    { get; set; } = false;
     
         public BlackBoard_IO       BlackBoard       { get; set; } = new();
         public StatusManager_IO    StatusManager    { get; set; } = new();

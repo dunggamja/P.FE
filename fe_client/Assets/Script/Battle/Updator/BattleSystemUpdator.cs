@@ -176,26 +176,22 @@ namespace Battle
             {
                 attacker.UpdateCellPosition(
                     (2, 0), 
-                    EnumCellPositionEvent.Enter, 
-                    _is_immediatly_move: true, 
+                    _visual_immediatly: true, 
                     _is_plan: false);
 
                 attacker_2.UpdateCellPosition(
                     (3, 0), 
-                    EnumCellPositionEvent.Enter, 
-                    _is_immediatly_move: true, 
+                    _visual_immediatly: true, 
                     _is_plan: false);
 
                 defender.UpdateCellPosition(
                     (2, 4), 
-                    EnumCellPositionEvent.Enter, 
-                    _is_immediatly_move: true, 
+                    _visual_immediatly: true, 
                     _is_plan: false);
 
                 defender_2.UpdateCellPosition(
-                    (3, 3), 
-                    EnumCellPositionEvent.Enter, 
-                    _is_immediatly_move: true, 
+                    (3, 3),  
+                    _visual_immediatly: true, 
                     _is_plan: false);
             }
 

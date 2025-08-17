@@ -275,13 +275,14 @@ public class InputHandler_Grid_Select : InputHandler
         var new_position_x = SelectCursor.x + MoveDirection.x;
         var new_position_y = SelectCursor.y + MoveDirection.y;
 
-        MoveSelcectCurosr(new_position_x, new_position_y);
+        MoveSelcectCursor(new_position_x, new_position_y);
 
         // 선택된 유닛 이동 처리.
         MoveSelectedEntity(
-            CommandEntityID, 
+            CommandEntityID,
             SelectCursor,
             _is_immediate: false);
+            // _is_plan: true);
     }
 
     void Update_DrawMoveRange()
@@ -316,7 +317,7 @@ public class InputHandler_Grid_Select : InputHandler
         }
     }
 
-    private void MoveSelcectCurosr(int _x, int _y)
+    private void MoveSelcectCursor(int _x, int _y)
     {
         var terrain_map = TerrainMapManager.Instance.TerrainMap;
         if (terrain_map != null && terrain_map.IsInBound(_x, _y) == false)
@@ -337,6 +338,7 @@ public class InputHandler_Grid_Select : InputHandler
         );       
     }
 
+    // 조작중일때의 이동 처리, 실제 이동력 소모 없음.
     private void MoveSelectedEntity(
         Int64          _entity_id,
         (int x, int y) _cell,
@@ -361,11 +363,11 @@ public class InputHandler_Grid_Select : InputHandler
             (
                 _entity_id,
                 _cell,
-                EnumCellPositionEvent.Enter,
+                // EnumCellPositionEvent.Enter,
 
-                _is_immediate:    _is_immediate, // 즉시 이동 여부.
+                _visual_immediate:    _is_immediate, // 즉시 이동 여부.
                 _execute_command: false,         // 명령 상태 처리. 
-                _is_plan:         true           // 좌표 점유 처리.
+                _is_plan:         true       // 좌표 점유 처리.
             )
         );
     }
@@ -409,14 +411,8 @@ public class InputHandler_Grid_Select : InputHandler
         // 명령을 내릴 유닛 선택.
         CommandEntityID = _entity_id;
 
-        // 셀 점유 상태 임시 해제.
-        entity.UpdateCellPosition
-        (
-            entity.Cell,
-            EnumCellPositionEvent.Exit,
-            _is_immediatly_move: false,
-            _is_plan: false
-        );
+        // 명령을 내리는 유닛은 셀 점유 상태를 해제합니다.
+        entity.UpdateCellOccupied(false);
     }
 
     void Process_Cancel_CommandEntity()
@@ -430,29 +426,25 @@ public class InputHandler_Grid_Select : InputHandler
             var base_position  = entity.PathBasePosition;
             if (base_position == SelectCursor)
             {
-                CommandEntityID = 0;
-
-                // 셀 점유 상태 원복.
-                entity.UpdateCellPosition
-                (
+                // 원래 위치로 복귀.
+                entity.UpdateCellPosition(
                     base_position,
-                    EnumCellPositionEvent.Enter,
-                    _is_immediatly_move: false,
-                    _is_plan: false
-                );
+                    _visual_immediatly: true,
+                    _is_plan: false);
 
-                return;
+                CommandEntityID = 0;
             }
             else
             {
                 // 커서 이동.
-                MoveSelcectCurosr(base_position.x, base_position.y);
+                MoveSelcectCursor(base_position.x, base_position.y);
 
                 // 명령 중이던 캐릭터 원래 위치로 복귀.    
                 MoveSelectedEntity(
                     CommandEntityID, 
                     base_position, 
                     _is_immediate: true);
+                    // _is_plan: true);
             }
         }
         else

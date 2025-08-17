@@ -7,59 +7,60 @@ namespace Battle
 {
     public partial class Entity 
     {
+        public void UpdateCellOccupied(bool _is_occupy)
+        {
+            if (Cell_Occupied == _is_occupy)
+                return;
+
+            Cell_Occupied = _is_occupy;
+
+            Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
+
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
+                ID,
+                PathZOCFaction,
+                Cell,
+                _is_occupy: Cell_Occupied));
+        }
+
+        
         public void UpdateCellPosition(
             (int x, int y)        _cell,
-            EnumCellPositionEvent _cell_position_event,
-            bool                  _is_immediatly_move,
+            bool                  _visual_immediatly,
             bool                  _is_plan)
         {
             // 이전 위치.            
             Cell_Prev = Cell;
+
+
+            if (_is_plan == false)
+            {
+                // 기존에 점유하고 있던 좌표 해제.
+                UpdateCellOccupied(false);
+            }            
             
             // 새 위치.
             Cell        = _cell;
+
+            if (_is_plan == false)
+            {
+                // 새로운 위치 셀 점유.
+                UpdateCellOccupied(true);
+
+                // 베이스 포지션 변경.
+                PathBasePosition = Cell;
+
+                Debug.Log($"PathBasePosition: {ID}, {Cell}");
+            }
 
             var position_cur  = Cell.CellToPosition();
             var position_prev = PathVehicle.Position;
 
             PathVehicle.Setup(position_cur, position_prev);
 
-            
-
-            // 실제 이동되었을 경우 처리.
-            if (_is_plan == false)
-            {
-                PathBasePosition = Cell;
-
-                // 이전 위치 셀 점유 해제. 
-                if (_cell_position_event == EnumCellPositionEvent.Exit
-                ||  _cell_position_event == EnumCellPositionEvent.Move)
-                {
-                    EventDispatchManager.Instance.UpdateEvent(
-                        ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
-                        ID,
-                        PathZOCFaction,
-                        Cell_Prev,
-                        _is_occupy: false));
-                }
-
-
-                // 새로운 위치 셀 점유.
-                if (_cell_position_event == EnumCellPositionEvent.Enter
-                 || _cell_position_event == EnumCellPositionEvent.Move)
-                {
-                    EventDispatchManager.Instance.UpdateEvent(
-                        ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
-                        ID,
-                        PathZOCFaction,
-                        Cell,
-                        _is_occupy: true));
-                }
-            }
-
-
             var visual_position_to   = PathVehicle.Position;
-            var visual_position_from = (_is_immediatly_move) 
+            var visual_position_from = (_visual_immediatly) 
                                      ? PathVehicle.Position 
                                      : PathVehicle.PositionPrev;
             
