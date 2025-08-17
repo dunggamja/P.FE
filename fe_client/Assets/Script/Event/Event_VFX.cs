@@ -29,7 +29,8 @@ using UnityEngine;
         public void Release()
         {
             // ObjectPooling...
-            ObjectPool<VFX_TransformEvent>.Return(this);        
+            var temp = this;
+            ObjectPool<VFX_TransformEvent>.Return(ref temp);        
         }
 
         public void Reset()
@@ -87,7 +88,8 @@ using UnityEngine;
         public void Release()
         {
             // ObjectPooling...
-            ObjectPool<VFX_ColorEvent>.Return(this);        
+            var temp = this;
+            ObjectPool<VFX_ColorEvent>.Return(ref temp);        
         }
 
         public void Reset()

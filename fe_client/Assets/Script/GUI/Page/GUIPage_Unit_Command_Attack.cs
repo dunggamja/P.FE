@@ -170,7 +170,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
           m_menu_item_datas.Add(menu_item_data);
         }
 
-        ListPool<Item>.Return(list_weapons);      
+        ListPool<Item>.Return(ref list_weapons);      
       }
 
 
@@ -241,8 +241,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         // 공격 범위에 있는 타겟중 1명을 선택합니다.
 
         // 공격 범위 데이터 셋팅
-        var move_range_visitor = ObjectPool<MoveRangeVisitor>.Acquire();
-        move_range_visitor.SetData(
+        var attack_range_visit = ObjectPool<AttackRangeVisitor>.Acquire();
+        attack_range_visit.SetData(
             _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
@@ -251,18 +251,18 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         );
 
         // 공격 범위 대상 찾기
-        PathAlgorithm.FloodFill(move_range_visitor);
+        PathAlgorithm.FloodFill(attack_range_visit);
 
         // 처음 걸리는 대상을 선택.
         Int64 target_entity_id = 0;
-        foreach (var pos in move_range_visitor.List_Weapon)
+        foreach (var pos in attack_range_visit.List_Weapon)
         {
             target_entity_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
             if (target_entity_id > 0)
                 break;
         }
 
-        ObjectPool<MoveRangeVisitor>.Return(move_range_visitor);
+        ObjectPool<AttackRangeVisitor>.Return(ref attack_range_visit);
 
 
         // 전투 예측 UI를 엽니다.

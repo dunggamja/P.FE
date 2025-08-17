@@ -105,7 +105,7 @@ public class InputHandler_UI_Menu : InputHandler
         OnUpdate_Input_Process(input_result);
 
         OnUpdate_Menu_Move();
-        ObjectPool<InputParam_Result>.Return(input_result);
+        ObjectPool<InputParam_Result>.Return(ref input_result);
 
 
         // 메뉴가 없으면 종료.

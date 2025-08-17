@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ public interface IPoolObject
 //     private static readonly HashSet<T> m_inuse = new();
 // }
 
-public static class ObjectPool<T> where T : IPoolObject, new() 
+public static class ObjectPool<T> where T :  class, IPoolObject, new()
 {
     static ObjectPool()
     {
@@ -88,7 +89,7 @@ public static class ObjectPool<T> where T : IPoolObject, new()
         return pool_object;
     }
 
-    public static void Return(T _obj)
+    public static void Return(ref T _obj)
     {
         if (_obj == null)
             return;
@@ -101,12 +102,12 @@ public static class ObjectPool<T> where T : IPoolObject, new()
 
         
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
-        if (m_pool.Count >= m_max_count)
-            return;        
-        
+        if (m_pool.Count < m_max_count)  
+        {
+            m_pool.Push(_obj);
+        }
 
-        // m_inuse.Remove(_obj);
-        m_pool.Push(_obj);
+        _obj = null;
     }
 }
 
@@ -128,7 +129,7 @@ public static class ListPool<T>
         return list;
     }
 
-    public static void Return(List<T> list)
+    public static void Return(ref List<T> list)
     {
         if (list == null)
             return;
@@ -136,10 +137,12 @@ public static class ListPool<T>
         list.Clear();
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
-        if (m_pool.Count >= m_max_count)
-            return;
+        if (m_pool.Count < m_max_count)
+        {
+            m_pool.Push(list);
+        }
 
-        m_pool.Push(list);
+        list = null;
     }
 }
 
@@ -161,7 +164,7 @@ public static class HashSetPool<T>
         return hashSet;
     }
 
-    public static void Return(HashSet<T> hashSet)
+    public static void Return(ref HashSet<T> hashSet)
     {
         if (hashSet == null)
             return;
@@ -169,10 +172,12 @@ public static class HashSetPool<T>
         hashSet.Clear();
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
-        if (m_pool.Count >= m_max_count)
-            return;
+        if (m_pool.Count < m_max_count)
+        {
+            m_pool.Push(hashSet);
+        }
 
-        m_pool.Push(hashSet);
+        hashSet = null;
     }
 }
 
@@ -194,7 +199,7 @@ public static class DictionaryPool<TKey, TValue>
         return dict;
     }
 
-    public static void Return(Dictionary<TKey, TValue> dict)
+    public static void Return(ref Dictionary<TKey, TValue> dict)
     {
         if (dict == null)
             return;
@@ -202,10 +207,12 @@ public static class DictionaryPool<TKey, TValue>
         dict.Clear();
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
-        if (m_pool.Count >= m_max_count)
-            return;
+        if (m_pool.Count < m_max_count)
+        {
+            m_pool.Push(dict);
+        }
 
-        m_pool.Push(dict);
+        dict = null;
     }
 }
 
@@ -223,7 +230,7 @@ public static class QueuePool<T>
         return queue;
     }
 
-    public static void Return(Queue<T> queue)
+    public static void Return(ref Queue<T> queue)
     {
         if (queue == null)
             return;
@@ -231,10 +238,12 @@ public static class QueuePool<T>
         queue.Clear();
 
         // 풀링 최대 개수를 초과하면 반환 처리 하지 않는다.
-        if (m_pool.Count >= m_max_count)
-            return;
+        if (m_pool.Count < m_max_count)
+        {
+            m_pool.Push(queue);
+        }
 
-        m_pool.Push(queue);
+        queue = null;
     }
 }
 

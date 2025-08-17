@@ -219,14 +219,14 @@ namespace Battle
                                 owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                             }
 
-                            ObjectPool<ScoreResult>.Return(current_score);
+                            ObjectPool<ScoreResult>.Return(ref current_score);
                         }
                     }
 
-                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(list_collect_target);
+                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(ref list_collect_target);
                 }
 
-                ListPool<Item>.Return(list_weapon);
+                ListPool<Item>.Return(ref list_weapon);
             }
 
             // 무기 원상 복구.
@@ -379,7 +379,7 @@ namespace Battle
             // 타겟 이관.
             _collect_targets.AddRange(visitor.GetCollectTargets());
 
-            ObjectPool<CollectTargetVisitor>.Return(visitor);
+            ObjectPool<CollectTargetVisitor>.Return(ref visitor);
         }
 
     }    

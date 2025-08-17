@@ -127,7 +127,7 @@ namespace Battle
                 result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
                 result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
-                ObjectPool<CombatParam_Plan>.Return(combat_param);
+                ObjectPool<CombatParam_Plan>.Return(ref combat_param);
             }
 
 

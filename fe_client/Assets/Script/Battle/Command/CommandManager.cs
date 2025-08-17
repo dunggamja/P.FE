@@ -186,7 +186,7 @@ namespace Battle
                 }
             }
 
-            ListPool<Command>.Return(command_list);
+            ListPool<Command>.Return(ref command_list);
         }
     }
 }

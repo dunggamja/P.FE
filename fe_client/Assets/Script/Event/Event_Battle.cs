@@ -28,7 +28,8 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<Battle_Situation_UpdateEvent>.Return(this);
+            var temp = this;
+            ObjectPool<Battle_Situation_UpdateEvent>.Return(ref temp);
         }
     }
 
@@ -114,7 +115,8 @@ namespace Battle
 
         public void Release()
         {
-            ObjectPool<Battle_Cell_PositionEvent>.Return(this);
+            var temp = this;
+            ObjectPool<Battle_Cell_PositionEvent>.Return(ref temp);
         }
     }
 

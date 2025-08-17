@@ -12,7 +12,7 @@ namespace Battle.MoveRange
     AttackRange = 1 << 1,  // 무기 범위
   }
   
-  public class MoveRangeVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
+  public class AttackRangeVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
   {
     public int                DrawFlag     { get; set; } = 0;
     public TerrainMap         TerrainMap   { get; set; }
@@ -65,7 +65,7 @@ namespace Battle.MoveRange
     }
 
 
-    public MoveRangeVisitor SetData(
+    public AttackRangeVisitor SetData(
       int          _draw_flag,
       TerrainMap   _terrain, 
       Entity       _entity_object,
@@ -116,12 +116,12 @@ namespace Battle.MoveRange
   public class VFXHelper_DrawRange
   {
 
-    public int           DrawFlag         { get; private set; } = 0;
-    public Int64         DrawEntityID     { get; private set; } = 0;
-    public bool          UseBasePosition  { get; private set; } = false;
-    public Int64         UseWeaponID      { get; private set; } = 0;
-    public List<Int64>   VFXList          { get; private set; } = new List<Int64>();
-    MoveRangeVisitor     MoveRangeVisitor { get; set; }         = new();
+    public int           DrawFlag           { get; private set; } = 0;
+    public Int64         DrawEntityID       { get; private set; } = 0;
+    public bool          UseBasePosition    { get; private set; } = false;
+    public Int64         UseWeaponID        { get; private set; } = 0;
+    public List<Int64>   VFXList            { get; private set; } = new List<Int64>();
+    AttackRangeVisitor   AttackRangeVisitor { get; set; }         = new();
 
 
     public void DrawRange(int   _draw_flag
@@ -152,7 +152,7 @@ namespace Battle.MoveRange
 
       // 탐색.
       PathAlgorithm.FloodFill(
-        MoveRangeVisitor.SetData(
+        AttackRangeVisitor.SetData(
           _draw_flag, 
           terrain_map, 
           entity_object, 
@@ -161,7 +161,7 @@ namespace Battle.MoveRange
 
 
       // 이동 범위 표시.
-      foreach(var move in MoveRangeVisitor.List_Move)
+      foreach(var move in AttackRangeVisitor.List_Move)
       {
         var vfx_id = VFXManager.Instance.CreateVFXAsync(
             ObjectPool<VFXShape.Param>.Acquire()
@@ -174,10 +174,10 @@ namespace Battle.MoveRange
       }
 
       // 무기 범위 표시.
-      foreach(var weapon in MoveRangeVisitor.List_Weapon)
+      foreach(var weapon in AttackRangeVisitor.List_Weapon)
       {
         // 이미 이동 범위에 포함되어 있으면 처리하지 않는다.
-        if (MoveRangeVisitor.List_Move.Contains(weapon))
+        if (AttackRangeVisitor.List_Move.Contains(weapon))
           continue;
 
         var vfx_id = VFXManager.Instance.CreateVFXAsync(
@@ -198,7 +198,7 @@ namespace Battle.MoveRange
       DrawFlag     = 0;
       DrawEntityID = 0;
 
-      MoveRangeVisitor.Reset();
+      AttackRangeVisitor.Reset();
       ReleaseVFX();
     }
 

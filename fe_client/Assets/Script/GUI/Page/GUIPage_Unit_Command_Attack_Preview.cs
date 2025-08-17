@@ -63,11 +63,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
 
-    private Int64 m_entity_id  = 0;     
-    private Int64 m_target_id  = 0;
-    private Int64 m_weapon_id  = 0;
+    private Int64       m_entity_id   = 0;     
+    private Int64       m_target_id   = 0;
+    private Int64       m_weapon_id   = 0;
+    private Int64       m_vfx_cursor  = 0;
 
-    private Int64 m_vfx_cursor = 0;
+    private List<Int64> m_target_list = new();
 
     public void OnReceiveEvent(IEventParam _event)
     {
@@ -85,14 +86,15 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     protected override void OnOpen(GUIOpenParam _param)
     {
-        // throw new NotImplementedException();
-
         var param   = _param as PARAM;
         m_entity_id = param?.EntityID ?? 0;
         m_target_id = param?.TargetID ?? 0;
         m_weapon_id = param?.WeaponID ?? 0;
 
+
         CreateCursorVFX();
+
+        UpdateTargetList();
 
         UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
 
@@ -110,6 +112,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     protected override void OnClose()
     {
         // throw new NotImplementedException();
+        
         ReleaseCursorVFX();
     }
 
@@ -132,6 +135,40 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         }
     }
 
+    void UpdateTargetList()
+    {
+        // 공격 범위 탐색
+        var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Acquire();
+        attack_range_visit.SetData(
+            _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _terrain:           TerrainMapManager.Instance.TerrainMap,
+            _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
+            _use_base_position: false,
+            _use_weapon_id:     m_weapon_id
+        );
+
+        PathAlgorithm.FloodFill(attack_range_visit);
+
+        // 공격 가능한 타겟 목록.
+        m_target_list.Clear();
+        foreach(var pos in attack_range_visit.List_Weapon)
+        {
+            var entity_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
+            if (entity_id > 0)
+                m_target_list.Add(entity_id);
+        }
+
+        ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return(ref attack_range_visit);
+
+        
+        // 셋팅된 타겟이 공격가능하지 않을때 예외처리.
+        if (m_target_list.Contains(m_target_id) == false)
+        {
+            m_target_id = m_target_list.Count > 0 ? m_target_list[0] : 0;
+        }
+
+    }
+
 
     void UpdatePreview(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
     {
@@ -147,7 +184,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
         }
 
-        // 타겟 표시용 이펙트
+        // 타겟 위치로 커서 옮김.
         var entity_target = EntityManager.Instance.GetEntity(_target_id);
         if (entity_target != null)
         {
@@ -157,8 +194,6 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
                 .SetPosition(entity_target.Cell.CellToPosition())                
             ); 
         }
-
-
 
         // 공격자 표시.
         m_preview_attacker.Initialize(
@@ -180,22 +215,16 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Defender.HP_Before,
             result.Defender.HP_After);
 
-        // 공격 시퀀스 표시.
-        var temp = ListPool<Transform>.Acquire();
-        for (int i = 0; i < m_grid_attack_root.transform.childCount; i++)
-        {
-            temp.Add(m_grid_attack_root.transform.GetChild(i));        
+        // 그리드 아이템 제거.
+        {           
+            var list_delete = ListPool<Transform>.Acquire();
+            for (int i = 0; i < m_grid_attack_root.transform.childCount; i++)
+                list_delete.Add(m_grid_attack_root.transform.GetChild(i)); 
+            list_delete.ForEach(e => { if (e != null) GameObject.Destroy(e.gameObject);});
+            ListPool<Transform>.Return(ref list_delete);
         }
 
-        for (int i = 0; i < temp.Count; i++)
-        {
-            if (temp[i] != null)
-                GameObject.Destroy(temp[i].gameObject);
-        }
-
-
-        ListPool<Transform>.Return(temp);
-
+        // 그리드 아이템 생성
         for (int i = 0; i < result.Actions.Count; i++)
         {
             var clonedItem = Instantiate(m_grid_attack_sequence, m_grid_attack_root.transform);
@@ -221,12 +250,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     }
 
 
+
+
     void CreateCursorVFX()
     {
         var entity = EntityManager.Instance.GetEntity(m_entity_id);
         if (entity == null)
             return;
-
 
         // 이펙트 생성.
         var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
@@ -254,7 +284,25 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (_event.MoveDirection == Vector2Int.zero)
             return;
 
+        if (m_target_list.Count == 0)
+            return;
+
+        // 방향키에 따라서 다음 타겟을 바꿉시다.
+        int offset =
+          (_event.MoveDirection.x != 0) 
+        ? (_event.MoveDirection.x > 0 ? 1 : -1) 
+        : (_event.MoveDirection.y != 0) 
+        ? (_event.MoveDirection.y > 0 ? 1 : -1) 
+        : 0;
+
+
         // 타겟 변경.
+        var index    = m_target_list.IndexOf(m_target_id);
+        index       += (offset + m_target_list.Count);
+        index       %= m_target_list.Count;
+        m_target_id  = m_target_list[index];
+
+        UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
     }
 
     void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)

@@ -141,6 +141,13 @@ namespace Battle
                 e.StatusManager.Weapon.Equip(attacker_weapon.ID);
             }
 
+            {
+                // 킬소드 장비.
+                var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
+                attacker_2.Inventory.AddItem(attacker_weapon);
+                attacker_2.StatusManager.Weapon.Equip(attacker_weapon.ID);
+            }
+
             foreach(var e in list_defender)
             {
                 // 능력치 셋팅.

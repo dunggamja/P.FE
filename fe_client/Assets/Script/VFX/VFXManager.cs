@@ -144,7 +144,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
 
         // 반환.
-        ObjectPool<T>.Return(_param);
+        ObjectPool<T>.Return(ref _param);
 
         return vfx_object;
     }
@@ -229,7 +229,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         }
 
         // 풀에 반환.
-        HashSetPool<Int64>.Return(release_list);
+        HashSetPool<Int64>.Return(ref release_list);
     }
 
 

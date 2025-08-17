@@ -76,7 +76,7 @@ public static partial class PathAlgorithm
             }
         }
 
-        ListPool<Node>.Return(list_node);
+        ListPool<Node>.Return(ref list_node);
     }
 
 
@@ -205,9 +205,9 @@ public static partial class PathAlgorithm
         }        
 
         // 오브젝트 반환
-        ListPool<Node>.Return(open_list);
-        ListPool<Node>.Return(close_list);
-        ObjectPool<MoveRangeCheck>.Return(move_range_check);
+        ListPool<Node>.Return(ref open_list);
+        ListPool<Node>.Return(ref close_list);
+        ObjectPool<MoveRangeCheck>.Return(ref move_range_check);
 
         if (goal_node != null)
         {
@@ -370,8 +370,8 @@ public static partial class PathAlgorithm
             }   
         }
 
-        HashSetPool<(int x, int y, int move_cost)>.Return(open_list_move);
-        HashSetPool<(int x, int y, int move_cost)>.Return(close_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return(ref open_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return(ref close_list_move);
         // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");            
     }
 

@@ -52,7 +52,7 @@ namespace Battle
         }
 
         // 무기 목록 반환.
-        ListPool<Item>.Return(list_weapon);
+        ListPool<Item>.Return(ref list_weapon);
 
         // 착용중인 무기를 원래대로 바꿔줍시다.
         StatusManager.Weapon.Equip(equip_weapon_id);
