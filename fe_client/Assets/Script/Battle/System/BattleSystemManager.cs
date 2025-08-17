@@ -22,7 +22,9 @@ namespace Battle
 
         private List<BattleSystem>                 m_update_system          = new();
         private int                                m_system_index           = 0;
+        
         private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
+        private HashSet<(int, int)>                m_faction_alliance       = new ();
 
         private Queue<Command>                     m_command_queue          = new (10);
 
@@ -175,6 +177,28 @@ namespace Battle
                  m_faction_commander[_faction] = _commander_type;
         }
 
+        public void SetFactionAlliance(int _faction_1, int _faction_2)
+        {
+            m_faction_alliance.Add((_faction_1, _faction_2));
+            m_faction_alliance.Add((_faction_2, _faction_1));
+        }
+
+        public void RemoveFactionAlliance(int _faction_1, int _faction_2)
+        {
+            m_faction_alliance.Remove((_faction_1, _faction_2));
+            m_faction_alliance.Remove((_faction_2, _faction_1));
+        }
+
+        public bool IsFactionAlliance(int _faction_1, int _faction_2)
+        {
+            // 같은 진영이면 그냥 아군.
+            if (_faction_1 == _faction_2)
+                return true;
+
+            
+            return m_faction_alliance.Contains((_faction_1, _faction_2));
+        }
+
         public void PushCommand(Command _command)
         {
             m_command_queue.Enqueue(_command);
@@ -205,12 +229,17 @@ namespace Battle
             foreach(var e in m_faction_commander)
                 faction_commander.Add((e.Key, e.Value));
 
+            List<(int, int)> faction_alliance = new();
+            foreach(var e in m_faction_alliance)
+                faction_alliance.Add(e);
+
 
             return new BattleSystemManager_IO()
             {
                 Turn             = turn?.Save() ?? null,
                 BlackBoard       = BlackBoard.Save(),
-                FactionCommander = faction_commander
+                FactionCommander = faction_commander,
+                FactionAlliance  = faction_alliance
             };
         }
 
@@ -219,13 +248,15 @@ namespace Battle
             var turn_system = GetSystem(EnumSystem.BattleSystem_Turn) as BattleSystem_Turn;
             turn_system?.Load(_io.Turn);
                
-
             BlackBoard.Load(_io.BlackBoard);
 
             m_faction_commander.Clear();
             foreach(var e in _io.FactionCommander)
                 m_faction_commander.Add(e.Item1, e.Item2);
 
+            m_faction_alliance.Clear();
+            foreach(var e in _io.FactionAlliance)
+                m_faction_alliance.Add(e);
 
             // 나머지는 그냥 초기화 처리.
             m_command_queue.Clear();
@@ -243,6 +274,8 @@ namespace Battle
     public BlackBoard_IO        BlackBoard       { get; set; } = null;
 
     public List<(int, Battle.EnumCommanderType)> 
-                                FactionCommander { get; set; } = null;                              
+                                FactionCommander { get; set; } = null;  
+
+    public List<(int, int)>     FactionAlliance  { get; set; } = null;
     }
 }

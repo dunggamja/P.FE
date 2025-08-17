@@ -388,8 +388,11 @@ public static partial class PathAlgorithm
             return (false, 0);  
   
         // ZOC에 막히는지 체크합니다. (목표지점은 완전히 비어있어야 함.)
-        if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, 
-            (_is_occupancy) ? 0 : _path_owner.PathZOCFaction))        
+        Func<int, bool> func_ignore_zoc = null;        
+        if (_is_occupancy == false)
+            func_ignore_zoc = _path_owner.IsIgnoreZOC;
+
+        if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, func_ignore_zoc))        
             return (false, 0);
 
         

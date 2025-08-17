@@ -146,6 +146,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     Int64 FindTarget(Int64 _weapon_id, ref List<Int64> _target_list)
     {
+        _target_list.Clear();
+
+        // 공격자 체크.
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return 0;
+
         // 공격 범위 탐색
         var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Acquire();
         attack_range_visit.SetData(
@@ -159,12 +166,17 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         PathAlgorithm.FloodFill(attack_range_visit);
 
         // 공격 가능한 타겟 목록.
-        _target_list.Clear();
         foreach(var pos in attack_range_visit.List_Weapon)
         {
-            var entity_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
-            if (entity_id > 0)
-                _target_list.Add(entity_id);
+            var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
+            if (target_id > 0)
+            {   
+                // 공격 가능한지 체크.
+                if (CombatHelper.IsAttackable(m_entity_id, target_id) == false)
+                    continue;             
+
+                _target_list.Add(target_id);
+            }
         }
 
         ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return(ref attack_range_visit);

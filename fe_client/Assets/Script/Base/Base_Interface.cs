@@ -107,6 +107,8 @@ public interface IPathOwner
     int              PathZOCFaction    { get; }
     (int x, int y)   PathBasePosition  { get; }
     int              PathMoveRange     { get; }
+
+    bool             IsIgnoreZOC(int _faction);
 }
 
 // public interface IItem

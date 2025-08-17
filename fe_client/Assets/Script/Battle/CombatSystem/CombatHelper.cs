@@ -36,8 +36,6 @@ namespace Battle
             public int             HP_After     { get; set; }
         }
 
-
-
         public class Result
         {
             public Result_Unit         Attacker { get; set; } = new();
@@ -135,6 +133,29 @@ namespace Battle
             GameSnapshot.Load(snapshot, _is_plan: true);
 
             return result;
+        }
+    
+    
+    
+        public static bool IsAttackable(Int64 _attacker_id, Int64 _target_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0)
+                return false;
+
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            // TODO: 혼란 체크.
+
+            // 아군이면 공격 불가.
+            var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+            if (is_alliance)
+                return false;
+
+            return true;
         }
     }
 }

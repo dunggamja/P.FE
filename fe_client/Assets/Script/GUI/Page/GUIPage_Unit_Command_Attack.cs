@@ -235,6 +235,11 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             return;
 
 
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
         var weapon_id = SelectedItemData.ItemID;
 
 
@@ -257,9 +262,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         Int64 target_entity_id = 0;
         foreach (var pos in attack_range_visit.List_Weapon)
         {
-            target_entity_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
-            if (target_entity_id > 0)
+            var target_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
+
+            if (CombatHelper.IsAttackable(m_entity_id, target_id))
+            {
+                target_entity_id = target_id;
                 break;
+            }
         }
 
         ObjectPool<AttackRangeVisitor>.Return(ref attack_range_visit);

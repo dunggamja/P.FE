@@ -100,5 +100,13 @@ namespace Battle
             PathAttribute &= ~(1 << (int)_attribute);
         }
 
+        public bool IsIgnoreZOC(int _faction)
+        {
+            // 아군이면 통과.
+            return BattleSystemManager
+                .Instance
+                .IsFactionAlliance(GetFaction(), _faction);
+        }
+
     }
 }

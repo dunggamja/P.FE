@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,7 @@ public class Terrain_ZOC
         // Debug.Log($"DecreaseZOC: {_faction}, {_x}, {_y}, {new_value}");
     }
 
-    public bool IsBlockedZOC(int _x, int _y, int _faction_ignore)
+    public bool IsBlockedZOC(int _x, int _y, Func<int, bool> _func_ignore_zoc)
     {
         if (_x < 0 || _y < 0 || m_width <= _x || m_height <= _y)
             return false;
@@ -65,8 +66,8 @@ public class Terrain_ZOC
 
         foreach((var faction, var zoc_array) in m_faction_zoc)
         {
-            // 같은 진영은 통과가능.
-            if (_faction_ignore == faction)
+            // 통과 조건 체크.
+            if (_func_ignore_zoc != null && _func_ignore_zoc(faction))
                 continue;
 
             // 셀 점유 확인.

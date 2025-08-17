@@ -194,8 +194,8 @@ namespace Battle
                         if (target_entity.IsDead)
                             continue;     
 
-                        // TODO: 적/아군 체크에 대한 함수는 따로 빼야한다.
-                        if (target_entity.GetFaction() == owner_entity.GetFaction())
+                        // 공격 가능한지 체크.
+                        if (CombatHelper.IsAttackable(owner_entity.ID, target_id) == false)
                             continue;
 
                         // try
