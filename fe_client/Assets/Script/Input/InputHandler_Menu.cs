@@ -11,6 +11,7 @@ public class InputHandler_UI_Menu : InputHandler
     {
         public bool                             IsSelect      { get; set; }
         public bool                             IsCancel      { get; set; }
+        public bool                             IsForward     { get; set; }
         public (bool changed, Vector2    value) MoveDirection { get; set; }
         public (bool changed, Vector2Int value) SelectTile    { get; set; }
 
@@ -18,6 +19,7 @@ public class InputHandler_UI_Menu : InputHandler
         {
             IsSelect      = false;
             IsCancel      = false;
+            IsForward     = false;
             MoveDirection = default;
             SelectTile    = default;
         }
@@ -145,6 +147,12 @@ public class InputHandler_UI_Menu : InputHandler
                     input_result.IsCancel = true;
                 }
                 break;
+
+                case InputParam_UI_Forward _:
+                {
+                    input_result.IsForward = true;
+                }
+                break;
             }
         }
     }
@@ -158,6 +166,10 @@ public class InputHandler_UI_Menu : InputHandler
         else if (input_result.IsCancel)
         {
             OnUpdate_Input_Process_Cancel();
+        }
+        else if (input_result.IsForward)
+        {
+            OnUpdate_Input_Process_Forward();
         }
         else if (input_result.MoveDirection.changed)
         {
@@ -179,6 +191,17 @@ public class InputHandler_UI_Menu : InputHandler
     {
         Close_FocusGUI();
     }
+
+    private void OnUpdate_Input_Process_Forward()
+    {
+        var gui_id = FocusGUI;
+        if (gui_id == 0)
+            return;
+
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<GUI_Menu_ForwardEvent>.Acquire().Set(gui_id));
+    }
+
 
     private void OnUpdate_Input_Process_Move(Vector2 _move_direction)
     {

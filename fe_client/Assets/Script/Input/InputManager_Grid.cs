@@ -93,9 +93,21 @@ public partial class InputManager
         // Debug.Log($"{_context.action.actionMap.name}:Grid_Cancel");
     }
 
-    public void OnGrid_AnyButton(InputAction.CallbackContext _context)
+    public void OnGrid_Forward(InputAction.CallbackContext _context)
     {
-        // Debug.Log($"{_context.action.actionMap.name}:Grid_AnyButton");
+        // Debug.Log($"{_context.action.actionMap.name}:Grid_Forward");
+        var input_handler_context = GetFocusInputHandlerContext();
+        if (input_handler_context == null)
+        {
+            Debug.LogError("InputHandlerContext is null");
+            return;
+        }
+
+        if (_context.started || _context.performed)
+        {
+            var input_param = new InputParam_Grid_Forward();
+            input_handler_context.InputParamQueue.Enqueue(input_param);
+        }
     }
-    
+   
 }

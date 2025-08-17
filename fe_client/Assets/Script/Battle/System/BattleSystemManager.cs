@@ -11,8 +11,7 @@ namespace Battle
         // Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
 
         public IBattleSystemParam  Param          { get; private set; }
-        public EnumState           State          { get; private set; }
-                       
+        public EnumState           State          { get; private set; }                       
         public BattleBlackBoard    BlackBoard     { get; private set; } = new ();
 
         

@@ -9,6 +9,7 @@ public enum EnumInputParamType
     Grid_Pointer,   // 그리드 포인터
     Grid_Select,    // 그리드 선택
     Grid_Cancel,    // 그리드 취소
+    Grid_Forward,   // 그리드 포워드 <- 먼지 모름. (공격범위 표시 시 사용)
     // Grid_Delta,     // 그리드 델타
     // Grid_AnyButton, // 그리드 버튼
 
@@ -17,6 +18,7 @@ public enum EnumInputParamType
     UI_Delta,     // UI 델타
     UI_Select,    // UI 선택
     UI_Cancel,    // UI 취소
+    UI_Forward,   // UI 포워드 <- 먼지 모름. (무기 변경 시 사용)
 }
 
 
@@ -68,6 +70,11 @@ public class InputParam_Grid_Cancel : InputParam
     public override EnumInputParamType ParamType => EnumInputParamType.Grid_Cancel;
 }
 
+public class InputParam_Grid_Forward : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.Grid_Forward;
+}
+
 public class InputParam_UI_Move : InputParam
 {
     public override EnumInputParamType ParamType => EnumInputParamType.UI_Move;
@@ -108,7 +115,10 @@ public class InputParam_UI_Cancel : InputParam
     public override EnumInputParamType ParamType => EnumInputParamType.UI_Cancel;
 }
 
-
+public class InputParam_UI_Forward : InputParam
+{
+    public override EnumInputParamType ParamType => EnumInputParamType.UI_Forward;
+}
 
 // public class InputParam_Grid_Delta : InputParam
 // {

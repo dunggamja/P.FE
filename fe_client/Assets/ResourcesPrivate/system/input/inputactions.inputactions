@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Forward",
+                    "type": "Button",
+                    "id": "29658bc0-a03b-4c3b-8835-d4ade45cbf98",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Point",
                     "type": "PassThrough",
                     "id": "50d6a6b7-be17-4cb9-a451-85df48b5d0a0",
@@ -809,6 +818,28 @@
                     "action": "TrackedDeviceOrientation",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9a6aa541-fed3-40e7-8322-654b18386725",
+                    "path": "*/{Forward}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5485aa0f-d6d8-4947-ae10-bf71f3cdeda9",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -874,6 +905,15 @@
                     "name": "Grid_Select",
                     "type": "Button",
                     "id": "2a47c61d-1000-4758-a348-cde4464399c3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Grid_Forward",
+                    "type": "Button",
+                    "id": "0cc03ed1-0ce7-4beb-aea0-7b0785e0dfdd",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1188,6 +1228,28 @@
                     "action": "Grid_Select",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "80dfcc48-7035-4df8-ac5d-d0fa911e8a19",
+                    "path": "*/{Forward}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa180a45-a139-4e24-9f5d-c53bed1762c6",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grid_Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -1217,6 +1279,15 @@
                     "name": "Menu_Cancel",
                     "type": "Button",
                     "id": "24a395ba-0f37-4761-b520-1b88a88780d8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Menu_Forward",
+                    "type": "Button",
+                    "id": "961b24d8-38c7-452c-91a6-b80b32ed3469",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1487,6 +1558,28 @@
                     "action": "Menu_Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "4552e2d3-98ca-4706-a848-27b361abb59f",
+                    "path": "*/{Forward}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu_Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d362abc4-22b5-4165-a6d4-70dc083dec68",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu_Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

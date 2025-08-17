@@ -11,6 +11,7 @@ class InputParam_Result : IPoolObject
 {
     public bool                             IsSelect      { get; set; }
     public bool                             IsCancel      { get; set; }
+    public bool                             IsForward     { get; set; }
     public (bool changed, Vector2    value) MoveDirection { get; set; }
     // public (bool changed, Vector2Int value) SelectTile    { get; set; }
 
@@ -18,6 +19,7 @@ class InputParam_Result : IPoolObject
     {
         IsSelect      = false;
         IsCancel      = false;
+        IsForward     = false;
         MoveDirection = default;
         // SelectTile    = default;
     }
@@ -146,6 +148,13 @@ public class InputHandler_Grid_Select : InputHandler
                     _result.IsCancel = true;
                 }
                 break;  
+
+                case InputParam_Grid_Forward:
+                {
+                    // 器况靛 贸府.
+                    _result.IsForward = true;
+                }
+                break;
             }
         }
     }
@@ -163,6 +172,10 @@ public class InputHandler_Grid_Select : InputHandler
             OnUpdate_Input_Process_Cancel();
             // 秒家 贸府. (辆丰)
             // IsFinish = true;
+        }
+        else if (_result.IsForward)
+        {
+            OnUpdate_Input_Process_Forward();
         }
         else if (_result.MoveDirection.changed)
         {
@@ -219,6 +232,12 @@ public class InputHandler_Grid_Select : InputHandler
         {
            Process_Cancel_CommandEntity();
         }
+    }
+
+    void OnUpdate_Input_Process_Forward()
+    {
+        // TODO: 器况靛 贸府.
+        // 利 傍拜 裹困 ON/OFF 贸府
     }
 
     void OnUpdate_Input_Process_Move(Vector2 _move_direction)

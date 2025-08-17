@@ -100,4 +100,22 @@ public partial class InputManager
             // Debug.Log($"OnUI_Cancel performed, {_context.phase}");
         }
     }
+
+    public void OnMenu_Forward(InputAction.CallbackContext _context)
+    {
+        var input_handler_context = GetFocusInputHandlerContext();
+        if (input_handler_context == null)
+        {
+            Debug.LogError("InputHandlerContext is null");
+            return;
+        }
+
+        if (_context.started || _context.performed)
+        {
+            var input_param = new InputParam_UI_Forward();
+            input_handler_context.InputParamQueue.Enqueue(input_param);
+
+            // Debug.Log($"OnUI_Forward performed, {_context.phase}");
+        }
+    }
 }

@@ -8,12 +8,11 @@ using UnityEngine.UI;
 
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
-    typeof(GUI_Menu_SelectEvent)
+    typeof(GUI_Menu_SelectEvent),
+    typeof(GUI_Menu_ForwardEvent)
     )]
 public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 {
-
-
 
     public class PARAM : GUIOpenParam
     {
@@ -81,6 +80,10 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             case GUI_Menu_SelectEvent menu_select_event:
                 OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
                 break;
+
+            case GUI_Menu_ForwardEvent menu_forward_event:
+                OnReceiveEvent_GUI_Menu_ForwardEvent(menu_forward_event);
+                break;
         }
     }
 
@@ -94,9 +97,11 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
         CreateCursorVFX();
 
-        UpdateTargetList();
+        // 타겟 갱신.
+        m_target_id = FindTarget(m_weapon_id, ref m_target_list);
 
-        UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
+        // 프리뷰 UI 갱신
+        UpdateUI_Preview();
 
         // CombatSystemManager.Instance.Setup()
 
@@ -106,6 +111,8 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     {
         base.OnLoop();
 
+
+        // 공격범위 표시.
         UpdateDrawRange();
     }
 
@@ -135,7 +142,9 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         }
     }
 
-    void UpdateTargetList()
+
+
+    Int64 FindTarget(Int64 _weapon_id, ref List<Int64> _target_list)
     {
         // 공격 범위 탐색
         var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Acquire();
@@ -144,38 +153,39 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
             _use_base_position: false,
-            _use_weapon_id:     m_weapon_id
+            _use_weapon_id:     _weapon_id
         );
 
         PathAlgorithm.FloodFill(attack_range_visit);
 
         // 공격 가능한 타겟 목록.
-        m_target_list.Clear();
+        _target_list.Clear();
         foreach(var pos in attack_range_visit.List_Weapon)
         {
             var entity_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
             if (entity_id > 0)
-                m_target_list.Add(entity_id);
+                _target_list.Add(entity_id);
         }
 
         ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return(ref attack_range_visit);
 
-        
-        // 셋팅된 타겟이 공격가능하지 않을때 예외처리.
-        if (m_target_list.Contains(m_target_id) == false)
+        // 기존 타겟이 공격 가능하면 유지, 공격 불가능하면 다른 타겟으로 변경.
+        Int64 new_target_id = m_target_id;        
+        if (_target_list.Contains(m_target_id) == false)
         {
-            m_target_id = m_target_list.Count > 0 ? m_target_list[0] : 0;
+            new_target_id = _target_list.Count > 0 ? _target_list[0] : 0;
         }
 
+        return new_target_id;
     }
 
 
-    void UpdatePreview(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
+    void UpdateUI_Preview()
     {
         var result = CombatHelper.Run_Plan(
-            _attacker_id, 
-            _target_id, 
-            _weapon_id);
+            m_entity_id, 
+            m_target_id, 
+            m_weapon_id);
 
 
         if (result == null)
@@ -185,7 +195,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         }
 
         // 타겟 위치로 커서 옮김.
-        var entity_target = EntityManager.Instance.GetEntity(_target_id);
+        var entity_target = EntityManager.Instance.GetEntity(m_target_id);
         if (entity_target != null)
         {
             EventDispatchManager.Instance.UpdateEvent(
@@ -302,7 +312,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         index       %= m_target_list.Count;
         m_target_id  = m_target_list[index];
 
-        UpdatePreview(m_entity_id, m_target_id, m_weapon_id);
+        UpdateUI_Preview();
     }
 
     void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
@@ -313,6 +323,68 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         // 선택 이벤트 처리.
     }
 
+    void OnReceiveEvent_GUI_Menu_ForwardEvent(GUI_Menu_ForwardEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        // 무기 변경 이벤트.
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
+
+        // 무기 변경.
+        {
+            var   list_weapon   = ListPool<Item>.Acquire();
+            var   list_target   = ListPool<Int64>.Acquire();
+
+            Int64 new_weapon_id = 0;
+            Int64 new_target_id = 0;
+
+            // 소유 중인 무기 목록 순회.
+            entity.Inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
+            if (1 < list_weapon.Count)
+            {            
+                var index  = list_weapon.FindIndex(e => e.ID == m_weapon_id);
+                for(int i = 1; i < list_weapon.Count; ++i)
+                {
+                    var weapon_index     = (index + i) % list_weapon.Count;
+                    var weapon_id        = list_weapon[weapon_index].ID;
+
+                    // 무기로 공격가능한 타겟이 있는지 찾는다.
+                    var target_id = FindTarget(weapon_id, ref list_target);
+                    if (target_id > 0)
+                    {
+                        // 무기 & 타겟 변경.
+                        new_weapon_id = weapon_id;
+                        new_target_id = target_id;
+                        break;
+                    }
+                }
+            }
+
+            // 무기 & 타겟 변경되었으면 데이터 & UI 갱신.
+            if (new_weapon_id > 0 && new_target_id > 0)
+            {
+                m_weapon_id    = new_weapon_id;
+                m_target_id    = new_target_id;
+                m_target_list.Clear();
+                m_target_list.AddRange(list_target);
+
+                // UI 갱신.
+                UpdateUI_Preview();
+            }
+
+
+            ListPool<Item>.Return(ref list_weapon);
+            ListPool<Int64>.Return(ref list_target);
+        }
+
+
+        
+    }
 
 
 }
