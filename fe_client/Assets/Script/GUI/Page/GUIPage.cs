@@ -91,7 +91,7 @@ public abstract class GUIPage : GUIBase
         gameObject.SetActive(false);
 
         ID             = _param.ID;
-        GUIType        = _param.GUIType;
+        // GUIType        = _param.GUIType;
         GUIName        = _param.GUIName;
         IsInputEnabled = _param.IsInputEnabled;
         

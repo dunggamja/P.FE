@@ -15,6 +15,13 @@ public class GUIManager : SingletonMono<GUIManager>
     [SerializeField] private Canvas m_canvas_root_screen = null;
     [SerializeField] private Canvas m_canvas_root_hud    = null;
 
+    [SerializeField]
+    private Transform m_gui_pool_root = null;
+
+
+
+    private Dictionary<string, Queue<GUIPage>> m_gui_pools        = new();
+
 
 
     Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
@@ -104,7 +111,7 @@ public class GUIManager : SingletonMono<GUIManager>
              switch(_param.GUIType)
             {
                 case EnumGUIType.Screen:
-                case EnumGUIType.Popup:
+                // case EnumGUIType.Popup:
                 _ui_root = m_canvas_root_screen.transform;
                 break;
 
@@ -113,24 +120,32 @@ public class GUIManager : SingletonMono<GUIManager>
                 break;
             }
 
-            // 취소 토큰 처리.
-            
-            var gui_object = await AssetManager.Instance.InstantiateAsync(_param.GUIName, _ui_root, _cancel_token);
-            if (gui_object == null)
-            {
-                Debug.LogError($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+            // 풀에서 가져올수 있는지 체크.
+            GameObject gui_object = null;
+            GUIPage    gui_page   = AcquireFromPool(_param.GUIName);
 
-                throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+
+            if (gui_page == null)
+            {
+                gui_object = await AssetManager.Instance.InstantiateAsync(_param.GUIName, _ui_root, _cancel_token);
+
+                if (gui_object == null)
+                {
+                    Debug.LogError($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+
+                    throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+                }
+
+                // GUIPage 컴포넌트 체크.
+                if (gui_object.TryGetComponent<GUIPage>(out gui_page) == false)
+                {
+                    Debug.LogError($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
+                    GameObject.Destroy(gui_object);
+
+                    throw new Exception($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
+                }            
             }
 
-            // GUIPage 컴포넌트 체크.
-            if (gui_object.TryGetComponent<GUIPage>(out var gui_page) == false)
-            {
-                Debug.LogError($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
-                GameObject.Destroy(gui_object);
-
-                throw new Exception($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
-            }
 
             // 취소 시 gui_object 제거.
             if (_cancel_token.IsCancellationRequested)
@@ -140,6 +155,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
                 _cancel_token.ThrowIfCancellationRequested();
             }
+            
 
 
             // 활성화된 UI 목록에 추가.
@@ -254,8 +270,38 @@ public class GUIManager : SingletonMono<GUIManager>
         return GetInputFocusGUI() > 0;
     }
 
+    GUIPage AcquireFromPool(string _gui_name)
+    {
+        if (m_gui_pools.TryGetValue(_gui_name, out var pool) && pool.Count > 0)
+        {
+            return pool.Dequeue();
+        }
+
+        return null;
+    }
 
 
+
+    void ReturnToPool(GUIPage _gui_object)
+    {
+        if (_gui_object == null)
+            return;
+
+        if (!m_gui_pools.TryGetValue(_gui_object.GUIName, out var pool))
+        {
+            pool = new Queue<GUIPage>();
+            m_gui_pools.Add(_gui_object.GUIName, pool);
+        }
+
+        pool.Enqueue(_gui_object);
+
+        // 풀 루트 밑으로 옮기기
+        _gui_object.gameObject.SetActive(false);
+        _gui_object.transform.SetParent(m_gui_pool_root);
+        _gui_object.transform.localPosition = Vector3.zero;
+        _gui_object.transform.localRotation = Quaternion.identity;
+        _gui_object.transform.localScale    = Vector3.one;        
+    }
 
 
 

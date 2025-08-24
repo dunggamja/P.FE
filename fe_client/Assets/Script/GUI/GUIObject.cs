@@ -12,7 +12,7 @@ public enum EnumGUIType
 
     //
     Screen,  // 전체 화면에 표시되는 UI
-    Popup,   // 팝업 형태의 UI
+    // Popup,   // 팝업 형태의 UI
     HUD,     // 월드 스페이스에 표시되는 UI
 }
 
