@@ -69,8 +69,7 @@ namespace Battle
 
             public void Reset()
             {
-
-                Debug.LogWarning($"TurnData.Reset() {m_id}");
+                // m_turn_type          = EnumCombatTurn.None;
                 m_id                 = 0;
                 m_turn_value         = 0;
                 m_turn_count         = 0;
@@ -171,7 +170,7 @@ namespace Battle
             if (_param == null)
                 return;
 
-            OnRelease();
+            ClearData();
 
             var attacker = _param.Attacker;
             var defender = _param.Defender;
@@ -295,9 +294,14 @@ namespace Battle
 
         protected override void OnRelease()
         {
+            ClearData();
+        }
+
+        void ClearData()
+        {
             CombatTurn = EnumCombatTurn.None;
             AttackerData.Reset();
-            DefenderData.Reset();
+            DefenderData.Reset(); 
         }
 
 

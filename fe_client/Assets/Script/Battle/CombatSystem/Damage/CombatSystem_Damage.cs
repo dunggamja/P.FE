@@ -87,9 +87,7 @@ namespace Battle
         }
 
         protected override void OnEnter(ICombatSystemParam _param)
-        {
-            OnRelease();
-
+        {            
             //var dealer = GetDealer(_param);
             //var target = GetTarget(_param);
 
@@ -105,6 +103,8 @@ namespace Battle
         {
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
+            if (dealer == null || target == null)
+                return true;
 
             
             // 무기 상성에 따른 명중률 보정은 일단 제거.

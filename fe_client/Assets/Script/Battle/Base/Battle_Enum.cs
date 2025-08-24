@@ -146,6 +146,11 @@ namespace Battle
         // IsMoving,
     }
 
+    public enum EnumCombatBlackBoard
+    {
+        None = 0,
+    }
+
     public enum EnumBattleBlackBoard
     {
         None = 0,
