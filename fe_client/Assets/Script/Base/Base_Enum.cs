@@ -9,6 +9,8 @@ public enum EnumSystem
     None,
     CombatSystem_Turn,                // (전투씬), 공/방 턴  관리
     CombatSystem_Damage,              // (전투씬), 데미지 관리
+    CombatSystem_Visual,              // (전투씬), 연출 관리.
+    CombatSystem_PostProcess,         // (전투씬), 전투 결과 후처리. (HUD 갱신, 유닛 제거 등)
     // CombatSystem_Effect,              // (전투씬), 데미지 처리
      
     BattleSystem_Turn,                // (전투필드),  턴   진행    

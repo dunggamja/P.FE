@@ -60,6 +60,9 @@ public class InputHandler_Grid_Select : InputHandler
     {
         var input_result = ObjectPool<InputParam_Result>.Acquire();
 
+        // 명령이 가능한지 확인.
+        OnUpdate_Verify_CommandEntity();
+
         // 입력의 결과값을 생성.
         OnUpdate_Input_Compute(Context.InputParamQueue, ref input_result);
 
@@ -109,6 +112,27 @@ public class InputHandler_Grid_Select : InputHandler
     {
         // 타일 커서 생성
         CreateTileSelectVFX();
+    }
+
+    void OnUpdate_Verify_CommandEntity()
+    {
+        if (CommandEntityID <= 0)
+            return;
+
+        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+        if (entity == null)
+        {
+            CommandEntityID = 0;
+            return;
+        }
+
+        var faction           = entity.GetFaction();
+        var commander_type    = BattleSystemManager.Instance.GetFactionCommanderType(faction);
+        var is_enable_command = entity.HasCommandEnable() && commander_type == EnumCommanderType.Player;
+        if (is_enable_command == false)
+        {
+            CommandEntityID = 0;
+        }
     }
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
@@ -175,6 +199,7 @@ public class InputHandler_Grid_Select : InputHandler
         }
         else if (_result.IsForward)
         {
+            // 옵션 버튼임. (적 공격 범위 표시 등)
             OnUpdate_Input_Process_Forward();
         }
         else if (_result.MoveDirection.changed)
@@ -201,6 +226,7 @@ public class InputHandler_Grid_Select : InputHandler
 
         if (CommandEntityID > 0)
         {
+            // 조작중인 캐릭터가 있을 경우.
             var entity = EntityManager.Instance.GetEntity(CommandEntityID);
             if (entity != null && entity.Cell == SelectCursor)
             {
@@ -209,7 +235,7 @@ public class InputHandler_Grid_Select : InputHandler
             }
             else
             {
-                // TODO: 이동이라도 시켜줄까?
+                // TODO: 즉시 이동이라도 시켜주면 되려나.?
             }
         }
         else
@@ -230,7 +256,12 @@ public class InputHandler_Grid_Select : InputHandler
     {
         if (CommandEntityID > 0)
         {
-           Process_Cancel_CommandEntity();
+            // 조작중인 캐릭터가 있을 경우.
+            Process_Cancel_CommandEntity();
+        }
+        else
+        {
+            // 조작중인 캐릭터가 없을 경우.
         }
     }
 
@@ -393,11 +424,12 @@ public class InputHandler_Grid_Select : InputHandler
         bool is_enable_command = entity.HasCommandEnable() && commander_type == EnumCommanderType.Player;
         if  (is_enable_command)
         {
+            // 명령을 내릴 유닛 선택.
             SetCommandEntity(_entity_id);
         }
         else
         {
-            // TODO: 상태창 열기. or 공격범위 표시.
+            // TODO: 공격범위 표시할 유닛에 등록.
         }
     }
 

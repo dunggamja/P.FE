@@ -21,10 +21,9 @@ namespace Battle
         public bool IsFinished => State == EnumState.Finished;
 
 
-        // public CombatSystem_Effect EffectSystem => GetSystem(EnumSystem.CombatSystem_Effect) as CombatSystem_Effect;
-        // public CombatSystem_Damage DamageSystem => GetSystem(EnumSystem.CombatSystem_Damage) as CombatSystem_Damage;
-        // public CombatSystem_Turn   TurnSystem   => GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
-
+        private bool                m_is_combat_logic_finished = false;
+        private bool                m_is_post_process_finished = false;
+        private List<Combat_DamageResult> m_list_damage_result              = new List<Combat_DamageResult>();
 
 
         protected override void Init()
@@ -32,12 +31,16 @@ namespace Battle
             base.Init();
 
             // 현재는 파엠을 의식하고 1대1 전투를 상정하고 만들어져 있음.
-            // TODO: 파엠이 아닌 글룸헤이븐식 전투로 바꿀수도 있음.
-            //       
+           
 
-            var turn_sytem   = new CombatSystem_Turn();   m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
-            var damage_sytem = new CombatSystem_Damage(); m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+            var turn_sytem         = new CombatSystem_Turn();        
+            var damage_sytem       = new CombatSystem_Damage();      
+            var post_process_sytem = new CombatSystem_PostProcess(); 
             // var effect_sytem = new CombatSystem_Effect(); m_repository.Add((int)effect_sytem.SystemType, effect_sytem);
+
+            m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
+            m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+            m_repository.Add((int)post_process_sytem.SystemType, post_process_sytem);
 
             foreach (var e in m_repository.Values)
                 e.Init();
@@ -61,25 +64,17 @@ namespace Battle
 
         void OnEnter()
         {
+            m_is_combat_logic_finished = false;
+            m_is_post_process_finished = false;
+            m_list_damage_result.Clear();
         }
 
         bool OnUpdate()
         {
-            // 공격자/방어자 턴 셋팅
-            if (UpdateSystem(EnumSystem.CombatSystem_Turn, Param) == EnumState.Finished)
-            {
-                // 공격자/방어자 턴 셋팅 실패하면 바로 종료 처리.
-                return true;
-            }
+            OnUpdate_Combat_Logic();
+            OnUpdate_PostProcess();
 
-            // 데미지 
-            UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
-
-            // 죽음 체크
-            if (Param.IsPlan == false && Check_Dead())
-                return true;            
-
-            return false;
+            return m_is_combat_logic_finished && m_is_post_process_finished;
         }
 
 
@@ -140,25 +135,78 @@ namespace Battle
             return GetSystemState(_system_type) == EnumState.Finished;
         }
 
+
+        public void AddCombatDamageResult(Combat_DamageResult _damage)
+        {
+            m_list_damage_result.Add(_damage);
+        }
+
+        public List<Combat_DamageResult> GetCombatDamageResult()
+        {
+            return m_list_damage_result;
+        }
+
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
         public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
 
 
+
         bool Check_Dead()
         {
+            if (Param == null)
+                return false;
 
-            var attacker_hp = Param.Attacker
-                            .StatusManager
-                            .Status
-                            .GetPoint(EnumUnitPoint.HP);//, Param.IsPlan);
+            if (Param.Attacker == null || Param.Defender == null)
+                return false;
 
-            var defender_hp = Param.Defender
-                            .StatusManager
-                            .Status
-                            .GetPoint(EnumUnitPoint.HP);//, Param.IsPlan);
+            // 공격자/방어자 둘 중 하나라도 죽었으면 죽음 체크 완료.
+            return (Param.Attacker.IsDead || Param.Defender.IsDead);
+        }
 
-            return (attacker_hp <= 0 || defender_hp <= 0);
+
+        void OnUpdate_Combat_Logic()
+        {
+            if (m_is_combat_logic_finished)
+                return;
+
+
+            // 공격자/방어자 턴 순서 계산.
+            if (UpdateSystem(EnumSystem.CombatSystem_Turn, Param) == EnumState.Finished)
+            {
+                // 전투로직 종료 
+                m_is_combat_logic_finished = true;
+                return;
+            }
+
+            // 공격/방어 데미지 처리
+            UpdateSystem(EnumSystem.CombatSystem_Damage, Param);
+
+            // 실제 전투일때. 처리하는 로직.
+            if (Param.IsPlan == false)
+            {
+                // 죽음 체크
+                if (Check_Dead())
+                {
+                    // 전투 로직 종료.
+                    m_is_combat_logic_finished = true;
+                    return;
+                }
+            }            
+        }
+
+        void OnUpdate_PostProcess()
+        {
+            if (m_is_combat_logic_finished == false)
+                return;
+
+            if (m_is_post_process_finished)
+                return;
+
+            if (UpdateSystem(EnumSystem.CombatSystem_PostProcess, Param) == EnumState.Finished)
+            {
+                m_is_post_process_finished = true;
+            }
         }
     }
 }

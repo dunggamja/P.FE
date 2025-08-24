@@ -33,6 +33,30 @@ namespace Battle
         }
     }
 
+
+    public class Battle_Scene_ChangeEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public bool   IsEnter { get; private set; } = false;
+
+        public void Release()
+        {
+            var temp = this;
+            ObjectPool<Battle_Scene_ChangeEvent>.Return(ref temp);
+        }
+
+        public void Reset()
+        {
+            IsEnter = false;
+        }
+
+        public Battle_Scene_ChangeEvent Set(bool _is_enter)
+        {
+            IsEnter = _is_enter;
+            return this;
+        }
+    }
+
     // public class Battle_AI_Command_DecisionEvent : IEventParam
     // {
     //     // AI 명령 결정 이벤트.

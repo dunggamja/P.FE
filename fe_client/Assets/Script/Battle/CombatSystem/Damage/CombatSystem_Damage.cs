@@ -5,48 +5,76 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class CombatSystem_Damage : CombatSystem
-    {
-        const int   ADVANTAGE_HIT               = 20;
-        const float CRITICAL_DAMAGE_MULTIPLIER  = 2f;
-        const float EFFECTIVE_DAMAGE_MULTIPLIER = 1.5f;
 
-        public enum EnumDamageType
+        public struct Combat_DamageResult
         {
+            public Int64  AttackerID         { get; private set; }
+            public Int64  TargetID           { get; private set; }
+            public Int64  WeaponID           { get; private set; }
 
+            public int    Result_HP_Attacker { get; private set; }
+            public int    Result_HP_Target   { get; private set; }
+            
+
+
+            public bool   WeaponEffectiveness { get; private set; }
+            public bool   Result_Hit          { get; private set; }
+            public bool   Result_Critical     { get; private set; }
+            public bool   Result_Guard        { get; private set; }
+
+            public float  Result_HitRate      { get; private set; }
+            public float  Result_CriticalRate { get; private set; }
+            public float  Result_GuardRate    { get; private set; }
+            public int    Result_Damage       { get; private set; }   
+
+            public int    Result_HitRate_Percent      => Math.Clamp((int)(Result_HitRate * 100), 0, 100);
+            public int    Result_CriticalRate_Percent => Math.Clamp((int)(Result_CriticalRate * 100), 0, 100);
+            public int    Result_GuardRate_Percent    => Math.Clamp((int)(Result_GuardRate * 100), 0, 100);
+
+            public static Combat_DamageResult Create(
+                Int64 _attacker_id,
+                Int64 _target_id,
+                Int64 _weapon_id,
+                int   _result_hp_attacker,
+                int   _result_hp_target,
+                bool  _weapon_effectiveness, 
+                bool  _result_hit,
+                bool  _result_critical, 
+                bool  _result_guard, 
+                float _result_hit_rate, 
+                float _result_critical_rate,
+                float _result_guard_rate, 
+                int   _result_damage)
+            {
+                return new Combat_DamageResult
+                {
+                    AttackerID          = _attacker_id,
+                    TargetID            = _target_id,
+                    WeaponID            = _weapon_id,
+                    Result_HP_Attacker  = _result_hp_attacker,
+                    Result_HP_Target    = _result_hp_target,
+                    WeaponEffectiveness = _weapon_effectiveness,
+                    Result_Hit          = _result_hit,
+                    Result_Critical     = _result_critical,
+                    Result_Guard        = _result_guard,
+                    Result_HitRate      = _result_hit_rate,
+                    Result_CriticalRate = _result_critical_rate,
+                    Result_GuardRate    = _result_guard_rate,
+                    Result_Damage       = _result_damage,
+                };
+            }
         }
 
 
-        // // 요건 사용 안 할 거 같은...?
-        // public enum EnumSkillTiming
-        // {
-        //     None,
-
-        //     Attack_Start,
-        //     Attack_Complete,
-
-        //     Modify_Advantage,
-        //     Modify_Hit,
-        //     Modify_Critical,
-        //     Modify_Damage,
-        //     Modify_ApplyDamage,
-        // }
 
 
-        // public EnumAdvantageState WeaponAdvantage     { get; private set; }
-        
-        public bool   WeaponEffectiveness { get; private set; }
 
-        public bool   Result_Hit          { get; private set; }
-        public bool   Result_Critical     { get; private set; }
-        public bool   Result_Guard        { get; private set; }
-
-        public float  Result_HitRate      { get; private set; }
-        public float  Result_CriticalRate { get; private set; }
-        public float  Result_GuardRate    { get; private set; }
-        public int    Result_Damage       { get; private set; }        
-
-
+    public partial class CombatSystem_Damage : CombatSystem
+    {
+        // const int   ADVANTAGE_HIT               = 20;
+        const float CRITICAL_DAMAGE_MULTIPLIER  = 2f;
+        const float EFFECTIVE_DAMAGE_MULTIPLIER = 1.5f;
+       
         public CombatSystem_Damage() : base(EnumSystem.CombatSystem_Damage)
         { }
 
@@ -58,18 +86,6 @@ namespace Battle
 
         public override void Release()
         {
-            // WeaponAdvantage     = EnumAdvantageState.None;
-            WeaponEffectiveness = false;
-
-
-            Result_Hit          = false;
-            Result_Critical     = false;
-            Result_Guard        = false;
-            
-            Result_HitRate      = 0f;
-            Result_CriticalRate = 0f;
-            Result_GuardRate    = 0f;
-            Result_Damage       = 0;
         }
 
         protected override void OnEnter(ICombatSystemParam _param)
@@ -96,12 +112,18 @@ namespace Battle
             // 무기 상성에 따른 명중률 보정은 일단 제거.
             // WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
             // 무기 특효에 대한 값 셋팅.
-            WeaponEffectiveness  = Calculate_WeaponEffectiveness(_param);
+            bool WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
+
+            bool  Result_Hit          = false;
+            bool  Result_Critical     = false;
+            bool  Result_Guard        = false;
+            int   Result_Damage       = 0;
 
             // 명중 / 필살 / 데미지 계산.
-            Result_HitRate       = Calculate_HitRate(_param);
-            Result_CriticalRate  = Calculate_CriticalRate(_param);
-            Result_GuardRate     = Calculate_GuardRate(_param);
+            float Result_HitRate       = Calculate_HitRate(_param);
+            float Result_CriticalRate  = Calculate_CriticalRate(_param);
+            float Result_GuardRate     = Calculate_GuardRate(_param);
+          
 
             if (_param.IsPlan)
             {
@@ -128,9 +150,7 @@ namespace Battle
                 Result_Damage = (int)(Result_Damage * CRITICAL_DAMAGE_MULTIPLIER);
 
             // TODO: HEAL.
-
-
-            //, _param.IsPlan);
+            // //, _param.IsPlan);
 
             if (Result_Hit)
             {
@@ -138,13 +158,25 @@ namespace Battle
                 target.ApplyDamage(Result_Damage);
             }
 
-            // // 로그 적용.
-            // _param.PushLog(new CombatLog(
-            //     CombatLog.EnumLogType.Damage,
-            //         dealer.ID,
-            //         target.ID,
-            //         Result_Damage));
 
+            CombatSystemManager.Instance.AddCombatDamageResult(
+                Combat_DamageResult.Create
+                (
+                    dealer.ID,
+                    target.ID,
+                    dealer.StatusManager.Weapon.ItemID,
+                    dealer.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
+                    target.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
+                    WeaponEffectiveness,
+                    Result_Hit,
+                    Result_Critical,
+                    Result_Guard,
+                    Result_HitRate,
+                    Result_CriticalRate,
+                    Result_GuardRate,
+                    Result_Damage
+                )
+            );
             // 1 Tick에 완료 처리.
             return true;
         }

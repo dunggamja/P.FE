@@ -8,7 +8,8 @@ using UnityEngine.UI;
 
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
-    typeof(GUI_Menu_SelectEvent)
+    typeof(GUI_Menu_SelectEvent),
+    typeof(Battle_Scene_ChangeEvent)
     )]
 public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 {
@@ -144,6 +145,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
             case GUI_Menu_SelectEvent menu_select_event:
                 OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
+                break;
+
+            case Battle_Scene_ChangeEvent:
+                GUIManager.Instance.CloseUI(ID);
                 break;
         }
     }

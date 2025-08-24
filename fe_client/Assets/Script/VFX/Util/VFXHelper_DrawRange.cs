@@ -11,8 +11,22 @@ namespace Battle.MoveRange
     MoveRange   = 1 << 0,    // 이동 거리
     AttackRange = 1 << 1,  // 무기 범위
   }
+
+  // 범위를 그리는 타입이, 유닛1개 뿐 아니라 다양한 경우가 앞으로 있을 것 같아서, 
+  // 추상화 해두었다.
+  public interface IDrawRangeData
+  {
+    public int DrawFlag { get; }
+    
+    public HashSet<(int x, int y)> List_Move   { get; }
+    public HashSet<(int x, int y)> List_Weapon { get; }
+    
+  }
   
-  public class AttackRangeVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
+  public class AttackRangeVisitor : 
+      PathAlgorithm.IFloodFillVisitor, 
+      IPoolObject, 
+      IDrawRangeData
   {
     public int                DrawFlag     { get; set; } = 0;
     public TerrainMap         TerrainMap   { get; set; }

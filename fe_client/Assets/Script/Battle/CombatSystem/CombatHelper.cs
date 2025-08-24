@@ -87,38 +87,31 @@ namespace Battle
                 result.Defender.HP_Before = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
 
-                CombatSystemManager.Instance.Setup(combat_param);
-
-
-                
-                while (CombatSystemManager.Instance.IsFinished == false)
+                // 전투 예측 실행.
                 {
-                    CombatSystemManager.Instance.Update();
+                    CombatSystemManager.Instance.Setup(combat_param);
+                    while (CombatSystemManager.Instance.IsFinished == false)
+                        CombatSystemManager.Instance.Update();
+                }
 
-                    var turn_system   = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Turn) as CombatSystem_Turn;
-                    var damage_system = CombatSystemManager.Instance.GetSystem(EnumSystem.CombatSystem_Damage) as CombatSystem_Damage;
+                // 전투 예측 결과 정리.
+                var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
+                foreach (var damage in damage_result)
+                {
+                    // 공격자 / 방어자 구분.
+                    var is_attacker  = (damage.AttackerID == attacker.ID);
 
-                    // 
-                    if (turn_system == null || damage_system == null || turn_system.IsFinished)
-                        break;
-                   
-                    
-                    var is_attacker_turn = turn_system.CombatTurn == CombatSystem_Turn.EnumCombatTurn.Attacker;
-                    var damage           = (damage_system != null) ? damage_system.Result_Damage       : 0;
-                    var critical_rate    = (damage_system != null) ? (int)(damage_system.Result_CriticalRate * 100) : 0;
-                    var hit_rate         = (damage_system != null) ? (int)(damage_system.Result_HitRate * 100) : 0;
-
-                    critical_rate = Math.Clamp(critical_rate, 0, 100);
-                    hit_rate      = Math.Clamp(hit_rate, 0, 100);
+                    // 유닛 정보 셋팅. (데미지, 명중률, 치명타율)
+                    var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
+                    unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
+                    unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
+                    unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
 
 
-                    // 전투중 Dmg, Cri, Hit 셋팅. 
-                    var unit_info          = (is_attacker_turn) ? result.Attacker : result.Defender;
-                    unit_info.Damage       = Math.Max(damage, unit_info.Damage);
-                    unit_info.CriticalRate = Math.Max(critical_rate, unit_info.CriticalRate);
-                    unit_info.HitRate      = Math.Max(hit_rate, unit_info.HitRate);
+                    // 데미지 셋팅.
+                    var damage_value = damage.Result_Damage;
 
-                    result.Actions.Add(Result_Action.Create(is_attacker_turn, damage));
+                    result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
                 }
 
                 // 전투 후 HP 셋팅
