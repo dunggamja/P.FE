@@ -16,6 +16,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     public class PARAM : GUIOpenParam
     {
         public Int64 EntityID { get; private set; }
+        public override EnumGUIType GUIType => EnumGUIType.Screen;
 
         private PARAM(Int64 _entity_id) 
         : base(
@@ -23,10 +24,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             GUIPage.GenerateID(),    
 
             // asset path
-            "gui/page/unit_command", 
-
-            // gui type
-            EnumGUIType.Screen,      
+            "gui/page/unit_command",   
 
             // is input enabled
             true                     

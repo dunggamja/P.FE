@@ -28,6 +28,7 @@ public enum EnumGUIState
 
 public abstract class GUIBase : MonoBehaviour//, IUIProperty
 {
+   
     // private Vector3    m_init_local_position = Vector3.zero;
     // private Quaternion m_init_local_rotation = Quaternion.identity;
     // private Vector3    m_init_local_scale = Vector3.one;

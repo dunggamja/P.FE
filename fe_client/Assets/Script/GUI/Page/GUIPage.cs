@@ -7,18 +7,17 @@ using DG.Tweening;
 using UnityEngine;
 
 
-public class GUIOpenParam
+public abstract class GUIOpenParam
 {
-    public Int64             ID             { get; private set; }
-    public string            GUIName        { get; private set; }
-    public EnumGUIType       GUIType        { get; private set; }
-    public bool              IsInputEnabled { get; private set; } = false;
+    public Int64                ID             { get; private set; }
+    public string               GUIName        { get; private set; }
+    public abstract EnumGUIType GUIType        { get; }
+    public bool                 IsInputEnabled { get; private set; } = false;
 
-    protected GUIOpenParam(Int64 _id, string _gui_name, EnumGUIType _gui_type, bool _is_input_enabled = false)
+    protected GUIOpenParam(Int64 _id, string _gui_name, bool _is_input_enabled = false)
     {
         ID             = _id;
         GUIName        = _gui_name;
-        GUIType        = _gui_type;
         IsInputEnabled = _is_input_enabled;
     }
 }

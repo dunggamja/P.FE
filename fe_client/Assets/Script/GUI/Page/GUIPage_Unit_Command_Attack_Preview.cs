@@ -17,6 +17,8 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     public class PARAM : GUIOpenParam
     {
+        public override EnumGUIType GUIType => EnumGUIType.Screen;
+
         public Int64 EntityID { get; private set; }
         public Int64 TargetID { get; private set; }
         public Int64 WeaponID { get; private set; }
@@ -28,9 +30,6 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
             // asset path
             "gui/page/unit_command_attack_preview", 
-
-            // gui type
-            EnumGUIType.Screen,
 
             // is input enabled
             true
