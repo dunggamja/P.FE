@@ -136,12 +136,12 @@ namespace Battle
         {
         }
 
-        public override void Init()
+        protected override void OnInit()
         {
             
         }
 
-        public override void Release()
+        protected override void OnRelease()
         {
             // m_list_command.Clear();
         }

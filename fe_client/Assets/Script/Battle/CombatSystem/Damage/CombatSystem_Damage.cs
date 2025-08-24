@@ -78,19 +78,17 @@ namespace Battle
         public CombatSystem_Damage() : base(EnumSystem.CombatSystem_Damage)
         { }
 
-        public override void Init()
+        protected override void OnInit()
         {
-            
         }
 
-
-        public override void Release()
+        protected override void OnRelease()
         {
         }
 
         protected override void OnEnter(ICombatSystemParam _param)
         {
-            Release();
+            OnRelease();
 
             //var dealer = GetDealer(_param);
             //var target = GetTarget(_param);

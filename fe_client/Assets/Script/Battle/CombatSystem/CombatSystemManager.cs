@@ -21,8 +21,8 @@ namespace Battle
         public bool IsFinished => State == EnumState.Finished;
 
 
-        private bool                m_is_combat_logic_finished = false;
-        private bool                m_is_post_process_finished = false;
+        private bool                      m_is_combat_logic_finished = false;
+        private bool                      m_is_post_process_finished = false;
         private List<Combat_DamageResult> m_list_damage_result              = new List<Combat_DamageResult>();
 
 
@@ -52,6 +52,12 @@ namespace Battle
             Param = null;
             State = EnumState.None;
 
+
+            m_is_combat_logic_finished = false;
+            m_is_post_process_finished = false;
+            m_list_damage_result.Clear();
+
+
             foreach (var e in m_repository.Values)
                 e.Release();
         }
@@ -60,6 +66,9 @@ namespace Battle
         {
             Param = _param;
             State = EnumState.None;
+
+            foreach (var e in m_repository.Values)
+                e.Init();
         }
 
         void OnEnter()
@@ -67,6 +76,7 @@ namespace Battle
             m_is_combat_logic_finished = false;
             m_is_post_process_finished = false;
             m_list_damage_result.Clear();
+            // Debug.LogWarning("list_damage_result.Clear()");
         }
 
         bool OnUpdate()
@@ -81,6 +91,8 @@ namespace Battle
         void OnExit()
         {
             //Debug.Log("Battle Finished");
+            foreach (var e in m_repository.Values)
+                e.Release();
         }
 
 

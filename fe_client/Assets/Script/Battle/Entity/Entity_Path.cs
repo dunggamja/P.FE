@@ -51,7 +51,7 @@ namespace Battle
                 // 베이스 포지션 변경.
                 PathBasePosition = Cell;
 
-                Debug.Log($"PathBasePosition: {ID}, {Cell}");
+                // Debug.Log($"PathBasePosition: {ID}, {Cell}");
             }
 
             var position_cur  = Cell.CellToPosition();

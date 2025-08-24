@@ -27,16 +27,14 @@ namespace Battle
         public BattleSystem_Turn() : base(EnumSystem.BattleSystem_Turn)
         { }
 
-        public override void Init()
+        protected override void OnInit()
         {
-            Release();
+            Clear();
         }
 
-        public override void Release()
+        protected override void OnRelease()
         {
-            m_turn_update_count = 0;
-            Array.Clear(m_queue_turn, 0, m_queue_turn.Length);
-            Array.Clear(m_queue_faction, 0, m_queue_faction.Length);
+            Clear();
         }
 
         protected override void OnEnter(IBattleSystemParam _param)
@@ -173,6 +171,13 @@ namespace Battle
                     .Set(EnumSituationType.BattleSystem_Turn_Changed, false)
                     );
             }    
+        }
+
+        void Clear()
+        {
+            m_turn_update_count = 0;
+            Array.Clear(m_queue_turn, 0, m_queue_turn.Length);
+            Array.Clear(m_queue_faction, 0, m_queue_faction.Length);
         }
 
 

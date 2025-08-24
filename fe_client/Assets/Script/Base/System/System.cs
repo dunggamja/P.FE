@@ -20,8 +20,20 @@ public abstract class System<T> : ISystem where T : ISystemParam
         SystemType = _system_type;
     }
 
-    public    abstract void Init();
-    public    abstract void Release();
+    public    void Init()
+    {
+        State = EnumState.None;
+        OnInit();
+    }
+    public    void Release()
+    {
+        State = EnumState.None;  
+        OnRelease();
+    }
+
+    protected abstract void OnInit();
+    protected abstract void OnRelease();
+
     protected abstract void OnEnter(T _param);
     protected abstract bool OnUpdate(T _param);
     protected abstract void OnExit(T _param);
