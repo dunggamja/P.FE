@@ -152,6 +152,10 @@ namespace Battle
                     // 삭제.~
                     foreach(var id in list_delete)
                     {
+                        var entity = GetEntity(id);
+                        if (entity != null)
+                            entity.Reset();
+
                         Remove(id);
 
                         // 오브젝트도 삭제 처리.

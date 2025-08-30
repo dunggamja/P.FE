@@ -13,6 +13,7 @@ public abstract class GUIOpenParam
     public string               GUIName        { get; private set; }
     public abstract EnumGUIType GUIType        { get; }
     public bool                 IsInputEnabled { get; private set; } = false;
+    public virtual bool         IsMultipleOpen => GUIType == EnumGUIType.HUD;
 
     protected GUIOpenParam(Int64 _id, string _gui_name, bool _is_input_enabled = false)
     {
@@ -31,6 +32,8 @@ public abstract class GUIPage : GUIBase
     public string       GUIName        { get; private set; } = "";
     public bool         IsInputEnabled { get; private set; } = false;
     public bool         IsInputFocused { get; private set; } = false;
+    public bool         IsMultipleOpen { get; private set; } = false;
+
 
     public bool         IsInputFocusing
     {
@@ -39,6 +42,7 @@ public abstract class GUIPage : GUIBase
             return ID == GUIManager.Instance.GetInputFocusGUI();
         }
     }
+
 
     static private Int64 s_id_generator = 0;
     static public Int64 GenerateID()
@@ -94,6 +98,7 @@ public abstract class GUIPage : GUIBase
         // GUIType        = _param.GUIType;
         GUIName        = _param.GUIName;
         IsInputEnabled = _param.IsInputEnabled;
+        IsMultipleOpen = _param.IsMultipleOpen;
         
 
         IsInitialized = true;

@@ -145,6 +145,33 @@ namespace Battle
     }
 
 
+    public class Battle_Entity_HP_UpdateEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+        public Int64 EntityID { get; private set; } = 0;
+        public int  HP        { get; private set; } = 0;
+
+        public void Release()
+        {
+            var temp = this;
+            ObjectPool<Battle_Entity_HP_UpdateEvent>.Return(ref temp);
+        }
+
+        public void Reset()
+        {
+            EntityID = 0;
+            HP       = 0;
+        }
+
+        public Battle_Entity_HP_UpdateEvent Set(Int64 _entity_id, int _hp)
+        {
+            EntityID = _entity_id;
+            HP       = _hp;
+            return this;
+        }
+    }
+
 
 }
 

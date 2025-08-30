@@ -196,10 +196,10 @@ namespace Battle
             }
 
             // 월드 오브젝트 생성.
-            WorldObjectManager.Instance.CreateObject(attacker.ID).Forget();
-            WorldObjectManager.Instance.CreateObject(defender.ID).Forget();
-            WorldObjectManager.Instance.CreateObject(attacker_2.ID).Forget();
-            WorldObjectManager.Instance.CreateObject(defender_2.ID).Forget();
+            attacker.CreateProcess();
+            attacker_2.CreateProcess();
+            defender.CreateProcess();
+            defender_2.CreateProcess();
         }
 
 

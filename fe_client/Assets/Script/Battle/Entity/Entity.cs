@@ -31,7 +31,8 @@ namespace Battle
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
 
-        
+
+        private Dictionary<EnumEntityHUD, Int64> m_hud_list = new();
 
 
 
@@ -84,9 +85,32 @@ namespace Battle
 
         public void Reset()
         {
+            // 좌표 점유 해제. 
+            UpdateCellOccupied(false);
+
+            // HUD 삭제.
+            DeleteHUD();
+
+
             EventDispatchManager.Instance.DetachReceiver(this);
         }
 
+        public void CreateHUD()
+        {
+            CreateHUD_HP();
+        }
+
+        public void DeleteHUD()
+        {
+            // HUD 삭제.
+            foreach((var _, var hud_id) in m_hud_list)
+            {
+                GUIManager.Instance.CloseUI(hud_id);
+            }
+
+            // 
+            m_hud_list.Clear();
+        }
 
 
         public int GetFaction()

@@ -33,6 +33,10 @@ public class GUIManager : SingletonMono<GUIManager>
     AsyncOperationTracker              m_async_operation_tracker = new();
 
 
+    public Camera HUDCamera 
+        => (m_canvas_root_hud) ? m_canvas_root_hud.worldCamera : null;
+
+
 
        
     private void Awake()
@@ -57,7 +61,15 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public Int64 OpenUI(GUIOpenParam _param)
     {   
-        if (IsOpenUI(_param.GUIName))
+        if (_param == null)
+        {
+            Debug.LogError("GUIManager: OpenUI param is null.");
+            return 0;
+        }
+
+
+
+        if (_param.IsMultipleOpen == false && IsOpenUI(_param.GUIName))
         {
             Debug.Log($"GUIManager: OpenUI failed. {_param.GUIName} is already open.");
             return 0;
@@ -223,7 +235,7 @@ public class GUIManager : SingletonMono<GUIManager>
         if (_gui_id == 0)
             return;
 
-        var focus_gui = GetGUIPage(_gui_id);
+        var focus_gui = GetGUI(_gui_id);
         if (focus_gui != null)
         {
             var is_focus = (GetInputFocusGUI() == _gui_id);
@@ -240,7 +252,7 @@ public class GUIManager : SingletonMono<GUIManager>
         }
     }
 
-    public GUIPage GetGUIPage(Int64 _id)
+    public GUIPage GetGUI(Int64 _id)
     {
         if (m_active_gui.TryGetValue(_id, out var gui_object))
             return gui_object;
