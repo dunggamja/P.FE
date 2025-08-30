@@ -220,6 +220,8 @@ namespace Battle
                         {
                             // 공격 명령을 내린다.
                             PushCommand_Attack(entity_object.ID, entity_object.BlackBoard.Score_Attack);
+
+                            // Debug.LogWarning($"PushCommand_Attack: {entity_object.ID}");
                         }
                         break;
 
@@ -227,6 +229,8 @@ namespace Battle
                         {
                             // 행동 완료 명령을 내린다.
                             PushCommand_Done(entity_object.ID);
+
+                            // Debug.LogWarning($"PushCommand_Done: {entity_object.ID}");
                         }
                         break;
                     }

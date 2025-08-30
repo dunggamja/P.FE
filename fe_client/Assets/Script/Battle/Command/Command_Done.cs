@@ -32,6 +32,13 @@ namespace Battle
             {
                 // Owner.SetCommandDone(EnumCommandFlag.Done);
                 Owner.SetAllCommandDone();
+
+                // ÁÂÇ¥ Ã³¸®.
+                Owner.UpdateCellPosition(
+                    Owner.Cell,
+                    _visual_immediatly: true,
+                    _is_plan: false
+                );
             }
         }
 

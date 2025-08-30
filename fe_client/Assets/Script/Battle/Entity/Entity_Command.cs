@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Battle
@@ -71,19 +72,18 @@ namespace Battle
 
         public void SetCommandDone(EnumCommandFlag _command_flag)
         {
-            // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
-            // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+            BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
 
-            // foreach (var e in )
-                BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+            // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
+            // Debug.Log($"SetCommandEnable: {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
         public void SetCommandEnable(EnumCommandFlag _command_flag)
         {
-            // if (_set_flag) BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag,   (byte)_command_flag);
-            // else           BlackBoard.ResetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
-            // foreach (var e in _command_flag)
-                BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+            BlackBoard.SetBitFlag(EnumEntityBlackBoard.CommandFlag, (byte)_command_flag);
+
+            // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
+            // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
 
@@ -91,12 +91,18 @@ namespace Battle
         {            
             // 모든 비트플래그를 1로 해준다.
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, -1);
+
+            // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
+            // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
         public void SetAllCommandDone()
         {
             // 모든 비트플래그를 0으로 해준다.
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
+
+            // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
+            // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
 

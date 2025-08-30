@@ -271,7 +271,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     );
             }
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Wait:                
+            case MENU_ITEM_DATA.EnumMenuType.Wait:   
+            {
+                // 대기 명령
+                BattleSystemManager.Instance.PushCommand(
+                    new Command_Done(m_entity_id)
+                    );
+
+                // GUI 닫기.
+                GUIManager.Instance.CloseUI(ID);
+            }             
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Skill:
                 break;
