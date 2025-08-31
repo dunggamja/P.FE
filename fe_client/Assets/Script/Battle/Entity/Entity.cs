@@ -10,8 +10,7 @@ namespace Battle
      IFaction,
      ICommand,
      IEventReceiver,
-     IPathOwner,
-     IAIUpdaterOwner
+     IPathOwner
     {
         public Int64                ID              { get; private set; }
 
@@ -31,8 +30,8 @@ namespace Battle
         public (int x, int y)       PathBasePosition { get; private set; } 
         public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
 
-        public AIManager            AIManager       { get; private set; }
-        public EnumAIType           AIType          { get; private set; } = EnumAIType.None;
+        public AIManager            AIManager       { get; }
+        public AIDataManager        AIDataManager   { get; }
         public CommandManager       CommandManager  { get; private set; }    
 
 
@@ -50,7 +49,6 @@ namespace Battle
             Cell_Prev         = Cell;
             Cell_Occupied     = false;
             PathBasePosition  = Cell;
-            AIType            = EnumAIType.None;
                  
             BlackBoard        = new EntityBlackBoard();
             Skill             = new BattleSkill();
@@ -59,6 +57,7 @@ namespace Battle
             PathVehicle       = new PathVehicle_Basic();
             Inventory         = new Inventory();
             AIManager         = new AIManager();            
+            AIDataManager     = new AIDataManager();
             CommandManager    = new CommandManager();
 
         }
@@ -74,7 +73,8 @@ namespace Battle
         public void Initialize()
         {
             Inventory.Initialize(this);
-            AIManager.Initialize(this);
+            AIDataManager.Initialize(this);
+            AIManager.Initialize(AIDataManager);
             CommandManager.Initialize(this);
 
             EventDispatchManager.Instance.AttachReceiver(this);   
@@ -122,7 +122,7 @@ namespace Battle
 
         public void SetAIType(EnumAIType _ai_type)
         {
-            AIType = _ai_type;
+            AIDataManager.SetAIType(_ai_type);
         }
 
         public Entity_IO Save()

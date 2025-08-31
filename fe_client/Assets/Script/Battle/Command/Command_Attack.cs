@@ -8,9 +8,9 @@ namespace Battle
     public class Target_Command_Attack : ITarget
     {
 
-        public Int64              MainTargetID { get; private set; } = 0;
+        public Int64       MainTargetID { get; private set; } = 0;
 
-        public IEnumerable<Int64> OtherTargetIDs => null;
+        public List<Int64> AllTargetIDList => null;
 
 
 

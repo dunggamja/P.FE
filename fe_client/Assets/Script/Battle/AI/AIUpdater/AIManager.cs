@@ -13,14 +13,14 @@ namespace Battle
         
         private Dictionary<EnumAIPriority, List<IAIUpdater>> m_repository = new();
 
-        public bool Initialize(IAIUpdaterOwner _owner)
+        public bool Initialize(IAIDataManager _owner)
         {
             SetAIType(_owner.AIType);
             return true;
         }
 
 
-        public void Update(EnumAIPriority _priority, IAIUpdaterOwner _param)
+        public void Update(EnumAIPriority _priority, IAIDataManager _param)
         {
             if (_param == null)
                 return;

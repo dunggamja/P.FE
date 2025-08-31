@@ -106,7 +106,7 @@ namespace Battle
         }
 
 
-        public void Update(IAIUpdaterOwner _param)
+        public void Update(IAIDataManager _param)
         {
             if (_param == null)
                 return;

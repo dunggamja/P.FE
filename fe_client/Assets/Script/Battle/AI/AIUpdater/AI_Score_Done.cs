@@ -12,7 +12,7 @@ namespace Battle
         //       정말 할만한 행동이 없으면 Done 을 하도록 해둔 것임.
         const float DONE_SCORE = 0.001f;
 
-        public void Update(IAIUpdaterOwner _owner)
+        public void Update(IAIDataManager _owner)
         {
             if (_owner == null)
                 return;

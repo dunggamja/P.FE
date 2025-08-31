@@ -48,8 +48,13 @@ public interface IOwner
 /// </summary>
 public interface ITarget
 {
-    Int64              MainTargetID   { get; }
-    IEnumerable<Int64> OtherTargetIDs { get; }
+    Int64       MainTargetID   { get; }
+    List<Int64> AllTargetIDList { get; }
+}
+
+public interface ITargetPosition
+{
+    List<(int x, int y)> Positions { get; }
 }
 
 
@@ -90,14 +95,29 @@ public interface IEffect
 
 public interface IAIUpdater 
 {
-    void Update(IAIUpdaterOwner _owner);
+    void Update(IAIDataManager _owner);
 }
 
-public interface IAIUpdaterOwner
+public interface IAIData
+{
+    // TODO: 각 행동마다 필요로 하는 데이터가 다를수 있을 거 같군...
+    //       일단 그 부분은 나중에 생각해보자. 
+
+    // 목표 타겟 / 위치가 지정되어 있을 경우
+    public ITarget         Targets        { get; } // 목표 타겟
+    public ITargetPosition TargetPosition { get; } // 목표 위치
+
+
+    public (int x, int y)  BasePosition { get; }   // 거점
+}
+
+public interface IAIDataManager
 {
     Int64             ID     { get; }
 
     Battle.EnumAIType AIType { get; }
+
+    IAIData           AIData { get; }
 }
 
 
