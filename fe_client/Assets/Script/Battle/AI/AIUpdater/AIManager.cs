@@ -5,20 +5,11 @@ using UnityEngine;
 
 namespace Battle
 {
-    // public enum EnumAIType
-    // {
-    //     None,
-        
-    //     Attack, // 공격
-    //     Done,   // 행동완료
-    // }
 
     public class AIManager
     {
         // TODO: sensor system에 대해서 정리 필요함...;;;;;
         // 현재는 그냥 공용함수로 돌리는 거랑 차이가 없는 상태임....
-
-
 
         public bool Initialize(IOwner _owner)
         {

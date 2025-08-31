@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    // 공격 타겟을 찾아봅시다.
+    // 사정거리 내의 공격 타겟을 찾는 로직.
     public class AI_Attack : IAIUpdater
     {
         public class ScoreResult : IPoolObject
@@ -16,23 +16,19 @@ namespace Battle
                 
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
                 DamageRate_Taken, // 내가 받는 데미지 양
-
-                HitRate,
-                DodgeRate,
-                
-                MoveCost,     // 이동 거리
-
+                HitRate,          // 명중률
+                DodgeRate,        // 회피율                
+                MoveCost,         // 이동 거리
                 MAX
             }
 
-            // 각 항목별 점수., 하드코딩해두고...
-            // 시나리오에 따라서 제어가 필요할 경우에는 어떻게 제어할 지 고민해보자 . 
+            // 각 항목별 점수... 일단 하드 코딩해둡니다. 기준도 뭐도 없이 그냥 정한 수치...
             static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
             {            
-                { EnumScoreType.DamageRate_Dealt, 5f   },
-                { EnumScoreType.DamageRate_Taken, 0.5f },
-                { EnumScoreType.HitRate,          0.2f },
-                { EnumScoreType.DodgeRate,        0.2f },
+                { EnumScoreType.DamageRate_Dealt, 1f   },
+                { EnumScoreType.DamageRate_Taken, 0.7f },
+                { EnumScoreType.HitRate,          0.7f },
+                { EnumScoreType.DodgeRate,        0.4f },
                 { EnumScoreType.MoveCost,         0.1f }
 
             };
@@ -81,14 +77,6 @@ namespace Battle
                 Array.Copy(_o.m_score, m_score, m_score.Length);
             }
 
-
-            // public float GetScore(EnumScoreType _score_type)
-            // {
-            //     var index = (int)_score_type;
-            //     if (index < 0 || score.Length <= index)
-            //         return 0f;
-            //     return score[index];
-            // }
 
             public float CalculateScore()
             {
@@ -143,7 +131,7 @@ namespace Battle
 
             // 결과값은 가장 높은 것 1개만 저장해봅세...
             owner_blackboard.Score_Attack.Reset();
-            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, 0f);            
+            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, 0f);           
 
 
             // 행동들이 가능한 상태인지 체크.
@@ -154,7 +142,6 @@ namespace Battle
             if (is_attackable)
             {
                 // 소유 중인 무기들로 테스트 전투를 돌립니다.
-
                 var list_weapon = ListPool<Item>.Acquire();
                 owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
 
