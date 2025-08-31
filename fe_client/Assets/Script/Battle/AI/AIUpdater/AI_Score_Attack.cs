@@ -125,11 +125,6 @@ namespace Battle
             var equiped_weapon_id = owner_weapon.ItemID;
 
 
-            // 결과값은 가장 높은 것 1개만 저장해봅세...
-            owner_blackboard.Score_Attack.Reset();
-            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, 0f);           
-
-
             // 행동들이 가능한 상태인지 체크.
             var is_moveable   = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);

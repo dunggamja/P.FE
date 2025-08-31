@@ -84,7 +84,7 @@ public class GUIPage_Turn_Start : GUIPage, IEventReceiver
 
 
           // 2초 뒤 자동 닫기.
-          Invoke(nameof(CloseSelf), 2.0f);
+          Invoke(nameof(CloseSelf), 1.0f);
     }
 
     protected override void OnClose()

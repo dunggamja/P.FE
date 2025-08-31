@@ -15,6 +15,9 @@ namespace Battle
 
         public void ResetAIScore()
         {
+            BlackBoard.Score_Attack.Reset();
+
+
             for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
             {
                 var ai_type = (EnumEntityBlackBoard)i;
