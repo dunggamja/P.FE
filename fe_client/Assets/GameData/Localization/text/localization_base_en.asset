@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: Empty
     m_Metadata:
       m_Items: []
+  - m_Id: 40406579353214976
+    m_Localized: Turn {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

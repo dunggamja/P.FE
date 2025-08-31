@@ -30,7 +30,10 @@ public class HUD_Unit_HP : HUDBase, IEventReceiver
             "gui/hud/unit_hp",
 
             // is input enabled
-            false)
+            false,
+
+            // is multiple open
+            true)
         {
             EntityID = _entity_id;
             HP       = _hp;

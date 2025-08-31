@@ -27,7 +27,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             "gui/page/unit_command_attack", 
 
             // is input enabled
-            true
+            true,
+
+            // is multiple open
+            false
             )             
         { 
             EntityID = _entity_id;  

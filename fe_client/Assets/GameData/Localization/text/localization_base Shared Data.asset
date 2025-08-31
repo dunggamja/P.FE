@@ -27,6 +27,10 @@ MonoBehaviour:
     m_Key: ui_empty
     m_Metadata:
       m_Items: []
+  - m_Id: 40406579353214976
+    m_Key: ui_turn_number
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

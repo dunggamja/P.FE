@@ -27,7 +27,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             "gui/page/unit_command",   
 
             // is input enabled
-            true                     
+            true,
+
+            // is multiple open
+            false                     
             )      
         { 
             EntityID = _entity_id;  
@@ -76,6 +79,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     key   = "ui_menu_wait";
                     break;
             }
+
+            // ui_turn_number: Turn {0}
 
             return LocalizeKey.Create(table, key);
         }

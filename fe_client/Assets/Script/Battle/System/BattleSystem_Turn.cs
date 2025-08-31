@@ -170,6 +170,9 @@ namespace Battle
                     .Acquire()
                     .Set(EnumSituationType.BattleSystem_Turn_Changed, false)
                     );
+
+                // 턴 변경시 GUI 열기.
+                GUIManager.Instance.OpenUI(GUIPage_Turn_Start.PARAM.Create(Turn_Cur));
             }    
         }
 
