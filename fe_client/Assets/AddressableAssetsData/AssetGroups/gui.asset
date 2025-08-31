@@ -15,27 +15,6 @@ MonoBehaviour:
   m_GroupName: gui
   m_GUID: 172150e33854c4dc0a7c133d7e87cdc1
   m_SerializeEntries:
-  - m_GUID: 3c66a1cdabd6444d3abb4664a180bc40
-    m_Address: gui/hud/unit_hp
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - gui
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 664feed5b51ed416090497382a5016f7
-    m_Address: gui/page/unit_command
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - gui
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ffbbc8f3f3bd4f9a99f7427f011981b
-    m_Address: gui/page/unit_command_attack
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - gui
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aab75ba42822940eb9dcb5ae58504d24
     m_Address: gui/element/grid_item_menu_text
     m_ReadOnly: 0
@@ -43,15 +22,8 @@ MonoBehaviour:
     - gui
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b786c4f91916a4afe9496bdbbf9396fc
-    m_Address: gui/page/unit_command_attack_preview
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - gui
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d5ea3b2ab6c524a0fa028a926caf2805
-    m_Address: gui/element/grid_item_attack_preview_sequence
+  - m_GUID: e51f84c91ddca40c59c1a1f6c7474956
+    m_Address: gui/page/turn_start
     m_ReadOnly: 0
     m_SerializedLabels:
     - gui
