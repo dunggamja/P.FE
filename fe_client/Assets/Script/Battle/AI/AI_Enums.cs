@@ -73,4 +73,34 @@ namespace Battle
         // 이탈 포인트로 향한다.이동처에서 공격 가능한 상대가 있으면 공격해 온다.
         Leave_Aggressive,
     }
+
+
+    public enum EnumAIMoveType
+    {
+      Advance,    // 진군 - 타겟을 향해 이동.
+      Intercept,  // 요격 - 거점에서 대기.
+
+      Fixed,      // 그 자리를 움직이지 않는다
+      Route,      // 일정한 루트를 이동.
+      Random,     // 랜덤으로 이동.   
+      Leave,      // 이탈 포인트로 이동.
+    }
+
+    public enum EnumAIAggressiveType
+    {
+      Aggressive, // 적을 공격 - 공격 O. 회피 X. 최대한 접근
+      Alert,      // 적을 경계 - 공격 O. 회피 O. 공격 먼저 체크. 안 되면 회피. 회피시 거리 유지.
+      Evassive,   // 적을 피함 - 공격 X. 회피 O. 최대한 도망.
+
+      Aiming,     // 대상을 노림. - 대상 외 공격 X 
+      Guard,      // 대상을 지킴. - 공격 O. 대상과 거리 유지. 대상과 가까운 적 공격. 대상과 적 사이로 이동.
+
+    }
+
+    public enum EnumAITargetType
+    {
+        None,
+        Target,
+        Position,
+    }
 }
