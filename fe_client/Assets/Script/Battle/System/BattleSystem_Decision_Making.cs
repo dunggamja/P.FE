@@ -76,23 +76,32 @@ namespace Battle
     class Entity_Score_Calculator
     {
         public int                 Faction      { get; private set; } = 0;
-        public EnumCommandPriority Priority     { get; private set; } = EnumCommandPriority.None;
+        public EnumAIPriority      Priority     { get; private set; } = EnumAIPriority.Primary;
+
+
 
         public float               BestScore    { get; private set; } = 0;
         public Int64               BestEntityID { get; private set; } = 0;
 
+        // public EnumCommandPriority Priority     { get; private set; } = EnumCommandPriority.None;
         public void Reset()
         {
             Faction      = 0;
-            Priority     = EnumCommandPriority.None;
+            Priority     = EnumAIPriority.Primary;
+
             BestScore    = 0;
             BestEntityID = 0;
+            // Priority     = EnumCommandPriority.None;
         }
 
-        public void SetData(int _faction, EnumCommandPriority _priority)
+        public void SetFaction(int _faction)
         {
-            Faction      = _faction;
-            Priority     = _priority;
+            Faction = _faction;
+        }
+
+        public void SetPriority(EnumAIPriority _priority)
+        {
+            Priority = _priority;
         }
 
 
@@ -106,12 +115,16 @@ namespace Battle
             if (Faction != _entity.GetFaction())
                 return;
 
-            // 행동 우선순위가 다름.
-            if (Priority != _entity.GetCommandPriority())
+            // 행동이 불가능한 상태.
+            if (_entity.IsEnableCommandProgress() == false)
                 return;
+
+            // // 행동 우선순위가 다름.
+            // if (Priority != _entity.GetCommandPriority())
+            //     return;
             
             // TODO: 나중에 필요한 Sensor만 업데이트 할 수 있게 정리 필요.
-            _entity.AIManager.Update(_entity);
+            _entity.AIManager.Update(Priority, _entity);
 
             var entity_score = _entity.GetAIScoreMax().score;
             if (entity_score > BestScore)
@@ -126,7 +139,7 @@ namespace Battle
     public partial class BattleSystem_Decision_Making : BattleSystem//, IEventReceiver
     {
         // 의사결정 우선순위.
-        static readonly EnumCommandPriority[] s_list_priority = (EnumCommandPriority[])Enum.GetValues(typeof(EnumCommandPriority));
+        // static readonly EnumCommandPriority[] s_list_priority = (EnumCommandPriority[])Enum.GetValues(typeof(EnumCommandPriority));
 
 
         // 행동 점수 계산기.
@@ -163,14 +176,8 @@ namespace Battle
                 // AI의 의사결정 프로세스.
                 case EnumCommanderType.None:
                 case EnumCommanderType.AI:
-                {
-                    // 의사결정 우선순위 순으로 처리.
-                    for (int i = s_list_priority.Length - 1; i >= 0; --i)
-                    {
-                        // 의사결정에 성공했으면 더 이상 처리하지 않는다.
-                        if (OnUpdate_DecisionMaking_AI(faction, s_list_priority[i]) == true)
-                            break;
-                    }
+                {   
+                    OnUpdate_DecisionMaking_AI(faction);
                 }
                 break;
 
@@ -192,57 +199,69 @@ namespace Battle
         }
 
 
-        bool OnUpdate_DecisionMaking_AI(int _faction, EnumCommandPriority _priority)
+        bool OnUpdate_DecisionMaking_AI(int _faction)//, EnumCommandPriority _priority)
         {
-
-            // 우선순위가 없으면 무시.
-            if (_priority == EnumCommandPriority.None)
-                return false;
-
-
             m_entity_score_calculator.Reset();
-            m_entity_score_calculator.SetData(_faction, _priority);
 
-            // 모든 엔티티에 대해서 명령 점수를 계산한다.
-            EntityManager.Instance.Loop(m_entity_score_calculator.OnUpdate_Entity_Command_Score);
+            // 진영 셋팅.
+            m_entity_score_calculator.SetFaction(_faction);
 
 
-            if (0 < m_entity_score_calculator.BestEntityID)
-            { 
-                // 
-                var entity_id      = m_entity_score_calculator.BestEntityID;
-                var entity_object  = EntityManager.Instance.GetEntity(entity_id);
-                if (entity_object != null)
+            // 모든 엔티티의 AIScore를 리셋.
+            EntityManager.Instance.Loop(e => e.ResetAIScore());
+
+
+            // 우선순위가 높은 AI타입부터 처리합니다.
+            for(int i = (int)EnumAIPriority.Begin; i < (int)EnumAIPriority.Max; ++i)
+            {
+                var priority = (EnumAIPriority)i;
+
+                // 검사할 AI 우선순위 타입.
+                m_entity_score_calculator.SetPriority(priority);
+
+                // 모든 엔티티에 대해서 명령 점수를 계산한다.
+                EntityManager.Instance.Loop(m_entity_score_calculator.OnUpdate_Entity_Command_Score);
+
+
+                // 가장 점수가 높게 나온 유닛에게 명령을 내린다.
+                if (0 < m_entity_score_calculator.BestEntityID)
                 {
-                    switch(entity_object.GetAIScoreMax()._type)
-                    {
-                        case EnumEntityBlackBoard.AIScore_Attack:
-                        {
-                            // 공격 명령을 내린다.
-                            PushCommand_Attack(entity_object.ID, entity_object.BlackBoard.Score_Attack);
-
-                            // Debug.LogWarning($"PushCommand_Attack: {entity_object.ID}");
-                        }
-                        break;
-
-                        case EnumEntityBlackBoard.AIScore_Done:
-                        {
-                            // 행동 완료 명령을 내린다.
-                            PushCommand_Done(entity_object.ID);
-
-                            // Debug.LogWarning($"PushCommand_Done: {entity_object.ID}");
-                        }
-                        break;
-                    }
-
-                    return true;
+                    if (PushCommand(m_entity_score_calculator.BestEntityID))
+                        return true;                    
                 }
-            }
+            }           
+            
 
             return false;
         }
 
-        void PushCommand_Attack(Int64 _entity_id, AI_Attack.ScoreResult _damage_score)
+        bool PushCommand(Int64 _entity_id)
+        {
+            var entity_object  = EntityManager.Instance.GetEntity(_entity_id);
+            if (entity_object == null)
+                return false;
+
+            switch(entity_object.GetAIScoreMax()._type)
+            {
+                case EnumEntityBlackBoard.AIScore_Attack:
+                {
+                    // 공격 명령을 내린다.
+                    PushCommand_Attack(entity_object.ID, entity_object.BlackBoard.Score_Attack);
+                }
+                break;
+
+                case EnumEntityBlackBoard.AIScore_Done:
+                {
+                    // 행동 완료 명령을 내린다.
+                    PushCommand_Done(entity_object.ID);
+                }
+                break;
+            }
+
+            return true;
+        }
+
+        void PushCommand_Attack(Int64 _entity_id, AI_Score_Attack.Result _damage_score)
         {
            
             // 공격 명령 셋팅.               

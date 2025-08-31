@@ -90,8 +90,17 @@ public interface IEffect
 
 public interface IAIUpdater 
 {
-    void Update(IOwner _owner);
+    void Update(IAIUpdaterOwner _owner);
 }
+
+public interface IAIUpdaterOwner
+{
+    Int64             ID     { get; }
+
+    Battle.EnumAIType AIType { get; }
+}
+
+
 
 // public interface IPathNodeManager
 // {

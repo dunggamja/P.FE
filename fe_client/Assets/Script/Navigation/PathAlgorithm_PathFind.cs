@@ -31,7 +31,8 @@ public static partial class PathAlgorithm
         public IPathOwner              Visitor      { get; set; }  
         public (int x, int y)          Position     { get; set; }  
         public int                     MoveDistance { get; set; }
-        public bool                    Occupancy    => false;
+        public bool                    VisitOnlyEmptyCell => false;
+        public bool                    StopVisit          => false;
 
         public HashSet<(int x, int y)> VisitList { get; set; } = new();
 
@@ -40,9 +41,10 @@ public static partial class PathAlgorithm
             VisitList.Clear();
         }
 
-        public void Visit(int x, int y)
+        public bool Visit(int x, int y)
         {
             VisitList.Add((x, y));
+            return true;
         }
 
         public bool IsInMoveRange(int _x, int _y)
@@ -92,11 +94,20 @@ public static partial class PathAlgorithm
             return false;
 
         
-        // 시작 지점. 목표지점에 이동이 가능한지 체크합니다.
-        if (!Verify_Movecost(_terrain_map, _path_owner, _to_cell, _is_occupancy:true).result)
-                return false;                    
+        // 목표지점이 이동가능하고 비어있는지 체크합니다. 
+        if (!Verify_Movecost(
+            _terrain_map,
+            _path_owner,
+            _to_cell,
+            _check_ignore_zoc:false).result)
+            return false;                    
 
-        if (!Verify_Movecost(_terrain_map, _path_owner, _from_cell, _is_occupancy:false).result)
+        // 시작지점은 왜 체크했는지 기억안나지만 이동가능한 지형인지만 체크합시다.
+        if (!Verify_Movecost(
+            _terrain_map, 
+            _path_owner, 
+            _from_cell, 
+            _check_ignore_zoc:true).result)
             return false;
 
         
@@ -181,7 +192,12 @@ public static partial class PathAlgorithm
                         continue;
 
                     // 이동 가능한 지 체크.
-                    (var moveable, var move_cost) = Verify_Movecost(_terrain_map, _path_owner, (x, y), _is_occupancy:false);
+                    (var moveable, var move_cost) = Verify_Movecost(
+                        _terrain_map, 
+                        _path_owner, 
+                        (x, y), 
+                        _check_ignore_zoc:true);
+
                     if (!moveable)
                         continue;
 
@@ -288,14 +304,15 @@ public static partial class PathAlgorithm
 
     public interface IFloodFillVisitor
     {
-        TerrainMap     TerrainMap   { get; }
-        IPathOwner     Visitor      { get; }
-        (int x, int y) Position     { get; }
-        int            MoveDistance { get; }
-        bool           Occupancy    { get; }
+        TerrainMap     TerrainMap         { get; }
+        IPathOwner     Visitor            { get; }
+        (int x, int y) Position           { get; }
+        int            MoveDistance       { get; }
+        bool           VisitOnlyEmptyCell { get; }
+        bool           StopVisit          { get; }
 
 
-        void Visit(int x, int y);
+        bool Visit(int x, int y);
     }
 
     static public void FloodFill(IFloodFillVisitor _visitor)
@@ -312,6 +329,10 @@ public static partial class PathAlgorithm
 
         while(open_list_move.Count > 0)
         {
+            // 중단 조건 체크.
+            if (_visitor.StopVisit)
+                break;
+
             // movecost가 가장 적은 아이템을 가져옵니다.            
             var item = (x:0, y:0, move_cost:int.MaxValue);
             
@@ -321,13 +342,23 @@ public static partial class PathAlgorithm
                     item = e;
             }            
 
-            // 내가 점유가능한 위치에서만 Visit을 실행합니다. 
+            // #1. 시작 위치인지 체크. 
             var is_start_position = (item.x == _visitor.Position.x && item.y == _visitor.Position.y);
-            var verify_move_cost  = Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (item.x, item.y), _visitor.Occupancy).result;
 
+            // #2. 이동 가능한 지역인지 체크.
+            var verify_move_cost  = Verify_Movecost(
+                _visitor.TerrainMap,
+                _visitor.Visitor, 
+                (item.x, item.y), 
+                _check_ignore_zoc: _visitor.VisitOnlyEmptyCell == false)
+                .result;
+
+            // 시작 위치 or 이동 가능한 지역일 경우 Visit을 실행.
             var call_visit = (is_start_position) || verify_move_cost;                                    
             if (call_visit)
-                _visitor.Visit(item.x, item.y);
+            {
+                _visitor.Visit(item.x, item.y);                
+            }
 
             // open/close list 셋팅
             open_list_move.Remove(item);
@@ -353,7 +384,13 @@ public static partial class PathAlgorithm
                     // Debug.Log($"FloodFill, x:{x}, y:{y}");
 
                     // 통과 가능한 지역인지 체크합니다.
-                    (var moveable, var move_cost) = Verify_Movecost(_visitor.TerrainMap, _visitor.Visitor, (x, y), _is_occupancy:false);
+                    (var moveable, var move_cost) = Verify_Movecost(
+                        _visitor.TerrainMap,
+                        _visitor.Visitor, 
+                        (x, y), 
+                        _check_ignore_zoc:true);
+
+
                     if (!moveable)
                         continue;
 
@@ -379,7 +416,7 @@ public static partial class PathAlgorithm
         TerrainMap     _terrain_map, 
         IPathOwner     _path_owner, 
         (int x, int y) _cell,
-         bool          _is_occupancy)
+         bool          _check_ignore_zoc)
     {
         if (_terrain_map == null || _path_owner == null)
             return (false, 0);
@@ -387,9 +424,9 @@ public static partial class PathAlgorithm
         if (_terrain_map.IsInBound(_cell.x, _cell.y) == false)
             return (false, 0);  
   
-        // ZOC에 막히는지 체크합니다. (목표지점은 완전히 비어있어야 함.)
+        // ZOC 무시 함수 셋팅합니다.
         Func<int, bool> func_ignore_zoc = null;        
-        if (_is_occupancy == false)
+        if (_check_ignore_zoc)
             func_ignore_zoc = _path_owner.IsIgnoreZOC;
 
         if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, func_ignore_zoc))        

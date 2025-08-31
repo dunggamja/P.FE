@@ -86,7 +86,7 @@ namespace Battle
 
     public class EntityBlackBoard : BlackBoard<EnumEntityBlackBoard>
     {
-        public AI_Attack.ScoreResult Score_Attack { get; private set; } = new();
+        public AI_Score_Attack.Result Score_Attack { get; private set; } = new();
 
 
         public override void Reset()

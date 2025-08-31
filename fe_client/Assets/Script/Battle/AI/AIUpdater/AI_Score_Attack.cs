@@ -6,23 +6,21 @@ using UnityEngine;
 namespace Battle
 {
     // 사정거리 내의 공격 타겟을 찾는 로직.
-    public class AI_Attack : IAIUpdater
+    public class AI_Score_Attack : IAIUpdater
     {
-        public class ScoreResult : IPoolObject
+        public class Result : IPoolObject
         {
             public enum EnumScoreType
-            {
-                // Tactical,     // 전술적 타겟 TODO: 요것은 어떻게 제어할지 고민좀 해보자...
-                
+            {                
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
                 DamageRate_Taken, // 내가 받는 데미지 양
                 HitRate,          // 명중률
                 DodgeRate,        // 회피율                
-                MoveCost,         // 이동 거리
+                MoveCost,         // 이동 거리 (가까울수록 높은 점수)
                 MAX
             }
 
-            // 각 항목별 점수... 일단 하드 코딩해둡니다. 기준도 뭐도 없이 그냥 정한 수치...
+            // 각 항목별 점수. (기준도 뭐도 없이 그냥 정한 수치)
             static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
             {            
                 { EnumScoreType.DamageRate_Dealt, 1f   },
@@ -39,7 +37,7 @@ namespace Battle
 
             private float[]        m_score = new float[(int)EnumScoreType.MAX] ;
 
-            public ScoreResult Setup(Int64 _entity_id, Int64 _weapon_id)
+            public Result Setup(Int64 _entity_id, Int64 _weapon_id)
             {
                 TargetID = _entity_id;
                 WeaponID = _weapon_id;
@@ -69,7 +67,7 @@ namespace Battle
                 Position = (_x, _y);
             }
 
-            public void CopyFrom(ScoreResult _o)
+            public void CopyFrom(Result _o)
             {
                 TargetID = _o.TargetID;
                 WeaponID = _o.WeaponID;
@@ -107,15 +105,13 @@ namespace Battle
             }
         }
 
-        // public ScoreResult BestScore { get; private set; } = new();
 
-
-        public void Update(IOwner _owner)
+        public void Update(IAIUpdaterOwner _param)
         {
-            if (_owner == null)
+            if (_param == null)
                 return;
 
-            var owner_entity = EntityManager.Instance.GetEntity(_owner.ID);
+            var owner_entity = EntityManager.Instance.GetEntity(_param.ID);
             if (owner_entity == null)
                 return;
 
@@ -188,7 +184,7 @@ namespace Battle
                         // try
                         {
                             // 점수 계산.
-                            var current_score = ObjectPool<ScoreResult>.Acquire();
+                            var current_score = ObjectPool<Result>.Acquire();
                 
                             Score_Calculate(ref current_score, owner_entity, target_entity);
 
@@ -206,7 +202,7 @@ namespace Battle
                                 owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                             }
 
-                            ObjectPool<ScoreResult>.Return(ref current_score);
+                            ObjectPool<Result>.Return(ref current_score);
                         }
                     }
 
@@ -221,7 +217,7 @@ namespace Battle
         }
 
 
-        static void Score_Calculate(ref ScoreResult _score, Entity _owner, Entity _target)
+        static void Score_Calculate(ref Result _score, Entity _owner, Entity _target)
         {
             if (_owner == null || _target == null)
                 return;
@@ -253,17 +249,17 @@ namespace Battle
 
             
             // 데미지 점수 셋팅. 
-            _score.SetScore(ScoreResult.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
-            _score.SetScore(ScoreResult.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
+            _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
+            _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
 
             // 이동거리 점수 셋팅.
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
             var distance_max     = _owner.PathMoveRange;
-            _score.SetScore(ScoreResult.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
+            _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중 / 회피 점수 셋팅.
-            _score.SetScore(ScoreResult.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
-            _score.SetScore(ScoreResult.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
+            _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
+            _score.SetScore(Result.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
         }
 
@@ -274,7 +270,8 @@ namespace Battle
             public IPathOwner     Visitor        { get; set; }  
             public (int x, int y) Position       { get; set; }  
             public int            MoveDistance   { get; set; }   
-            public bool           Occupancy      => true;
+            public bool           VisitOnlyEmptyCell          => true;
+            public bool           StopVisit => false;
             
             public int            WeaponRangeMin { get; set; }
             public int            WeaponRangeMax { get; set; }
@@ -299,8 +296,10 @@ namespace Battle
                 VisitList.Clear();
             }
 
-            public void Visit(int _visit_x, int _visit_y)
+            public bool Visit(int _visit_x, int _visit_y)
             {
+                bool result = false;
+
                 for(int i = -WeaponRangeMax; i <= WeaponRangeMax; ++i)
                 {
                     for(int k = -WeaponRangeMax; k <= WeaponRangeMax; ++k)
@@ -329,9 +328,13 @@ namespace Battle
                         if (entity_id > 0)
                         {
                             CollectTargets.Add((entity_id, _visit_x, _visit_y));
+
+                            result = true;
                         }
                     }
                 }
+
+                return result;
             }
         }
 

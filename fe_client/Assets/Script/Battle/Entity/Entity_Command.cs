@@ -9,24 +9,28 @@ namespace Battle
 {
     public partial class Entity 
     {
+
+        const int AISCORE_INDEX_BEGIN = (int)EnumEntityBlackBoard.AIScore_Begin;
+        const int AISCORE_INDEX_END   = (int)EnumEntityBlackBoard.AIScore_Max;
+
+        public void ResetAIScore()
+        {
+            for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
+            {
+                var ai_type = (EnumEntityBlackBoard)i;
+                BlackBoard.SetBPValue(ai_type, 0f);
+            }
+        }
        
 
         public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
         {
-            // 검사할 AIScore 목록
-            Span<EnumEntityBlackBoard> list_ai_type = stackalloc EnumEntityBlackBoard[2] 
-            { 
-                EnumEntityBlackBoard.AIScore_Attack
-              , EnumEntityBlackBoard.AIScore_Done 
-            };
-
-
             var top_score_type = EnumEntityBlackBoard.None;
             var top_score      = 0f;
 
-            // 가장 높은 Score를 반환합니다.
-            foreach (var ai_type in list_ai_type)
+            for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
             {
+                var ai_type = (EnumEntityBlackBoard)i;
                 var score = BlackBoard.GetBPValueAsFloat(ai_type);
                 if (score > top_score)
                 {
@@ -134,17 +138,17 @@ namespace Battle
             return false;
         }
 
-        public EnumCommandPriority GetCommandPriority()
-        {
-            if (IsEnableCommandProgress() == false)
-                return EnumCommandPriority.None;
+        // public EnumCommandPriority GetCommandPriority()
+        // {
+        //     if (IsEnableCommandProgress() == false)
+        //         return EnumCommandPriority.None;
 
-            if (GetCommandProgressState() == EnumCommandProgressState.Progress)
-                return EnumCommandPriority.Critical;
+        //     if (GetCommandProgressState() == EnumCommandProgressState.Progress)
+        //         return EnumCommandPriority.Critical;
 
-            // TODO: 행동 우선순위...;
-            return EnumCommandPriority.Normal;
-        }
+        //     // TODO: 행동 우선순위...;
+        //     return EnumCommandPriority.Normal;
+        // }
         
 
 

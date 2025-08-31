@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class AI_Done : IAIUpdater
+    public class AI_Score_Done : IAIUpdater
     {
         // TODO: 0.001f는 그냥 임시로 적은 하드코딩 값.
         //       정말 할만한 행동이 없으면 Done 을 하도록 해둔 것임.
         const float DONE_SCORE = 0.001f;
 
-        public void Update(IOwner _owner)
+        public void Update(IAIUpdaterOwner _owner)
         {
             if (_owner == null)
                 return;

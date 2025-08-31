@@ -107,6 +107,13 @@ namespace Battle
             attacker_2.SetFaction(1);
             defender.SetFaction(2);
             defender_2.SetFaction(2);
+
+
+            // 2. AI 타입 셋팅.
+            attacker.SetAIType(EnumAIType.Attack);
+            attacker_2.SetAIType(EnumAIType.Attack);
+            defender.SetAIType(EnumAIType.Attack);
+            defender_2.SetAIType(EnumAIType.Attack);
             
             BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
             BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);

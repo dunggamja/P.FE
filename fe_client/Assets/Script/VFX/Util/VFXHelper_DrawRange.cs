@@ -33,7 +33,9 @@ namespace Battle.MoveRange
     public IPathOwner         Visitor      { get; set; }
     public (int x, int y)     Position     { get; set; }
     public int                MoveDistance { get; set; }
-    public bool               Occupancy    => true;
+    public bool               VisitOnlyEmptyCell     => true;
+    public bool               StopVisit => false;
+
     public Int64              VisitorID    { get; set; } = 0;
     public (int min, int max) WeaponRange  { get; set; } = (0, 0);
 
@@ -42,10 +44,11 @@ namespace Battle.MoveRange
 
 
 
-    public void Visit(int _visit_x, int _visit_y)
+    public bool Visit(int _visit_x, int _visit_y)
     {
-        List_Move.Add((_visit_x, _visit_y));
+        bool result = false;
 
+        List_Move.Add((_visit_x, _visit_y));
         
         var weapon_range_min = WeaponRange.min;
         var weapon_range_max = WeaponRange.max;
@@ -74,8 +77,12 @@ namespace Battle.MoveRange
                 }
 
                 List_Weapon.Add((weapon_x, weapon_y));
+
+                result = true;
             }
         }
+
+        return result;
     }
 
 

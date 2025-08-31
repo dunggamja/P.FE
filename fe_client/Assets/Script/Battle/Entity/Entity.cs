@@ -5,14 +5,21 @@ using UnityEngine;
 
 namespace Battle
 {
-    public partial class Entity : IOwner, IFaction, ICommand, IEventReceiver, IPathOwner
+    public partial class Entity : 
+     IOwner,
+     IFaction,
+     ICommand,
+     IEventReceiver,
+     IPathOwner,
+     IAIUpdaterOwner
     {
         public Int64                ID              { get; private set; }
 
         public (int x, int y)       Cell            { get; private set; }
         public (int x, int y)       Cell_Prev       { get; private set; }
         public bool                 Cell_Occupied   { get; private set; } = false;
-        // public ITarget              Target          { get; }
+        
+
         public EntityBlackBoard     BlackBoard      { get; }
         public BattleSkill          Skill           { get; } 
         public StatusManager        StatusManager   { get; } 
@@ -25,7 +32,7 @@ namespace Battle
         public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
 
         public AIManager            AIManager       { get; private set; }
-
+        public EnumAIType           AIType          { get; private set; } = EnumAIType.None;
         public CommandManager       CommandManager  { get; private set; }    
 
 
@@ -39,11 +46,11 @@ namespace Battle
         protected Entity(Int64 _id)
         {
             ID                = _id;
-            // Target            = null;
             Cell              = (0, 0);
             Cell_Prev         = Cell;
             Cell_Occupied     = false;
             PathBasePosition  = Cell;
+            AIType            = EnumAIType.None;
                  
             BlackBoard        = new EntityBlackBoard();
             Skill             = new BattleSkill();
@@ -51,15 +58,9 @@ namespace Battle
             PathNodeManager   = new PathNodeManager();
             PathVehicle       = new PathVehicle_Basic();
             Inventory         = new Inventory();
-            AIManager         = new AIManager();
+            AIManager         = new AIManager();            
             CommandManager    = new CommandManager();
 
-
-
-            // IsCommandAbort  = false;
-
-            // IsCommandDirty  = false;
-            // CommandManager = new CommandManager();
         }
 
         public static Entity Create(Int64 _id)
@@ -76,11 +77,7 @@ namespace Battle
             AIManager.Initialize(this);
             CommandManager.Initialize(this);
 
-            EventDispatchManager.Instance.AttachReceiver(this);
-
-
-            //PathNodeManager.Setup(CellPosition);
-            //PathVehicle.Setup(Cell.CellToPosition());            
+            EventDispatchManager.Instance.AttachReceiver(this);   
         }
 
         public void Reset()
@@ -123,10 +120,10 @@ namespace Battle
             BlackBoard.SetValue(EnumEntityBlackBoard.Faction, _faction);
         }
 
-        // public void SetCommandDirty(bool _is_dirty)
-        // {
-        //     IsCommandDirty = _is_dirty;
-        // }
+        public void SetAIType(EnumAIType _ai_type)
+        {
+            AIType = _ai_type;
+        }
 
         public Entity_IO Save()
         {
