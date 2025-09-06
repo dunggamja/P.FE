@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,9 +9,9 @@ namespace Battle
     public enum EnumAIPriority
     {
         Begin   = 0,
-        Primary = Begin,    // ¿ì¼±ÇØ¼­ Ã³¸®ÇÒ Çàµ¿.
-        Secondary,  // ¿ì¼±¼øÀ§°¡ ³·Àº Çàµ¿.
-        Others,     // ³ª¸ÓÁö.
+        Primary = Begin,    // ìš°ì„ í•´ì„œ ì²˜ë¦¬í•  í–‰ë™.
+        Secondary,  // ìš°ì„ ìˆœìœ„ê°€ ë‚®ì€ í–‰ë™.
+        Others,     // ë‚˜ë¨¸ì§€.
 
         Max,
 
@@ -22,78 +22,78 @@ namespace Battle
     {
         None,
 
-        // ±ÙÃ³¿¡ ÀÖ´Â ÀûÀ» ÇâÇØ ÀÌµ¿ÇØ, »çÁ¤°Å¸®¿¡ ÀâÀ¸¸é °ø°ÝÇØ ¿Â´Ù.
+        // ê·¼ì²˜ì— ìžˆëŠ” ì ì„ í–¥í•´ ì´ë™í•´, ì‚¬ì •ê±°ë¦¬ì— ìž¡ìœ¼ë©´ ê³µê²©í•´ ì˜¨ë‹¤.
         Attack,
 
-        // Æ¯Á¤ ¸ñÇ¥¸¦ ÇâÇØ ÀÌµ¿ÇØ, »çÁ¤°Å¸®¿¡ ÀâÀ¸¸é °ø°ÝÇØ ¿Â´Ù.¸ñÇ¥ ÀÌ¿Ü¿¡´Â °ø°ÝÇÏÁö ¾Ê´Â´Ù.
-        // ¸ñÇ¥·ÎÀÇ ÀÌµ¿ ·çÆ®¸¦ ¿ÏÀüÈ÷ ºÀ¼âÇØµµ ´Ù¸¥ Àû¿¡°Ô´Â °ø°ÝÇÏÁö ¾Ê´Â´Ù.? 
-        // ¸ñÇ¥°¡ ¸Ê»ó¿¡¼­ »ç¶óÁö¸é Åë»óÀûÀÎ Áø°Ý Å¸ÀÔÀÌ µÈ´Ù.
+        // íŠ¹ì • ëª©í‘œë¥¼ í–¥í•´ ì´ë™í•´, ì‚¬ì •ê±°ë¦¬ì— ìž¡ìœ¼ë©´ ê³µê²©í•´ ì˜¨ë‹¤.ëª©í‘œ ì´ì™¸ì—ëŠ” ê³µê²©í•˜ì§€ ì•ŠëŠ”ë‹¤.
+        // ëª©í‘œë¡œì˜ ì´ë™ ë£¨íŠ¸ë¥¼ ì™„ì „ížˆ ë´‰ì‡„í•´ë„ ë‹¤ë¥¸ ì ì—ê²ŒëŠ” ê³µê²©í•˜ì§€ ì•ŠëŠ”ë‹¤.? 
+        // ëª©í‘œê°€ ë§µìƒì—ì„œ ì‚¬ë¼ì§€ë©´ í†µìƒì ì¸ ì§„ê²© íƒ€ìž…ì´ ëœë‹¤.
         Attack_Target,
 
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý, ¾øÀ¸¸é Æ¯Á¤ ¸ñÇ¥¸¦ ÇâÇØ ÀÌµ¿.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©, ì—†ìœ¼ë©´ íŠ¹ì • ëª©í‘œë¥¼ í–¥í•´ ì´ë™.
         Attack_Move,
 
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý, ¾øÀ¸¸é ±× ÀÚ¸®¿¡¼­ ´ë±â.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©, ì—†ìœ¼ë©´ ê·¸ ìžë¦¬ì—ì„œ ëŒ€ê¸°.
         Intercept,
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý, ¾øÀ¸¸é °ÅÁ¡À¸·Î ÀÌµ¿.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©, ì—†ìœ¼ë©´ ê±°ì ìœ¼ë¡œ ì´ë™.
         Intercept_Base,
 
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý,¾ø´Â °æ¿ì¿¡´Â ÀûÀÇ »çÁ¤°Å¸®¿¡ ÀÖÀ¸¸é »çÁ¤°Å¸® ¹ÛÀ¸·Î µµ¸ÁÄ£´Ù, ¾È¿¡ ¾øÀ¸¸é ±× ÀÚ¸®¿¡¼­ ´ë±â.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©,ì—†ëŠ” ê²½ìš°ì—ëŠ” ì ì˜ ì‚¬ì •ê±°ë¦¬ì— ìžˆìœ¼ë©´ ì‚¬ì •ê±°ë¦¬ ë°–ìœ¼ë¡œ ë„ë§ì¹œë‹¤, ì•ˆì— ì—†ìœ¼ë©´ ê·¸ ìžë¦¬ì—ì„œ ëŒ€ê¸°.
         Alert,
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý,¾ø´Â °æ¿ì´Â ÀûÀÇ »çÁ¤°Å¸®¿¡ ÀÖÀ¸¸é »çÁ¤°Å¸® ¹ÛÀ¸·Î µµ¸ÁÄ¡°í, 
-        // ¾È µé¾î¿ÀÁö ¾ÊÀ¸¸é ÀûÀÇ °ø°Ý ¹üÀ§ ¾Æ½½¾Æ½½ÇÏ°Ô ¹Ù±ù±îÁö ´Ù°¡°£´Ù.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©,ì—†ëŠ” ê²½ìš°ëŠ” ì ì˜ ì‚¬ì •ê±°ë¦¬ì— ìžˆìœ¼ë©´ ì‚¬ì •ê±°ë¦¬ ë°–ìœ¼ë¡œ ë„ë§ì¹˜ê³ , 
+        // ì•ˆ ë“¤ì–´ì˜¤ì§€ ì•Šìœ¼ë©´ ì ì˜ ê³µê²© ë²”ìœ„ ì•„ìŠ¬ì•„ìŠ¬í•˜ê²Œ ë°”ê¹¥ê¹Œì§€ ë‹¤ê°€ê°„ë‹¤.
         Alert_Aggressive,
 
-        // ÀûÀÇ »çÁ¤°Å¸®¿¡ µé¾î°¡¸é »çÁ¤°Å¸® ¹ÛÀ¸·Î µµ¸ÁÄ¡°í, µé¾î°¡Áö ¾ÊÀ¸¸é ±× ÀÚ¸®¿¡¼­ ´ë±â. °ø°ÝÇØ ¿ÀÁö ¾Ê´Â´Ù.
+        // ì ì˜ ì‚¬ì •ê±°ë¦¬ì— ë“¤ì–´ê°€ë©´ ì‚¬ì •ê±°ë¦¬ ë°–ìœ¼ë¡œ ë„ë§ì¹˜ê³ , ë“¤ì–´ê°€ì§€ ì•Šìœ¼ë©´ ê·¸ ìžë¦¬ì—ì„œ ëŒ€ê¸°. ê³µê²©í•´ ì˜¤ì§€ ì•ŠëŠ”ë‹¤.
         Alert_Evasive,
 
-        // ·£´ýÀ¸·Î ÀÌµ¿.
+        // ëžœë¤ìœ¼ë¡œ ì´ë™.
         Wandering,
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý, ¾øÀ¸¸é ·£´ýÀ¸·Î ÀÌµ¿.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©, ì—†ìœ¼ë©´ ëžœë¤ìœ¼ë¡œ ì´ë™.
         Wandering_Aggressive,
 
-        // »çÁ¤°Å¸® ³»¿¡ °ø°Ý °¡´ÉÇÑ ÀûÀÌ ÀÖÀ¸¸é °ø°Ý, ¾øÀ¸¸é ÀÏÁ¤ÇÑ ·çÆ®¸¦ ÀÌµ¿.
+        // ì‚¬ì •ê±°ë¦¬ ë‚´ì— ê³µê²© ê°€ëŠ¥í•œ ì ì´ ìžˆìœ¼ë©´ ê³µê²©, ì—†ìœ¼ë©´ ì¼ì •í•œ ë£¨íŠ¸ë¥¼ ì´ë™.
         Patrol,
 
-        // ±× ÀÚ¸®¸¦ ¿òÁ÷ÀÌÁö ¾Ê´Â´Ù.±× ÀÚ¸®¿¡¼­ °ø°Ý °¡´ÉÇÏ¸é °ø°ÝÇÑ´Ù.ÀÎÁ¢ µî °ø°Ý °¡´ÉÇÏÁö ¾ÊÀ¸¸é µµ¹ßÀº ÇÒ ¼ö ¾ø´Ù.
+        // ê·¸ ìžë¦¬ë¥¼ ì›€ì§ì´ì§€ ì•ŠëŠ”ë‹¤.ê·¸ ìžë¦¬ì—ì„œ ê³µê²© ê°€ëŠ¥í•˜ë©´ ê³µê²©í•œë‹¤.ì¸ì ‘ ë“± ê³µê²© ê°€ëŠ¥í•˜ì§€ ì•Šìœ¼ë©´ ë„ë°œì€ í•  ìˆ˜ ì—†ë‹¤.
         Fixed,
 
-        // Æ¯Á¤ ¸ñÇ¥¸¦ ÇâÇØ ÀÌµ¿. °ø°ÝÇØ ¿ÀÁö ¾Ê´Â´Ù. , ±æÀ» Ã£À»¼ö ¾ø´Ù¸é °ø°Ý ÇØ¾ßÇÒµí.
+        // íŠ¹ì • ëª©í‘œë¥¼ í–¥í•´ ì´ë™. ê³µê²©í•´ ì˜¤ì§€ ì•ŠëŠ”ë‹¤. , ê¸¸ì„ ì°¾ì„ìˆ˜ ì—†ë‹¤ë©´ ê³µê²© í•´ì•¼í• ë“¯.
         Move,
 
-        // ÀÌÅ» Æ÷ÀÎÆ®·Î ÇâÇÑ´Ù. °ø°ÝÇØ ¿ÀÁö ¾Ê´Â´Ù. , ±æÀ» Ã£À»¼ö ¾ø´Ù¸é °ø°ÝÇØ¾ß ÇÒµí.
+        // ì´íƒˆ í¬ì¸íŠ¸ë¡œ í–¥í•œë‹¤. ê³µê²©í•´ ì˜¤ì§€ ì•ŠëŠ”ë‹¤. , ê¸¸ì„ ì°¾ì„ìˆ˜ ì—†ë‹¤ë©´ ê³µê²©í•´ì•¼ í• ë“¯.
         Leave,
 
-        // ÀÌÅ» Æ÷ÀÎÆ®·Î ÇâÇÑ´Ù.ÀÌµ¿Ã³¿¡¼­ °ø°Ý °¡´ÉÇÑ »ó´ë°¡ ÀÖÀ¸¸é °ø°ÝÇØ ¿Â´Ù.
+        // ì´íƒˆ í¬ì¸íŠ¸ë¡œ í–¥í•œë‹¤.ì´ë™ì²˜ì—ì„œ ê³µê²© ê°€ëŠ¥í•œ ìƒëŒ€ê°€ ìžˆìœ¼ë©´ ê³µê²©í•´ ì˜¨ë‹¤.
         Leave_Aggressive,
     }
 
 
     public enum EnumAIMoveType
     {
-      Advance,    // Áø±º - Å¸°ÙÀ» ÇâÇØ ÀÌµ¿.
-      Intercept,  // ¿ä°Ý - °ÅÁ¡¿¡¼­ ´ë±â.
+      Advance,    // ì§„êµ° - íƒ€ê²Ÿì„ í–¥í•´ ì´ë™.
+      Intercept,  // ìš”ê²© - ê±°ì ì—ì„œ ëŒ€ê¸°.
 
-      Fixed,      // ±× ÀÚ¸®¸¦ ¿òÁ÷ÀÌÁö ¾Ê´Â´Ù
-      Route,      // ÀÏÁ¤ÇÑ ·çÆ®¸¦ ÀÌµ¿.
-      Random,     // ·£´ýÀ¸·Î ÀÌµ¿.   
-      Leave,      // ÀÌÅ» Æ÷ÀÎÆ®·Î ÀÌµ¿.
+      Fixed,      // ê·¸ ìžë¦¬ë¥¼ ì›€ì§ì´ì§€ ì•ŠëŠ”ë‹¤
+      Route,      // ì¼ì •í•œ ë£¨íŠ¸ë¥¼ ì´ë™.
+      Random,     // ëžœë¤ìœ¼ë¡œ ì´ë™.   
+      Leave,      // ì´íƒˆ í¬ì¸íŠ¸ë¡œ ì´ë™.
     }
 
     public enum EnumAIAggressiveType
     {
-      Aggressive, // ÀûÀ» °ø°Ý - °ø°Ý O. È¸ÇÇ X. ÃÖ´ëÇÑ Á¢±Ù
-      Alert,      // ÀûÀ» °æ°è - °ø°Ý O. È¸ÇÇ O. °ø°Ý ¸ÕÀú Ã¼Å©. ¾È µÇ¸é È¸ÇÇ. È¸ÇÇ½Ã °Å¸® À¯Áö.
-      Evassive,   // ÀûÀ» ÇÇÇÔ - °ø°Ý X. È¸ÇÇ O. ÃÖ´ëÇÑ µµ¸Á.
+      Aggressive, // ì ì„ ê³µê²© - ê³µê²© O. íšŒí”¼ X. ìµœëŒ€í•œ ì ‘ê·¼
+      Alert,      // ì ì„ ê²½ê³„ - ê³µê²© O. íšŒí”¼ O. ê³µê²© ë¨¼ì € ì²´í¬. ì•ˆ ë˜ë©´ íšŒí”¼. íšŒí”¼ì‹œ ê±°ë¦¬ ìœ ì§€.
+      Evassive,   // ì ì„ í”¼í•¨ - ê³µê²© X. íšŒí”¼ O. ìµœëŒ€í•œ ë„ë§.
 
-      Aiming,     // ´ë»óÀ» ³ë¸². - ´ë»ó ¿Ü °ø°Ý X 
-      Guard,      // ´ë»óÀ» ÁöÅ´. - °ø°Ý O. ´ë»ó°ú °Å¸® À¯Áö. ´ë»ó°ú °¡±î¿î Àû °ø°Ý. ´ë»ó°ú Àû »çÀÌ·Î ÀÌµ¿.
-
+      // // ë°‘ì˜ ê²ƒì€ ì¼ë‹¨... ì—†ì•¨ê¹Œ..;;;
+      // Aiming,     // ëŒ€ìƒì„ ë…¸ë¦¼. - ëŒ€ìƒ ì™¸ ê³µê²© X. ìµœëŒ€í•œ ì ‘ê·¼.
+      // Guard,      // ëŒ€ìƒì„ ì§€í‚´. - ê³µê²© O. ëŒ€ìƒê³¼ ê±°ë¦¬ë¥¼ ìœ ì§€í•˜ëŠ” ì„ ì—ì„œ ì  ê³µê²©.
     }
 
     public enum EnumAITargetType

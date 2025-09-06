@@ -1,26 +1,32 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Battle
 {
-    // »çÁ¤°Å¸® ³»ÀÇ °ø°İ Å¸°ÙÀ» Ã£´Â ·ÎÁ÷.
+    // ì‚¬ì •ê±°ë¦¬ ë‚´ì˜ ê³µê²© íƒ€ê²Ÿì„ ì°¾ëŠ” ë¡œì§.
     public class AI_Score_Attack : IAIUpdater
     {
         public class Result : IPoolObject
         {
             public enum EnumScoreType
             {                
-                DamageRate_Dealt, // ÀÔÈú ¼ö ÀÖ´Â µ¥¹ÌÁö ¾ç
-                DamageRate_Taken, // ³»°¡ ¹Ş´Â µ¥¹ÌÁö ¾ç
-                HitRate,          // ¸íÁß·ü
-                DodgeRate,        // È¸ÇÇÀ²                
-                MoveCost,         // ÀÌµ¿ °Å¸® (°¡±î¿ï¼ö·Ï ³ôÀº Á¡¼ö)
+                DamageRate_Dealt, // ì…í ìˆ˜ ìˆëŠ” ë°ë¯¸ì§€ ì–‘
+                DamageRate_Taken, // ë‚´ê°€ ë°›ëŠ” ë°ë¯¸ì§€ ì–‘
+                HitRate,          // ëª…ì¤‘ë¥ 
+                DodgeRate,        // íšŒí”¼ìœ¨                
+                MoveCost,         // ì´ë™ ê±°ë¦¬ (ê°€ê¹Œìš¸ìˆ˜ë¡ ë†’ì€ ì ìˆ˜)
+
+                // TOOD: ì ì—ê²Œ ìœ„í—˜ì„ ë°›ëŠ” ìœ„ì¹˜ì¸ì§€ ì²´í¬.
+                // ThreatenRate,
+
+                // TODO: íƒ€ê²Ÿì˜ ìš°ì„ ìˆœìœ„ ì²´í¬. (íëŸ¬ ë“± ê³  ê°€ì¹˜ìœ ë‹›?)
+                // TargetPriority,
                 MAX
             }
 
-            // °¢ Ç×¸ñº° Á¡¼ö. (±âÁØµµ ¹¹µµ ¾øÀÌ ±×³É Á¤ÇÑ ¼öÄ¡)
+            // ê° í•­ëª©ë³„ ì ìˆ˜. (ê¸°ì¤€ë„ ë­ë„ ì—†ì´ ê·¸ëƒ¥ ì •í•œ ìˆ˜ì¹˜)
             static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
             {            
                 { EnumScoreType.DamageRate_Dealt, 1f   },
@@ -58,7 +64,7 @@ namespace Battle
                 if (index < 0 || m_score.Length <= index)
                     return;
                 
-                // °¢ ½ºÄÚ¾î´Â 0.0 ~ 1.0 ±îÁö¸¸ À¯È¿.
+                // ê° ìŠ¤ì½”ì–´ëŠ” 0.0 ~ 1.0 ê¹Œì§€ë§Œ ìœ íš¨.
                 m_score[index] = Mathf.Clamp01(_score_value);                
             }
 
@@ -81,7 +87,7 @@ namespace Battle
                 var result    = 0f;
                 var max_score = 0f;
 
-                // ÃÖ°í Á¡¼ö.
+                // ìµœê³  ì ìˆ˜.
                 foreach(var e in s_score_multiplier.Values)
                 {
                     max_score += Mathf.Max(e, 0f);
@@ -91,7 +97,7 @@ namespace Battle
                 if (max_score <= float.Epsilon)
                     return 0f;
 
-                // Á¡¼ö ÇÕ»ê.
+                // ì ìˆ˜ í•©ì‚°.
                 for (int i = 0; i < m_score.Length; ++i)
                 {
                     if (s_score_multiplier.TryGetValue((EnumScoreType)i, out var multiplier))
@@ -100,7 +106,7 @@ namespace Battle
                     }
                 }
 
-                // Á¡¼ö´Â 0.0 ~ 1.0À¸·Î Á¦ÇÑ.
+                // ì ìˆ˜ëŠ” 0.0 ~ 1.0ìœ¼ë¡œ ì œí•œ.
                 return Mathf.Clamp01(result / max_score);
             }
         }
@@ -115,34 +121,34 @@ namespace Battle
             if (owner_entity == null)
                 return;
 
-            // ÄÚµå°¡ ³Ê¹« ±æ¾îÁ®¼­ º¯¼öµé Ä³½Ì.
+            // ì½”ë“œê°€ ë„ˆë¬´ ê¸¸ì–´ì ¸ì„œ ë³€ìˆ˜ë“¤ ìºì‹±.
             var owner_status     = owner_entity.StatusManager;
             var owner_blackboard = owner_entity.BlackBoard;
             var owner_inventory  = owner_entity.Inventory;
 
-            // Âø¿ëÁßÀÎ ¹«±â / ¾ÆÀÌÅÛ ID
+            // ì°©ìš©ì¤‘ì¸ ë¬´ê¸° / ì•„ì´í…œ ID
             var owner_weapon      = owner_status.Weapon;
             var equiped_weapon_id = owner_weapon.ItemID;
 
 
-            // Çàµ¿µéÀÌ °¡´ÉÇÑ »óÅÂÀÎÁö Ã¼Å©.
+            // í–‰ë™ë“¤ì´ ê°€ëŠ¥í•œ ìƒíƒœì¸ì§€ ì²´í¬.
             var is_moveable   = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
 
 
-            // °ø°İ Çàµ¿ÀÌ ºÒ°¡´ÉÇÑ »óÅÂ¸é Á¾·á
+            // ê³µê²© í–‰ë™ì´ ë¶ˆê°€ëŠ¥í•œ ìƒíƒœë©´ ì¢…ë£Œ
             if (is_attackable == false)
                 return;
 
 
-            // Á¡¼ö °è»ê °á°ú°ª.
+            // ì ìˆ˜ ê³„ì‚° ê²°ê³¼ê°’.
             var current_score = ObjectPool<Result>.Acquire();
 
-            // ¼ÒÀ¯ ÁßÀÎ ¹«±âµé·Î Å×½ºÆ® ÀüÅõ¸¦ µ¹¸³´Ï´Ù.
+            // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸°ë“¤ë¡œ í…ŒìŠ¤íŠ¸ ì „íˆ¬ë¥¼ ëŒë¦½ë‹ˆë‹¤.
             var list_weapon = ListPool<Item>.Acquire();
             owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
 
-            // °ø°İ °¡´ÉÇÑ Å¸°Ù ¸ñ·Ï.
+            // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ëª©ë¡.
             var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Acquire();
 
 
@@ -150,18 +156,18 @@ namespace Battle
             {                            
                 foreach(var e in list_weapon)
                 {
-                    // Å×½ºÆ® ÀüÅõ¸¦ ¿¬»êÇÏ±â À§ÇØ Âø¿ëÁßÀÎ ¹«±â¸¦ ¹Ù²ãÁİ´Ï´Ù.
+                    // í…ŒìŠ¤íŠ¸ ì „íˆ¬ë¥¼ ì—°ì‚°í•˜ê¸° ìœ„í•´ ì°©ìš©ì¤‘ì¸ ë¬´ê¸°ë¥¼ ë°”ê¿”ì¤ë‹ˆë‹¤.
                     owner_weapon.Equip(e.ID);
                     
-                    // ÃÖ´ë ÀÌµ¿ °Å¸®. 
+                    // ìµœëŒ€ ì´ë™ ê±°ë¦¬. 
                     var move_distance = (is_moveable) ? owner_entity.PathMoveRange : 0;
 
-                    // ¹«±â »çÁ¤°Å¸®. (ÃÖ¼Ò/ÃÖ´ë)
+                    // ë¬´ê¸° ì‚¬ì •ê±°ë¦¬. (ìµœì†Œ/ìµœëŒ€)
                     var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
                     var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range);
 
 
-                    // °ø°İ °¡´ÉÇÑ Å¸°Ù ¸ñ·Ï ÃÊ±âÈ­.
+                    // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ëª©ë¡ ì´ˆê¸°í™”.
                     list_collect_target.Clear();
                     
                     // Target Collect
@@ -175,35 +181,35 @@ namespace Battle
                         range_min,
                         range_max);
 
-                    // Å¸°Ù ¼øÈ¸.
+                    // íƒ€ê²Ÿ ìˆœíšŒ.
                     foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target)
                     {
                         var target_entity = EntityManager.Instance.GetEntity(target_id);
                         if (target_entity == null)
                             continue; 
 
-                        // Á×¾úÀ¸¸é Å¸°ÙÆÃ¿¡¼­ Á¦¿Ü
+                        // ì£½ì—ˆìœ¼ë©´ íƒ€ê²ŸíŒ…ì—ì„œ ì œì™¸
                         if (target_entity.IsDead)
                             continue;     
 
-                        // °ø°İ °¡´ÉÇÑÁö Ã¼Å©.
+                        // ê³µê²© ê°€ëŠ¥í•œì§€ ì²´í¬.
                         if (CombatHelper.IsAttackable(owner_entity.ID, target_id) == false)
                             continue;
 
-                        // Á¡¼ö °è»ê °á°ú°ª ÃÊ±âÈ­.
+                        // ì ìˆ˜ ê³„ì‚° ê²°ê³¼ê°’ ì´ˆê¸°í™”.
                         current_score.Reset();
             
                         Score_Calculate(ref current_score,
                             owner_entity,
                             target_entity,
                             (attack_pos_x, attack_pos_y));
-                        // Á¡¼ö °è»ê.
+                        // ì ìˆ˜ ê³„ì‚°.
                         var calculate_score = current_score.CalculateScore();
 
-                        // Á¡¼ö ºñ±³.
+                        // ì ìˆ˜ ë¹„êµ.
                         if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
                         {
-                            // ³ôÀº Á¡¼ö ¼ÂÆÃ.
+                            // ë†’ì€ ì ìˆ˜ ì…‹íŒ….
                             owner_blackboard.Score_Attack.CopyFrom(current_score);                            
                             owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                         }
@@ -212,10 +218,10 @@ namespace Battle
             }  
             finally
             {
-                // ¹«±â ¿ø»ó º¹±¸.
+                // ë¬´ê¸° ì›ìƒ ë³µêµ¬.
                 owner_weapon.Equip(equiped_weapon_id);     
 
-                // pool ¹İÈ¯.
+                // pool ë°˜í™˜.
                 ObjectPool<Result>.Return(ref current_score);
                 ListPool<Item>.Return(ref list_weapon);
                 ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(ref list_collect_target);
@@ -229,7 +235,7 @@ namespace Battle
                 return;
 
 
-            // ÀüÅõ °á°ú ½ºÄÚ¾î
+            // ì „íˆ¬ ê²°ê³¼ ìŠ¤ì½”ì–´
             _score.Reset();
             _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
            
@@ -254,25 +260,25 @@ namespace Battle
             var dodge_rate         = Mathf.Clamp01((100 - result.Defender.HitRate) / 100f);
 
 
-            // °ø°İÀÚ/Å¸°Ù HP
+            // ê³µê²©ì/íƒ€ê²Ÿ HP
             var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
             var target_hp = Math.Max(1, _target.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
 
             
-            // µ¥¹ÌÁö Á¡¼ö ¼ÂÆÃ. 
+            // ë°ë¯¸ì§€ ì ìˆ˜ ì…‹íŒ…. 
             _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
             _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
 
-            // ÀÌµ¿°Å¸® Á¡¼ö ¼ÂÆÃ.
+            // ì´ë™ê±°ë¦¬ ì ìˆ˜ ì…‹íŒ….
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
             var distance_max     = Math.Max(1, _owner.PathMoveRange);
             _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
-            // ¸íÁß / È¸ÇÇ Á¡¼ö ¼ÂÆÃ.
+            // ëª…ì¤‘ / íšŒí”¼ ì ìˆ˜ ì…‹íŒ…. <- ê°œì„  í•„ìš”?
             _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
             _score.SetScore(Result.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
-            // °ø°İ À§Ä¡ ¼ÂÆÃ.
+            // ê³µê²© ìœ„ì¹˜ ì…‹íŒ….
             _score.SetAttackPosition(_attack_position.x, _attack_position.y);
         }
 
@@ -320,23 +326,23 @@ namespace Battle
                         var x = _visit_x + i;
                         var y = _visit_y + k;
 
-                        // ¹«±â »ç°Å¸® Ã¼Å©
+                        // ë¬´ê¸° ì‚¬ê±°ë¦¬ ì²´í¬
                         var distance = PathAlgorithm.Distance(_visit_x, _visit_y, x, y);
                         if (distance < WeaponRangeMin || WeaponRangeMax < distance)
                         {
                             continue;
                         }
 
-                        // TODO: ¶È°°Àº À§Ä¡¸¦ ¸Å¹ø Collecting ÇÒ °ÍÀÎÁö ¸»Áö´Â ÃßÈÄ °í·Á.
+                        // TODO: ë˜‘ê°™ì€ ìœ„ì¹˜ë¥¼ ë§¤ë²ˆ Collecting í•  ê²ƒì¸ì§€ ë§ì§€ëŠ” ì¶”í›„ ê³ ë ¤.
                         if (VisitList.Contains((x, y)))
                         {
                             continue;
                         }
 
-                        // °Ë»ç ±â·Ï¿¡ Ãß°¡.
+                        // ê²€ì‚¬ ê¸°ë¡ì— ì¶”ê°€.
                         VisitList.Add((x, y));
                         
-                        // Å¸°Ù Ãß°¡. (´ë»ó id, °ø°İ À§Ä¡ x, °ø°İ À§Ä¡ y)
+                        // íƒ€ê²Ÿ ì¶”ê°€. (ëŒ€ìƒ id, ê³µê²© ìœ„ì¹˜ x, ê³µê²© ìœ„ì¹˜ y)
                         var entity_id = TerrainMap.EntityManager.GetCellData(x, y);
                         if (entity_id > 0)
                         {
@@ -367,7 +373,7 @@ namespace Battle
             if (_terrain_map == null || _path_owner == null)
                 return;
 
-            // Äİ¹é
+            // ì½œë°±
             var visitor            = ObjectPool<CollectTargetVisitor>.Acquire();
             visitor.TerrainMap     = _terrain_map;
             visitor.Visitor      = _path_owner;
@@ -376,10 +382,10 @@ namespace Battle
             visitor.WeaponRangeMax = _weapon_range_max;
             visitor.WeaponRangeMin = _weapon_range_min;
 
-            // FloodFillÀ» ÅëÇØ¼­ °ø°İ °¡´ÉÇÑ Å¸°ÙÀ» Ã£¾Æº¾½Ã´Ù. 
+            // FloodFillì„ í†µí•´ì„œ ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿì„ ì°¾ì•„ë´…ì‹œë‹¤. 
             PathAlgorithm.FloodFill(visitor);
 
-            // Å¸°Ù ÀÌ°ü.
+            // íƒ€ê²Ÿ ì´ê´€.
             _collect_targets.AddRange(visitor.GetCollectTargets());
 
             ObjectPool<CollectTargetVisitor>.Return(ref visitor);

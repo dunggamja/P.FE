@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,41 +8,90 @@ namespace Battle
   public class AI_Score_Move : IAIUpdater
   {
 
+    public EnumAIAggressiveType AggressiveType { get; private set; } = EnumAIAggressiveType.Aggressive;
 
-
-    public bool IsAggressive      { get; set; } = false; // ÀûÀ» °ø°İÇÒÁö ¿©ºÎ
-    public bool IsEvassive        { get; set; } = false; // ÀûÀ» ÇÇÇÒÁö ¿©ºÎ
-    public bool IsBasePosition    { get; set; } = false; // °ÅÁ¡À¸·Î ÀÌµ¿ÇÒÁö ¿©ºÎ
-    public bool HasTarget         { get; set; } = false; // Æ¯Á¤ ¸ñÇ¥¸¦ ÇâÇØ ÀÌµ¿ÇÒÁö ¿©ºÎ
-    public bool HasTargetPosition { get; set; } = false; // Æ¯Á¤ À§Ä¡·Î ÀÌµ¿ÇÒÁö ¿©ºÎ
+    public EnumAITargetType     TargetType     { get; private set; } = EnumAITargetType.None;
 
 
     public void Update(IAIDataManager _owner)
     {
       if (_owner == null)
         return;
+      
+      // êµ¬í˜„ì„ ì–´ë–»ê²Œ í• ê¹Œ???;;; 
+      // ê³µê²©ì€ ëª¨ë“  ê²½ìš°ì˜ ìˆ˜ë¥¼ ì²´í¬í–ˆì—ˆëŠ”ë°... ì´ë™ë„ ê·¸ë ‡ê²Œ í•˜ëŠ”ê²Œ ì¢‹ê² ì§€???;;;
 
-        // À½... ¾îÂî±¸ºĞÇÒÁö Àß ¸ğ¸£°ÚÀ¸´Ï.. EnumAIType¿¡ µû¶ó¼­ µ¿ÀÛÀ» ºĞ·ùÇØº¾½Ã´Ù.
-        // ¹º°¡ 
+      // ê° ì¢Œí‘œ ì ìˆ˜ê°€ í•„ìš”í•˜ë‹¤. 
 
-        switch(_owner.AIType)
-        {
-          case EnumAIType.Attack:
-            Process_AIType_Attack(_owner);
-            break;
-        }
+      //  ì ì—ê²Œ ê°€ê¹Œì›Œì§ˆë•Œì˜ ì ìˆ˜
+      //  ì ì—ê²Œ ìœ„í—˜ì„ ë°›ì„ë•Œì˜ ì ìˆ˜.
+      //  ì§€í˜• ì´ë“ ì .ìˆ˜
+
+      // update cell position ì´ ìˆì„ë•Œë§ˆë‹¤ ì˜í–¥ë„ ë§µì— ë§ˆí‚¹ì„ í•´ë‘”ë‹¤. (ë¸”ë¡ë‹¨ìœ„ë¡œ ë§ˆí‚¹)
+      // ì˜í–¥ë„ ë§µì„ ì‚¬ìš©í•  ì¼ì´ ìˆì„ë•Œ ë§ˆí‚¹í•´ë‘” ë¸”ë¡ë“¤ì„ ê°±ì‹ í•˜ê³  ì‚¬ìš©í•˜ë„ë¡ í•œë‹¤. 
+
+      switch(TargetType)
+      {
+        case EnumAITargetType.Target:
+          Process_Target(_owner);
+          break;
+        case EnumAITargetType.Position:
+          Process_TargetPosition(_owner);
+          break;
+
+        case EnumAITargetType.None:
+          Process_NoneTarget(_owner);
+          break;
+      }
+
+      //   score = w1 * (1f - distToNearestEnemyNorm) // ì ì—ê²Œ ê°€ê¹Œì›Œì§ˆë•Œì˜ ì ìˆ˜
+      // + w2 * (1f - threatExposure) // ì ì—ê²Œ ìœ„í—˜ì„ ë°›ì„ë•Œì˜ ì ìˆ˜.
+      // + w3 * terrainAdvantage      // ì§€í˜• ì´ë“ ì ìˆ˜.
+      // - w4 * moveCost;             // ì´ë™ ë¹„ìš© ì ìˆ˜.?? <- í•„ìš”í•œê°€?
+
+        // ìŒ... ì–´ì°Œêµ¬ë¶„í• ì§€ ì˜ ëª¨ë¥´ê² ìœ¼ë‹ˆ.. EnumAITypeì— ë”°ë¼ì„œ ë™ì‘ì„ ë¶„ë¥˜í•´ë´…ì‹œë‹¤.
+        // ë­”ê°€ 
+
+        // switch(_owner.AIType)
+        // {
+        //   case EnumAIType.Attack:
+        //     Process_AIType_Attack(_owner);
+        //     break;
+        // }
         
     }
 
 
-    void Process_AIType_Attack(IAIDataManager _owner)
+    void Process_Target(IAIDataManager _owner)
     {
       if (_owner == null)
         return;
 
-        // ÀÌ¹Ì °ø°İ¿¡ ½ÇÆĞÇÑ °æ¿ì¿¡ ¿©±â·Î µé¾î¿Ã °Í..
-        // °¡Àå °¡±î¿î Àû¿¡°Ô ÃÖ´ëÇÑ °¡±î¿î À§Ä¡·Î ÀÌµ¿ÇÑ´Ù. 
+        var target_list = _owner.AIData?.Targets?.AllTargetIDList;
+        if (target_list == null)
+          return;
+
+
+
+        // ì´ë¯¸ ê³µê²©ì— ì‹¤íŒ¨í•œ ê²½ìš°ì— ì—¬ê¸°ë¡œ ë“¤ì–´ì˜¬ ê²ƒ..
+        // ê°€ì¥ ê°€ê¹Œìš´ ì ì—ê²Œ ìµœëŒ€í•œ ê°€ê¹Œìš´ ìœ„ì¹˜ë¡œ ì´ë™í•œë‹¤. 
         
     }
+
+    void Process_TargetPosition(IAIDataManager _owner)
+    {
+      if (_owner == null)
+        return;
+        
+    }
+
+    void Process_NoneTarget(IAIDataManager _owner)
+    {
+      if (_owner == null)
+        return;
+        
+    }
+
+    
   }
 }
