@@ -201,10 +201,17 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     void UpdateUI_Preview()
     {
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
         var result = CombatHelper.Run_Plan(
             m_entity_id, 
             m_target_id, 
-            m_weapon_id);
+            m_weapon_id,
+            entity.Cell
+            );
 
 
         if (result == null)

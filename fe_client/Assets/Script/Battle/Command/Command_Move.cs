@@ -89,7 +89,7 @@ namespace Battle
                 if (m_failed_path_find == false)
                     Owner.UpdateCellPosition(
                           m_cell_to
-                        , m_visual_immediate
+                        , (_apply: true, _immediatly: m_visual_immediate)
                         , m_is_plan);
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");

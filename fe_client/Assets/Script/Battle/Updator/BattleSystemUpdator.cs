@@ -183,22 +183,22 @@ namespace Battle
             {
                 attacker.UpdateCellPosition(
                     (2, 0), 
-                    _visual_immediatly: true, 
+                    (_apply: true, _immediatly: true), 
                     _is_plan: false);
 
                 attacker_2.UpdateCellPosition(
                     (3, 0), 
-                    _visual_immediatly: true, 
+                    (_apply: true, _immediatly: true), 
                     _is_plan: false);
 
                 defender.UpdateCellPosition(
                     (2, 4), 
-                    _visual_immediatly: true, 
+                    (_apply: true, _immediatly: true), 
                     _is_plan: false);
 
                 defender_2.UpdateCellPosition(
                     (3, 3),  
-                    _visual_immediatly: true, 
+                    (_apply: true, _immediatly: true), 
                     _is_plan: false);
             }
 

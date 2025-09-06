@@ -36,7 +36,7 @@ namespace Battle
                 // ÁÂÇ¥ Ã³¸®.
                 Owner.UpdateCellPosition(
                     Owner.Cell,
-                    _visual_immediatly: true,
+                    (_apply: true, _immediatly: true),
                     _is_plan: false
                 );
             }

@@ -26,9 +26,9 @@ namespace Battle
 
         
         public void UpdateCellPosition(
-            (int x, int y)        _cell,
-            bool                  _visual_immediatly,
-            bool                  _is_plan)
+            (int x, int y)                  _cell,
+            (bool _apply, bool _immediatly) _visual_update,
+            bool                            _is_plan)
         {
             // 이전 위치.            
             Cell_Prev = Cell;
@@ -43,6 +43,7 @@ namespace Battle
             // 새 위치.
             Cell        = _cell;
 
+            // 
             if (_is_plan == false)
             {
                 // 새로운 위치 셀 점유.
@@ -54,24 +55,29 @@ namespace Battle
                 // Debug.Log($"PathBasePosition: {ID}, {Cell}");
             }
 
+            // 위치 셋팅.
             var position_cur  = Cell.CellToPosition();
             var position_prev = PathVehicle.Position;
 
             PathVehicle.Setup(position_cur, position_prev);
 
-            var visual_position_to   = PathVehicle.Position;
-            var visual_position_from = (_visual_immediatly) 
-                                     ? PathVehicle.Position 
-                                     : PathVehicle.PositionPrev;
-            
+            // visual 갱신 처리.
+            if (_visual_update._apply)
+            {
+                var visual_position_to   = PathVehicle.Position;
+                var visual_position_from = (_visual_update._immediatly) 
+                                        ? PathVehicle.Position 
+                                        : PathVehicle.PositionPrev;                
 
-            // 월드 객체 위치 변경 이벤트.
-            EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
-                ID,
-                visual_position_to,
-                visual_position_from
-            ));
+                // 월드 객체 위치 변경 이벤트.
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
+                    ID,
+                    visual_position_to,
+                    visual_position_from
+                ));
+            }
+
         }
 
         public void UpdatePathBehavior(float _delta_time)

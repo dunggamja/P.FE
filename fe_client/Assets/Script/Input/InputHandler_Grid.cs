@@ -461,7 +461,7 @@ public class InputHandler_Grid_Select : InputHandler
                 // 원래 위치로 복귀.
                 entity.UpdateCellPosition(
                     base_position,
-                    _visual_immediatly: true,
+                    (_apply: true, _immediatly: true),
                     _is_plan: false);
 
                 CommandEntityID = 0;

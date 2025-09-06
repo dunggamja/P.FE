@@ -45,7 +45,7 @@ namespace Battle
                 // 공격 유닛 위치 셋팅.
                 Owner.UpdateCellPosition(
                     Position,
-                    _visual_immediatly: true,
+                    (_apply: true, _immediatly: true),
                     _is_plan: false);
 
                 // 무기 장착.

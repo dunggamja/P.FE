@@ -24,7 +24,7 @@ namespace Battle
             static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
             {            
                 { EnumScoreType.DamageRate_Dealt, 1f   },
-                { EnumScoreType.DamageRate_Taken, 0.7f },
+                { EnumScoreType.DamageRate_Taken, -0.7f }, 
                 { EnumScoreType.HitRate,          0.7f },
                 { EnumScoreType.DodgeRate,        0.4f },
                 { EnumScoreType.MoveCost,         0.1f }
@@ -84,7 +84,7 @@ namespace Battle
                 // 최고 점수.
                 foreach(var e in s_score_multiplier.Values)
                 {
-                    max_score += e;
+                    max_score += Mathf.Max(e, 0f);
                 }
 
                 
@@ -129,13 +129,25 @@ namespace Battle
             var is_moveable   = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
 
-            // 공격이 가능한지 체크.
-            if (is_attackable)
-            {
-                // 소유 중인 무기들로 테스트 전투를 돌립니다.
-                var list_weapon = ListPool<Item>.Acquire();
-                owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
 
+            // 공격 행동이 불가능한 상태면 종료
+            if (is_attackable == false)
+                return;
+
+
+            // 점수 계산 결과값.
+            var current_score = ObjectPool<Result>.Acquire();
+
+            // 소유 중인 무기들로 테스트 전투를 돌립니다.
+            var list_weapon = ListPool<Item>.Acquire();
+            owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
+
+            // 공격 가능한 타겟 목록.
+            var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Acquire();
+
+
+            try
+            {                            
                 foreach(var e in list_weapon)
                 {
                     // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
@@ -148,7 +160,9 @@ namespace Battle
                     var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
                     var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range);
 
-                    var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Acquire();
+
+                    // 공격 가능한 타겟 목록 초기화.
+                    list_collect_target.Clear();
                     
                     // Target Collect
                     CollectTarget(
@@ -161,7 +175,7 @@ namespace Battle
                         range_min,
                         range_max);
 
-
+                    // 타겟 순회.
                     foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target)
                     {
                         var target_entity = EntityManager.Instance.GetEntity(target_id);
@@ -176,43 +190,40 @@ namespace Battle
                         if (CombatHelper.IsAttackable(owner_entity.ID, target_id) == false)
                             continue;
 
-                        // try
+                        // 점수 계산 결과값 초기화.
+                        current_score.Reset();
+            
+                        Score_Calculate(ref current_score,
+                            owner_entity,
+                            target_entity,
+                            (attack_pos_x, attack_pos_y));
+                        // 점수 계산.
+                        var calculate_score = current_score.CalculateScore();
+
+                        // 점수 비교.
+                        if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
                         {
-                            // 점수 계산.
-                            var current_score = ObjectPool<Result>.Acquire();
-                
-                            Score_Calculate(ref current_score, owner_entity, target_entity);
-
-                            // 위치 셋팅.
-                            current_score.SetAttackPosition(attack_pos_x, attack_pos_y);
-
-                            // 점수 계산.
-                            var calculate_score = current_score.CalculateScore();
-
-                            // 점수 비교.
-                            if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
-                            {
-                                // 높은 점수 셋팅.
-                                owner_blackboard.Score_Attack.CopyFrom(current_score);                            
-                                owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
-                            }
-
-                            ObjectPool<Result>.Return(ref current_score);
+                            // 높은 점수 셋팅.
+                            owner_blackboard.Score_Attack.CopyFrom(current_score);                            
+                            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                         }
                     }
-
-                    ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(ref list_collect_target);
                 }
+            }  
+            finally
+            {
+                // 무기 원상 복구.
+                owner_weapon.Equip(equiped_weapon_id);     
 
+                // pool 반환.
+                ObjectPool<Result>.Return(ref current_score);
                 ListPool<Item>.Return(ref list_weapon);
-            }
-
-            // 무기 원상 복구.
-            owner_weapon.Equip(equiped_weapon_id);                       
+                ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(ref list_collect_target);
+            }    
         }
 
 
-        static void Score_Calculate(ref Result _score, Entity _owner, Entity _target)
+        static void Score_Calculate(ref Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
         {
             if (_owner == null || _target == null)
                 return;
@@ -224,7 +235,12 @@ namespace Battle
            
             
 
-            var result = CombatHelper.Run_Plan(_owner.ID, _target.ID, _owner.StatusManager.Weapon.ItemID);
+            var result = CombatHelper.Run_Plan(
+                _owner.ID, 
+                _target.ID, 
+                _owner.StatusManager.Weapon.ItemID,
+                _attack_position);
+
             if (result == null)
                 return;
 
@@ -249,13 +265,15 @@ namespace Battle
 
             // 이동거리 점수 셋팅.
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
-            var distance_max     = _owner.PathMoveRange;
+            var distance_max     = Math.Max(1, _owner.PathMoveRange);
             _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중 / 회피 점수 셋팅.
             _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
             _score.SetScore(Result.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
 
+            // 공격 위치 셋팅.
+            _score.SetAttackPosition(_attack_position.x, _attack_position.y);
         }
 
 

@@ -45,7 +45,11 @@ namespace Battle
 
 
         // 전투 예측 실행.
-        public static Result Run_Plan(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
+        public static Result Run_Plan(
+            Int64          _attacker_id,
+            Int64          _target_id,
+            Int64          _weapon_id,
+            (int x, int y) _attack_position)
         {
             
             var attacker     = EntityManager.Instance.GetEntity(_attacker_id);
@@ -67,6 +71,12 @@ namespace Battle
 
             // 무기 장착.
             attacker.StatusManager.Weapon.Equip(_weapon_id);
+
+            // 공격 위치 셋팅.
+            attacker.UpdateCellPosition(
+                _attack_position,
+                (_apply: false, _immediatly: false),
+                _is_plan: false);
 
 
             var result = new Result();
