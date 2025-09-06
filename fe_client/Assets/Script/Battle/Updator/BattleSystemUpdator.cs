@@ -56,7 +56,7 @@ namespace Battle
             await DataManager.Instance.LoadSheetData();
 
             // 현재 시간을 기반으로 시드값 초기화
-            Util.SetRandomSeed((uint)System.DateTime.Now.Ticks);
+            Util.SetRandomSeed((int)System.DateTime.Now.Ticks);
 
             // 지형 시스템 초기화
             Test_BattleSystem_Setup_Terrain();

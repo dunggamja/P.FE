@@ -91,5 +91,13 @@ public abstract class GUIElement : GUIBase
 {
     // button, scrollview, etc.
     // 아직 잘 모르지만, GUI 내부 객체들을 Element 로 분류해볼 예정.
+
+    virtual protected void OnDestroy()
+    {
+        // TODO: 이것은 임시 코드임....
+        // Clear를 어디서 처리해야 할지 아직 정하지 않았음.
+        Clear();
+    }
+
     protected abstract void Clear();
 }

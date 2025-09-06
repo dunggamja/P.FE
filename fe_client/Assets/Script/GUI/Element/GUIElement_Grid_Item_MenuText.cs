@@ -44,13 +44,6 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         gameObject.SetActive(true);
     }
 
-    void OnDestroy()
-    {
-        // TODO: 이것은 임시 코드임....
-        Clear();
-    }
-
-
     protected override void Clear()
     {
         m_selected_index_subscription?.Dispose();

@@ -20,7 +20,6 @@ public class GUIElement_Attack_Preview_Sequence_Grid : GUIElement
 
     protected override void Clear()
     {
-        // throw new NotImplementedException();
         m_text_damage_atatcker.text = string.Empty;
         m_text_damage_defender.text = string.Empty;
         m_image_damage_direction.rectTransform.localScale = Vector3.one;
@@ -44,10 +43,5 @@ public class GUIElement_Attack_Preview_Sequence_Grid : GUIElement
         m_image_damage_direction.rectTransform.localScale 
           = (_is_attacker_turn) ? new Vector3(1, 1, 1) : new Vector3(-1, 1, 1);
     }
-
-
-
-
-
 
 }

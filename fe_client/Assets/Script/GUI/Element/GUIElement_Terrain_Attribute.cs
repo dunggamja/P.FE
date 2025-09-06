@@ -43,12 +43,6 @@ public class GUIElement_Terrain_Attribute : GUIElement
     }
 
 
-    void OnDestroy()
-    {
-        // TODO: 이것은 임시 코드임....
-        Clear();
-    }
-
     void UpdateText()
     {
       // var terrain_map = TerrainMapManager.Instance.TerrainMap;
