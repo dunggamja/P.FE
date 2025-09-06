@@ -73,225 +73,227 @@ using UnityEngine;
 //     }
 // }
 
-
-public struct TerrainBlock
+namespace Battle
 {
-    int            m_block_x;
-    int            m_block_y;
-    int            m_block_size;
-    Int64[,]       m_cell_data;
-
-    public TerrainBlock(int _x, int _y, int _size)
+    public struct TerrainBlock
     {
-        m_block_x    = _x;
-        m_block_y    = _y;
-        m_block_size = _size;
-        m_cell_data  = new Int64[_size, _size];
-    }
+        int            m_block_x;
+        int            m_block_y;
+        int            m_block_size;
+        Int64[,]       m_cell_data;
 
-    public void SetCellData(int _x, int _y, Int64 _data)
-    {
-        m_cell_data[_x % m_block_size, _y % m_block_size] = _data;
-        // Debug.Log($"SetCellData: {_x}, {_y}, {_data}");
-    }
-
-    public void RemoveCellData(int _x, int _y)
-    {
-        m_cell_data[_x % m_block_size, _y % m_block_size] = 0;
-        // Debug.Log($"RemoveCellData: {_x}, {_y}");
-    }
-
-    public Int64 GetCellData(int _x, int _y)
-    {
-        return m_cell_data[_x % m_block_size, _y % m_block_size];
-    }
-
-    public bool HasBitIndex(int _x, int _y, int _bit_index)
-    {
-        var     cell_data = GetCellData(_x, _y);        
-        return (cell_data & (1L << _bit_index)) != 0;
-    }
-
-    public void SetBitIndex(int _x, int _y, int _bit_index)
-    {
-        var cell_data  = GetCellData(_x, _y);
-        cell_data     |= 1L << _bit_index;
-
-        SetCellData(_x, _y, cell_data);
-    }
-
-    public void RemoveBitIndex(int _x, int _y, int _bit_index)
-    {
-        var cell_data = GetCellData(_x, _y);
-        cell_data    &= ~(1L << _bit_index);
-
-        SetCellData(_x, _y, cell_data);
-    }
-
-    public TerrainBlock_IO Save()
-    {
-        return new TerrainBlock_IO 
-        { 
-            BlockX    = m_block_x, 
-            BlockY    = m_block_y, 
-            BlockSize = m_block_size, 
-            CellData  = (Int64[,])m_cell_data.Clone()
-        };
-
-    }
-
-    public void Load(TerrainBlock_IO _io)
-    {
-        m_block_x    = _io.BlockX;
-        m_block_y    = _io.BlockY;
-        m_block_size = _io.BlockSize;
-        m_cell_data  = (Int64[,])_io.CellData.Clone();
-    }
-}
-
-public class TerrainBlock_IO
-{
-    public int      BlockX    { get; set; }
-    public int      BlockY    { get; set; }
-    public int      BlockSize { get; set; }
-    public Int64[,] CellData  { get; set; }
-}
-
-
-
-public class TerrainBlockManager
-{
-    int             m_width;
-    int             m_height;
-    int             m_block_size;
-    TerrainBlock[,] m_blocks;
-
-    public TerrainBlockManager(int _width, int _height, int _block_size)
-    {
-        m_width         = _width;
-        m_height        = _height;
-        m_block_size    = Math.Max(1, _block_size);
-
-        var tile_size   = Math.Max(_width, _height);
-        var block_count = (tile_size / m_block_size) + ((0 < (tile_size % m_block_size)) ? 1: 0);
-
-        m_blocks        = new TerrainBlock[block_count, block_count];
-        for(int y = 0; y < block_count; ++y)
+        public TerrainBlock(int _x, int _y, int _size)
         {
-            for(int x = 0; x < block_count; ++x)
+            m_block_x    = _x;
+            m_block_y    = _y;
+            m_block_size = _size;
+            m_cell_data  = new Int64[_size, _size];
+        }
+
+        public void SetCellData(int _x, int _y, Int64 _data)
+        {
+            m_cell_data[_x % m_block_size, _y % m_block_size] = _data;
+            // Debug.Log($"SetCellData: {_x}, {_y}, {_data}");
+        }
+
+        public void RemoveCellData(int _x, int _y)
+        {
+            m_cell_data[_x % m_block_size, _y % m_block_size] = 0;
+            // Debug.Log($"RemoveCellData: {_x}, {_y}");
+        }
+
+        public Int64 GetCellData(int _x, int _y)
+        {
+            return m_cell_data[_x % m_block_size, _y % m_block_size];
+        }
+
+        public bool HasBitIndex(int _x, int _y, int _bit_index)
+        {
+            var     cell_data = GetCellData(_x, _y);        
+            return (cell_data & (1L << _bit_index)) != 0;
+        }
+
+        public void SetBitIndex(int _x, int _y, int _bit_index)
+        {
+            var cell_data  = GetCellData(_x, _y);
+            cell_data     |= 1L << _bit_index;
+
+            SetCellData(_x, _y, cell_data);
+        }
+
+        public void RemoveBitIndex(int _x, int _y, int _bit_index)
+        {
+            var cell_data = GetCellData(_x, _y);
+            cell_data    &= ~(1L << _bit_index);
+
+            SetCellData(_x, _y, cell_data);
+        }
+
+        public TerrainBlock_IO Save()
+        {
+            return new TerrainBlock_IO 
+            { 
+                BlockX    = m_block_x, 
+                BlockY    = m_block_y, 
+                BlockSize = m_block_size, 
+                CellData  = (Int64[,])m_cell_data.Clone()
+            };
+
+        }
+
+        public void Load(TerrainBlock_IO _io)
+        {
+            m_block_x    = _io.BlockX;
+            m_block_y    = _io.BlockY;
+            m_block_size = _io.BlockSize;
+            m_cell_data  = (Int64[,])_io.CellData.Clone();
+        }
+    }
+
+    public class TerrainBlock_IO
+    {
+        public int      BlockX    { get; set; }
+        public int      BlockY    { get; set; }
+        public int      BlockSize { get; set; }
+        public Int64[,] CellData  { get; set; }
+    }
+
+
+
+    public class TerrainBlockManager
+    {
+        int             m_width;
+        int             m_height;
+        int             m_block_size;
+        TerrainBlock[,] m_blocks;
+
+        public TerrainBlockManager(int _width, int _height, int _block_size)
+        {
+            m_width         = _width;
+            m_height        = _height;
+            m_block_size    = Math.Max(1, _block_size);
+
+            var tile_size   = Math.Max(_width, _height);
+            var block_count = (tile_size / m_block_size) + ((0 < (tile_size % m_block_size)) ? 1: 0);
+
+            m_blocks        = new TerrainBlock[block_count, block_count];
+            for(int y = 0; y < block_count; ++y)
             {
-                m_blocks[x, y] = new TerrainBlock(x * m_block_size, y * m_block_size, m_block_size);
+                for(int x = 0; x < block_count; ++x)
+                {
+                    m_blocks[x, y] = new TerrainBlock(x * m_block_size, y * m_block_size, m_block_size);
+                }
+            }
+        }
+
+        (int block_x, int block_y) FindBlockIndex(int _x, int _y)
+        {
+            if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
+                return (-1, -1);
+
+            var block_x = _x / m_block_size;
+            var block_y = _y / m_block_size;
+
+            return (block_x, block_y);
+        }
+
+        public void SetCellData(int _x, int _y, Int64 _data)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return;
+
+            m_blocks[block_x, block_y].SetCellData(_x, _y, _data);
+        }
+
+        public void RemoveCellData(int _x, int _y)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return;
+
+            m_blocks[block_x, block_y].RemoveCellData(_x, _y);
+        }
+
+        public Int64 GetCellData(int _x, int _y)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return 0;
+
+            return m_blocks[block_x, block_y].GetCellData(_x, _y);
+        }
+
+
+        public bool HasBitIndex(int _x, int _y, int _bit_index)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return false;
+
+            return m_blocks[block_x, block_y].HasBitIndex(_x, _y, _bit_index);
+        }
+
+        public void SetBitIndex(int _x, int _y, int _bit_index)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return;
+
+            m_blocks[block_x, block_y].SetBitIndex(_x, _y, _bit_index);
+        }
+
+        public void RemoveBitIndex(int _x, int _y, int _bit_index)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return;
+
+            m_blocks[block_x, block_y].RemoveBitIndex(_x, _y, _bit_index);
+        }
+
+
+        public TerrainBlockManager_IO Save()
+        {
+            var blocks = new TerrainBlock_IO[m_blocks.GetLength(0), m_blocks.GetLength(1)];
+
+            for(int y = 0; y < m_blocks.GetLength(1); ++y)
+            {
+                for(int x = 0; x < m_blocks.GetLength(0); ++x)
+                {
+                    blocks[x, y] = m_blocks[x, y].Save();
+                }
+            }
+
+            return new TerrainBlockManager_IO 
+            { 
+                BlockSize = m_block_size, 
+                Blocks    = blocks
+            };
+        }
+
+        public void Load(TerrainBlockManager_IO _io)
+        {
+            m_block_size = _io.BlockSize;
+            m_blocks     = new TerrainBlock[m_blocks.GetLength(0), m_blocks.GetLength(1)];
+
+            for(int y = 0; y < m_blocks.GetLength(1); ++y)
+            {
+                for(int x = 0; x < m_blocks.GetLength(0); ++x)
+                {
+                    m_blocks[x, y].Load(_io.Blocks[x, y]);
+                }
             }
         }
     }
 
-    (int block_x, int block_y) FindBlockIndex(int _x, int _y)
+    public class TerrainBlockManager_IO
     {
-        if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
-            return (-1, -1);
-
-        var block_x = _x / m_block_size;
-        var block_y = _y / m_block_size;
-
-        return (block_x, block_y);
+        public int BlockSize { get; set; }
+        public TerrainBlock_IO[,] Blocks { get; set; }
     }
 
-    public void SetCellData(int _x, int _y, Int64 _data)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return;
-
-        m_blocks[block_x, block_y].SetCellData(_x, _y, _data);
-    }
-
-    public void RemoveCellData(int _x, int _y)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return;
-
-        m_blocks[block_x, block_y].RemoveCellData(_x, _y);
-    }
-
-    public Int64 GetCellData(int _x, int _y)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return 0;
-
-        return m_blocks[block_x, block_y].GetCellData(_x, _y);
-    }
-
-
-    public bool HasBitIndex(int _x, int _y, int _bit_index)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return false;
-
-        return m_blocks[block_x, block_y].HasBitIndex(_x, _y, _bit_index);
-    }
-
-    public void SetBitIndex(int _x, int _y, int _bit_index)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return;
-
-        m_blocks[block_x, block_y].SetBitIndex(_x, _y, _bit_index);
-    }
-
-    public void RemoveBitIndex(int _x, int _y, int _bit_index)
-    {
-        (var block_x, var block_y) = FindBlockIndex(_x, _y);
-        if (block_x < 0 || block_y < 0)
-            return;
-
-        m_blocks[block_x, block_y].RemoveBitIndex(_x, _y, _bit_index);
-    }
-
-
-    public TerrainBlockManager_IO Save()
-    {
-        var blocks = new TerrainBlock_IO[m_blocks.GetLength(0), m_blocks.GetLength(1)];
-
-        for(int y = 0; y < m_blocks.GetLength(1); ++y)
-        {
-            for(int x = 0; x < m_blocks.GetLength(0); ++x)
-            {
-                blocks[x, y] = m_blocks[x, y].Save();
-            }
-        }
-
-        return new TerrainBlockManager_IO 
-        { 
-            BlockSize = m_block_size, 
-            Blocks    = blocks
-        };
-    }
-
-    public void Load(TerrainBlockManager_IO _io)
-    {
-        m_block_size = _io.BlockSize;
-        m_blocks     = new TerrainBlock[m_blocks.GetLength(0), m_blocks.GetLength(1)];
-
-        for(int y = 0; y < m_blocks.GetLength(1); ++y)
-        {
-            for(int x = 0; x < m_blocks.GetLength(0); ++x)
-            {
-                m_blocks[x, y].Load(_io.Blocks[x, y]);
-            }
-        }
-    }
 }
-
-public class TerrainBlockManager_IO
-{
-    public int BlockSize { get; set; }
-    public TerrainBlock_IO[,] Blocks { get; set; }
-}
-
 
 
 namespace Battle

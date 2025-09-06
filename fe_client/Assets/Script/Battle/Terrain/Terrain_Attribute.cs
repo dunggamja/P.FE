@@ -1,122 +1,125 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
 using UnityEngine;
 
-
-public class Terrain_Attribute : TerrainBlockManager
+namespace Battle
 {
-    public Terrain_Attribute(int _width, int _height, int _block_size)
-    : base(_width, _height, _block_size)
+    
+    public class Terrain_Attribute : TerrainBlockManager
     {
-    }
-
-    public Int64 GetAttribute(int _x, int _y)
-    {
-        return GetCellData(_x, _y);
-    }
-
-    public bool HasAttribute(int _x, int _y, EnumTerrainAttribute _attribute_type)
-    {
-        return HasBitIndex(_x, _y, (int)_attribute_type);
-    }
-
-    public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
-    {
-        SetBitIndex(_x, _y, (int)_attribute_type);
-    }
-
-    public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
-    {
-        RemoveBitIndex(_x, _y, (int)_attribute_type);
-    }
-
-    public static int Calculate_MoveCost(int _path_owner_attribute, Int64 _terrain_attribute)
-    {
-        // TODO: ³ªÁß¿¡ µ¥ÀÌÅÍ·Î °ü¸® °¡´ÉÇÏµµ·Ï »©´Â°Ô ÁÁÀ»µí? ScriptableObject...
-        // move_cost == 0, ÀÌµ¿ ºÒ°¡
-
-        if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
+        public Terrain_Attribute(int _width, int _height, int _block_size)
+        : base(_width, _height, _block_size)
         {
-            // ÀÌµ¿ ºÒ°¡ Áö¿ª
+        }
+
+        public Int64 GetAttribute(int _x, int _y)
+        {
+            return GetCellData(_x, _y);
+        }
+
+        public bool HasAttribute(int _x, int _y, EnumTerrainAttribute _attribute_type)
+        {
+            return HasBitIndex(_x, _y, (int)_attribute_type);
+        }
+
+        public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+        {
+            SetBitIndex(_x, _y, (int)_attribute_type);
+        }
+
+        public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
+        {
+            RemoveBitIndex(_x, _y, (int)_attribute_type);
+        }
+
+        public static int Calculate_MoveCost(int _path_owner_attribute, Int64 _terrain_attribute)
+        {
+            // TODO: ë‚˜ì¤‘ì— ë°ì´í„°ë¡œ ê´€ë¦¬ ê°€ëŠ¥í•˜ë„ë¡ ë¹¼ëŠ”ê²Œ ì¢‹ì„ë“¯? ScriptableObject...
+            // move_cost == 0, ì´ë™ ë¶ˆê°€
+
+            if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
+            {
+                // ì´ë™ ë¶ˆê°€ ì§€ì—­
+                return 0;
+            }
+
+            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
+            {
+                // ë¹„í–‰ ìœ ë‹›ë§Œ ê°€ëŠ¥.
+                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
+                    return 0;
+
+                // ì´ë™ Cost
+                return 1;
+            }
+
+            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
+            {
+                // ë¬¼ ì§€í˜•
+                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
+                &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) == 0))
+                    return 0;
+                
+                // ë¬¼ ì§€í˜• ì´ë™ Cost
+                return 1;
+            }
+
+            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.WaterSide)) != 0)
+            {
+                // ë¬¼ê°€
+                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
+                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water))  == 0)
+                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0))
+                    return 0;
+
+                // ë¬¼ê°€ ì§€í˜• ì´ë™ Cost
+                return 1;
+            }
+
+            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
+            {
+                // ë•…
+
+                
+                {
+                    // ë¹„ë³‘ì€ ì§€í˜• Cost 1ë¡œ í†µê³¼ê°€ëŠ¥.
+                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) != 0)
+                        return 1;
+
+                    // ë•… ì´ë™ì´ ê°€ëŠ¥í•œ ì§€ ì²´í¬.
+                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0)
+                        return 0;
+                }
+
+                {
+                    // ê²½ì‚¬ì§„ ì§€í˜•.
+                    if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Slope)) != 0)
+                    {
+                        // ê²½ì‚¬ë©´ ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
+                        if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Slope)) == 0)
+                            return 0;
+
+                        // ê²½ì‚¬ë©´ ì´ë™ Cost
+                        return 3;
+                    }
+                    // ìˆ² ì§€í˜•
+                    else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Forest)) != 0)
+                    {
+                        // ìˆ² ì§€í˜• ì´ë™ Cost
+                        return 2;
+                    }
+                }
+
+
+                // ì¼ë°˜ ë•… ì§€í˜• ì´ë™ Cost
+                return 1;
+            }
+
+
+            // ì§€í˜• ì…‹íŒ…ì´ ì•ˆ ë˜ì–´ ìžˆìœ¼ë©´ ì´ë™ ë¶ˆê°€.        
             return 0;
         }
-
-        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
-        {
-            // ºñÇà À¯´Ö¸¸ °¡´É.
-            if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
-                return 0;
-
-            // ÀÌµ¿ Cost
-            return 1;
-        }
-
-        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
-        {
-            // ¹° ÁöÇü
-            if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
-            &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) == 0))
-                return 0;
-            
-            // ¹° ÁöÇü ÀÌµ¿ Cost
-            return 1;
-        }
-
-        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.WaterSide)) != 0)
-        {
-            // ¹°°¡
-             if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
-            &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water))  == 0)
-            &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0))
-                return 0;
-
-            // ¹°°¡ ÁöÇü ÀÌµ¿ Cost
-            return 1;
-        }
-
-        else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
-        {
-            // ¶¥
-
-            
-            {
-                // ºñº´Àº ÁöÇü Cost 1·Î Åë°ú°¡´É.
-                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) != 0)
-                    return 1;
-
-                // ¶¥ ÀÌµ¿ÀÌ °¡´ÉÇÑ Áö Ã¼Å©.
-                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0)
-                    return 0;
-            }
-
-            {
-                // °æ»çÁø ÁöÇü.
-                if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Slope)) != 0)
-                {
-                    // °æ»ç¸é ÀÌµ¿ °¡´ÉÇÑÁö Ã¼Å©.
-                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Slope)) == 0)
-                        return 0;
-
-                    // °æ»ç¸é ÀÌµ¿ Cost
-                    return 3;
-                }
-                // ½£ ÁöÇü
-                else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Forest)) != 0)
-                {
-                    // ½£ ÁöÇü ÀÌµ¿ Cost
-                    return 2;
-                }
-            }
-
-
-            // ÀÏ¹Ý ¶¥ ÁöÇü ÀÌµ¿ Cost
-            return 1;
-        }
-
-
-        // ÁöÇü ¼ÂÆÃÀÌ ¾È µÇ¾î ÀÖÀ¸¸é ÀÌµ¿ ºÒ°¡.        
-        return 0;
     }
 }

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -46,7 +46,7 @@ namespace Battle
                 return;
            
 
-            // À§Ä¡&ZOC °»½Å.
+            // ìœ„ì¹˜&ZOC ê°±ì‹ .
             if (_event.IsOccupy)
             {
                 TerrainMap.EntityManager.SetCellData(_event.Cell.x,  _event.Cell.y, _event.EntityID);
