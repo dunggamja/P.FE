@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -8,8 +8,8 @@ namespace Battle
 {
     public class AI_Score_Done : IAIUpdater
     {
-        // TODO: 0.001f´Â ±×³É ÀÓ½Ã·Î ÀûÀº ÇÏµåÄÚµù °ª.
-        //       Á¤¸» ÇÒ¸¸ÇÑ Çàµ¿ÀÌ ¾øÀ¸¸é Done À» ÇÏµµ·Ï ÇØµĞ °ÍÀÓ.
+        // TODO: 0.001fëŠ” ê·¸ëƒ¥ ì„ì‹œë¡œ ì ì€ í•˜ë“œì½”ë”© ê°’.
+        //       ì •ë§ í• ë§Œí•œ í–‰ë™ì´ ì—†ìœ¼ë©´ Done ì„ í•˜ë„ë¡ í•´ë‘” ê²ƒì„.
         const float DONE_SCORE = 0.001f;
 
         public void Update(IAIDataManager _owner)

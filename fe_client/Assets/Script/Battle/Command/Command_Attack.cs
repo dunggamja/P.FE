@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,20 +39,20 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            // TODO : ¹«±â ÀåÂøÀº ³ªÁß¿¡ Command_Equip À¸·Î º¯°æ.?
+            // TODO : ë¬´ê¸° ì¥ì°©ì€ ë‚˜ì¤‘ì— Command_Equip ìœ¼ë¡œ ë³€ê²½.?
             if (Owner != null)
             {
-                // °ø°İ À¯´Ö À§Ä¡ ¼ÂÆÃ.
+                // ê³µê²© ìœ ë‹› ìœ„ì¹˜ ì…‹íŒ….
                 Owner.UpdateCellPosition(
                     Position,
                     (_apply: true, _immediatly: true),
                     _is_plan: false);
 
-                // ¹«±â ÀåÂø.
+                // ë¬´ê¸° ì¥ì°©.
                 Owner.StatusManager.Weapon.Equip(WeaponID);
             }
 
-            // ÀüÅõ ½Ã½ºÅÛ ¼ÂÆÃ.
+            // ì „íˆ¬ ì‹œìŠ¤í…œ ì…‹íŒ….
             
             CombatParam.Cache.Reset();
             CombatParam.Cache.Set(Owner, EntityManager.Instance.GetEntity(Target.MainTargetID));
@@ -78,7 +78,7 @@ namespace Battle
             {
 
                 // Owner.SetCommandDone(EnumCommandFlag.Action);
-                // TODO: ÀÏ´Ü ¸ğµç Çàµ¿ Á¾·áÃ³¸®·Î ÇØµĞ´Ù.
+                // TODO: ì¼ë‹¨ ëª¨ë“  í–‰ë™ ì¢…ë£Œì²˜ë¦¬ë¡œ í•´ë‘”ë‹¤.
                 Owner.SetAllCommandDone();
             }
 

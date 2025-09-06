@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -25,10 +25,10 @@ namespace Battle
             if (_param == null)
                 return;
 
-            // AIType ¼ÂÆÃ.
+            // AIType ì…‹íŒ…. 
             if (m_ai_type != _param.AIType)
                 SetAIType(_param.AIType);
-
+ 
 
             if (m_repository.TryGetValue(_priority, out var list_updater))
             {
@@ -45,7 +45,7 @@ namespace Battle
             m_ai_type = _ai_type;
             m_repository.Clear();
 
-            // ´ë±â´Â ¿ì¼±¼øÀ§ ¸Å¿ì ³·À½.
+            // ëŒ€ê¸°ëŠ” ìš°ì„ ìˆœìœ„ ë§¤ìš° ë‚®ìŒ.í…ŒíŠ¸
             AddAIUpdater(EnumAIPriority.Others, new AI_Score_Done());
 
 

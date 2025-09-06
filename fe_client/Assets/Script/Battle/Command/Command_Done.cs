@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace Battle
                 // Owner.SetCommandDone(EnumCommandFlag.Done);
                 Owner.SetAllCommandDone();
 
-                // ÁÂÇ¥ Ã³¸®.
+                // ì¢Œí‘œ ì²˜ë¦¬.
                 Owner.UpdateCellPosition(
                     Owner.Cell,
                     (_apply: true, _immediatly: true),

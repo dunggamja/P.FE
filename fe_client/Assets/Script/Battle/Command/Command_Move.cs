@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,7 +43,7 @@ namespace Battle
 
             if (!m_visual_immediate)
             {
-                // °æ·Î »ı¼º & ±æÃ£±â
+                // ê²½ë¡œ ìƒì„± & ê¸¸ì°¾ê¸°
                 if (Owner.PathNodeManager.CreatePath(
                     Owner.PathVehicle.Position,
                     m_cell_to.CellToPosition(),
@@ -54,7 +54,7 @@ namespace Battle
             }
             else
             {
-                // °æ·Î »ı¼º ¾ÈÇÔ.
+                // ê²½ë¡œ ìƒì„± ì•ˆí•¨.
                 Owner.PathNodeManager.ClearPath(); 
             }
         }
@@ -64,12 +64,12 @@ namespace Battle
             if (Owner == null || m_failed_path_find)
                 return true;
 
-            // À¯´Ö ÀÌµ¿ Ã³¸®.
+            // ìœ ë‹› ì´ë™ ì²˜ë¦¬.
             Owner.UpdatePathBehavior(Constants.BATTLE_SYSTEM_UPDATE_INTERVAL);
 
             //Debug.Log($"Command_Move, OnUpdate, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
-            // ÀÌµ¿ÀÌ ¿Ï·áµÇ¾úÀ¸¸é ¿Ï·áÃ³¸®.
+            // ì´ë™ì´ ì™„ë£Œë˜ì—ˆìœ¼ë©´ ì™„ë£Œì²˜ë¦¬.
             return Owner.PathNodeManager.IsEmpty();
         }
 
@@ -85,7 +85,7 @@ namespace Battle
             {
                 // Owner.PathVehicle.Position
                 
-                // ÁÂÇ¥ ÀÌµ¿ Ã³¸®.
+                // ì¢Œí‘œ ì´ë™ ì²˜ë¦¬.
                 if (m_failed_path_find == false)
                     Owner.UpdateCellPosition(
                           m_cell_to
@@ -94,7 +94,7 @@ namespace Battle
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
-                // Çàµ¿ ÇÃ·¡±× Ã³¸®.
+                // í–‰ë™ í”Œë˜ê·¸ ì²˜ë¦¬.
                 if (m_execute_command)
                     Owner.SetCommandDone(EnumCommandFlag.Move);
             }
