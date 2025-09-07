@@ -10,8 +10,6 @@ namespace Battle
     None,
 
     Threat, // 이동거리 + 공격범위.
-
-    
     
   }
 
