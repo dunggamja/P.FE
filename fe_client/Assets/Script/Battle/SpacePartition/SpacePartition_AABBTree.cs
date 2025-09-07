@@ -12,16 +12,21 @@ namespace Battle
       public Int64 id; // 객체 ID (리프에서만 유효)
       public int   height = 0;
       public AABB  box;
-      public Node  left, right, parent;
+      
+      public Node  left;
+      public Node  right;
+      public Node  parent;
+
       public bool  IsLeaf => left == null && right == null;
 
       public void Reset()
       {
+        id     = 0;
+        height = 0;
         box    = default;
         left   = null;
         right  = null;
         parent = null;
-        id     = 0;
       }
 
 
@@ -244,6 +249,23 @@ namespace Battle
         _node = _node.parent;
       }
 
+    }
+
+    public void Clear()
+    {
+
+      void ClearNode(Node _node)
+      {
+        if (_node == null)
+          return;
+        
+        ClearNode(_node.left);
+        ClearNode(_node.right);
+
+        ObjectPool<Node>.Return(ref _node);
+      }
+
+      ClearNode(m_root);
     }
     
   }
