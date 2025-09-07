@@ -7,6 +7,12 @@ namespace Battle
 {
     public partial class Entity 
     {
+
+        // public void RefreshCellOccupied()
+        // {
+
+        // }
+
         public void UpdateCellOccupied(bool _is_occupy)
         {
             if (Cell_Occupied == _is_occupy)

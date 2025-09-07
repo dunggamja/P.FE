@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 
@@ -129,6 +130,11 @@ namespace Battle
             SetCellData(_x, _y, cell_data);
         }
 
+        public void ClearBlock()
+        {
+            Array.Clear(m_cell_data, 0, m_cell_data.Length);
+        }
+
         public TerrainBlock_IO Save()
         {
             return new TerrainBlock_IO 
@@ -186,7 +192,7 @@ namespace Battle
             }
         }
 
-        (int block_x, int block_y) FindBlockIndex(int _x, int _y)
+        public (int block_x, int block_y) FindBlockIndex(int _x, int _y)
         {
             if (_x < 0 || m_width <= _x || _y < 0 || m_height <= _y)
                 return (-1, -1);
@@ -224,6 +230,15 @@ namespace Battle
             return m_blocks[block_x, block_y].GetCellData(_x, _y);
         }
 
+        public void ClearBlockData(int _x, int _y)
+        {
+            (var block_x, var block_y) = FindBlockIndex(_x, _y);
+            if (block_x < 0 || block_y < 0)
+                return;
+
+            m_blocks[block_x, block_y].ClearBlock();
+        }
+
 
         public bool HasBitIndex(int _x, int _y, int _bit_index)
         {
@@ -251,6 +266,8 @@ namespace Battle
 
             m_blocks[block_x, block_y].RemoveBitIndex(_x, _y, _bit_index);
         }
+
+        
 
 
         public TerrainBlockManager_IO Save()
