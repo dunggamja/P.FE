@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 
 namespace Battle
 {
-  public enum EnumSpacePartitionType
-  {
-    None,
-    Threat,   // 이동거리 + 공격범위.    
-    Position, // 위치.
-  }
+  // public enum EnumSpacePartitionType
+  // {
+  //   None,
+  //   Threat,   // 이동거리 + 공격범위.    
+  //   Position, // 위치.
+  // }
+
 
 
    [EventReceiver(typeof(Battle_Cell_PositionEvent))]
   public class SpacePartitionManager : Singleton<SpacePartitionManager>, IEventReceiver
   {
+     
     
      public Dictionary<int, DynamicAABBTree>  FactionThreaten { get; private set; } = new();
      public BlockManager    EntityPosition { get; private set; } = new();
@@ -27,6 +30,8 @@ namespace Battle
      {
         FactionThreaten.Clear();
         EntityPosition.Initialize(_world_width, _world_height, BLOCK_SIZE);
+
+        EventDispatchManager.Instance.AttachReceiver(this);
      }
 
      public void OnReceiveEvent(IEventParam _event)
@@ -107,5 +112,31 @@ namespace Battle
         // AABB트리에 삽입.
         tree.Insert(_entity.ID, box);
      }
+
+
+     public void Query_Position_AABB(
+        List<Int64>                _results,
+        AABB                       _box,
+        SpacePartition.QueryFilter _filter = null)
+     {
+        EntityPosition.Query_AABB(_results, _box, _filter);
+     }
+
+     public void Query_Position_Range(
+        List<Int64>                _results,
+        (int x, int y)             _center,
+        int                        _range,
+        SpacePartition.QueryFilter _filter = null)
+     {
+        EntityPosition.Query_Center(_results, _center, _range, _filter);
+     }
+
+    //  public void Query_Threaten(
+    //     List<Int64>                _results,
+    //     AABB                       _box,
+    //     SpacePartition.QueryFilter _filter = null)
+    //  {
+    //     EntityPosition.RangeAABB(_results, _box, _filter);
+    //  }
   }
 }

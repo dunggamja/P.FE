@@ -71,6 +71,10 @@ namespace Battle
         if (target_list == null)
           return;
 
+        // const int 
+
+        // SpacePartitionManager.Instance.
+
 
 
         // 이미 공격에 실패한 경우에 여기로 들어올 것..

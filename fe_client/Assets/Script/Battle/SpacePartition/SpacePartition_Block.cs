@@ -53,7 +53,10 @@ namespace Battle
       m_block_size    = _block_size;
 
       var world_size  = Math.Max(m_world_width, m_world_height);
-      var block_count = (world_size / m_block_size) + (world_size & m_block_size) > 0 ? 1: 0;
+      var block_count = (world_size / m_block_size);      
+      if ((world_size % m_block_size) > 0)
+        block_count++;
+
       m_nodes         = new Node[block_count, block_count];
       m_id_position   = new();
     }
@@ -112,9 +115,10 @@ namespace Battle
       return position;
     }
 
-    public void RangeAABB(
-        List<Int64> _results, AABB _box, 
-        Func<(int x, int y), Int64, bool> _func_filter = null)
+    public void Query_AABB(
+        List<Int64>                _results,
+        AABB                       _box, 
+        SpacePartition.QueryFilter _query_filter = null)
     {
       var block_index_min = PositionToBlockIndex((int)_box.min.x, (int)_box.min.y);
       var block_index_max = PositionToBlockIndex((int)_box.max.x, (int)_box.max.y);
@@ -125,20 +129,22 @@ namespace Battle
         {
           foreach (var id in m_nodes[x, y].ListId)
           {
-            if (_func_filter == null || _func_filter(GetIDPosition(id), id))
+            var position = GetIDPosition(id);
+            if (_query_filter == null || _query_filter(position, id))
                 _results.Add(id);            
           }
         }
       }
     }
 
-    public void Range(
-      (int x, int y) _position, int _range,
-      List<Int64> _results, 
-      Func<(int x, int y), Int64, bool> _func_filter = null)
+    public void Query_Center(
+      List<Int64>                _results, 
+      (int x, int y)             _center, 
+      int                        _range,
+      SpacePartition.QueryFilter _query_filter = null)
     {
-      var min = new Vector2(_position.x - _range, _position.y - _range);
-      var max = new Vector2(_position.x + _range, _position.y + _range);  
+      var min = new Vector2(_center.x - _range, _center.y - _range);
+      var max = new Vector2(_center.x + _range, _center.y + _range);  
 
       var block_index_min = PositionToBlockIndex((int)min.x, (int)min.y);
       var block_index_max = PositionToBlockIndex((int)max.x, (int)max.y);
@@ -149,7 +155,13 @@ namespace Battle
         {
           foreach (var id in m_nodes[x, y].ListId)
           {
-            if (_func_filter == null || _func_filter(GetIDPosition(id), id))
+            // 거리 체크.
+            var position = GetIDPosition(id);
+            var distance = PathAlgorithm.Distance(_center.x, _center.y, position.x, position.y);
+            if (distance > _range)
+                continue;
+
+            if (_query_filter == null || _query_filter(position, id))
                 _results.Add(id);            
           }
         }
