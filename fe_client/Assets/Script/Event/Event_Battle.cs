@@ -59,7 +59,7 @@ namespace Battle
 
     // public class Battle_AI_Command_DecisionEvent : IEventParam
     // {
-    //     // AI ∏Ì∑… ∞·¡§ ¿Ã∫•∆Æ.
+    //     // AI ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ ÔøΩÃ∫ÔøΩ∆Æ.
 
     //     public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
@@ -104,7 +104,7 @@ namespace Battle
 
     public class Battle_Cell_PositionEvent : IEventParam
     {
-        // ºø ¡°¿Ø ¿Ã∫•∆Æ.
+        
 
         
 

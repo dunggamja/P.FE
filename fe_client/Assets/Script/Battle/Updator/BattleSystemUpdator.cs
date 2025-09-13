@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -21,14 +21,14 @@ namespace Battle
 
             IsInitialized = false;
 
-            // ÇÁ·ÎÆÄÀÏ¸µÀ» À§ÇØ ÀÓ½Ã Ã³¸®
+            // ë””ë²„ê·¸ ë¡œê·¸ ë¹„í™œì„±í™”
             // Debug.unityLogger.logEnabled = false;
 
-            // DOTween ·Î±× ·¹º§ ¼³Á¤ - Init()À» »ç¿ëÇÏ¿© ¿Ã¹Ù¸£°Ô ¼³Á¤
+            // DOTween ì´ˆê¸°í™” - Init()ì—ì„œ ì´ˆê¸°í™” ë˜ì—ˆìœ¼ë©´ ë¹„í™œì„±í™”
             DOTween.Init(false, false, LogBehaviour.ErrorsOnly);
 
 
-            // °ÔÀÓ µ¥ÀÌÅÍ ÃÊ±âÈ­.
+            // ê²Œì„ ë°ì´í„° ì´ˆê¸°í™”.
             Initialize_GameData().Forget();
         }
 
@@ -52,21 +52,20 @@ namespace Battle
 
         async UniTask Initialize_GameData()
         {
-            // ½ÃÆ® µ¥ÀÌÅÍ ·Îµå.
+            // ê²Œì„ ë°ì´í„° ë¡œë“œ.
             await DataManager.Instance.LoadSheetData();
 
-            // ÇöÀç ½Ã°£À» ±â¹İÀ¸·Î ½Ãµå°ª ÃÊ±âÈ­
+            // ëœë¤ ì‹œë“œ ì„¤ì •.
             Util.SetRandomSeed((int)System.DateTime.Now.Ticks);
 
-            // ÁöÇü ½Ã½ºÅÛ ÃÊ±âÈ­
+            // ì§€í˜• ë§µ ì…‹íŒ….
             Test_BattleSystem_Setup_Terrain();
 
-            // À¯´Ö »ı¼º & ´É·ÂÄ¡ ¼ÂÆÃ.
+            // ìœ ë‹› ì…‹íŒ….
             Test_BattleSystem_Setup_Unit();
 
             IsInitialized = true;
         }
-
 
 
         void Test_BattleSystem_Setup_Terrain()
@@ -81,7 +80,11 @@ namespace Battle
                 }
             }
 
+            // ì§€í˜• ë§µ ì…‹íŒ…
             TerrainMapManager.Instance.SetTerrainMap(terrain_map);
+
+            // ê³µê°„ ë¶„í•  ì´ˆê¸°í™”.
+            SpacePartitionManager.Instance.Initialize(terrain_map.Width, terrain_map.Height);
         }
 
 
@@ -102,19 +105,20 @@ namespace Battle
             EntityManager.Instance.AddEntity(defender);
             EntityManager.Instance.AddEntity(defender_2);
 
-            // 1. ÇÃ·¹ÀÌ¾î Áø¿µ, 2: AI Áø¿µ.
+            // 1. í”Œë ˆì´ì–´, 2: ì  ai
             attacker.SetFaction(1);
             attacker_2.SetFaction(1);
             defender.SetFaction(2);
             defender_2.SetFaction(2);
 
 
-            // 2. AI Å¸ÀÔ ¼ÂÆÃ.
+            // 2. AI íƒ€ì… ì…‹íŒ….
             attacker.SetAIType(EnumAIType.Attack);
             attacker_2.SetAIType(EnumAIType.Attack);
             defender.SetAIType(EnumAIType.Attack);
             defender_2.SetAIType(EnumAIType.Attack);
             
+            // 
             BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
             BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
 
@@ -127,7 +131,7 @@ namespace Battle
             {
                 var attacker_status = e.StatusManager.Status as UnitStatus;
 
-                // ´É·ÂÄ¡ ¼ÂÆÃ.
+                // ëŠ¥ë ¥ì¹˜ ì…‹íŒ….
                 attacker_status.SetPoint(EnumUnitPoint.HP, 22);
                 attacker_status.SetPoint(EnumUnitPoint.HP_Max, 22);
                 attacker_status.SetStatus(EnumUnitStatus.Strength, 6);
@@ -139,17 +143,17 @@ namespace Battle
                 attacker_status.SetStatus(EnumUnitStatus.Luck, 5);
                 attacker_status.SetStatus(EnumUnitStatus.Weight, 4);
 
-                // ±×¶ó¿îµå ¼ÂÆÃ
+                // ì§€í˜• ì†ì„±.
                 e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
 
-                // ¹«±â ¼ÂÆÃ.
+                // TODO: ë¬´ê¸° ì…‹íŒ…ì€ ë‚˜ì¤‘ì— ë°”ê¾¸ì•¼ í• ë“¯.
                 var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_IRON);
                 e.Inventory.AddItem(attacker_weapon);
                 e.StatusManager.Weapon.Equip(attacker_weapon.ID);
             }
 
             {
-                // Å³¼Òµå Àåºñ.
+                // í‚¬ì†Œë“œ?
                 var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
                 attacker_2.Inventory.AddItem(attacker_weapon);
                 attacker_2.StatusManager.Weapon.Equip(attacker_weapon.ID);
@@ -157,7 +161,7 @@ namespace Battle
 
             foreach(var e in list_defender)
             {
-                // ´É·ÂÄ¡ ¼ÂÆÃ.
+                // ëŠ¥ë ¥ì¹˜ ì…‹íŒ….
                 var defender_status = e.StatusManager.Status as UnitStatus;                
                 defender_status.SetPoint(EnumUnitPoint.HP, 22);
                 defender_status.SetPoint(EnumUnitPoint.HP_Max, 22);
@@ -170,16 +174,16 @@ namespace Battle
                 defender_status.SetStatus(EnumUnitStatus.Luck, 5);
                 defender_status.SetStatus(EnumUnitStatus.Weight, 4);
 
-                // ±×¶ó¿îµå ¼ÂÆÃ.
+                // ì§€í˜• ì†ì„±.
                 e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
 
-                // ¹«±â ¼ÂÆÃ.
+                // TODO: ë¬´ê¸° ì…‹íŒ…ì€ ë‚˜ì¤‘ì— ë°”ê¾¸ì•¼ í• ë“¯.
                 var defender_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
                 e.Inventory.AddItem(defender_weapon);
                 e.StatusManager.Weapon.Equip(defender_weapon.ID);
             }
 
-            // À¯´Ö À§Ä¡ ¼³Á¤.
+            // ìœ„ì¹˜ ì…‹íŒ….
             {
                 attacker.UpdateCellPosition(
                     (2, 0), 
@@ -202,7 +206,7 @@ namespace Battle
                     _is_plan: false);
             }
 
-            // ¿ùµå ¿ÀºêÁ§Æ® »ı¼º.
+            // ìƒì„±.ì²˜ë¦¬
             attacker.CreateProcess();
             attacker_2.CreateProcess();
             defender.CreateProcess();

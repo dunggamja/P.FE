@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     {
         if (!m_cached_attribute.TryGetValue(_type, out var _attributes))
         {
-            // EventReceiverAttributes¸¸ ¼±ÅÃÇØ¼­ ¹è¿­·Î ¸¸µé¾îÁİ´Ï´Ù. 
+            // EventReceiverAttributes ì†ì„± ê°€ì ¸ì˜¤ê¸°. 
             _attributes = System.Attribute.GetCustomAttributes(_type, true)
             .Where(e => e is EventReceiverAttribute)
             .Select(e => e as EventReceiverAttribute)
@@ -114,16 +114,16 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
 
         switch (_event.EventProcessTiming)
         {
-            // Áï½Ã Ã³¸®.
+            // ì¦‰ì‹œ ì²˜ë¦¬.
             case EnumEventProcessTiming.Immediate:    DispatchEvent(_event);    break;
             
-            // ´ÙÀ½ ÇÁ·¹ÀÓ¿¡ Ã³¸®.
+            // ë‹¤ìŒ ì—…ë°ì´íŠ¸ì‹œ ì²˜ë¦¬.
             case EnumEventProcessTiming.OnNextUpdate: UpdateEventQueue(_event); break;
         }
         
     }
 
-    // ÀÌº¥Æ® dispatch
+    // ì´ë²¤íŠ¸ dispatch
     private void DispatchEvent(IEventParam _event)
     {
         if (_event == null)
@@ -137,7 +137,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
                 var temp_receivers = ListPool<IEventReceiver>.Acquire();
                 temp_receivers.AddRange(receivers);
 
-                // ÀÌº¥Æ® µğ½ºÆĞÄ¡ Ã³¸®.
+                // ì´ë²¤íŠ¸ ì²˜ë¦¬.
                 foreach (var e in temp_receivers)
                 {
                     if (e != null)
@@ -148,7 +148,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
             }
         }
 
-        // µğ½ºÆĞÄ¡ ¿Ï·á µÈ ÀÌº¥Æ®
+        // ì´ë²¤íŠ¸ ì²˜ë¦¬.
         m_dispatched_list.Add(_event);
 
         //_event.Release();
@@ -156,7 +156,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     }
 
 
-    // Queue¿¡ ³Ö¾î³õ°í Update¿¡¼­ Ã³¸®.
+    // Queueì— ì´ë²¤íŠ¸ ì¶”ê°€.
     private void UpdateEventQueue(IEventParam _event)
     {
         if (_event == null)
@@ -168,15 +168,15 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
 
     private void DispatchEventQueue()
     {
-        // Å¥¸¦ º¹»çÇÕ½Ã´Ù.
+        // Queueì— ì´ë²¤íŠ¸ ì¶”ê°€.
         var list_event = ListPool<IEventParam>.Acquire();
 
         list_event.AddRange(m_update_event_queue);
 
-        // Å¥ Å¬¸®¾î.
+        // Queue ì´ˆê¸°í™”.
         m_update_event_queue.Clear();
 
-        // ÀÌº¥Æ® µğ½ºÆĞÄ¡.
+        // ì´ë²¤íŠ¸ ì²˜ë¦¬.
         foreach (var e in list_event)
         {
             DispatchEvent(e);
@@ -190,7 +190,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     {
         foreach(var e in m_dispatched_list)
         {
-            // Release Ã³¸®.
+            // Release ì²˜ë¦¬.
             if (e != null)
                 e.Release();
         }
@@ -202,10 +202,10 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     {
         base.OnLoop();
 
-        // ÀÌº¥Æ® dispatch Ã³¸®.
+        // ì´ë²¤íŠ¸ dispatch ì²˜ë¦¬.
         DispatchEventQueue();
 
-        // ÀÌº¥Æ® dispatch ÈÄÃ³¸®.
+        // ì´ë²¤íŠ¸ dispatch ì²˜ë¦¬.
         PostDispatchedEvent();
     }
 

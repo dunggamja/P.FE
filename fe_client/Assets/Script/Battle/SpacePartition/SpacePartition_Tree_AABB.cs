@@ -85,6 +85,11 @@ namespace Battle
       InsertLeaf(node);
     }
 
+    public bool HasNode(Int64 _id)
+    {
+      return m_node_map.ContainsKey(_id);
+    }
+
     public void Remove(Int64 _id)
     {
       if (m_node_map.TryGetValue(_id, out var node) == false)
