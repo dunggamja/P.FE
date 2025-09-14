@@ -41,19 +41,19 @@ namespace Battle
 
         public void OnUpdate_Entity_Command_Score(Entity _entity)
         {
-            // Á×¾úÀ¸¸é ¾Ï°Íµµ ¾ÈÇÔ.
+            // ì£½ì—ˆë‹¤.
             if (_entity.IsDead)
                 return;
 
-            // Áø¿µÀÌ ´Ù¸§.
+            // ì§„ì˜ì´ ë‹¤ë¥´ë‹¤.
             if (Faction != _entity.GetFaction())
                 return;
 
-            // Çàµ¿ÀÌ ºÒ°¡´ÉÇÑ »óÅÂ.
+            // í–‰ë™ì´ ì§„í–‰ ì¤‘ì´ ì•„ë‹ˆë‹¤.
             if (_entity.IsEnableCommandProgress() == false)
                 return;
 
-            // // Çàµ¿ ¿ì¼±¼øÀ§°¡ ´Ù¸§.
+            // í–‰ë™ ìš°ì„ ìˆœìœ„ê°€ ë‹¤ë¥´ë‹¤.
             // if (Priority != _entity.GetCommandPriority())
             //     return;
             
@@ -73,11 +73,11 @@ namespace Battle
 
     public partial class BattleSystem_Decision_Making : BattleSystem//, IEventReceiver
     {
-        // ÀÇ»ç°áÁ¤ ¿ì¼±¼øÀ§.
+        // í–‰ë™ ìš°ì„ ìˆœìœ„.
         // static readonly EnumCommandPriority[] s_list_priority = (EnumCommandPriority[])Enum.GetValues(typeof(EnumCommandPriority));
 
 
-        // Çàµ¿ Á¡¼ö °è»ê±â.
+        // í–‰ë™ ìš°ì„ ìˆœìœ„ ê³„ì‚°ê¸°.
         Entity_Score_Calculator  m_entity_score_calculator = new Entity_Score_Calculator();
 
         public BattleSystem_Decision_Making() : base(EnumSystem.BattleSystem_Decision_Making)
@@ -100,15 +100,15 @@ namespace Battle
         }
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            // ÇöÀç ÅÏ¿¡ Çàµ¿ÇÏ´Â Áø¿µ.
+            // í˜„ìž¬ ì§„ì˜.
             var faction         = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
 
-            // ÇöÀç ÅÏ¿¡ Çàµ¿ÇÏ´Â Áø¿µÀÇ ¸í·É Ã³¸® Å¸ÀÔ.
+            // ì§„ì˜ ëª…ë ¹ ìœ í˜•.
             var commander_type  = BattleSystemManager.Instance.GetFactionCommanderType(faction);
 
             switch(commander_type)
             {
-                // AIÀÇ ÀÇ»ç°áÁ¤ ÇÁ·Î¼¼½º.
+                // AI ëª…ë ¹ ìœ í˜•.
                 case EnumCommanderType.None:
                 case EnumCommanderType.AI:
                 {   
@@ -118,7 +118,7 @@ namespace Battle
 
                 case EnumCommanderType.Player:           
                 {
-                    // TODO: À¯ÀúÀÇ ÀÔ·Â ¸í·Éµé °ËÁõ ÇÊ¿ä?
+                    // TODO: í”Œë ˆì´ì–´ ëª…ë ¹ ìœ í˜•.
                 }     
                 break;
             }
@@ -138,27 +138,27 @@ namespace Battle
         {
             m_entity_score_calculator.Reset();
 
-            // Áø¿µ ¼ÂÆÃ.
+            // ì§„ì˜ ì„¤ì •.
             m_entity_score_calculator.SetFaction(_faction);
 
 
-            // ¸ðµç ¿£Æ¼Æ¼ÀÇ AIScore¸¦ ¸®¼Â.
+            // AIScore ì´ˆê¸°í™”.
             EntityManager.Instance.Loop(e => e.ResetAIScore());
 
 
-            // ¿ì¼±¼øÀ§°¡ ³ôÀº AIÅ¸ÀÔºÎÅÍ Ã³¸®ÇÕ´Ï´Ù.
+            // AI ìš°ì„ ìˆœìœ„ ê³„ì‚°.
             for(int i = (int)EnumAIPriority.Begin; i < (int)EnumAIPriority.Max; ++i)
             {
                 var priority = (EnumAIPriority)i;
 
-                // °Ë»çÇÒ AI ¿ì¼±¼øÀ§ Å¸ÀÔ.
+                // AI ìš°ì„ ìˆœìœ„ ì„¤ì •.
                 m_entity_score_calculator.SetPriority(priority);
 
-                // ¸ðµç ¿£Æ¼Æ¼¿¡ ´ëÇØ¼­ ¸í·É Á¡¼ö¸¦ °è»êÇÑ´Ù.
+                // ìœ ë‹› ìš°ì„ ìˆœìœ„ ê³„ì‚°.
                 EntityManager.Instance.Loop(m_entity_score_calculator.OnUpdate_Entity_Command_Score);
 
 
-                // °¡Àå Á¡¼ö°¡ ³ô°Ô ³ª¿Â À¯´Ö¿¡°Ô ¸í·ÉÀ» ³»¸°´Ù.
+                // ìš°ì„ ìˆœìœ„ ê³„ì‚° ê²°ê³¼ ì²˜ë¦¬.
                 if (0 < m_entity_score_calculator.BestEntityID)
                 {
                     if (PushCommand(m_entity_score_calculator.BestEntityID))
@@ -180,14 +180,21 @@ namespace Battle
             {
                 case EnumEntityBlackBoard.AIScore_Attack:
                 {
-                    // °ø°Ý ¸í·ÉÀ» ³»¸°´Ù.
+                    // ê³µê²© ëª…ë ¹
                     PushCommand_Attack(entity_object.ID, entity_object.BlackBoard.Score_Attack);
+                }
+                break;
+
+                case EnumEntityBlackBoard.AIScore_Move:
+                {
+                    // ì´ë™ ëª…ë ¹
+                    PushCommand_Move(entity_object.ID, entity_object.BlackBoard.Score_Move);
                 }
                 break;
 
                 case EnumEntityBlackBoard.AIScore_Done:
                 {
-                    // Çàµ¿ ¿Ï·á ¸í·ÉÀ» ³»¸°´Ù.
+                    // ëŒ€ê¸° ëª…ë ¹
                     PushCommand_Done(entity_object.ID);
                 }
                 break;
@@ -199,21 +206,21 @@ namespace Battle
         void PushCommand_Attack(Int64 _entity_id, AI_Score_Attack.Result _damage_score)
         {
            
-            // °ø°Ý ¸í·É ¼ÂÆÃ.               
+            // ì´ë™ ìš°ì„ ìˆœìœ„ ê³„ì‚° ê²°ê³¼ ì²˜ë¦¬.               
             BattleSystemManager.Instance.PushCommand(
                 
-                    // ÀÌµ¿ ¸í·É
+                    // ì´ë™ ìš°ì„ ìˆœìœ„ ê³„ì‚° ê²°ê³¼ ì²˜ë¦¬.
                     new Command_Move
                     (
                         _entity_id,
                         _damage_score.Position,
                         // _cell_event: EnumCellPositionEvent.Move,
                         _execute_command: true
-                        //, _is_immediate: true // ÀÏ´ÜÀº Áï½Ã ÀÌµ¿.    
+                        //, _is_immediate: true // ì¦‰ì‹œ ì´ë™.    
                     ));
                     
             BattleSystemManager.Instance.PushCommand(
-                    // °ø°Ý ¸í·É
+                    // ê³µê²© ëª…ë ¹
                     new Command_Attack
                     (
                         _entity_id,
@@ -226,6 +233,17 @@ namespace Battle
         void PushCommand_Done(Int64 _entity_id)
         {
             BattleSystemManager.Instance.PushCommand(new Command_Done(_entity_id));
+        }
+
+        void PushCommand_Move(Int64 _entity_id, AI_Score_Move.Result _move_score)
+        {
+            BattleSystemManager.Instance.PushCommand(new Command_Move(
+                _entity_id, 
+                _move_score.Position,
+                _execute_command: true,
+                _visual_immediate: false,
+                _is_plan: false
+            ));
         }
 
     }

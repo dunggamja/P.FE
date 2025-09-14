@@ -10,10 +10,10 @@ public static partial class PathAlgorithm
 {
     static public float Distance(int _from_x, int _from_y, int _to_x, int _to_y)
     {
-        // 1. 4¹æÇâ ÀÌµ¿¸¸ Á¸ÀçÇÒ °æ¿ì.
+        // 1. 4ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
         return Math.Abs(_from_x - _to_x) + Math.Abs(_from_y - _to_y);
 
-        // 2. ´ë°¢¼± ÀÌµ¿ÀÌ Á¸ÀçÇÒ °æ¿ì
+        // 2. ï¿½ë°¢ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         // return Mathf.Sqrt((_from_x - _to_x) * (_from_x - _to_x) + (_from_y - _to_y) * (_from_y - _to_y));
     }
 
@@ -23,7 +23,7 @@ public static partial class PathAlgorithm
     {     
         public int   x         { get; private set; } = 0;
         public int   y         { get; private set; } = 0;
-        public float cost      { get; private set; } = 0f;
+        public int   cost      { get; private set; } = 0;
         public float heuristic { get; private set; } = 0f;
         public Node  parent    { get; private set; } = null;       
         

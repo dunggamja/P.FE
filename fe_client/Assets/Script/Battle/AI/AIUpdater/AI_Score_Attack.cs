@@ -27,15 +27,19 @@ namespace Battle
             }
 
             // 각 항목별 점수. (기준도 뭐도 없이 그냥 정한 수치)
-            static Dictionary<EnumScoreType, float> s_score_multiplier = new ()
-            {            
-                { EnumScoreType.DamageRate_Dealt, 1f   },
-                { EnumScoreType.DamageRate_Taken, -0.7f }, 
-                { EnumScoreType.HitRate,          0.7f },
-                { EnumScoreType.DodgeRate,        0.4f },
-                { EnumScoreType.MoveCost,         0.1f }
+            static float Default_Score_Multiplier(EnumScoreType _type, float _score)
+            {   
+                switch(_type)         
+                {
+                    case EnumScoreType.DamageRate_Dealt: return 1f;
+                    case EnumScoreType.DamageRate_Taken: return -0.7f;
+                    case EnumScoreType.HitRate:          return 0.7f;
+                    case EnumScoreType.DodgeRate:        return 0.4f;
+                    case EnumScoreType.MoveCost:         return 0.1f;
+                }
 
-            };
+                return 0f;
+            }
 
             public  Int64          TargetID { get; private set; } = 0;
             public  Int64          WeaponID { get; private set; } = 0;
@@ -82,32 +86,28 @@ namespace Battle
             }
 
 
-            public float CalculateScore()
+            public float CalculateScore(Func<EnumScoreType, float, float> _func_score_multiplier = null)
             {
-                var result    = 0f;
-                var max_score = 0f;
+                if (_func_score_multiplier == null)
+                    _func_score_multiplier = Default_Score_Multiplier;
 
-                // 최고 점수.
-                foreach(var e in s_score_multiplier.Values)
-                {
-                    max_score += Mathf.Max(e, 0f);
-                }
 
-                
-                if (max_score <= float.Epsilon)
-                    return 0f;
+                var score_total = 0f;
+                var score_max = 0f;
 
                 // 점수 합산.
                 for (int i = 0; i < m_score.Length; ++i)
                 {
-                    if (s_score_multiplier.TryGetValue((EnumScoreType)i, out var multiplier))
-                    {
-                        result += m_score[i] * multiplier;
-                    }
+                    score_total += Mathf.Max(_func_score_multiplier((EnumScoreType)i, m_score[i]), 0f);
+                    score_max   += Mathf.Max(_func_score_multiplier((EnumScoreType)i, 1f), 0f);
                 }
 
+                // 예외처리.
+                if (score_max <= float.Epsilon)
+                    return 0f;
+
                 // 점수는 0.0 ~ 1.0으로 제한.
-                return Mathf.Clamp01(result / max_score);
+                return Mathf.Clamp01(score_total / score_max);
             }
         }
 
@@ -203,6 +203,7 @@ namespace Battle
                             owner_entity,
                             target_entity,
                             (attack_pos_x, attack_pos_y));
+
                         // 점수 계산.
                         var calculate_score = current_score.CalculateScore();
 
@@ -289,8 +290,9 @@ namespace Battle
             public IPathOwner     Visitor        { get; set; }  
             public (int x, int y) Position       { get; set; }  
             public int            MoveDistance   { get; set; }   
-            public bool           VisitOnlyEmptyCell          => true;
-            public bool           StopVisit => false;
+            public bool           VisitOnlyEmptyCell  => true;
+            public bool           IsStop()   => false;
+            
             
             public int            WeaponRangeMin { get; set; }
             public int            WeaponRangeMax { get; set; }
@@ -306,7 +308,7 @@ namespace Battle
             public void Reset()
             {
                 TerrainMap     = null;
-                Visitor      = null;
+                Visitor        = null;
                 Position       = (0, 0);
                 MoveDistance   = 0;
                 WeaponRangeMin = 0;
@@ -315,9 +317,11 @@ namespace Battle
                 VisitList.Clear();
             }
 
-            public bool Visit(int _visit_x, int _visit_y)
+
+
+            public void Visit(int _visit_x, int _visit_y)
             {
-                bool result = false;
+                // bool result = false;
 
                 for(int i = -WeaponRangeMax; i <= WeaponRangeMax; ++i)
                 {
@@ -348,12 +352,12 @@ namespace Battle
                         {
                             CollectTargets.Add((entity_id, _visit_x, _visit_y));
 
-                            result = true;
+                            // result = true;
                         }
                     }
                 }
 
-                return result;
+                // return result;
             }
         }
 

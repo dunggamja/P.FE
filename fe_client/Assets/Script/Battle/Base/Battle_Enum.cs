@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,23 +7,23 @@ using UnityEngine;
 namespace Battle
 {
     /// <summary>
-    /// À¯´Ö ¼Ó¼º
+    /// ìœ ë‹› ì†ì„±   
     /// </summary>
     public enum EnumUnitAttribute
     {
       None = 0,
   
-      Infantry   = 1, // º¸º´
-      Cavalry    = 2, // ±âº´
-      Flyer      = 3, // ºñº´
-      Undead     = 4, // Á»ºñ
-      Beast      = 5, // ¸Í¼ö
-      Large      = 6, // °Å´ë
-      HeavyArmor = 7, // Áß°©
+      Infantry   = 1, // ë³´ë³‘
+      Cavalry    = 2, // ê¸°ë³‘
+      Flyer      = 3, // ë¹„í–‰
+      Undead     = 4, // ì–¸ë°ë“œ
+      Beast      = 5, // ë¹„ìŠ¤íŠ¸
+      Large      = 6, // ëŒ€í˜•
+      HeavyArmor = 7, // ì¤‘í˜•
     }
 
     /// <summary>
-    /// À¯´Ö Æ÷ÀÎÆ®. (cur / max) ÇüÅÂÀÇ ±¸Á¶.
+    /// ìœ ë‹› í¬ì¸íŠ¸. (cur / max) í˜„ì¬ / ìµœëŒ€
     /// </summary>
     public enum EnumUnitPoint
     {
@@ -35,85 +35,85 @@ namespace Battle
     }
 
     /// <summary>
-    /// À¯´Ö ´É·ÂÄ¡
+    /// ìœ ë‹› ëŠ¥ë ¥ì¹˜.
     /// </summary>
     public enum EnumUnitStatus
     {
       None = 0,
 
-      Level      ,  // ·¹º§
-      Strength   ,  // Èû
-      Magic      ,  // ¸¶·Â
-      Skill      ,  // ±â¼ú
-      Speed      ,  // ¼Óµµ
-      Luck       ,  // Çà¿î
-      Defense    ,  // ¼öºñ·Â
-      Resistance ,  // ¸¶¹æ·Â
-      Movement   ,  // ÀÌµ¿·Â
-      Weight     ,  // ¹«°Ô. 
+      Level      ,  // ë ˆë²¨
+      Strength   ,  // í˜
+      Magic      ,  // ë§ˆë ¥
+      Skill      ,  // ìŠ¤í‚¬
+      Speed      ,  // ì†ë„
+      Luck       ,  // í–‰ìš´
+      Defense    ,  // ë°©ì–´
+      Resistance ,  // ë§ˆë°©
+      Movement   ,  // ì´ë™ë ¥
+      Weight     ,  // ì¤‘ëŸ‰. 
     }
 
     /// <summary>
-    /// ¹«±â ¼Ó¼º.
+    /// ë¬´ê¸° ì†ì„±.
     /// </summary>
     public enum EnumWeaponAttribute
     {
       None = 0,
   
-      Sword        = 1, // °Ë
-      Axe          = 2, // µµ³¢
-      Lance        = 3, // Ã¢
-      MartialArts  = 4, // °İÅõ
-      Bow          = 5, // È°
-      Wand         = 6, // ÁöÆÎÀÌ
-      Grimoire     = 7, // ¸¶¹ı¼­
-      Dagger       = 8, // ´Ü°Ë
+      Sword        = 1, // ê²€
+      Axe          = 2, // ë„ë¼
+      Lance        = 3, // ì°½
+      MartialArts  = 4, // ê²©íˆ¬ìˆ 
+      Bow          = 5, // í™œ
+      Wand         = 6, // ë§ˆë²•ë´‰
+      Grimoire     = 7, // ë§ˆë²•ì„œ
+      Dagger       = 8, // ë‹¨ê²€
 
 
-      KillInfantry   = 101, // Æ¯È¿, º¸º´
-      KillCavalry    = 102, // Æ¯È¿, ±âº´
-      KillFlyer      = 103, // Æ¯È¿, ºñº´
-      KillUndead     = 104, // Æ¯È¿, Á»ºñ
-      KillBeast      = 105, // Æ¯È¿, ¸Í¼ö
-      KillLarge      = 106, // Æ¯È¿, °Å´ë
-      KillHeavyArmor = 107, // Æ¯È¿, Áß°©
+      KillInfantry   = 101, // ë³´ë³‘
+      KillCavalry    = 102, // ë³´ë³‘
+      KillFlyer      = 103, // ë¹„í–‰
+      KillUndead     = 104, // ì–¸ë°ë“œ
+      KillBeast      = 105, // ë¹„ìŠ¤íŠ¸
+      KillLarge      = 106, // ëŒ€í˜•
+      KillHeavyArmor = 107, // ì¤‘í˜•
     }
 
     /// <summary>
-    /// ¹«±â ´É·ÂÄ¡
+    /// ë¬´ê¸° ìƒíƒœ.
     /// </summary>
     public enum EnumWeaponStatus
     {
       None = 0,
   
-      Might_Physics   = 1, // Èû
-      Might_Magic     = 2, // ¸¶·Â
-      Hit             = 3, // ¸íÁß
-      Critical        = 4, // Ä¡¸í
-      Weight          = 5, // ¹«°Ô
-      Dodge           = 6, // È¸ÇÇ
-      Dodge_Critical  = 7, // ÇÊ»ìÈ¸ÇÇ
-      Range           = 8, // »ç°Å¸®
-      Range_Min       = 9, // »ç°Å¸®. (ÃÖ¼Ò)
+      Might_Physics   = 1, // ë¬¼ë¦¬ ìœ„ë ¥
+      Might_Magic     = 2, // ë§ˆë²• ìœ„ë ¥
+      Hit             = 3, // ëª…ì¤‘
+      Critical        = 4, // í•„ì‚´
+      Weight          = 5, // ë¬´ê²Œ
+      Dodge           = 6, // íšŒí”¼
+      Dodge_Critical  = 7, // í•„ì‚´ íšŒí”¼
+      Range           = 8, // ì‚¬ê±°ë¦¬
+      Range_Min       = 9, // ì‚¬ê±°ë¦¬. (ìµœì†Œ)
     }
 
 
     /// <summary>
-    /// ºí·¢º¸µå
+    /// ì—”í‹°í‹° ë¸”ë™ë³´ë“œ.
     /// </summary>
     public enum EnumEntityBlackBoard
     {
         None         = 0,
 
-        CommandOwner = 1,  // [À¯´Ö] ¸í·É Å¸ÀÔ
-        CommandFlag,       // [À¯´Ö] ¸í·É »óÅÂ (0 : ´ë±â, 1 : Çàµ¿ ¿Ï·á)
-        Faction,           // [À¯´Ö] Áø¿µ
+        CommandOwner = 1,  // [ëª…ë ¹] ì†Œìœ ì
+        CommandFlag,       // [ëª…ë ¹] ëª…ë ¹ (0 : ì´ë™, 1 : ê³µê²©)
+        Faction,           // [ëª…ë ¹] ì§„ì˜
 
         AIScore_Begin  = 1000,
         
-        AIScore_Attack = AIScore_Begin, // [AI] °ø°İ
-        AIScore_Done,          // [AI] Çàµ¿¿Ï·á
-        AIScore_Move,          // [AI] ÀÌµ¿
+        AIScore_Attack = AIScore_Begin, // [AI] ê³µê²©
+        AIScore_Done,          // [AI] ì™„ë£Œ
+        AIScore_Move,          // [AI] ì´ë™
 
 
         AIScore_Max,
@@ -129,13 +129,13 @@ namespace Battle
     {
         None = 0,
 
-        TurnUpdateCount = 1, // [Turn ½Ã½ºÅÛ] Turn Update Count    
-        CurrentTurn,         // [Turn ½Ã½ºÅÛ] Turn Number    
-        CurrentFaction,      // [Turn ½Ã½ºÅÛ] Faction Number  
+        TurnUpdateCount = 1, // [Turn ìš°ì„ ìˆœìœ„] Turn Update Count    
+        CurrentTurn,         // [Turn ìš°ì„ ìˆœìœ„] Turn Number    
+        CurrentFaction,      // [Turn ìš°ì„ ìˆœìœ„] Faction Number  
     }
 
     /// <summary>
-    /// À¯¸®/ºÒ¸® ¸íÁß·ü¿¡ ¿µÇâ.
+    /// ìš°ì„ ìˆœìœ„/í›„ìˆœìœ„ ìš°ì„ ìˆœìœ„.
     /// </summary>
     public enum EnumAdvantageState
     {
@@ -147,17 +147,17 @@ namespace Battle
 
 
     /// <summary>
-    /// ÁöÇü ¼Ó¼º. bitflag·Î »ı°¢Áß. 32bit?
+    /// ì§€í˜• ì†ì„±. bitflag. 32bit?
     /// </summary>
     public enum EnumTerrainAttribute
     {
-        Invalid  = 0, // ÀÌµ¿ ºÒ°¡
-        FlyerOnly, // ºñÇà À¯´Ö¸¸ °¡´É.
-        Water,     // ¹° ÁöÇü
-        WaterSide, // ¹°°¡,
-        Ground,    // ¶¥        
-        Forest,    // ½£ ÁöÇü        
-        Slope,     // (»ê)ºñÅ», °æ»ç¸é
+        Invalid  = 0, // ë¬´íš¨
+        FlyerOnly, // ë¹„í–‰ ì „ìš©.
+        Water,     // ë¬¼ 
+        WaterSide, // ë¬¼ ì˜†,
+        Ground,    // ë•…        
+        Forest,    // ìˆ²        
+        Slope,     // (ê²½ì‚¬) ê²½ì‚¬, ê²½ì‚¬
 
         MAX = 32,
         // bitflag.. 32 bit or 64 bit ?
@@ -165,10 +165,10 @@ namespace Battle
 
     public enum EnumPathOwnerAttribute
     {
-      Ground, // Áö»ó ÀÌµ¿ °¡´É
-      Flyer, // ºñÇà ÀÌµ¿ °¡´É
-      Water, // ¹° ÀÌµ¿ °¡´É
-      Slope, // (»ê) ºñÅ», °æ»ç¸é ÀÌµ¿°¡´É
+      Ground, // ë•… ì´ë™ ê°€ëŠ¥
+      Flyer, // ë¹„í–‰ ì´ë™ ê°€ëŠ¥
+      Water, // ë¬¼ ì´ë™ ê°€ëŠ¥
+      Slope, // (ê²½ì‚¬) ê²½ì‚¬, ê²½ì‚¬ ì´ë™ ê°€ëŠ¥
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?
@@ -180,21 +180,21 @@ namespace Battle
     /// </summary>
     public enum EnumCommanderType
     {
-        None,   // ¸í·É ¾È ¹ŞÀ½.
-        Player, // ÇÃ·¹ÀÌ¾î°¡ ¸í·É
-        AI,     // AI ¸í·É
+        None,   // ëª…ë ¹ ì—†ìŒ.
+        Player, // í”Œë ˆì´ì–´
+        AI,     // AI
     }
 
     public enum EnumCommandFlag : byte
     {
         // None,        
-        Move,     // ÀÌµ¿
-        Action,   // ¾ÆÀÌÅÛ »ç¿ë, °ø°İ µî.
-        Exchange, // ¾ÆÀÌÅÛ ±³È¯, ... ¿ä°Ç ActionÀÌ °¡´ÉÇÏ¸é ³ÀµÑ ¿¹Á¤?
-        // Done,     // Çàµ¿ Á¾·á
+        Move,     // ì´ë™
+        Action,   // í–‰ë™, ê³µê²©.
+        Exchange, // í–‰ë™ êµí™˜, ... í–‰ë™ì´ ìˆìœ¼ë©´ í–‰ë™ ì·¨ì†Œ?
+        // Done,     // ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // Çàµ¿ »óÅÂ.
+    // ëª…ë ¹ ì§„í–‰ ìƒíƒœ.
     public enum EnumCommandProgressState 
     {
         None,
@@ -203,25 +203,25 @@ namespace Battle
         Invalid,
     }
 
-    // ÀÇ»ç°áÁ¤ ¿ì¼±¼øÀ§.
+    // ëª…ë ¹ ìš°ì„ ìˆœìœ„.
     // public enum EnumCommandPriority
     // {
     //     None,
                 
-    //     // ¿ì¼±¼øÀ§. ³ôÀ»¼ö·Ï ¿ì¼±¼øÀ§°¡ ³ôÀ½.
+    //     // 
     //     Low,
     //     Normal,
     //     High,
 
-    //     // ½Ã½ºÅÛ »ó ¿ì¼±ÇØ¼­ Ã³¸®ÇØ¾ß ÇÏ´Â °æ¿ì
+    //     // 
     //     Critical, 
     // }
 
     public enum EnumCellPositionEvent
     {
-        Enter,  // µîÀå
-        Exit,  // ¼Ò¸ê
-        Move, // ÀÌµ¿
+        Enter,  // ì…ì¥
+        Exit,  // í‡´ì¥
+        Move, // ì´ë™
 
         // MAX = 32,
     }

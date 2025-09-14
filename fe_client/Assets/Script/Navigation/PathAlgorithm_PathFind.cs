@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,9 +9,12 @@ using UnityEngine.Assertions.Comparers;
 
 public static partial class PathAlgorithm
 {
+    // FIND OPTION
     public struct PathFindOption
     {
-        public (bool check, int range, (int x, int y) base_pos)     MoveRange { get; private set; }
+        // ì¶œë°œì§€ì ìœ¼ë¡œ ë¶€í„° ì´ë™ ê°€ëŠ¥í•œ ë²”ìœ„ë¥¼ ì²´í¬.
+        public (bool check, int range, (int x, int y) base_pos)     
+                                MoveRange { get; private set; } 
 
         public PathFindOption SetMoveRange(bool _check, int _range, (int x, int y) _base_pos)
         {
@@ -19,9 +22,10 @@ public static partial class PathAlgorithm
             return this;
         }
 
+
         public static PathFindOption EMPTY => new PathFindOption()
         {
-            MoveRange = (false, 0, (0, 0))
+            MoveRange = (false, 0, (0, 0)),
         };
     }
 
@@ -32,7 +36,7 @@ public static partial class PathAlgorithm
         public (int x, int y)          Position     { get; set; }  
         public int                     MoveDistance { get; set; }
         public bool                    VisitOnlyEmptyCell => false;
-        public bool                    StopVisit          => false;
+        public bool                    IsStop() => false;
 
         public HashSet<(int x, int y)> VisitList { get; set; } = new();
 
@@ -41,10 +45,11 @@ public static partial class PathAlgorithm
             VisitList.Clear();
         }
 
-        public bool Visit(int x, int y)
+
+        public void Visit(int x, int y)
         {
             VisitList.Add((x, y));
-            return true;
+            // return true;
         }
 
         public bool IsInMoveRange(int _x, int _y)
@@ -54,32 +59,41 @@ public static partial class PathAlgorithm
     }
     
 
-    public static void PathFind(
-        ref List<PathNode> _path_nodes, 
+    public static (bool result, int move_distance) PathFind(
         TerrainMap         _terrain_map, 
         IPathOwner         _path_owner, 
         (int x, int y)     _from_cell,
         (int x, int y)     _to_cell,
-        PathFindOption     _option)
+        PathFindOption     _option,
+        List<PathNode>     _path_nodes = null)
     {
-        if (_path_nodes == null)
-            return;
-
-        _path_nodes.Clear();
-
         var list_node = ListPool<Node>.Acquire();
 
-        // A* ·Î ±æÃ£±â. ¸øÃ£À¸¸é null ¹İÈ¯.
-        if (AStar(ref list_node, _terrain_map, _path_owner, _from_cell, _to_cell, _option))
+        try
         {
-            foreach(var e in list_node)
+            // A* ê²€ìƒ‰. ê²€ìƒ‰ ê²°ê³¼ê°€ null ì´ë©´ ê²€ìƒ‰ ì‹¤íŒ¨.
+            if (AStar(ref list_node, _terrain_map, _path_owner, _from_cell, _to_cell, _option))
             {
-                _path_nodes.Add(new PathNode(e.x, e.y));
+                if (_path_nodes != null)
+                {
+                    _path_nodes.Clear();
+                    foreach(var e in list_node)
+                        _path_nodes.Add(new PathNode(e.x, e.y, -1, e.cost));
+                }        
+
+                return (true, list_node.Count);
             }
         }
+        finally
+        {
 
-        ListPool<Node>.Return(ref list_node);
+            ListPool<Node>.Return(ref list_node);
+        }
+
+        return (false, 0);
     }
+
+
 
 
     static bool AStar(
@@ -94,7 +108,7 @@ public static partial class PathAlgorithm
             return false;
 
         
-        // ¸ñÇ¥ÁöÁ¡ÀÌ ÀÌµ¿°¡´ÉÇÏ°í ºñ¾îÀÖ´ÂÁö Ã¼Å©ÇÕ´Ï´Ù. 
+        // ëª©ì ì§€ ì ìœ  ê°€ëŠ¥í•œì§€ ì²´í¬.
         if (!Verify_Movecost(
             _terrain_map,
             _path_owner,
@@ -102,7 +116,7 @@ public static partial class PathAlgorithm
             _check_ignore_zoc:false).result)
             return false;                    
 
-        // ½ÃÀÛÁöÁ¡Àº ¿Ö Ã¼Å©Çß´ÂÁö ±â¾ï¾È³ªÁö¸¸ ÀÌµ¿°¡´ÉÇÑ ÁöÇüÀÎÁö¸¸ Ã¼Å©ÇÕ½Ã´Ù.
+        // ì¶œë°œì§€ê°€ ì´ë™ê°€ëŠ¥í•œì§€ ì²´í¬.
         if (!Verify_Movecost(
             _terrain_map, 
             _path_owner, 
@@ -110,15 +124,15 @@ public static partial class PathAlgorithm
             _check_ignore_zoc:true).result)
             return false;
 
-        
+
+        // í’€ ì‚¬ìš©.
         var open_list        = ListPool<Node>.Acquire();
         var close_list       = ListPool<Node>.Acquire();
+        
+        // ì´ë™ ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ì§€ ì•Šì•„ì•¼ í•˜ëŠ” ê²½ìš° 
         var move_range_check = (_option.MoveRange.check) ? ObjectPool<MoveRangeCheck>.Acquire() : null;
-
-        // ÀÌµ¿ ¹üÀ§ Ã¼Å©°¡ ÇÊ¿äÇÒ °æ¿ì, FloodFillÀ» ½ÇÇàÇÏ¿© ÀÌµ¿¹üÀ§¸¦ ¹Ì¸® °è»êÇØµÓ½Ã´Ù.
         if (move_range_check != null)
         {
-            move_range_check = ObjectPool<MoveRangeCheck>.Acquire();
             move_range_check.TerrainMap   = _terrain_map;
             move_range_check.Visitor      = _path_owner;
             move_range_check.Position     = _option.MoveRange.base_pos;
@@ -126,108 +140,117 @@ public static partial class PathAlgorithm
             PathAlgorithm.FloodFill(move_range_check);
         }
 
-
-        // ½ÃÀÛ ÁöÁ¡À» ³Ö½À´Ï´Ù.
-        open_list.Add(new Node(_from_cell.x, _from_cell.y, _to_cell.x, _to_cell.y, 0, null));
-
-        // Debug.Log($"start:{_from_cell.x}, {_from_cell.y}");
-
-        // ³²Àº °Å¸®°¡ °¡Àå ÀûÀº ³ëµå¸¦ Ã£¾Æº¾½Ã´Ù.
-        Node func_find_minimum_heuristic(List<Node> _list_node)
-        {
-            if (_list_node == null)
-                return null;
-
-            Node minimum = null;         
-            foreach (var e in _list_node)
-            {
-                if (e == null || (minimum != null && minimum.heuristic <= e.heuristic))
-                    continue;
-
-                minimum = e;
-            }
-
-            return minimum;
-        }
-
-        // µµÂø ³ëµå.
+        // ëª©í‘œì§€.
         Node goal_node = null;
 
-        while(0 < open_list.Count)
-        {
-            // ³²Àº °Å¸®°¡ °¡Àå °¡±î¿î ³ëµå¸¦ °¡Á®¿Â´Ù.
-            var item = func_find_minimum_heuristic(open_list);
 
-            // »ç¿ëÇÑ ³ëµå´Â open_list¿¡¼­ Á¦°Å ÈÄ close_list¿¡ Ãß°¡.
-            open_list.Remove(item);
-            close_list.Add(item);
-            // Debug.Log($"close:{item.x}, {item.y}");
+        try
+        {       
+            // ì¶œë°œì§€ë¥¼ ì¶”ê°€.
+            open_list.Add(new Node(_from_cell.x, _from_cell.y, _to_cell.x, _to_cell.y, 0, null));
 
-            // ¸ñÇ¥ ÁöÁ¡¿¡ µµ´Ş.
-            if ((item.x, item.y) == _to_cell)
+            // Debug.Log($"start:{_from_cell.x}, {_from_cell.y}");
+
+            // ìµœì†Œ ë¹„ìš©ì„ ì°¾ëŠ” í•¨ìˆ˜.
+            Node func_find_minimum_heuristic(List<Node> _list_node)
             {
-                goal_node = item;
-                // Debug.Log($"goal:{item.x}, {item.y}");
-                break;
+                if (_list_node == null)
+                    return null;
+
+                Node minimum = null;         
+                foreach (var e in _list_node)
+                {
+                    if (e == null || (minimum != null && minimum.heuristic <= e.heuristic))
+                        continue;
+
+                    minimum = e;
+                }
+
+                return minimum;
             }
 
-            // ÁÖº¯ ³ëµå Å½»ö.
-            for(int i = -1; i <= 1; ++i)
+            
+
+            while(0 < open_list.Count)
             {
-                for(int k = -1; k <= 1; ++k)
+                // ìµœì†Œ ë¹„ìš©ì„ ì°¾ëŠ” í•¨ìˆ˜.
+                var item = func_find_minimum_heuristic(open_list);
+
+                // ìµœì†Œ ë¹„ìš©ì„ ì°¾ì€ ë…¸ë“œë¥¼ ì œê±°í•˜ê³  ì¶”ê°€.
+                open_list.Remove(item);
+                close_list.Add(item);
+                // Debug.Log($"close:{item.x}, {item.y}");
+
+                // ëª©í‘œì§€ì— ë„ë‹¬í–ˆëŠ”ì§€ ì²´í¬.
+                if ((item.x, item.y) == _to_cell)
                 {
-                    var x         = item.x + i;
-                    var y         = item.y + k;
+                    goal_node = item;
+                    // Debug.Log($"goal:{item.x}, {item.y}");
+                    break;
+                }
 
-                    // °¡·Î, ¼¼·Î 1Ä­¾¿¸¸ ÀÌµ¿°¡´É. (´ë°¢¼± ÀÌµ¿ ¾øÀ½)
-                    if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
-                        continue;
+                // ì´ë™ ê°€ëŠ¥í•œ ì¢Œí‘œë¥¼ ì°¾ëŠ”ë‹¤.
+                for(int i = -1; i <= 1; ++i)
+                {
+                    for(int k = -1; k <= 1; ++k)
+                    {
+                        var x         = item.x + i;
+                        var y         = item.y + k;
 
-                    // ÀÌ¹Ì °Ë»çÇÑ ÁöÁ¡ÀÎÁö Ã¼Å©.
-                    if (0 <= close_list.FindIndex(e => e.x == x && e.y == y))
-                        continue;
+                        // 1ì¹¸ ì´ìƒ ì´ë™í•˜ëŠ”ì§€ ì²´í¬.
+                        if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
+                            continue;
 
-                    // ÀÌµ¿ ¹üÀ§ Ã¼Å©.
-                    if (move_range_check != null && !move_range_check.IsInMoveRange(x, y))
-                        continue;
+                        // ì´ë¯¸ ë°©ë¬¸í•œ ì¢Œí‘œì¸ì§€ ì²´í¬.
+                        if (0 <= close_list.FindIndex(e => e.x == x && e.y == y))
+                            continue;
 
-                    // ÀÌµ¿ °¡´ÉÇÑ Áö Ã¼Å©.
-                    (var moveable, var move_cost) = Verify_Movecost(
-                        _terrain_map, 
-                        _path_owner, 
-                        (x, y), 
-                        _check_ignore_zoc:true);
+                        // ì´ë™ ë²”ìœ„ ì²´í¬.
+                        if (move_range_check != null && !move_range_check.IsInMoveRange(x, y))
+                            continue;
 
-                    if (!moveable)
-                        continue;
+                        // ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
+                        (var moveable, var move_cost) = Verify_Movecost(
+                            _terrain_map, 
+                            _path_owner, 
+                            (x, y), 
+                            _check_ignore_zoc:true);
 
-                    // »õ·Î¿î ³ëµå µ¥ÀÌÅÍ 
-                    var new_item  = new Node(x, y, _to_cell.x, _to_cell.y, move_cost, item);
+                        if (!moveable)
+                            continue;
 
-                    // °°Àº ÁÂÇ¥¿¡ ¼ÓÇÏ´Â ³ëµå°¡ ÀÖÀ» °æ¿ì ºñ±³ ÈÄ º¯°æ.
-                    var old_item = open_list.Find((e) => e.x == new_item.x && e.y == new_item.y);
-                    if (old_item != null && old_item.cost < new_item.cost)
-                        continue;                    
+                        // ìƒˆë¡œìš´ ë…¸ë“œ ìƒì„±.
+                        var new_item  = new Node(x, y, _to_cell.x, _to_cell.y, move_cost, item);
 
-                    // °ãÄ¡´Â ³ëµå Á¦°Å.
-                    if (old_item != null)
-                        open_list.Remove(old_item);
+                        // ì´ë¯¸ ë°©ë¬¸í•œ ë…¸ë“œì¸ì§€ ì²´í¬.
+                        var old_item = open_list.Find((e) => e.x == new_item.x && e.y == new_item.y);
+                        if (old_item != null && old_item.cost < new_item.cost)
+                            continue;                    
 
-                    open_list.Add(new_item);
-                    // Debug.Log($"open:{new_item.x}, {new_item.y}");
+                        // ì´ë¯¸ ë°©ë¬¸í•œ ë…¸ë“œì¸ì§€ ì²´í¬.
+                        if (old_item != null)
+                            open_list.Remove(old_item);
 
+                        open_list.Add(new_item);
+                        // Debug.Log($"open:{new_item.x}, {new_item.y}");
+
+                    }
                 }
             }
+        }
+        finally
+        {
+            ListPool<Node>.Return(ref open_list);
+            ListPool<Node>.Return(ref close_list);
+            ObjectPool<MoveRangeCheck>.Return(ref move_range_check);            
         }        
 
-        // ¿ÀºêÁ§Æ® ¹İÈ¯
-        ListPool<Node>.Return(ref open_list);
-        ListPool<Node>.Return(ref close_list);
-        ObjectPool<MoveRangeCheck>.Return(ref move_range_check);
+        // ê²°ê³¼ ë°˜í™˜.
+        
 
         if (goal_node != null)
         {
-            // ±æÃ£±â ¼º°ø.
+            // ê²°ê³¼ ë°˜í™˜.
             if (_path_find_list != null)
             {
                 _path_find_list.Clear();    
@@ -238,20 +261,15 @@ public static partial class PathAlgorithm
                     goal_node = goal_node.parent;
                 }
 
-                // µÚÁı¾î Áà¾ßÇÔ.
+                // ì—­ìˆœìœ¼ë¡œ ì •ë ¬.
                 _path_find_list.Reverse();
             }
-
-            // foreach(var e in _path_find_list)
-            // {
-            //     Debug.Log($"path:{e.x}, {e.y}");
-            // }
 
             return true;
         }
         else
         {
-            // ±æÃ£±â ½ÇÆĞ.
+            // ê²°ê³¼ ë°˜í™˜.
             return false;
         }
     }
@@ -309,15 +327,15 @@ public static partial class PathAlgorithm
         (int x, int y) Position           { get; }
         int            MoveDistance       { get; }
         bool           VisitOnlyEmptyCell { get; }
-        bool           StopVisit          { get; }
 
 
-        bool Visit(int x, int y);
+        bool  IsStop();
+        void  Visit(int x, int y);
     }
 
     static public void FloodFill(IFloodFillVisitor _visitor)
     {
-        // _visitor ¾øÀ¸¸é ¾Æ¹«°Íµµ ÇÏÁö ¾Ê½À´Ï´Ù.    
+        // _visitor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½.    
         if (_visitor == null)
             return;
 
@@ -329,11 +347,11 @@ public static partial class PathAlgorithm
 
         while(open_list_move.Count > 0)
         {
-            // Áß´Ü Á¶°Ç Ã¼Å©.
-            if (_visitor.StopVisit)
+            // ì¤‘ë‹¨ ì¡°ê±´ ì²´í¬.
+            if (_visitor.IsStop())
                 break;
 
-            // movecost°¡ °¡Àå ÀûÀº ¾ÆÀÌÅÛÀ» °¡Á®¿É´Ï´Ù.            
+            // movecost ìµœì†Œê°’ ì°¾ê¸°.            
             var item = (x:0, y:0, move_cost:int.MaxValue);
             
             foreach(var e in open_list_move)
@@ -342,10 +360,10 @@ public static partial class PathAlgorithm
                     item = e;
             }            
 
-            // #1. ½ÃÀÛ À§Ä¡ÀÎÁö Ã¼Å©. 
+            // #1. ì‹œì‘ ìœ„ì¹˜ ì²´í¬. 
             var is_start_position = (item.x == _visitor.Position.x && item.y == _visitor.Position.y);
 
-            // #2. ÀÌµ¿ °¡´ÉÇÑ Áö¿ªÀÎÁö Ã¼Å©.
+            // #2. ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
             var verify_move_cost  = Verify_Movecost(
                 _visitor.TerrainMap,
                 _visitor.Visitor, 
@@ -353,19 +371,19 @@ public static partial class PathAlgorithm
                 _check_ignore_zoc: _visitor.VisitOnlyEmptyCell == false)
                 .result;
 
-            // ½ÃÀÛ À§Ä¡ or ÀÌµ¿ °¡´ÉÇÑ Áö¿ªÀÏ °æ¿ì VisitÀ» ½ÇÇà.
+            // ì‹œì‘ ìœ„ì¹˜ or ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
             var call_visit = (is_start_position) || verify_move_cost;                                    
             if (call_visit)
             {
                 _visitor.Visit(item.x, item.y);                
             }
 
-            // open/close list ¼ÂÆÃ
+            // open/close list ì¶”ê°€.
             open_list_move.Remove(item);
             close_list_move.Add((item.x, item.y, 0));
             // Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
 
-            // ÀÌµ¿ °¡´É Áö¿ª Å½»ö. (FloodFill)
+            // ì´ë™ ê°€ëŠ¥í•œ ì¢Œí‘œ ì°¾ê¸°. (FloodFill)
             for(int i = -1; i <= 1; ++i)
             {
                 for(int k = -1; k <= 1; ++k)
@@ -373,17 +391,17 @@ public static partial class PathAlgorithm
                     var x = item.x + i;
                     var y = item.y + k;                    
 
-                    // ÀÌ¹Ì Ã¼Å©ÇÏ¿´À½.
+                    // ì´ë¯¸ ë°©ë¬¸í•œ ì¢Œí‘œì¸ì§€ ì²´í¬.
                     if (close_list_move.Contains((x, y, 0)))
                         continue;
 
-                    // °¡·Î, ¼¼·Î 1Ä­¾¿¸¸ ÀÌµ¿°¡´É. (´ë°¢¼± ÀÌµ¿ ¾øÀ½)
+                    // 1ì¹¸ ì´ìƒ ì´ë™í•˜ëŠ”ì§€ ì²´í¬. 
                     if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
                         continue;
 
                     // Debug.Log($"FloodFill, x:{x}, y:{y}");
 
-                    // Åë°ú °¡´ÉÇÑ Áö¿ªÀÎÁö Ã¼Å©ÇÕ´Ï´Ù.
+                    // ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
                     (var moveable, var move_cost) = Verify_Movecost(
                         _visitor.TerrainMap,
                         _visitor.Visitor, 
@@ -394,14 +412,14 @@ public static partial class PathAlgorithm
                     if (!moveable)
                         continue;
 
-                    // ÀÌµ¿ ¹üÀ§ ÃÊ°ú.
+                    // ì´ë™ ê°€ëŠ¥í•œì§€ ì²´í¬.
                     var total_cost = item.move_cost + move_cost;
                     if (total_cost > _visitor.MoveDistance)
                     {
                         continue;
                     }
 
-                    // open_list ¿¡ Ãß°¡.
+                    // open_list ì¶”ê°€.
                     open_list_move.Add((x, y, total_cost));
                 }
             }   
@@ -409,7 +427,7 @@ public static partial class PathAlgorithm
 
         HashSetPool<(int x, int y, int move_cost)>.Return(ref open_list_move);
         HashSetPool<(int x, int y, int move_cost)>.Return(ref close_list_move);
-        // Debug.Log($"FloodFill, Complete, x:{_position.x}, y:{_position.y}");            
+        // Debug.Log($"FloodFill, Complete, x:{_visitor.Position.x}, y:{_visitor.Position.y}");            
     }
 
     static (bool result, int move_cost) Verify_Movecost(
@@ -424,7 +442,7 @@ public static partial class PathAlgorithm
         if (_terrain_map.IsInBound(_cell.x, _cell.y) == false)
             return (false, 0);  
   
-        // ZOC ¹«½Ã ÇÔ¼ö ¼ÂÆÃÇÕ´Ï´Ù.
+        // ZOC ì²´í¬ ì—¬ë¶€.
         Func<int, bool> func_ignore_zoc = null;        
         if (_check_ignore_zoc)
             func_ignore_zoc = _path_owner.IsIgnoreZOC;
@@ -433,7 +451,7 @@ public static partial class PathAlgorithm
             return (false, 0);
 
         
-        // ÀÌµ¿ Cost °è»ê.
+        // ì´ë™ Cost ê³„ì‚°
         var move_cost = Terrain_Attribute.Calculate_MoveCost(
             _path_owner.PathAttribute, 
             _terrain_map.Attribute.GetAttribute(_cell.x, _cell.y));

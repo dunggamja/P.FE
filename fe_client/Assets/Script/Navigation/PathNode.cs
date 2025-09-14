@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
@@ -8,17 +8,20 @@ using UnityEngine;
 
 public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 {
-    float m_position_x; // ?úÑÏπ? X
-    float m_position_z; // ?úÑÏπ? Z
+    float m_position_x; // ÏúÑÏπò X
+    float m_position_z; // ÏúÑÏπò Z
     float m_rotation_y; // Î∞©Ìñ• Y
 
-    public static PathNode Empty { get; } = new PathNode { m_position_x = -1f, m_position_z = -1f, m_rotation_y = -1f };
+    int   m_move_cost;
 
-    public PathNode(float _position_x = -1f, float _position_z = -1f, float _rotation_y = -1f)
+    public static PathNode Empty { get; } = new PathNode { m_position_x = -1f, m_position_z = -1f, m_rotation_y = -1f, m_move_cost = 0 };
+
+    public PathNode(float _position_x = -1f, float _position_z = -1f, float _rotation_y = -1f, int _move_cost = 0)
     {
         m_position_x = _position_x;
         m_position_z = _position_z;
         m_rotation_y = _rotation_y;
+        m_move_cost  = _move_cost;
     }
 
 
@@ -48,7 +51,8 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
         return
             m_position_x == other.m_position_x &&
             m_position_z == other.m_position_z &&
-            m_rotation_y == other.m_rotation_y;
+            m_rotation_y == other.m_rotation_y &&
+            m_move_cost  == other.m_move_cost;
     }
 
     public bool Equals(PathNode x, PathNode y)
@@ -61,7 +65,8 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
         return 
             obj.m_position_x.GetHashCode() ^ 
             obj.m_position_z.GetHashCode() ^ 
-            obj.m_rotation_y.GetHashCode();
+            obj.m_rotation_y.GetHashCode() ^
+            obj.m_move_cost.GetHashCode();
     }
 
 
@@ -116,7 +121,7 @@ public class PathNodeManager //: IPathNodeManager
 
     bool Check_Arrive_Position(PathNode _target, IPathOwner _owner)
     {
-        // ≈∏∞Ÿ ¿ßƒ°∞° ¿ÃªÛ.
+        // ÏúÑÏπò Ï≤¥ÌÅ¨.
         if (!_target.IsValidPosition())
             return true;
 
@@ -128,11 +133,11 @@ public class PathNodeManager //: IPathNodeManager
         var position_from_prev = _target.GetPosition() - position_prev;        
         var target_from_cur    = _target.GetPosition() - position;
 
-        // µµ¬¯ ∞≈∏Æ √º≈©.
+        // ÏúÑÏπò Ï∞®Ïù¥ Ï≤¥ÌÅ¨.
         if (target_from_cur.magnitude <= m_arrive_radius)
             return true;
         
-        // ¿ßƒ°∏¶ ¡ˆ≥™∞¨¥¬¡ˆ √º≈©.
+        // ÏúÑÏπò Ï∞®Ïù¥ Ï≤¥ÌÅ¨.
         if (Vector3.Dot(position_from_prev, target_from_cur) < 0f)
             return true;
         
@@ -142,20 +147,20 @@ public class PathNodeManager //: IPathNodeManager
     // bool Check_Arrive_Rotation(PathNode _target, PathNode _prev, PathNode _current)
     // {
     //     return true;
-    //     // »∏¿¸ √º≈©«“ ∞Ë»π ¿œ¥‹ æ¯¿Ω.
+    //     // Î∞©Ìñ• Ï≤¥ÌÅ¨ Ïó¨Î∂Ä.
 
-    //     // // ?ú†?ö®?Ñ± Ï≤¥ÌÅ¨
+    //     // // Î∞©Ìñ• Ï≤¥ÌÅ¨
     //     // if (!_target.IsValidRotation())
     //     //     return true;
 
     //     // var rotation_target  = _target.GetRotation();
     //     // var rotation_current = _current.GetRotation();
 
-    //     // // ?òÑ?û¨ Î∞©Ìñ•Í≥? Î™©Ìëú Î∞©Ìñ•?ùò Ï∞®Ïù¥Î•? Í≥ÑÏÇ∞.
+    //     // // Î∞©Ìñ• Ï∞®Ïù¥ Í≥ÑÏÇ∞.
     //     // var rotation_diff  = rotation_target * Quaternion.Inverse(rotation_current);
     //     // var angle_diff     = Mathf.Acos(Quaternion.Dot(Quaternion.identity, rotation_diff));
 
-    //     // // Î∞©Ìñ• Ï∞®Ïù¥Í∞? ?óà?ö©Î≤îÏúÑ ?Ç¥ ?ûÑ
+    //     // // Î∞©Ìñ• Ï∞®Ïù¥ Î≤îÏúÑ Ï≤¥ÌÅ¨.
     //     // if (angle_diff <= m_arrive_angle)
     //     //     return true;
 
@@ -180,29 +185,39 @@ public class PathNodeManager //: IPathNodeManager
         
         var list_path_node = ListPool<PathNode>.Acquire();
 
-        // ∞Ê∑Œ √£±‚.
-        PathAlgorithm.PathFind(
-            ref list_path_node, 
+        // Í≤ΩÎ°ú Ï∞æÍ∏∞.
+        var path_find = PathAlgorithm.PathFind(
+            
             TerrainMap, 
             _path_owner, 
+
+            // Ï∂úÎ∞úÏßÄ/ÎèÑÏ∞©ÏßÄ.
             _from_position.PositionToCell(), 
             _dest_position.PositionToCell(),
+
+            // ÌòÑÏû¨ ÏúÑÏπòÎ•º Í∏∞Î∞òÏúºÎ°ú Ïù¥Îèô Í∞ÄÎä•Ìïú Î≤îÏúÑÎ•º Î≤óÏñ¥ÎÇòÏßÄ ÏïäÎèÑÎ°ù.
             PathAlgorithm.PathFindOption.EMPTY
                 .SetMoveRange(
                     true,
                     _path_owner.PathMoveRange, 
-                    _path_owner.PathBasePosition)
-            );        
+                    _path_owner.PathBasePosition),
 
-        // ∫πªÁ.
-        m_list_path_node.Clear();
-        foreach (var node in list_path_node)
-            m_list_path_node.Enqueue(node);
+            // Í∏∏Ï∞æÍ∏∞ Í≤ΩÎ°ú.
+            list_path_node
+            ).result;        
+
+        // Í≤ΩÎ°ú Ï†ÄÏû•.
+        if (path_find)
+        {
+            m_list_path_node.Clear();
+            foreach (var node in list_path_node)
+                m_list_path_node.Enqueue(node);
+        }
 
         ListPool<PathNode>.Return(ref list_path_node);
 
         
-        return 0 < m_list_path_node.Count;
+        return path_find;
     }
 
     public void ClearPath()

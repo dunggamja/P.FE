@@ -8,12 +8,12 @@ namespace Battle.MoveRange
 {
   public enum EnumDrawFlag
   {    
-    MoveRange   = 1 << 0,    // ÀÌµ¿ °Å¸®
-    AttackRange = 1 << 1,  // ¹«±â ¹üÀ§
+    MoveRange   = 1 << 0,    // ï¿½Ìµï¿½ ï¿½Å¸ï¿½
+    AttackRange = 1 << 1,  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   }
 
-  // ¹üÀ§¸¦ ±×¸®´Â Å¸ÀÔÀÌ, À¯´Ö1°³ »Ó ¾Æ´Ï¶ó ´Ù¾çÇÑ °æ¿ì°¡ ¾ÕÀ¸·Î ÀÖÀ» °Í °°¾Æ¼­, 
-  // Ãß»óÈ­ ÇØµÎ¾ú´Ù.
+  // ìœ„ì¹˜ë³„ë¡œ ì²´í¬í•˜ëŠ” ì¸í„°í˜ì´ìŠ¤, 1ì¹¸ ì´ìƒ ì´ë™í•˜ëŠ”ì§€ ì²´í¬í•˜ê³ , 
+  // ë²½ ë„˜ì–´ê°€ì§€ ì•ŠëŠ”ì§€ ì²´í¬í•˜ê³ ,
   public interface IDrawRangeData
   {
     public int DrawFlag { get; }
@@ -33,8 +33,8 @@ namespace Battle.MoveRange
     public IPathOwner         Visitor      { get; set; }
     public (int x, int y)     Position     { get; set; }
     public int                MoveDistance { get; set; }
-    public bool               VisitOnlyEmptyCell     => true;
-    public bool               StopVisit => false;
+    public bool               VisitOnlyEmptyCell  => true;
+    public bool               IsStop()            => false;
 
     public Int64              VisitorID    { get; set; } = 0;
     public (int min, int max) WeaponRange  { get; set; } = (0, 0);
@@ -44,9 +44,9 @@ namespace Battle.MoveRange
 
 
 
-    public bool Visit(int _visit_x, int _visit_y)
+    public void Visit(int _visit_x, int _visit_y)
     {
-        bool result = false;
+        // bool result = false;
 
         List_Move.Add((_visit_x, _visit_y));
         
@@ -55,7 +55,7 @@ namespace Battle.MoveRange
 
         
 
-        // ¹«±â »ç°Å¸® ¹üÀ§.
+        // ë²”ìœ„ ì²´í¬.
         for(int x = -weapon_range_max; x <= weapon_range_max; ++x)
         {
             for(int y = -weapon_range_max; y <= weapon_range_max; ++y)
@@ -63,14 +63,14 @@ namespace Battle.MoveRange
                 var weapon_x = _visit_x + x;
                 var weapon_y = _visit_y + y;
 
-                // ¹«±â »ç°Å¸® Ã¼Å©
+                // ë²”ìœ„ ì²´í¬.
                 var distance = PathAlgorithm.Distance(_visit_x, _visit_y, weapon_x, weapon_y);
                 if (distance < weapon_range_min || weapon_range_max < distance)
                 {
                     continue;
                 }
 
-                // ¸Ê ¹üÀ§ Ã¼Å©.
+                // ë²”ìœ„ ì²´í¬.
                 if (TerrainMap != null && TerrainMap.IsInBound(weapon_x, weapon_y) == false)
                 {
                   continue;
@@ -78,11 +78,11 @@ namespace Battle.MoveRange
 
                 List_Weapon.Add((weapon_x, weapon_y));
 
-                result = true;
+                // result = true;
             }
         }
 
-        return result;
+        // return result;
     }
 
 
@@ -150,7 +150,7 @@ namespace Battle.MoveRange
                         , bool  _use_base_position
                         , Int64 _use_weapon_id = 0)
     {
-      // ÀÌ¹Ì µ¿ÀÏÇÑ ParamÀ¸·Î ±×·ÁÁ®ÀÖÀ¸¸é Ã³¸®ÇÏÁö ¾Ê´Â´Ù.
+      // íŒŒë¼ë¯¸í„° ì´ˆê¸°í™”.
       if (DrawFlag        == _draw_flag 
       &&  DrawEntityID    == _entityID
       &&  UseBasePosition == _use_base_position
@@ -159,7 +159,7 @@ namespace Battle.MoveRange
 
       Clear();
 
-      // ±×¸± ¹üÀ§°¡ ¾øÀ¸¸é Ã³¸®ÇÏÁö ¾Ê´Â´Ù.  
+      // íŒŒë¼ë¯¸í„° ì´ˆê¸°í™”.  
       if (_draw_flag == 0 || _entityID == 0)
         return;
 
@@ -171,7 +171,7 @@ namespace Battle.MoveRange
       var terrain_map   = TerrainMapManager.Instance.TerrainMap;
       var entity_object = EntityManager.Instance.GetEntity(DrawEntityID);
 
-      // Å½»ö.
+      // ë²”ìœ„ ì²´í¬.
       PathAlgorithm.FloodFill(
         AttackRangeVisitor.SetData(
           _draw_flag, 
@@ -181,7 +181,7 @@ namespace Battle.MoveRange
           UseWeaponID));
 
 
-      // ÀÌµ¿ ¹üÀ§ Ç¥½Ã.
+      // ì´ë™ ë²”ìœ„ ì²´í¬.
       foreach(var move in AttackRangeVisitor.List_Move)
       {
         var vfx_id = VFXManager.Instance.CreateVFXAsync(
@@ -194,10 +194,10 @@ namespace Battle.MoveRange
         VFXList.Add(vfx_id);
       }
 
-      // ¹«±â ¹üÀ§ Ç¥½Ã.
+      // ê³µê²© ë²”ìœ„ ì²´í¬.
       foreach(var weapon in AttackRangeVisitor.List_Weapon)
       {
-        // ÀÌ¹Ì ÀÌµ¿ ¹üÀ§¿¡ Æ÷ÇÔµÇ¾î ÀÖÀ¸¸é Ã³¸®ÇÏÁö ¾Ê´Â´Ù.
+        // ì´ë™ ë²”ìœ„ ì²´í¬.
         if (AttackRangeVisitor.List_Move.Contains(weapon))
           continue;
 
