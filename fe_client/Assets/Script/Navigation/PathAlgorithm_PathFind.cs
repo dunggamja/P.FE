@@ -9,23 +9,56 @@ using UnityEngine.Assertions.Comparers;
 
 public static partial class PathAlgorithm
 {
+    public enum EnumCheckZOC
+    {
+        None,        // ZOC 검사 없음.
+
+        Occupy,      // 점유를 가능한지 체크.
+
+        PassThrough, // 통과가 가능한지 체크.
+    }
+
     // FIND OPTION
     public struct PathFindOption
     {
         // 출발지점으로 부터 이동 가능한 범위를 체크.
         public (bool check, int range, (int x, int y) base_pos)     
-                                MoveRange { get; private set; } 
+                                MoveLimitRange { get; private set; } 
 
-        public PathFindOption SetMoveRange(bool _check, int _range, (int x, int y) _base_pos)
+
+        // 도착지점까지의 범위 체크. 
+        public (bool check, int range) GoalRange { get; private set; }
+
+
+        // TRUE: 목표지점이 점유되어있는지 체크하지 않음, FALSE: 목표지점은 점유가능해야함.
+        public bool  MoveApproximately { get; private set; }
+
+        
+
+        public PathFindOption SetMoveLimitRange(int _range, (int x, int y) _base_pos)
         {
-            MoveRange = (_check, _range, _base_pos);
+            MoveLimitRange = (true, _range, _base_pos);
+            return this;
+        }
+
+        public PathFindOption SetGoalRange(int _range)
+        {
+            GoalRange = (true, _range);
+            return this;
+        }
+
+        public PathFindOption SetAllowApproximate()
+        {
+            MoveApproximately = true;
             return this;
         }
 
 
-        public static PathFindOption EMPTY => new PathFindOption()
+        public static PathFindOption Create() => new PathFindOption()
         {
-            MoveRange = (false, 0, (0, 0)),
+            MoveLimitRange    = (false, 0, (0, 0)),
+            GoalRange         = (false, 0),
+            MoveApproximately = false,
         };
     }
 
@@ -59,12 +92,14 @@ public static partial class PathAlgorithm
     }
     
 
-    public static (bool result, int move_distance) PathFind(
+
+
+    public static (bool result, int move_cost) PathFind(
         TerrainMap         _terrain_map, 
         IPathOwner         _path_owner, 
         (int x, int y)     _from_cell,
         (int x, int y)     _to_cell,
-        PathFindOption     _option,
+        PathFindOption     _option     = default,
         List<PathNode>     _path_nodes = null)
     {
         var list_node = ListPool<Node>.Acquire();
@@ -72,18 +107,21 @@ public static partial class PathAlgorithm
         try
         {
             // A* 검색. 검색 결과가 null 이면 검색 실패.
-            if (AStar(ref list_node, _terrain_map, _path_owner, _from_cell, _to_cell, _option))
+            if (AStar(list_node, _terrain_map, _path_owner, _from_cell, _to_cell, _option))
             {
                 if (_path_nodes != null)
                 {
                     _path_nodes.Clear();
                     foreach(var e in list_node)
-                        _path_nodes.Add(new PathNode(e.x, e.y, -1, e.cost));
-                }        
+                        _path_nodes.Add(new PathNode(e.x, e.y, e.cost));                                        
+                } 
 
-                return (true, list_node.Count);
+
+                var move_cost = (0 < list_node.Count) ? list_node[list_node.Count - 1].cost : 0;
+
+                return (true, move_cost);
             }
-        }
+        } 
         finally
         {
 
@@ -94,99 +132,149 @@ public static partial class PathAlgorithm
     }
 
 
+    static bool Verify_GoalRange((int x, int y) _cell, (int x, int y) _goal, int _goal_range)
+         => PathAlgorithm.Distance(_cell.x, _cell.y, _goal.x, _goal.y) <= _goal_range;   
+
+    // 길찾기 결과 반환.
+    static void CredatePathList(
+        Node                             _node,
+        Dictionary<(int x, int y), Node> _close_list,
+        List<Node>                       _path_find_list)
+    {
+        _path_find_list.Clear();    
+
+        while(true)
+        {
+            _path_find_list.Add(_node);
+
+            // 부모 노드가 없다면 끝.
+            if (_node.HasParent == false)
+                break;
+                            
+            _close_list.TryGetValue((_node.parent_node.x, _node.parent_node.y), out _node);
+        } 
+
+        // 역순으로 정렬.
+        _path_find_list.Reverse();
+    }
 
 
     static bool AStar(
-        ref List<Node>          _path_find_list,
-        TerrainMap              _terrain_map, 
-        IPathOwner              _path_owner, 
-        (int x, int y)          _from_cell,
-        (int x, int y)          _to_cell,
-        PathFindOption          _option)
+        List<Node>      _path_find_list,
+        TerrainMap      _terrain_map, 
+        IPathOwner      _path_owner, 
+        (int x, int y)  _start_cell,
+        (int x, int y)  _goal_cell,
+        PathFindOption  _option)
     {
+
         if (_terrain_map == null)
             return false;
 
-        
-        // 목적지 점유 가능한지 체크.
-        if (!Verify_Movecost(
-            _terrain_map,
-            _path_owner,
-            _to_cell,
-            _check_ignore_zoc:false).result)
-            return false;                    
 
-        // 출발지가 이동가능한지 체크.
-        if (!Verify_Movecost(
-            _terrain_map, 
-            _path_owner, 
-            _from_cell, 
-            _check_ignore_zoc:true).result)
+        // 목표지점 체크 로직.
+        var check_goal_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.Occupy;
+
+        // 통과지점 체크 로직.
+        var check_pass_zoc = _option.MoveApproximately ? EnumCheckZOC.None    : EnumCheckZOC.PassThrough;
+
+        // 목표지점 범위 체크.
+        var goal_range     = _option.GoalRange.check ? _option.GoalRange.range: 0;
+
+        // 목적지 점유 가능한지 체크.   
+        var verify_goal_movecost = false;
+
+        // 목적지를 범위로 체크해봅시다.
+        for(int y = -goal_range; y <= goal_range && verify_goal_movecost == false; ++y)
+        {
+            for(int x = -goal_range; x <= goal_range && verify_goal_movecost == false; ++x)
+            {                   
+                if (PathAlgorithm.Distance(0, 0, x, y) <= goal_range)
+                {
+                    verify_goal_movecost |=  Verify_Movecost(
+                                            _terrain_map,
+                                            _path_owner,
+                                            (_goal_cell.x + x, _goal_cell.y + y),
+                                            check_goal_zoc).result;
+                }                
+            }
+        }
+
+        // 목적지를 범위로 체크해봤는데 이동 가능한 좌표가 없다면 실패.
+        if (verify_goal_movecost == false)
             return false;
 
 
+        // // 출발지가 이동가능한지 체크.
+        // if (!Verify_Movecost(
+        //     _terrain_map, 
+        //     _path_owner, 
+        //     _start_cell, 
+        //     _check_ignore_zoc:true).result)
+        //     return false;
+
+
         // 풀 사용.
-        var open_list        = ListPool<Node>.Acquire();
-        var close_list       = ListPool<Node>.Acquire();
+        var open_list        = DictionaryPool<(int x, int y),Node>.Acquire();
+        var close_list       = DictionaryPool<(int x, int y), Node>.Acquire();
+        
+
         
         // 이동 범위를 벗어나지 않아야 하는 경우 
-        var move_range_check = (_option.MoveRange.check) ? ObjectPool<MoveRangeCheck>.Acquire() : null;
+        var move_range_check = (_option.MoveLimitRange.check) ? ObjectPool<MoveRangeCheck>.Acquire() : null;
         if (move_range_check != null)
         {
             move_range_check.TerrainMap   = _terrain_map;
             move_range_check.Visitor      = _path_owner;
-            move_range_check.Position     = _option.MoveRange.base_pos;
-            move_range_check.MoveDistance = _option.MoveRange.range;
+            move_range_check.Position     = _option.MoveLimitRange.base_pos;
+            move_range_check.MoveDistance = _option.MoveLimitRange.range;
             PathAlgorithm.FloodFill(move_range_check);
         }
 
-        // 목표지.
-        Node goal_node = null;
 
 
         try
-        {       
-            // 출발지를 추가.
-            open_list.Add(new Node(_from_cell.x, _from_cell.y, _to_cell.x, _to_cell.y, 0, null));
+        {   
+            // 출발 노드            
+            var node_start       = Node.Create(_start_cell.x, _start_cell.y, _goal_cell.x, _goal_cell.y);
 
-            // Debug.Log($"start:{_from_cell.x}, {_from_cell.y}");
+            // 목표에 가장 근접한 노드. (길찾기 실패시 사용?)
+            // var node_approximate = node_start;
+
+            // 출발 노드를 open_list에 추가.
+            open_list.Add((node_start.x, node_start.y), node_start);        
+
 
             // 최소 비용을 찾는 함수.
-            Node func_find_minimum_heuristic(List<Node> _list_node)
+            Node func_find_minimum_heuristic(Dictionary<(int x, int y), Node> _list_node)
             {
-                if (_list_node == null)
-                    return null;
-
-                Node minimum = null;         
-                foreach (var e in _list_node)
+                Node minimum = _list_node.First().Value;
+                foreach (var e in _list_node.Values)
                 {
-                    if (e == null || (minimum != null && minimum.heuristic <= e.heuristic))
-                        continue;
-
-                    minimum = e;
+                    if (e.heuristic < minimum.heuristic)
+                        minimum = e;
                 }
-
                 return minimum;
             }
-
-            
 
             while(0 < open_list.Count)
             {
                 // 최소 비용을 찾는 함수.
                 var item = func_find_minimum_heuristic(open_list);
 
-                // 최소 비용을 찾은 노드를 제거하고 추가.
-                open_list.Remove(item);
-                close_list.Add(item);
-                // Debug.Log($"close:{item.x}, {item.y}");
+                open_list.Remove((item.x, item.y));
+                close_list.Add((item.x, item.y), item);
 
+                
                 // 목표지에 도달했는지 체크.
-                if ((item.x, item.y) == _to_cell)
-                {
-                    goal_node = item;
-                    // Debug.Log($"goal:{item.x}, {item.y}");
-                    break;
+                 if (PathAlgorithm.Distance(_goal_cell.x, _goal_cell.y, item.x, item.y) <= goal_range)
+                {                    
+                    // 길찾기 결과 반환.
+                    if (_path_find_list != null)
+                        CredatePathList(item, close_list, _path_find_list);
+
+                    // 길찾기 성공.
+                    return true;
                 }
 
                 // 이동 가능한 좌표를 찾는다.
@@ -194,131 +282,81 @@ public static partial class PathAlgorithm
                 {
                     for(int k = -1; k <= 1; ++k)
                     {
-                        var x         = item.x + i;
-                        var y         = item.y + k;
+                        var x = item.x + i;
+                        var y = item.y + k;
 
                         // 1칸 이상 이동하는지 체크.
                         if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
                             continue;
 
                         // 이미 방문한 좌표인지 체크.
-                        if (0 <= close_list.FindIndex(e => e.x == x && e.y == y))
+                        if (close_list.ContainsKey((x, y)))
                             continue;
 
                         // 이동 범위 체크.
                         if (move_range_check != null && !move_range_check.IsInMoveRange(x, y))
                             continue;
 
-                        // 이동 가능한지 체크.
+
+                        // 이동 가능한지 체크.  
                         (var moveable, var move_cost) = Verify_Movecost(
                             _terrain_map, 
                             _path_owner, 
                             (x, y), 
-                            _check_ignore_zoc:true);
+                            check_pass_zoc);
 
                         if (!moveable)
                             continue;
 
                         // 새로운 노드 생성.
-                        var new_item  = new Node(x, y, _to_cell.x, _to_cell.y, move_cost, item);
+                        var new_item  = new Node(
+                            // 현재 셀
+                            x, y,
 
-                        // 이미 방문한 노드인지 체크.
-                        var old_item = open_list.Find((e) => e.x == new_item.x && e.y == new_item.y);
-                        if (old_item != null && old_item.cost < new_item.cost)
-                            continue;                    
+                            // 목표 지점
+                            _goal_cell.x, _goal_cell.y, 
 
-                        // 이미 방문한 노드인지 체크.
-                        if (old_item != null)
-                            open_list.Remove(old_item);
+                            // 이동 비용= 이전 까지의 비용 + 현재 셀의 이동 비용.
+                            item.cost + move_cost, 
 
-                        open_list.Add(new_item);
-                        // Debug.Log($"open:{new_item.x}, {new_item.y}");
+                            // 부모 노드 셋팅
+                            (item.x, item.y));
 
+                        
+                        if (open_list.TryGetValue((new_item.x, new_item.y), out var old_item))
+                        {
+                            // 기존 노드와 위치가 겹칠경우 cost 비교.                            
+                            if (new_item.cost < old_item.cost)                            
+                                open_list[(new_item.x, new_item.y)] = new_item;
+                        }                    
+                        else 
+                        {
+                            // open list에 추가.
+                            open_list.Add((new_item.x, new_item.y), new_item);
+                        }
                     }
                 }
             }
+
+            // // 근처에 도달한 값이 있으면 그걸 성공처리?
+            // if (node_approximate.cost > node_start.cost)
+            // {
+            //     CredatePathList(node_approximate, close_list, _path_find_list);
+            //     return true;
+            // }
         }
         finally
         {
-            ListPool<Node>.Return(ref open_list);
-            ListPool<Node>.Return(ref close_list);
+            DictionaryPool<(int x, int y), Node>.Return(ref open_list);
+            DictionaryPool<(int x, int y), Node>.Return(ref close_list);
             ObjectPool<MoveRangeCheck>.Return(ref move_range_check);            
-        }        
-
-        // 결과 반환.
-        
-
-        if (goal_node != null)
-        {
-            // 결과 반환.
-            if (_path_find_list != null)
-            {
-                _path_find_list.Clear();    
-
-                while(goal_node != null)
-                {
-                    _path_find_list.Add(goal_node);
-                    goal_node = goal_node.parent;
-                }
-
-                // 역순으로 정렬.
-                _path_find_list.Reverse();
-            }
-
-            return true;
-        }
-        else
-        {
-            // 결과 반환.
-            return false;
-        }
+        } 
+       
+        // 길찾기 실패.
+        return false;
     }
 
 
-
-    // class floodfill_node : IPoolObject
-    // {        
-    //     // List<(int x, int y, int move_cost)> Nodes = new(10);
-    //     HashSet<(int x, int y, int move_cost)> Nodes = new();
-        
-
-    //     public int Count => Nodes.Count;
-
-
-    //     public void Reset()
-    //     {
-    //         Nodes.Clear();
-    //     }
-
-    //     public void Add((int x, int y, int move_cost) _item)
-    //     {
-    //         Nodes.Add(_item);
-    //     }
-
-    //     public void Remove((int x, int y, int move_cost) _item)
-    //     {
-    //         Nodes.Remove(_item);
-    //     }
-
-    //     public bool Contains((int x, int y, int move_cost) _item)
-    //     {
-    //         return Nodes.Contains(_item);
-    //     }
-
-    //     public (int x, int y, int move_cost) FindMinimumCostNode()
-    //     {
-    //         var min_cost_node = (x:0, y:0, move_cost:int.MaxValue);
-    //         foreach (var node in Nodes)
-    //         {
-    //             if (node.move_cost < min_cost_node.move_cost)
-    //             {
-    //                 min_cost_node = node;
-    //             }
-    //         }
-
-    //         return min_cost_node;
-    //     }
-    // }
 
     public interface IFloodFillVisitor
     {
@@ -334,8 +372,7 @@ public static partial class PathAlgorithm
     }
 
     static public void FloodFill(IFloodFillVisitor _visitor)
-    {
-        // _visitor ������ �ƹ��͵� ���� �ʽ��ϴ�.    
+    {         
         if (_visitor == null)
             return;
 
@@ -352,8 +389,7 @@ public static partial class PathAlgorithm
                 break;
 
             // movecost 최소값 찾기.            
-            var item = (x:0, y:0, move_cost:int.MaxValue);
-            
+            var item = open_list_move.First();            
             foreach(var e in open_list_move)
             {
                 if (e.move_cost < item.move_cost) 
@@ -363,16 +399,19 @@ public static partial class PathAlgorithm
             // #1. 시작 위치 체크. 
             var is_start_position = (item.x == _visitor.Position.x && item.y == _visitor.Position.y);
 
-            // #2. 이동 가능한지 체크.
-            var verify_move_cost  = Verify_Movecost(
+            // 점유 가능한지 체크.
+            var check_zoc = (_visitor.VisitOnlyEmptyCell) ? EnumCheckZOC.Occupy : EnumCheckZOC.PassThrough;
+
+            // #2. 방문 가능한지 체크.
+            var enable_visit  = Verify_Movecost(
                 _visitor.TerrainMap,
                 _visitor.Visitor, 
                 (item.x, item.y), 
-                _check_ignore_zoc: _visitor.VisitOnlyEmptyCell == false)
+                check_zoc)
                 .result;
 
-            // 시작 위치 or 이동 가능한지 체크.
-            var call_visit = (is_start_position) || verify_move_cost;                                    
+            // 시작 위치 or 방문 가능한지 체크.
+            var call_visit = (is_start_position) || enable_visit;                                    
             if (call_visit)
             {
                 _visitor.Visit(item.x, item.y);                
@@ -406,7 +445,7 @@ public static partial class PathAlgorithm
                         _visitor.TerrainMap,
                         _visitor.Visitor, 
                         (x, y), 
-                        _check_ignore_zoc:true);
+                        _check_zoc: EnumCheckZOC.PassThrough);
 
 
                     if (!moveable)
@@ -434,7 +473,7 @@ public static partial class PathAlgorithm
         TerrainMap     _terrain_map, 
         IPathOwner     _path_owner, 
         (int x, int y) _cell,
-         bool          _check_ignore_zoc)
+        EnumCheckZOC   _check_zoc)
     {
         if (_terrain_map == null || _path_owner == null)
             return (false, 0);
@@ -442,13 +481,17 @@ public static partial class PathAlgorithm
         if (_terrain_map.IsInBound(_cell.x, _cell.y) == false)
             return (false, 0);  
   
-        // ZOC 체크 여부.
-        Func<int, bool> func_ignore_zoc = null;        
-        if (_check_ignore_zoc)
-            func_ignore_zoc = _path_owner.IsIgnoreZOC;
 
-        if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, func_ignore_zoc))        
-            return (false, 0);
+        // ZOC 체크 여부.
+        if (_check_zoc != EnumCheckZOC.None)
+        {
+            // 통과가 목적일 경우, Entity의 통과 로직 체크.
+            Func<int, bool> func_ignore_zoc = (_check_zoc == EnumCheckZOC.PassThrough) ?
+                                               _path_owner.IsIgnoreZOC : null;    
+
+            if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, func_ignore_zoc))        
+                return (false, 0);
+        }
 
         
         // 이동 Cost 계산

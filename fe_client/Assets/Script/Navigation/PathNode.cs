@@ -10,26 +10,39 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 {
     float m_position_x; // 위치 X
     float m_position_z; // 위치 Z
-    float m_rotation_y; // 방향 Y
+    // float m_rotation_y; // 방향 Y
 
     int   m_move_cost;
 
-    public static PathNode Empty { get; } = new PathNode { m_position_x = -1f, m_position_z = -1f, m_rotation_y = -1f, m_move_cost = 0 };
 
-    public PathNode(float _position_x = -1f, float _position_z = -1f, float _rotation_y = -1f, int _move_cost = 0)
+    public int MoveCost => m_move_cost;
+
+    public static PathNode Empty { get; } = new PathNode
+     { 
+        m_position_x = -1f, 
+        m_position_z = -1f, 
+        // m_rotation_y = -1f, 
+        m_move_cost = 0 
+    };
+
+    public PathNode(
+      float _position_x = -1f
+    , float _position_z = -1f
+    // , float _rotation_y = -1f
+    , int _move_cost = 0)
     {
         m_position_x = _position_x;
         m_position_z = _position_z;
-        m_rotation_y = _rotation_y;
+        // m_rotation_y = _rotation_y;
         m_move_cost  = _move_cost;
     }
 
 
     public bool       IsValidPosition() => 0f <= m_position_x && 0f <= m_position_z;
-    public bool       IsValidRotation() => 0f <= m_rotation_y;
+    // public bool       IsValidRotation() => 0f <= m_rotation_y;
 
     public Vector3    GetPosition() => new Vector3(m_position_x, 0f, m_position_z);
-    public Quaternion GetRotation() => Quaternion.Euler(0f, m_rotation_y * Mathf.Rad2Deg, 0f);
+    // public Quaternion GetRotation() => Quaternion.Euler(0f, m_rotation_y * Mathf.Rad2Deg, 0f);
 
     public void SetPosition(float _x, float _z)
     {
@@ -39,19 +52,19 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 
     public void SetPosition(Vector3 _position) => SetPosition(_position.x, _position.z);
 
-    public void SetRotation(float _rotation_y)
-    {
-        m_rotation_y = _rotation_y;
-    }
+    // public void SetRotation(float _rotation_y)
+    // {
+    //     m_rotation_y = _rotation_y;
+    // }
 
-    public void SetRotation(Quaternion _rotation) => SetRotation(_rotation.eulerAngles.y * Mathf.Deg2Rad);
+    // public void SetRotation(Quaternion _rotation) => SetRotation(_rotation.eulerAngles.y * Mathf.Deg2Rad);
 
     public bool Equals(PathNode other)
     {
         return
             m_position_x == other.m_position_x &&
             m_position_z == other.m_position_z &&
-            m_rotation_y == other.m_rotation_y &&
+            // m_rotation_y == other.m_rotation_y &&
             m_move_cost  == other.m_move_cost;
     }
 
@@ -65,15 +78,15 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
         return 
             obj.m_position_x.GetHashCode() ^ 
             obj.m_position_z.GetHashCode() ^ 
-            obj.m_rotation_y.GetHashCode() ^
+            // obj.m_rotation_y.GetHashCode() ^
             obj.m_move_cost.GetHashCode();
     }
-
-
 
     // public static bool operator ==(PathNode x, PathNode y) =>  x.Equals(y);
     // public static bool operator !=(PathNode x, PathNode y) => !x.Equals(y);
 }
+
+
 
 
 public class PathNodeManager //: IPathNodeManager
@@ -195,12 +208,10 @@ public class PathNodeManager //: IPathNodeManager
             _from_position.PositionToCell(), 
             _dest_position.PositionToCell(),
 
-            // 현재 위치를 기반으로 이동 가능한 범위를 벗어나지 않도록.
-            PathAlgorithm.PathFindOption.EMPTY
-                .SetMoveRange(
-                    true,
-                    _path_owner.PathMoveRange, 
-                    _path_owner.PathBasePosition),
+            
+            PathAlgorithm.PathFindOption.Create()
+                // 이동 가능한 범위를 벗어나지 않기위해 (범위,위치) 셋팅
+                .SetMoveLimitRange(_path_owner.PathMoveRange, _path_owner.PathBasePosition),
 
             // 길찾기 경로.
             list_path_node

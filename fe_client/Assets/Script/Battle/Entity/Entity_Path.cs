@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,38 +36,38 @@ namespace Battle
             (bool _apply, bool _immediatly) _visual_update,
             bool                            _is_plan)
         {
-            // ÀÌÀü À§Ä¡.            
+            // ê¸°ì¡´ ì…€.            
             Cell_Prev = Cell;
 
 
             if (_is_plan == false)
             {
-                // ±âÁ¸¿¡ Á¡À¯ÇÏ°í ÀÖ´ø ÁÂÇ¥ ÇØÁ¦.
+                // ì„ íƒ ì…€ ì ìœ  í•´ì œ.
                 UpdateCellOccupied(false);
             }            
             
-            // »õ À§Ä¡.
+            // ì„ íƒ ì…€.
             Cell        = _cell;
 
             // 
             if (_is_plan == false)
             {
-                // »õ·Î¿î À§Ä¡ ¼¿ Á¡À¯.
+                // ì„ íƒ ì…€ ì ìœ  í•´ì œ.
                 UpdateCellOccupied(true);
 
-                // º£ÀÌ½º Æ÷Áö¼Ç º¯°æ.
+                // ì„ íƒ ì…€ ê¸°ì¤€ ìœ„ì¹˜.
                 PathBasePosition = Cell;
 
                 // Debug.Log($"PathBasePosition: {ID}, {Cell}");
             }
 
-            // À§Ä¡ ¼ÂÆÃ.
+            // ì„ íƒ ì…€ ìœ„ì¹˜.
             var position_cur  = Cell.CellToPosition();
             var position_prev = PathVehicle.Position;
 
             PathVehicle.Setup(position_cur, position_prev);
 
-            // visual °»½Å Ã³¸®.
+            // visual ì„ íƒ íš¨ê³¼ ìƒì„±.
             if (_visual_update._apply)
             {
                 var visual_position_to   = PathVehicle.Position;
@@ -75,7 +75,7 @@ namespace Battle
                                         ? PathVehicle.Position 
                                         : PathVehicle.PositionPrev;                
 
-                // ¿ùµå °´Ã¼ À§Ä¡ º¯°æ ÀÌº¥Æ®.
+                // ì„ íƒ ì…€ ìœ„ì¹˜ ì´ë²¤íŠ¸ ìƒì„±.
                 EventDispatchManager.Instance.UpdateEvent(
                     ObjectPool<WorldObject_PositionEvent>.Acquire().Set(
                     ID,
@@ -114,7 +114,7 @@ namespace Battle
 
         public bool IsIgnoreZOC(int _faction)
         {
-            // ¾Æ±ºÀÌ¸é Åë°ú.
+            // ì•„êµ°ì¸ ê²½ìš° ì œì™¸.
             return BattleSystemManager
                 .Instance
                 .IsFactionAlliance(GetFaction(), _faction);

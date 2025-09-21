@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Battle;
@@ -60,19 +60,19 @@ public class InputHandler_Grid_Select : InputHandler
     {
         var input_result = ObjectPool<InputParam_Result>.Acquire();
 
-        // ¸í·ÉÀÌ °¡´ÉÇÑÁö È®ÀÎ.
+        // ì„ íƒ ì—”í‹°í‹° í™•ì¸.
         OnUpdate_Verify_CommandEntity();
 
-        // ÀÔ·ÂÀÇ °á°ú°ªÀ» »ı¼º.
+        // ì…ë ¥ íŒŒë¼ë¯¸í„° ê³„ì‚°.
         OnUpdate_Input_Compute(Context.InputParamQueue, ref input_result);
 
-        // ÀÔ·ÂÀÇ °á°ú°ªÀ» Ã³¸®.
+        // ì…ë ¥ íŒŒë¼ë¯¸í„° ì²˜ë¦¬.
         OnUpdate_Input_Process(input_result);
 
-        // Å¸ÀÏ ÀÌµ¿.
+        // ì„ íƒ ì…€ ì´ë™.
         OnUpdate_Tile_Move();
 
-        // ÀÌµ¿ ¹üÀ§ Ç¥½Ã.
+        // ì´ë™ ë²”ìœ„ ê·¸ë¦¬ê¸°.
         Update_DrawMoveRange();
 
         // 
@@ -104,13 +104,13 @@ public class InputHandler_Grid_Select : InputHandler
 
     protected override void OnPause()
     {
-        // Å¸ÀÏ Ä¿¼­ Á¦°Å.
+        // ì„ íƒ íš¨ê³¼ í•´ì œ.
         ReleaseTileSelectVFX();
     }
 
     protected override void OnResume()
     {
-        // Å¸ÀÏ Ä¿¼­ »ı¼º
+        // ì„ íƒ íš¨ê³¼ ìƒì„±.
         CreateTileSelectVFX();
     }
 
@@ -137,7 +137,7 @@ public class InputHandler_Grid_Select : InputHandler
 
     void OnUpdate_Input_Compute(Queue<InputParam> _queue_input_param, ref InputParam_Result _result)
     {     
-        // ÀÔ·Â ÆÄ¶÷ Ã³¸®.
+        // ì…ë ¥ íŒŒë¼ë¯¸í„° ì²˜ë¦¬.
         while (_queue_input_param.Count > 0)
         {
             var input_param = _queue_input_param.Dequeue();
@@ -146,14 +146,14 @@ public class InputHandler_Grid_Select : InputHandler
             {
                 case InputParam_Grid_Move input_param_move: 
                 {
-                    // ÀÌµ¿ ¹æÇâ ¼³Á¤.
+                    // ì´ë™ ë°©í–¥ ì„¤ì •.
                     _result.MoveDirection = (true, input_param_move.Direction);
                 }
                 break;
 
                 case InputParam_Grid_Pointer input_param_pointer:
                 {
-                    // // Å¸ÀÏ À§Ä¡ ¼³Á¤.
+                    // // ì„ íƒ ì…€ ì„¤ì •.
                     // var tile_pos      = new Vector2Int((int)input_param_pointer.Position.x, (int)input_param_pointer.Position.y);
                     // _result.SelectTile = (true, tile_pos);
                 }
@@ -161,21 +161,21 @@ public class InputHandler_Grid_Select : InputHandler
 
                 case InputParam_Grid_Select:
                 {
-                    // ¼±ÅÃ Ã³¸®.
+                    // ì„ íƒ ì—¬ë¶€ ì„¤ì •.
                     _result.IsSelect = true;
                 }
                 break;
 
                 case InputParam_Grid_Cancel:
                 {
-                    // Ãë¼Ò Ã³¸®.
+                    // ì·¨ì†Œ ì—¬ë¶€ ì„¤ì •.
                     _result.IsCancel = true;
                 }
                 break;  
 
                 case InputParam_Grid_Forward:
                 {
-                    // Æ÷¿öµå Ã³¸®.
+                    // ì „ì§„ ì—¬ë¶€ ì„¤ì •.
                     _result.IsForward = true;
                 }
                 break;
@@ -188,28 +188,28 @@ public class InputHandler_Grid_Select : InputHandler
     {
         if (_result.IsSelect)
         {
-            // ¼±ÅÃ Ã³¸®.
+            // ì„ íƒ ì—¬ë¶€ ì²˜ë¦¬.
             OnUpdate_Input_Process_Select();
         }
         else if (_result.IsCancel)
         {
             OnUpdate_Input_Process_Cancel();
-            // Ãë¼Ò Ã³¸®. (Á¾·á)
+            // ì·¨ì†Œ ì—¬ë¶€ ì²˜ë¦¬. (ì„ íƒ)
             // IsFinish = true;
         }
         else if (_result.IsForward)
         {
-            // ¿É¼Ç ¹öÆ°ÀÓ. (Àû °ø°İ ¹üÀ§ Ç¥½Ã µî)
+            // ì „ì§„ ì—¬ë¶€ ì²˜ë¦¬. (ì„ íƒ)
             OnUpdate_Input_Process_Forward();
         }
         else if (_result.MoveDirection.changed)
         {
-            // ÀÌµ¿ ¹æÇâ Ã³¸®.
+            // ì´ë™ ë°©í–¥ ì²˜ë¦¬.
             OnUpdate_Input_Process_Move(_result.MoveDirection.value);
         }
         // else if (_result.SelectTile.changed)
         // {
-        //     // Å¸ÀÏ ¼±ÅÃ.
+        //     // ì„ íƒ ì…€ ì²˜ë¦¬.
         //     // OnUpdate_Select(proc_result.SelectTile);
         // }
     }
@@ -226,16 +226,16 @@ public class InputHandler_Grid_Select : InputHandler
 
         if (CommandEntityID > 0)
         {
-            // Á¶ÀÛÁßÀÎ Ä³¸¯ÅÍ°¡ ÀÖÀ» °æ¿ì.
+            // ì„ íƒ ì—”í‹°í‹° í™•ì¸.
             var entity = EntityManager.Instance.GetEntity(CommandEntityID);
             if (entity != null && entity.Cell == SelectCursor)
             {
-                // À¯´Ö Ä¿¸Çµå UI ¿­±â.
+                // ì„ íƒ ì—”í‹°í‹° UI í™•ì¸.
                 GUIManager.Instance.OpenUI(GUIPage_Unit_Command.PARAM.Create(CommandEntityID));        
             }
             else
             {
-                // TODO: Áï½Ã ÀÌµ¿ÀÌ¶óµµ ½ÃÄÑÁÖ¸é µÇ·Á³ª.?
+                // TODO: ì„ íƒ ì—”í‹°í‹° ì´ë™.
             }
         }
         else
@@ -247,7 +247,7 @@ public class InputHandler_Grid_Select : InputHandler
             }
             else
             {
-                // TODO: ½Ã½ºÅÛ ¸Ş´º ¿­¾î¾ß ÇÒµí?
+                // TODO: ì„ íƒ ì…€ ì—”í‹°í‹° í™•ì¸.
             }
         }
     }
@@ -256,19 +256,19 @@ public class InputHandler_Grid_Select : InputHandler
     {
         if (CommandEntityID > 0)
         {
-            // Á¶ÀÛÁßÀÎ Ä³¸¯ÅÍ°¡ ÀÖÀ» °æ¿ì.
+            // ì„ íƒ ì—”í‹°í‹° ì·¨ì†Œ.
             Process_Cancel_CommandEntity();
         }
         else
         {
-            // Á¶ÀÛÁßÀÎ Ä³¸¯ÅÍ°¡ ¾øÀ» °æ¿ì.
+            // ì„ íƒ ì…€ ì·¨ì†Œ.
         }
     }
 
     void OnUpdate_Input_Process_Forward()
     {
-        // TODO: Æ÷¿öµå Ã³¸®.
-        // Àû °ø°İ ¹üÀ§ ON/OFF Ã³¸®
+        // TODO: ì „ì§„ ì—¬ë¶€ ì²˜ë¦¬.
+        // ì „ì§„ ì—¬ë¶€ ON/OFF ì²˜ë¦¬
     }
 
     void OnUpdate_Input_Process_Move(Vector2 _move_direction)
@@ -293,22 +293,22 @@ public class InputHandler_Grid_Select : InputHandler
 
     void OnUpdate_Tile_Move()
     {
-        // ÀÌµ¿ ¹æÇâÀÌ ¾øÀ¸¸é Á¾·á.
+        // ì´ë™ ë°©í–¥ í™•ì¸.
         if (MoveDirection == Vector2Int.zero)
             return;
         
-        // ÀÌµ¿ ½Ã°£ÀÌ Áö³µ´ÂÁö È®ÀÎ.
+        // ì´ë™ ì‹œê°„ í™•ì¸.
         var is_time_passed = (Time.time - MoveTile_LastTime > MOVE_INTERVAL);
         if (is_time_passed == false)
             return;
 
-        // Å¸ÀÏ ÀÌµ¿.
+        // ì„ íƒ ì…€ ì´ë™.
         var new_position_x = SelectCursor.x + MoveDirection.x;
         var new_position_y = SelectCursor.y + MoveDirection.y;
 
         MoveSelcectCursor(new_position_x, new_position_y);
 
-        // ¼±ÅÃµÈ À¯´Ö ÀÌµ¿ Ã³¸®.
+        // ì„ íƒ ì—”í‹°í‹° ì´ë™.
         MoveSelectedEntity(
             CommandEntityID,
             SelectCursor,
@@ -325,10 +325,10 @@ public class InputHandler_Grid_Select : InputHandler
             return;
         }
 
-        // ¼±ÅÃµÈ Å¸ÀÏÀÇ ¿£Æ¼Æ¼ ID.
+        // ì„ íƒ ì…€ ì—”í‹°í‹° ID.
         Int64 tile_entity_id = terrain_map.EntityManager.GetCellData(SelectCursor.x, SelectCursor.y);
         
-        // ÀÌµ¿ ¹üÀ§ Ç¥½Ã ¿£Æ¼Æ¼ ID.
+        // ì´ë™ ë²”ìœ„ ì—”í‹°í‹° ID.
         Int64 draw_entity_id = CommandEntityID > 0 ? CommandEntityID : tile_entity_id;
 
         BattleSystemManager.Instance.DrawRange.DrawRange(
@@ -358,10 +358,10 @@ public class InputHandler_Grid_Select : InputHandler
 
         SelectCursor = (_x, _y);
 
-        // ÀÌµ¿ ½Ã°£ °»½Å.
+        // ì´ë™ ì‹œê°„ ì„¤ì •.
         MoveTile_LastTime = Time.time;
 
-        // ÀÌÆåÆ® À§Ä¡ ÀÌµ¿.
+        // ì„ íƒ íš¨ê³¼ ìƒì„±.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFX_TransformEvent>.Acquire()
             .SetID(VFX_Select)
@@ -369,7 +369,7 @@ public class InputHandler_Grid_Select : InputHandler
         );       
     }
 
-    // Á¶ÀÛÁßÀÏ¶§ÀÇ ÀÌµ¿ Ã³¸®, ½ÇÁ¦ ÀÌµ¿·Â ¼Ò¸ğ ¾øÀ½.
+    // ì„ íƒ ì—”í‹°í‹° ì´ë™, ê¸°ì¡´ì— ì˜ˆì•½ëœ ëª…ë ¹ë“¤ ì·¨ì†Œ (ì§„í–‰ì¤‘ì¸ ê²ƒì€ ëƒ…ë‘”ë‹¤.)
     private void MoveSelectedEntity(
         Int64          _entity_id,
         (int x, int y) _cell,
@@ -379,7 +379,7 @@ public class InputHandler_Grid_Select : InputHandler
             return;
 
 
-        // ±âÁ¸ ÀÌµ¿¸í·É Áß´Ü.
+        // ê¸°ì¡´ì— ì˜ˆì•½ëœ ëª…ë ¹ë“¤ ì·¨ì†Œ (ì§„í–‰ì¤‘ì¸ ê²ƒì€ ëƒ…ë‘”ë‹¤.)
         BattleSystemManager.Instance.PushCommand(
             new Command_Abort
             (
@@ -388,7 +388,7 @@ public class InputHandler_Grid_Select : InputHandler
             )
         );
 
-        // ÀÌµ¿ ¸í·É Ãß°¡.
+        // ì´ë™ ëª…ë ¹ ì˜ˆì•½.
         BattleSystemManager.Instance.PushCommand(
             new Command_Move
             (
@@ -396,9 +396,9 @@ public class InputHandler_Grid_Select : InputHandler
                 _cell,
                 // EnumCellPositionEvent.Enter,
 
-                _visual_immediate:    _is_immediate, // Áï½Ã ÀÌµ¿ ¿©ºÎ.
-                _execute_command: false,         // ¸í·É »óÅÂ Ã³¸®. 
-                _is_plan:         true       // ÁÂÇ¥ Á¡À¯ Ã³¸®.
+                _visual_immediate:    _is_immediate, // ì¦‰ì‹œ ì´ë™.
+                _execute_command: false,             // ëª…ë ¹ ì‹¤í–‰ ì—¬ë¶€. 
+                _is_plan:         true               // ê³„íš ì´ë™ ì—¬ë¶€.
             )
         );
     }
@@ -406,10 +406,10 @@ public class InputHandler_Grid_Select : InputHandler
 
     void ReleaseVFX()
     {
-        // ¼±ÅÃ ÀÌÆåÆ® »èÁ¦.
+        // ì„ íƒ íš¨ê³¼ í•´ì œ.
         ReleaseTileSelectVFX();
 
-        // ÀÌµ¿ ¹üÀ§ Ç¥½Ã ÃÊ±âÈ­.
+        // ì´ë™ ë²”ìœ„ í•´ì œ.
         BattleSystemManager.Instance.DrawRange.Clear();   
     }
 
@@ -424,12 +424,12 @@ public class InputHandler_Grid_Select : InputHandler
         bool is_enable_command = entity.HasCommandEnable() && commander_type == EnumCommanderType.Player;
         if  (is_enable_command)
         {
-            // ¸í·ÉÀ» ³»¸± À¯´Ö ¼±ÅÃ.
+            // ì„ íƒ ì—”í‹°í‹° ì„¤ì •.
             SetCommandEntity(_entity_id);
         }
         else
         {
-            // TODO: °ø°İ¹üÀ§ Ç¥½ÃÇÒ À¯´Ö¿¡ µî·Ï.
+            // TODO: ëª…ë ¹ ì—”í‹°í‹° ì„¤ì •.
         }
     }
 
@@ -440,10 +440,10 @@ public class InputHandler_Grid_Select : InputHandler
         if (entity == null)
             return;
 
-        // ¸í·ÉÀ» ³»¸± À¯´Ö ¼±ÅÃ.
+        // ì„ íƒ ì—”í‹°í‹° ì„¤ì •.
         CommandEntityID = _entity_id;
 
-        // ¸í·ÉÀ» ³»¸®´Â À¯´ÖÀº ¼¿ Á¡À¯ »óÅÂ¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+        // ì„ íƒ ì—”í‹°í‹° ì…€ ì ìœ  í•´ì œ.
         entity.UpdateCellOccupied(false);
     }
 
@@ -458,7 +458,7 @@ public class InputHandler_Grid_Select : InputHandler
             var base_position  = entity.PathBasePosition;
             if (base_position == SelectCursor)
             {
-                // ¿ø·¡ À§Ä¡·Î º¹±Í.
+                // ì„ íƒ ì…€ ì´ë™.
                 entity.UpdateCellPosition(
                     base_position,
                     (_apply: true, _immediatly: true),
@@ -468,10 +468,10 @@ public class InputHandler_Grid_Select : InputHandler
             }
             else
             {
-                // Ä¿¼­ ÀÌµ¿.
+                // ì„ íƒ ì…€ ì´ë™.
                 MoveSelcectCursor(base_position.x, base_position.y);
 
-                // ¸í·É ÁßÀÌ´ø Ä³¸¯ÅÍ ¿ø·¡ À§Ä¡·Î º¹±Í.    
+                // ì„ íƒ ì—”í‹°í‹° ì´ë™.    
                 MoveSelectedEntity(
                     CommandEntityID, 
                     base_position, 
@@ -481,7 +481,7 @@ public class InputHandler_Grid_Select : InputHandler
         }
         else
         {
-            // ¿¡·¯ »óÈ²
+            // ì„ íƒ ì—”í‹°í‹° ì—†ìŒ.
             Debug.LogError($"Process_Cancel_CommandEntity: entity is null: {CommandEntityID}");
             CommandEntityID = 0;
         }
@@ -491,7 +491,7 @@ public class InputHandler_Grid_Select : InputHandler
 
     void CreateTileSelectVFX()
     {
-        // ÀÌÆåÆ® »ı¼º.
+        // ì„ íƒ íš¨ê³¼ ìƒì„±.
         var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
             .SetVFXRoot_Default()
             .SetPosition(SelectCursor.CellToPosition())

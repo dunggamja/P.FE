@@ -45,14 +45,17 @@ namespace Battle
             m_ai_type = _ai_type;
             m_repository.Clear();
 
-            // 대기는 우선순위 매우 낮음.테트
+            // 대기는 우선순위 매우 낮음.
             AddAIUpdater(EnumAIPriority.Others, new AI_Score_Done());
 
 
             switch(_ai_type)
             {
                 case EnumAIType.Attack:
-                    AddAIUpdater(EnumAIPriority.Primary, new AI_Score_Attack());
+                    // 1. 공격 가능한 적이 있으면 공격.
+                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    // 2. 가까운 적을 향해 이동.
+                    AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
                     break;
             }
         }

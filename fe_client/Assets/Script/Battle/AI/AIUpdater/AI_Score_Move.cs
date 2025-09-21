@@ -21,25 +21,38 @@ namespace Battle
 
       static float Default_Score_Multiplier(EnumScoreType _type, float _score)
       {
+        var multiplier = 0f;
         switch(_type)
         {
-          case EnumScoreType.CloseToTarget:    return 1f;
-          case EnumScoreType.TerrainAdvantage: return 1f;
-          case EnumScoreType.TerrainDamage:    return -1f;
+          case EnumScoreType.CloseToTarget:    multiplier = 1f;  break;
+          case EnumScoreType.TerrainAdvantage: multiplier = 1f;  break;
+          case EnumScoreType.TerrainDamage:    multiplier = -1f; break;
         }
 
-        return 0f;
+        return multiplier * _score;
       }
 
       public (int x, int y) Position { get; private set; } = (0, 0);
 
       private float[]       m_score = new float[(int)EnumScoreType.MAX] ;
 
+      public void CopyFrom(Result _o)
+      {
+        Position = _o.Position;
+        Array.Copy(_o.m_score, m_score, m_score.Length);
+      }
+
 
       public void Reset()
       {
           Position = (0, 0);
           Array.Clear(m_score, 0, m_score.Length);
+      }
+
+
+      public void SetPosition(int _x, int _y)
+      {
+        Position = (_x, _y);
       }
 
 
@@ -78,6 +91,46 @@ namespace Battle
           // 점수는 0.0 ~ 1.0으로 제한.
           return Mathf.Clamp01(score_total / score_max);
       }
+
+
+      public static float CalculateScore_CloseToTarget(int _x, int _y, List<PathNode> _path_to_target)
+      {
+          // 점수 계산 :
+          //  a : (현재 위치에서 가장 가까운 경로의 이동 비용 - 현재 위치에서 가장 가까운 경로의 거리)
+          //  b : (길찾기 마지막 경로까지의 이동 비용)
+          //  score = a / b
+
+          if (_path_to_target == null || _path_to_target.Count == 0)
+            return 0f;
+
+
+           // 이동이 불가능?
+          var move_cost_max = _path_to_target[_path_to_target.Count - 1].MoveCost;
+          if (move_cost_max <= 0)
+            return 0f;
+
+
+          // 현재 위치에서 가장 가까운 경로의 거리와 이동 비용을 찾습니다.
+          var close_node_distance = int.MaxValue;
+          var close_node_movecost = 0;
+          for (int i = 0; i < _path_to_target.Count; ++i)
+          {
+              var position  = _path_to_target[i].GetPosition().PositionToCell();
+              var distance  = PathAlgorithm.Distance(_x, _y, position.x, position.y);
+              if (close_node_distance > distance)
+              {
+                  // 현재 위치에서 가장 가까운 경로의 거리
+                  close_node_distance = distance;
+
+                  // (현재 위치에서 가장 가까운 경로의 이동 비용 - 현재 위치에서 가장 가까운 경로의 거리)
+                  close_node_movecost = _path_to_target[i].MoveCost - distance;
+              }
+          }
+
+          // 점수 계산.
+          return Mathf.Clamp01((float)close_node_movecost / move_cost_max);   
+      }
+
       
     }
 
@@ -97,26 +150,40 @@ namespace Battle
       public bool           IsStop()           => false;
 
 
-      public (int x, int y) BestPosition      { get; set; } = (0, 0);
-      public float          BestPositionScore { get; set; } = 0f;
+      
+      public Result         BestResult        { get; set; } = new();
+      public List<PathNode> BestPath          { get; set; } = new();
+      // public (int x, int y) BestPosition      { get; set; } = (0, 0);
+      // public float          BestScore         { get; set; } = 0f;
 
       public void Reset()
       {
-        TerrainMap        = null;
-        Visitor           = null;
-        Position          = (0, 0);
-        MoveDistance      = 0;
-        BestPosition      = (0, 0);
-        BestPositionScore = 0;
+        TerrainMap     = null;
+        Visitor        = null;
+        Position       = (0, 0);
+        MoveDistance   = 0;
+
+        // BestPosition   = (0, 0);
+        // BestScore      = 0f;
+        BestPath.Clear();
+        BestResult.Reset();
       }
 
       public void Visit(int x, int y)
-      {
-         const float SCORE_MIN = 0.01f;
+      {  
+         var temp_result = ObjectPool<Result>.Acquire();       
 
+         // 위치 셋팅.
+         temp_result.SetPosition(x, y);
 
+         // 타겟과의 거리에 대한 점수 셋팅.
+         temp_result.SetScore(Result.EnumScoreType.CloseToTarget, Result.CalculateScore_CloseToTarget(x, y, BestPath));
 
-          // return true;
+         // 점수가 더 좋다면 교체.
+         if (BestResult.CalculateScore() < temp_result.CalculateScore())
+             BestResult.CopyFrom(temp_result);
+
+         ObjectPool<Result>.Return(ref temp_result);
       }
     }
 
@@ -130,22 +197,29 @@ namespace Battle
       if (entity == null)
         return;
 
+      // 이동 행동이 불가능하면 종료.
+      var is_moveable   = entity.HasCommandEnable(EnumCommandFlag.Move);
+      if (is_moveable == false)
+        return;
 
-      var score = 0f;
       
-      // 타겟을 향해 가 봅시다.
+      // 타겟을 향해가 봅시다.
       switch(TargetType)
       {
         // 타겟을 향해서 이동.
-        case EnumAITargetType.Target:   score = Process_Target(_owner);         break;
+        case EnumAITargetType.Target:   Process_Target(_owner);         break;
         // 특정 위치를 향해서 이동.
-        case EnumAITargetType.Position: score = Process_TargetPosition(_owner); break;
+        case EnumAITargetType.Position: Process_TargetPosition(_owner); break;
         // 근처 가장 가까운 타겟을 향해서 이동.
-        case EnumAITargetType.None:     score = Process_CloseTarget(_owner);     break;
+        case EnumAITargetType.None:     Process_CloseTarget(_owner);     break;
       }
 
 
-      entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, score);
+      
+
+      
+
+      
 
       //   score = w1 * (1f - distToNearestEnemyNorm) // 적에게 가까워질때의 점수
       // + w2 * (1f - threatExposure) // 적에게 위험을 받을때의 점수.
@@ -165,103 +239,133 @@ namespace Battle
     }
 
 
-    float Process_Target(IAIDataManager _owner)
+    void Process_Target(IAIDataManager _owner)
     {
       if (_owner == null)
-        return 0f;
+        return;
 
         var target_list = _owner.AIData?.Targets?.AllTargetIDList;
         if (target_list == null)
-          return 0f;
+          return;
 
         
-      return 0f;
     }
 
-    float Process_TargetPosition(IAIDataManager _owner)
+    void Process_TargetPosition(IAIDataManager _owner)
     {
       if (_owner == null)
-        return 0f;
+        return;
 
 
-      return 0f;
         
     }
 
-    float Process_CloseTarget(IAIDataManager _owner)
+    void Process_CloseTarget(IAIDataManager _owner)
     {
-        // 가장 가까운 적에게 최대한 가까운 위치로 이동한다. 
-        if (_owner == null)
-          return 0f;
-
-        var entity = EntityManager.Instance.GetEntity(_owner.ID);
-        if (entity == null)
-          return 0f;
-
-        var target_id = Find_Closest_Enemy(entity);
-        if (target_id == 0)
-          return 0f;
-
-        var target_entity = EntityManager.Instance.GetEntity(target_id);
-        if (target_entity == null)
-          return 0f;
-
-
-        var visitor = ObjectPool<PositionVisitor>.Acquire();
-        visitor.TerrainMap     = entity.PathNodeManager.TerrainMap;
-        visitor.Visitor        = entity;
-        visitor.Position       = entity.Cell;
-        visitor.MoveDistance   = entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
-
-       
+        var list_path_nodes = ListPool<PathNode>.Acquire();
+        var visitor         = ObjectPool<PositionVisitor>.Acquire();
 
         try
-        {
-          PathAlgorithm.FloodFill(visitor);
-            
+        {          
+          // 가장 가까운 적에게 최대한 가까운 위치로 이동한다. 
+          if (_owner == null)
+            return;
 
+          var entity = EntityManager.Instance.GetEntity(_owner.ID);
+          if (entity == null)
+            return;
+
+
+          // 가장 가까운 적과 경로를 찾아봅시다.
+          var target_id = Find_Closest_Enemy(entity, list_path_nodes);
+          if (target_id == 0)
+            return;
+
+          // 해당 경로와 가장 가까운 위치를 찾아봅시다.
+          visitor.TerrainMap     = entity.PathNodeManager.TerrainMap;
+          visitor.Visitor        = entity;
+          visitor.Position       = entity.Cell;
+          visitor.MoveDistance   = entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+          visitor.BestPath.AddRange(list_path_nodes);
+          
+          PathAlgorithm.FloodFill(visitor);
+
+          // 점수 셋팅.
+          entity.BlackBoard.Score_Move.CopyFrom(visitor.BestResult);
+          entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.BestResult.CalculateScore());
         }
         finally
         {
+          ListPool<PathNode>.Return(ref list_path_nodes);
           ObjectPool<PositionVisitor>.Return(ref visitor);
         }
 
-
-        
-
-        return 0f;
     }
 
     
 
-    Int64 Find_Closest_Enemy(Entity _entity)
+    Int64 Find_Closest_Enemy(Entity _entity, List<PathNode> _path_nodes)
     {
-      if (_entity == null)
+      if (_entity == null || _path_nodes == null)
           return 0;
 
-        int RANGE_STEP   = 5;
-        int RANGE_MAX    = 100;
+        const int RANGE_STEP   = 5;
+        const int RANGE_MAX    = 100;
 
-        var entity_position = _entity.Cell;
-        var range_level     = 0;
+        var   entity_position  = _entity.Cell;
+        var   range_level      = 0;
 
-        Int64 target_id       = 0;
-        int   target_distance = 0;
+        Int64 target_id        = 0;
+        int   target_movecost  = 0;
+
+        var   weapon_range_max = _entity.GetWeaponRange().max;       
 
 
+        var terrain_map        = TerrainMapManager.Instance.TerrainMap;
+        var terrain_map_width  = (terrain_map != null) ? terrain_map.Width  : 0;
+        var terrain_map_height = (terrain_map != null) ? terrain_map.Height : 0;
+
+
+        // 공격자의 위치를 중심으로, 주변으로 범위를 확장해가면서 적을 찾습니다.
         while(target_id == 0 && (range_level * RANGE_STEP) < RANGE_MAX)
         {
-            var list_center = HashSetPool<(int x, int y)>.Acquire();
+            var list_aabb              = HashSetPool<AABB>.Acquire();
+            var list_target            = ListPool<Int64>.Acquire();
+            var list_target_path_nodes = ListPool<PathNode>.Acquire();
 
             // y축 좌우.
             for (int y = -range_level; y <= range_level; ++y)
             {
-               var center_x_l = entity_position.x - (RANGE_STEP * 2 * range_level);
-               var center_x_r = entity_position.x + (RANGE_STEP * 2 * range_level);
-               var center_y   = entity_position.y + (RANGE_STEP * 2 * y);
+              var center_x_l = entity_position.x - (RANGE_STEP * 2 * range_level);
+              var center_x_r = entity_position.x + (RANGE_STEP * 2 * range_level);
+              var center_y   = entity_position.y + (RANGE_STEP * 2 * y);
 
-               list_center.Add((center_x_l, center_y));
-               list_center.Add((center_x_r, center_y));
+              var left_box = new AABB {
+                      min = new Vector2(center_x_l - RANGE_STEP, center_y - RANGE_STEP),
+                      max = new Vector2(center_x_l + RANGE_STEP, center_y + RANGE_STEP)
+                    };
+
+              var right_box = new AABB {
+                      min = new Vector2(center_x_r - RANGE_STEP, center_y - RANGE_STEP),
+                      max = new Vector2(center_x_r + RANGE_STEP, center_y + RANGE_STEP)
+                    };
+
+              // if (left_box.max.x >= 0 
+              // &&  left_box.max.y >= 0 
+              // &&  left_box.min.x < terrain_map_width 
+              // &&  left_box.min.y < terrain_map_height)
+              {
+                list_aabb.Add(left_box);
+              }
+
+              // if (right_box.max.x >= 0 
+              // &&  right_box.max.y >= 0 
+              // &&  right_box.min.x < terrain_map_width 
+              // &&  right_box.min.y < terrain_map_height)
+              {
+                list_aabb.Add(right_box);
+              }
+
             }
 
             // x축 상하.
@@ -271,22 +375,43 @@ namespace Battle
                var center_y_t = entity_position.y + (RANGE_STEP * 2 * range_level);
                var center_y_b = entity_position.y - (RANGE_STEP * 2 * range_level);
 
-               list_center.Add((center_x, center_y_t));
-               list_center.Add((center_x, center_y_b));
+
+              var top_box = new AABB {
+                      min = new Vector2(center_x - RANGE_STEP, center_y_t - RANGE_STEP),
+                      max = new Vector2(center_x + RANGE_STEP, center_y_t + RANGE_STEP)
+                    };
+            
+              var bottom_box = new AABB {
+                      min = new Vector2(center_x - RANGE_STEP, center_y_b - RANGE_STEP),
+                      max = new Vector2(center_x + RANGE_STEP, center_y_b + RANGE_STEP)
+                    };
+
+              // if (top_box.max.x >= 0 
+              // &&  top_box.max.y >= 0 
+              // &&  top_box.min.x < terrain_map_width 
+              // &&  top_box.min.y < terrain_map_height)
+              {
+                list_aabb.Add(top_box);
+              }
+
+              // if (bottom_box.max.x >= 0 
+              // &&  bottom_box.max.y >= 0 
+              // &&  bottom_box.min.x < terrain_map_width 
+              // &&  bottom_box.min.y < terrain_map_height)
+              {
+                list_aabb.Add(bottom_box);
+              }
             }
 
 
-            foreach(var center in list_center)
+            foreach(var aabb in list_aabb)
             {
-                var list_target = ListPool<Int64>.Acquire();
+                list_target.Clear();
+              
 
                 // 근처에 있는 적을 찾아봅시다. 
                 SpacePartitionManager.Instance.Query_Position_AABB(
-                  list_target,
-                  new AABB {
-                    min = new Vector2(center.x - RANGE_STEP, center.y - RANGE_STEP),
-                    max = new Vector2(center.x + RANGE_STEP, center.y + RANGE_STEP)
-                  });
+                  list_target, aabb);
 
 
                 foreach(var e in list_target)
@@ -296,27 +421,41 @@ namespace Battle
                       continue;
 
                     // 같은 진영인 경우 제외.
-                    if (entity_target.GetFaction() == _entity.GetFaction())
+                    var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(_entity.GetFaction(), entity_target.GetFaction());
+                    if (is_alliance)
                       continue;
                   
-                    // 경로 찾기.
-                    var find_path = PathAlgorithm.PathFind(
-                      _entity.PathNodeManager.TerrainMap,
-                      _entity,
+                    // 대상의 위치까지 길찾기 
+                    var path_find = PathAlgorithm.PathFind(
+                        _entity.PathNodeManager.TerrainMap,
+                        _entity,
+    
+                        _entity.Cell,
+                        entity_target.Cell,
 
-                      _entity.Cell,
-                      entity_target.Cell,
 
-                      PathAlgorithm.PathFindOption.EMPTY);
+                        // 도착 범위 체크.
+                        PathAlgorithm.PathFindOption.Create()
+                        .SetAllowApproximate()
+                        // .SetGoalRange(5)
+                        ,
 
-                    // 경로 찾기 결과가 있으면 저장.
-                    if (find_path.result)
+                        // 길찾기 경로.
+                        list_target_path_nodes
+                      );
+
+                    
+                    // 길찾기 & 거리 체크
+                    if (path_find.result)
                     {
-                        // 가장 가까운 적을 찾는다.
-                        if (target_id == 0 || target_distance > find_path.move_distance)
+                        if (target_id == 0 || target_movecost > path_find.move_cost)
                         {
                           target_id       = e;
-                          target_distance = find_path.move_distance;
+                          target_movecost = path_find.move_cost;
+
+                          // 길찾기 경로 저장.
+                          _path_nodes.Clear();
+                          _path_nodes.AddRange(list_target_path_nodes);
                         }
                     }
                 }
@@ -324,6 +463,11 @@ namespace Battle
 
             // 탐색범위 증가.
             ++range_level;
+
+
+            HashSetPool<AABB>.Return(ref list_aabb);
+            ListPool<Int64>.Return(ref list_target);
+            ListPool<PathNode>.Return(ref list_target_path_nodes);
         }
 
         return target_id;

@@ -196,12 +196,12 @@ namespace Battle
                     _is_plan: false);
 
                 defender.UpdateCellPosition(
-                    (2, 4), 
+                    (2, 20), 
                     (_apply: true, _immediatly: true), 
                     _is_plan: false);
 
                 defender_2.UpdateCellPosition(
-                    (3, 3),  
+                    (3, 20),  
                     (_apply: true, _immediatly: true), 
                     _is_plan: false);
             }

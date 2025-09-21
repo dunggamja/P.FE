@@ -11,7 +11,7 @@ namespace Battle
     }
 
 
-    public struct AABB 
+    public struct AABB : IEquatable<AABB>
     {
       public Vector2 min, max;
 
@@ -59,6 +59,30 @@ namespace Battle
           min = _box.min - v, 
           max = _box.max + v 
         };
+      }
+
+      public bool Equals(AABB other)
+      {
+        return min == other.min && max == other.max;
+      }
+
+      public override bool Equals(object obj)
+      {
+        return obj is AABB other && Equals(other);
+      }
+
+      public override int GetHashCode()
+      {
+        return HashCode.Combine(min, max);
+      }
+
+      public static bool operator ==(AABB a, AABB b)
+      {
+        return a.Equals(b);
+      }
+      public static bool operator !=(AABB a, AABB b)
+      {
+        return !a.Equals(b);
       }
 
 

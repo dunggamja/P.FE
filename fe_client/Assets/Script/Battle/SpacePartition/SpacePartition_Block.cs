@@ -67,8 +67,14 @@ namespace Battle
       if (m_block_size <= 0)
         return (-1, -1);
 
-      var block_x = _pos_x / m_block_size;
-      var block_y = _pos_y / m_block_size;
+      if (m_nodes == null)
+        return (-1, -1);
+
+      if (m_nodes.GetLength(0) <= 0 || m_nodes.GetLength(1) <= 0)
+        return (-1, -1);
+
+      var block_x = Math.Clamp(_pos_x / m_block_size, 0, m_nodes.GetLength(0) - 1);
+      var block_y = Math.Clamp(_pos_y / m_block_size, 0, m_nodes.GetLength(1) - 1);
 
       return (block_x, block_y);
     }
@@ -120,13 +126,30 @@ namespace Battle
         AABB                       _box, 
         SpacePartition.QueryFilter _query_filter = null)
     {
+      if (_box.max.x < 0 || _box.max.y < 0)
+        return;
+
+      if (_box.min.x > m_world_width || _box.min.y > m_world_height)
+        return;
+      
       var block_index_min = PositionToBlockIndex((int)_box.min.x, (int)_box.min.y);
       var block_index_max = PositionToBlockIndex((int)_box.max.x, (int)_box.max.y);
+
+      if (block_index_min.x < 0 || block_index_min.y < 0 )
+        return;
+
+      if (block_index_max.x < 0 || block_index_max.y < 0)
+        return;
 
       for (var x = block_index_min.x; x <= block_index_max.x; x++)
       {
         for (var y = block_index_min.y; y <= block_index_max.y; y++)
-        {
+        { 
+
+          if (m_nodes[x, y].ListId == null)
+            continue;
+
+
           foreach (var id in m_nodes[x, y].ListId)
           {
             var position = GetIDPosition(id);
@@ -148,6 +171,14 @@ namespace Battle
 
       var block_index_min = PositionToBlockIndex((int)min.x, (int)min.y);
       var block_index_max = PositionToBlockIndex((int)max.x, (int)max.y);
+
+      if (block_index_min.x < 0 || block_index_min.y < 0 )
+        return;
+
+      if (block_index_max.x < 0 || block_index_max.y < 0)
+        return;
+
+
 
       for (var x = block_index_min.x; x <= block_index_max.x; x++)
       {
