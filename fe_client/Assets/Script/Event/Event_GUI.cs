@@ -15,7 +15,7 @@ public class GUI_Menu_MoveEvent : IEventParam
     public void Release()
     {
         var temp = this;
-        ObjectPool<GUI_Menu_MoveEvent>.Return(ref temp);
+        ObjectPool<GUI_Menu_MoveEvent>.Return(temp);
     }
 
     public GUI_Menu_MoveEvent Set(Int64 _gui_id, Vector2Int _move_direction)
@@ -42,7 +42,7 @@ public class GUI_Menu_SelectEvent : IEventParam
     public void Release()
     {   
         var temp = this;
-        ObjectPool<GUI_Menu_SelectEvent>.Return(ref temp);
+        ObjectPool<GUI_Menu_SelectEvent>.Return(temp);
     }
 
     public GUI_Menu_SelectEvent Set(Int64 _gui_id)
@@ -66,7 +66,7 @@ public class GUI_Menu_ForwardEvent : IEventParam
     public void Release()
     {
         var temp = this;
-        ObjectPool<GUI_Menu_ForwardEvent>.Return(ref temp);
+        ObjectPool<GUI_Menu_ForwardEvent>.Return(temp);
     }
 
     public GUI_Menu_ForwardEvent Set(Int64 _gui_id)

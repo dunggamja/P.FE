@@ -162,7 +162,7 @@ namespace Battle
                         WorldObjectManager.Instance.DeleteObject(id);
                     }
 
-                    ListPool<Int64>.Return(ref list_delete);
+                    ListPool<Int64>.Return(list_delete);
                 }
 
                 // 오브젝트가 없는 친구들은 만들어 줍시다.

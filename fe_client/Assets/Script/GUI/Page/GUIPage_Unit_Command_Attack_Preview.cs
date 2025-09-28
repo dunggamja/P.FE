@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Battle;
 using R3;
@@ -104,10 +104,10 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
         CreateCursorVFX();
 
-        // Å¸°Ù °»½Å.
-        m_target_id = FindTarget(m_weapon_id, ref m_target_list);
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
+        m_target_id = FindTarget(m_weapon_id, m_target_list);
 
-        // ÇÁ¸®ºä UI °»½Å
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ UI ì¶œë ¥.
         UpdateUI_Preview();
 
         // CombatSystemManager.Instance.Setup()
@@ -119,7 +119,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         base.OnLoop();
 
 
-        // °ø°İ¹üÀ§ Ç¥½Ã.
+        // ê³µê²© ë²”ìœ„ íƒìƒ‰.
         UpdateDrawRange();
     }
 
@@ -151,18 +151,18 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
 
-    Int64 FindTarget(Int64 _weapon_id, ref List<Int64> _target_list)
+    Int64 FindTarget(Int64 _weapon_id, List<Int64> _target_list)
     {
         _target_list.Clear();
 
-        // °ø°İÀÚ Ã¼Å©.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         var entity = EntityManager.Instance.GetEntity(m_entity_id);
         if (entity == null)
             return 0;
 
-        // °ø°İ ¹üÀ§ Å½»ö
-        var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Acquire();
-        attack_range_visit.SetData(
+        // ê³µê²© ë²”ìœ„ íƒìƒ‰.
+        using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
+        attack_range_visit.Value.SetData(
             _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
@@ -170,15 +170,15 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             _use_weapon_id:     _weapon_id
         );
 
-        PathAlgorithm.FloodFill(attack_range_visit);
+        PathAlgorithm.FloodFill(attack_range_visit.Value);
 
-        // °ø°İ °¡´ÉÇÑ Å¸°Ù ¸ñ·Ï.
-        foreach(var pos in attack_range_visit.List_Weapon)
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
+        foreach(var pos in attack_range_visit.Value.List_Weapon)
         {
             var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
             if (target_id > 0)
             {   
-                // °ø°İ °¡´ÉÇÑÁö Ã¼Å©.
+                // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
                 if (CombatHelper.IsAttackable(m_entity_id, target_id) == false)
                     continue;             
 
@@ -186,9 +186,9 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             }
         }
 
-        ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return(ref attack_range_visit);
+        //ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return( attack_range_visit.Value);
 
-        // ±âÁ¸ Å¸°ÙÀÌ °ø°İ °¡´ÉÇÏ¸é À¯Áö, °ø°İ ºÒ°¡´ÉÇÏ¸é ´Ù¸¥ Å¸°ÙÀ¸·Î º¯°æ.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         Int64 new_target_id = m_target_id;        
         if (_target_list.Contains(m_target_id) == false)
         {
@@ -220,7 +220,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
         }
 
-        // Å¸°Ù À§Ä¡·Î Ä¿¼­ ¿Å±è.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         var entity_target = EntityManager.Instance.GetEntity(m_target_id);
         if (entity_target != null)
         {
@@ -231,7 +231,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             ); 
         }
 
-        // °ø°İÀÚ Ç¥½Ã.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         m_preview_attacker.Initialize(
             result.Attacker.EntityID,
             result.Attacker.WeaponID,
@@ -241,7 +241,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Attacker.HP_Before,
             result.Attacker.HP_After);
 
-        // ¼öºñÀÚ Ç¥½Ã.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         m_preview_defender.Initialize(
             result.Defender.EntityID,
             result.Defender.WeaponID,
@@ -251,16 +251,16 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Defender.HP_Before,
             result.Defender.HP_After);
 
-        // ±×¸®µå ¾ÆÀÌÅÛ Á¦°Å.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         {           
             var list_delete = ListPool<Transform>.Acquire();
             for (int i = 0; i < m_grid_attack_root.transform.childCount; i++)
                 list_delete.Add(m_grid_attack_root.transform.GetChild(i)); 
             list_delete.ForEach(e => { if (e != null) GameObject.Destroy(e.gameObject);});
-            ListPool<Transform>.Return(ref list_delete);
+            ListPool<Transform>.Return( list_delete);
         }
 
-        // ±×¸®µå ¾ÆÀÌÅÛ »ı¼º
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         for (int i = 0; i < result.Actions.Count; i++)
         {
             var clonedItem = Instantiate(m_grid_attack_sequence, m_grid_attack_root.transform);
@@ -275,7 +275,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (IsInputFocused == false)
             return;
 
-        // ¹«±â ¹üÀ§¸¦ ±×·ÁÁİ´Ï´Ù.
+        // ê³µê²© ë²”ìœ„ íƒìƒ‰.
         BattleSystemManager.Instance.DrawRange.DrawRange
         (
             (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
@@ -294,7 +294,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (entity == null)
             return;
 
-        // ÀÌÆåÆ® »ı¼º.
+        // ì»¤ì„œ VFX ìƒì„±.
         var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
             .SetVFXRoot_Default()
             .SetPosition(entity.Cell.CellToPosition())
@@ -316,14 +316,14 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // ÀÌµ¿ ¹æÇâÀÌ ¾øÀ¸¸é Á¾·á.
+        // íƒ€ê²Ÿ ì´ë™ ë°©í–¥ì´ ì—†ìœ¼ë©´ ì¢…ë£Œ.
         if (_event.MoveDirection == Vector2Int.zero)
             return;
 
         if (m_target_list.Count == 0)
             return;
 
-        // ¹æÇâÅ°¿¡ µû¶ó¼­ ´ÙÀ½ Å¸°ÙÀ» ¹Ù²ß½Ã´Ù.
+        // íƒ€ê²Ÿ ì´ë™ ë°©í–¥ì— ë”°ë¼ ì¸ë±ìŠ¤ ì¶”ê°€.
         int offset =
           (_event.MoveDirection.x != 0) 
         ? (_event.MoveDirection.x > 0 ? 1 : -1) 
@@ -332,7 +332,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         : 0;
 
 
-        // Å¸°Ù º¯°æ.
+        // íƒ€ê²Ÿ ì¸ë±ìŠ¤ ì„¤ì •.
         var index    = m_target_list.IndexOf(m_target_id);
         index       += (offset + m_target_list.Count);
         index       %= m_target_list.Count;
@@ -353,7 +353,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
         // Command_Attack
-        // ÀüÅõ ½ÇÇà: °ø°İ ¸í·É
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°: ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
          BattleSystemManager.Instance.PushCommand(
                     new Command_Attack
                     (
@@ -364,7 +364,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
                     ));
 
 
-        // °ü·Ã UIµé ¸ğµÎ ´İ¾Æ¾ßÇÔ...
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ UI ì¶œë ¥.
         //GUIManager.Instance.CloseUI(ID);
     }
 
@@ -373,36 +373,36 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // ¹«±â º¯°æ ÀÌº¥Æ®.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         var entity = EntityManager.Instance.GetEntity(m_entity_id);
         if (entity == null)
             return;
 
 
 
-        // ¹«±â º¯°æ.
+        // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
         {
-            var   list_weapon   = ListPool<Item>.Acquire();
-            var   list_target   = ListPool<Int64>.Acquire();
+            using var list_weapon   = ListPool<Item>.AcquireWrapper();
+            using var list_target   = ListPool<Int64>.AcquireWrapper();
 
             Int64 new_weapon_id = 0;
             Int64 new_target_id = 0;
 
-            // ¼ÒÀ¯ ÁßÀÎ ¹«±â ¸ñ·Ï ¼øÈ¸.
-            entity.Inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
-            if (1 < list_weapon.Count)
+            // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ëª©ë¡ ì¶”ì¶œ.
+            entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
+            if (1 < list_weapon.Value.Count)
             {            
-                var index  = list_weapon.FindIndex(e => e.ID == m_weapon_id);
-                for(int i = 1; i < list_weapon.Count; ++i)
+                var index  = list_weapon.Value.FindIndex(e => e.ID == m_weapon_id);
+                for(int i = 1; i < list_weapon.Value.Count; ++i)
                 {
-                    var weapon_index     = (index + i) % list_weapon.Count;
-                    var weapon_id        = list_weapon[weapon_index].ID;
+                    var weapon_index     = (index + i) % list_weapon.Value.Count;
+                    var weapon_id        = list_weapon.Value[weapon_index].ID;
 
-                    // ¹«±â·Î °ø°İ°¡´ÉÇÑ Å¸°ÙÀÌ ÀÖ´ÂÁö Ã£´Â´Ù.
-                    var target_id = FindTarget(weapon_id, ref list_target);
+                    // ê³µê²© ê°€ëŠ¥í•œ íƒ€ê²Ÿ ì°¾ê¸°.
+                    var target_id = FindTarget(weapon_id, list_target.Value);
                     if (target_id > 0)
                     {
-                        // ¹«±â & Å¸°Ù º¯°æ.
+                        // ë¬´ê¸° & íƒ€ê²Ÿ ì„¤ì •.
                         new_weapon_id = weapon_id;
                         new_target_id = target_id;
                         break;
@@ -410,21 +410,21 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
                 }
             }
 
-            // ¹«±â & Å¸°Ù º¯°æµÇ¾úÀ¸¸é µ¥ÀÌÅÍ & UI °»½Å.
+            // ë¬´ê¸° & íƒ€ê²Ÿ ì„¤ì •ë˜ì—ˆìœ¼ë©´ UI ì¶œë ¥.
             if (new_weapon_id > 0 && new_target_id > 0)
             {
                 m_weapon_id    = new_weapon_id;
                 m_target_id    = new_target_id;
                 m_target_list.Clear();
-                m_target_list.AddRange(list_target);
+                m_target_list.AddRange(list_target.Value);
 
-                // UI °»½Å.
+                // UI ì¶œë ¥.
                 UpdateUI_Preview();
             }
 
 
-            ListPool<Item>.Return(ref list_weapon);
-            ListPool<Int64>.Return(ref list_target);
+            // ListPool<Item>.Return( list_weapon);
+            // ListPool<Int64>.Return( list_target);
         }
 
 

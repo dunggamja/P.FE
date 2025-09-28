@@ -55,7 +55,7 @@ public class Inventory
         return false;
     }
 
-    public void CollectItem(ref List<Item> _list_result, Func<Item, bool> _func_condition)
+    public void CollectItem(List<Item> _list_result, Func<Item, bool> _func_condition)
     {
         if (_list_result == null)
             return;
@@ -68,9 +68,9 @@ public class Inventory
         }
     }
 
-    public void CollectItemByType(ref List<Item> _list_result, EnumItemType _item_type)
+    public void CollectItemByType(List<Item> _list_result, EnumItemType _item_type)
     {
-        CollectItem(ref _list_result, (e) => e.ItemType == _item_type);
+        CollectItem(_list_result, (e) => e.ItemType == _item_type);
     }
 
     public void ForEachItem(Action<Item> _action)
@@ -97,7 +97,7 @@ public class Inventory
         if (!item.ProcessAction(owner_entity, _action_type))
             return false;
 
-        // TODO: ¾ÆÀÌÅÛ °¨¼Ò.
+        // TODO: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
         return true;
     }
@@ -106,7 +106,7 @@ public class Inventory
     {
         var items = new List<Item_IO>();
 
-        // ¾ÆÀÌÅÛ ½º³À¼¦ »ý¼º.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         foreach(var e in m_repository_list)
         {
             items.Add(e.Save());

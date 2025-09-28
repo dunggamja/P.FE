@@ -225,7 +225,7 @@ public class PathNodeManager //: IPathNodeManager
                 m_list_path_node.Enqueue(node);
         }
 
-        ListPool<PathNode>.Return(ref list_path_node);
+        ListPool<PathNode>.Return( list_path_node);
 
         
         return path_find;

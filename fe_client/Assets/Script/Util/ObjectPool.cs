@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,55 +13,30 @@ public interface IPoolObject
     void Reset();
 }
 
-// public class ObjectPoolWrapper<T> : IDisposable, IPoolObject where T : IPoolObject, new() 
-// {
-//     public T    Value      { get; private set; }
-//     public bool IsDisposed { get; private set; }
-
-//     public ObjectPoolWrapper()
-//     {
-//         IsDisposed = false;
-//     }
-
-//     public void Reset()
-//     {
-//         Value      = default;
-//         IsDisposed = false;
-//     }
-
-//     public static ObjectPoolWrapper<T> Acquire()
-//     {
-//         var pool_object        = ObjectPool<ObjectPoolWrapper<T>>.Acquire();
-//         pool_object.Value      = ObjectPool<T>.Acquire();
-//         pool_object.IsDisposed = false;
-
-//         return pool_object;
-//     }
-
-
-//     public void Dispose()
-//     {
-//         ObjectPool<T>.Return(Value);
-//         IsDisposed = true;
-//     }
-// }
-
-
-// TODO: MonoBehaviour(GameObject)¿¡ ´ëÇÑ Ç®¸µ Ã³¸® ÇÊ¿ä...
-
-// public static class GameObjectPool<T> where T : MonoBehaviour
-// {
-//     private static readonly Stack<T>   m_pool  = new();
-//     private static readonly HashSet<T> m_inuse = new();
-// }
 
 public static class ObjectPool<T> where T :  class, IPoolObject, new()
 {
+    public struct Wrapper : IDisposable
+    {
+        public T Value { get; private set; }
+
+        internal Wrapper(T _value)
+        {
+            Value = _value;
+        }
+
+        public void Dispose()
+        {
+            ObjectPool<T>.Return(Value);
+        }        
+    }
+
+
     static ObjectPool()
     {
         if (typeof(T).IsSubclassOf(typeof(UnityEngine.Object)))
         {
-            throw new InvalidOperationException("ObjectPool<T>´Â MonoBehaviour(GameObject)¿¡ ´ëÇÑ Ç®¸µ Ã³¸®¸¦ ÇÏÁö ¾Ê½À´Ï´Ù.");
+            throw new InvalidOperationException("ObjectPool<T>ï¿½ï¿½ MonoBehaviour(GameObject)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç®ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½.");
         }
     }
     
@@ -89,19 +64,24 @@ public static class ObjectPool<T> where T :  class, IPoolObject, new()
         return pool_object;
     }
 
-    public static void Return(ref T _obj)
+    public static Wrapper AcquireWrapper()
+    {
+        return new Wrapper(Acquire());
+    }
+
+    public static void Return(T _obj)
     {
         if (_obj == null)
             return;
 
-        // // Ç®¸µÀ» ¸ñÀûÀ¸·Î »ý¼ºµÈ °´Ã¼°¡ ¾Æ´Ï¶ó¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // // Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         // if (m_inuse.Contains(_obj) == false)
         //     return;
 
         _obj.Reset();
 
         
-        // Ç®¸µ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // Ç®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         if (m_pool.Count < m_max_count)  
         {
             m_pool.Push(_obj);
@@ -113,6 +93,22 @@ public static class ObjectPool<T> where T :  class, IPoolObject, new()
 
 public static class ListPool<T>
 {
+    public struct Wrapper : IDisposable
+    {
+        public List<T> Value { get; private set; }
+
+        internal Wrapper(List<T> _value)
+        {
+            Value = _value;
+        }
+
+        public void Dispose()
+        {
+            ListPool<T>.Return(Value);
+        }        
+    }
+
+
     private static readonly Stack<List<T>> m_pool = new();
 
     private static int m_max_count = 5;
@@ -129,14 +125,14 @@ public static class ListPool<T>
         return list;
     }
 
-    public static void Return(ref List<T> list)
+    public static void Return(List<T> list)
     {
         if (list == null)
             return;
 
         list.Clear();
 
-        // Ç®¸µ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // Ç®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         if (m_pool.Count < m_max_count)
         {
             m_pool.Push(list);
@@ -144,10 +140,31 @@ public static class ListPool<T>
 
         list = null;
     }
+
+    public static Wrapper AcquireWrapper()
+    {
+        return new Wrapper(Acquire());
+    }
 }
 
 public static class HashSetPool<T>
 {
+    public struct Wrapper : IDisposable
+    {
+        public HashSet<T> Value { get; private set; }
+
+        internal Wrapper(HashSet<T> _value)
+        {
+            Value = _value;
+        }
+
+        public void Dispose()
+        {
+            HashSetPool<T>.Return(Value);
+        }  
+    }
+      
+
     private static readonly Stack<HashSet<T>> m_pool = new();
 
     private static int m_max_count = 5;
@@ -164,14 +181,14 @@ public static class HashSetPool<T>
         return hashSet;
     }
 
-    public static void Return(ref HashSet<T> hashSet)
+    public static void Return(HashSet<T> hashSet)
     {
         if (hashSet == null)
             return;
 
         hashSet.Clear();
 
-        // Ç®¸µ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // Ç®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         if (m_pool.Count < m_max_count)
         {
             m_pool.Push(hashSet);
@@ -179,10 +196,30 @@ public static class HashSetPool<T>
 
         hashSet = null;
     }
+
+    public static Wrapper AcquireWrapper()
+    {
+        return new Wrapper(Acquire());
+    }
 }
 
 public static class DictionaryPool<TKey, TValue>
 {
+    public struct Wrapper : IDisposable
+    {
+        public Dictionary<TKey, TValue> Value { get; private set; }
+
+        internal Wrapper(Dictionary<TKey, TValue> _value)
+        {
+            Value = _value;
+        }
+
+        public void Dispose()
+        {
+            DictionaryPool<TKey, TValue>.Return(Value);
+        }
+    }
+
     private static readonly Stack<Dictionary<TKey, TValue>> m_pool = new();
 
     private static int m_max_count = 5;
@@ -199,14 +236,14 @@ public static class DictionaryPool<TKey, TValue>
         return dict;
     }
 
-    public static void Return(ref Dictionary<TKey, TValue> dict)
+    public static void Return(Dictionary<TKey, TValue> dict)
     {
         if (dict == null)
             return;
         
         dict.Clear();
 
-        // Ç®¸µ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // Ç®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         if (m_pool.Count < m_max_count)
         {
             m_pool.Push(dict);
@@ -214,12 +251,32 @@ public static class DictionaryPool<TKey, TValue>
 
         dict = null;
     }
+
+    public static Wrapper AcquireWrapper()
+    {
+        return new Wrapper(Acquire());
+    }
 }
 
 
 
 public static class QueuePool<T>
 {
+    public struct Wrapper : IDisposable
+    {
+        public Queue<T> Value { get; private set; }
+
+        internal Wrapper(Queue<T> _value)
+        {
+            Value = _value;
+        }
+
+        public void Dispose()
+        {
+            QueuePool<T>.Return(Value);
+        }
+    }
+
     private static readonly Stack<Queue<T>> m_pool = new();
     private static int m_max_count = 5;
 
@@ -230,14 +287,14 @@ public static class QueuePool<T>
         return queue;
     }
 
-    public static void Return(ref Queue<T> queue)
+    public static void Return(Queue<T> queue)
     {
         if (queue == null)
             return;
 
         queue.Clear();
 
-        // Ç®¸µ ÃÖ´ë °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹ÝÈ¯ Ã³¸® ÇÏÁö ¾Ê´Â´Ù.
+        // Ç®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½È¯ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         if (m_pool.Count < m_max_count)
         {
             m_pool.Push(queue);
@@ -245,5 +302,12 @@ public static class QueuePool<T>
 
         queue = null;
     }
+
+    public static Wrapper AcquireWrapper()
+    {
+        return new Wrapper(Acquire());
+    }
 }
+
+
 

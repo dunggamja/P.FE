@@ -107,10 +107,10 @@ public class InputHandler_UI_Menu : InputHandler
         OnUpdate_Input_Process(input_result);
 
         OnUpdate_Menu_Move();
-        ObjectPool<InputParam_Result>.Return(ref input_result);
+        ObjectPool<InputParam_Result>.Return( input_result);
 
 
-        // ¸Þ´º°¡ ¾øÀ¸¸é Á¾·á.
+        // ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (FocusGUI == 0)
         {
             IsFinish = true;
@@ -219,25 +219,25 @@ public class InputHandler_UI_Menu : InputHandler
             input_direction_y = _move_direction.y > 0 ? 1 : -1;
         }
 
-        // ¸Þ´º°¡ »ý±â¸é ÀÌµ¿ Ã³¸®.
+        // ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ Ã³ï¿½ï¿½.
         MoveDirection = new Vector2Int(input_direction_x, input_direction_y);
     }
 
     void OnUpdate_Menu_Move()
     {
-        // ÀÌµ¿ ¹æÇâÀÌ ¾øÀ¸¸é Á¾·á.
+        // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (MoveDirection == Vector2Int.zero)
             return;
         
-        // ÀÌµ¿ ½Ã°£ÀÌ Áö³µ´ÂÁö È®ÀÎ.
+        // ï¿½Ìµï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
         var is_time_passed = (Time.time - MoveInput_LastTime > MOVE_INTERVAL);
         if (is_time_passed == false)
             return;
 
-        // ÀÌµ¿ ½Ã°£ °»½Å.
+        // ï¿½Ìµï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½.
         MoveInput_LastTime = Time.time;
 
-        // ÀÌµ¿ ¹æÇâ ÀÌº¥Æ® ¹ß»ý.
+        // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<GUI_Menu_MoveEvent>.Acquire().Set(FocusGUI, MoveDirection));
     }
@@ -246,14 +246,14 @@ public class InputHandler_UI_Menu : InputHandler
     {
         //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
 
-        // ¿­·ÁÀÖ´Â GUI ¸ðµÎ ´Ý¾ÆÁÝ½Ã´Ù.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ GUI ï¿½ï¿½ï¿½ ï¿½Ý¾ï¿½ï¿½Ý½Ã´ï¿½.
         while(Close_FocusGUI())
         {
-            // ·çÇÁ µ¹¸é¼­ ´Ý¾ÆÁÝ½Ã´Ù.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½é¼­ ï¿½Ý¾ï¿½ï¿½Ý½Ã´ï¿½.
         }
 
 
-        // ÃÊ±âÈ­.
+        // ï¿½Ê±ï¿½È­.
         Reset();
     }
 

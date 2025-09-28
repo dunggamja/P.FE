@@ -33,7 +33,7 @@ using UnityEngine;
         public void Release()
         {
             var temp = this;
-            ObjectPool<WorldObject_PositionEvent>.Return(ref temp);
+            ObjectPool<WorldObject_PositionEvent>.Return( temp);
         }
     }
 // }

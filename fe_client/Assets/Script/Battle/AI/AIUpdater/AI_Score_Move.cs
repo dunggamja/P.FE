@@ -183,7 +183,7 @@ namespace Battle
          if (BestResult.CalculateScore() < temp_result.CalculateScore())
              BestResult.CopyFrom(temp_result);
 
-         ObjectPool<Result>.Return(ref temp_result);
+         ObjectPool<Result>.Return(temp_result);
       }
     }
 
@@ -296,8 +296,8 @@ namespace Battle
         }
         finally
         {
-          ListPool<PathNode>.Return(ref list_path_nodes);
-          ObjectPool<PositionVisitor>.Return(ref visitor);
+          ListPool<PathNode>.Return(list_path_nodes);
+          ObjectPool<PositionVisitor>.Return(visitor);
         }
 
     }
@@ -465,9 +465,9 @@ namespace Battle
             ++range_level;
 
 
-            HashSetPool<AABB>.Return(ref list_aabb);
-            ListPool<Int64>.Return(ref list_target);
-            ListPool<PathNode>.Return(ref list_target_path_nodes);
+            HashSetPool<AABB>.Return(list_aabb);
+            ListPool<Int64>.Return(list_target);
+            ListPool<PathNode>.Return(list_target_path_nodes);
         }
 
         return target_id;

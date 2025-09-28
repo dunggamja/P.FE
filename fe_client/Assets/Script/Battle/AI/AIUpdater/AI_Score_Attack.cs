@@ -142,19 +142,19 @@ namespace Battle
 
 
             // 점수 계산 결과값.
-            var current_score = ObjectPool<Result>.Acquire();
+            using var current_score = ObjectPool<Result>.AcquireWrapper();
 
             // 소유 중인 무기들로 테스트 전투를 돌립니다.
-            var list_weapon = ListPool<Item>.Acquire();
-            owner_inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
+            using var list_weapon = ListPool<Item>.AcquireWrapper();
+            owner_inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
 
             // 공격 가능한 타겟 목록.
-            var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Acquire();
+            using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
 
 
             try
             {                            
-                foreach(var e in list_weapon)
+                foreach(var e in list_weapon.Value)
                 {
                     // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
                     owner_weapon.Equip(e.ID);
@@ -168,11 +168,11 @@ namespace Battle
 
 
                     // 공격 가능한 타겟 목록 초기화.
-                    list_collect_target.Clear();
+                    list_collect_target.Value.Clear();
                     
                     // Target Collect
                     CollectTarget(
-                        ref list_collect_target,
+                        list_collect_target.Value,
                         TerrainMapManager.Instance.TerrainMap,
                         owner_entity,
                         owner_entity.Cell.x,
@@ -182,7 +182,7 @@ namespace Battle
                         range_max);
 
                     // 타겟 순회.
-                    foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target)
+                    foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target.Value)
                     {
                         var target_entity = EntityManager.Instance.GetEntity(target_id);
                         if (target_entity == null)
@@ -197,21 +197,22 @@ namespace Battle
                             continue;
 
                         // 점수 계산 결과값 초기화.
-                        current_score.Reset();
+                        current_score.Value.Reset();
             
-                        Score_Calculate(ref current_score,
+                        Score_Calculate(
+                            current_score.Value,
                             owner_entity,
                             target_entity,
                             (attack_pos_x, attack_pos_y));
 
                         // 점수 계산.
-                        var calculate_score = current_score.CalculateScore();
+                        var calculate_score = current_score.Value.CalculateScore();
 
                         // 점수 비교.
                         if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
                         {
                             // 높은 점수 셋팅.
-                            owner_blackboard.Score_Attack.CopyFrom(current_score);                            
+                            owner_blackboard.Score_Attack.CopyFrom(current_score.Value);                            
                             owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
                         }
                     }
@@ -223,14 +224,16 @@ namespace Battle
                 owner_weapon.Equip(equiped_weapon_id);     
 
                 // pool 반환.
-                ObjectPool<Result>.Return(ref current_score);
-                ListPool<Item>.Return(ref list_weapon);
-                ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(ref list_collect_target);
+                // ObjectPool<Result>.Return(current_score.Value);
+                // ListPool<Item>.Return(list_weapon.Value);
+                // ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(list_collect_target);
             }    
         }
 
 
-        static void Score_Calculate(ref Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
+
+
+        static void Score_Calculate(Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
         {
             if (_owner == null || _target == null)
                 return;
@@ -364,7 +367,7 @@ namespace Battle
 
         static void
             CollectTarget(
-            ref List<(Int64 target_id, int attack_pos_x, int atatck_pos_y)> _collect_targets,
+            List<(Int64 target_id, int attack_pos_x, int atatck_pos_y)> _collect_targets,
             TerrainMap _terrain_map, 
             IPathOwner _path_owner, 
             int        _x, 
@@ -378,21 +381,21 @@ namespace Battle
                 return;
 
             // 콜백
-            var visitor            = ObjectPool<CollectTargetVisitor>.Acquire();
-            visitor.TerrainMap     = _terrain_map;
-            visitor.Visitor      = _path_owner;
-            visitor.Position       = (_x, _y);
-            visitor.MoveDistance   = _move_distance;
-            visitor.WeaponRangeMax = _weapon_range_max;
-            visitor.WeaponRangeMin = _weapon_range_min;
+            using var visitor            = ObjectPool<CollectTargetVisitor>.AcquireWrapper();
+            visitor.Value.TerrainMap     = _terrain_map;
+            visitor.Value.Visitor        = _path_owner;
+            visitor.Value.Position       = (_x, _y);
+            visitor.Value.MoveDistance   = _move_distance;
+            visitor.Value.WeaponRangeMax = _weapon_range_max;
+            visitor.Value.WeaponRangeMin = _weapon_range_min;
 
             // FloodFill을 통해서 공격 가능한 타겟을 찾아봅시다. 
-            PathAlgorithm.FloodFill(visitor);
+            PathAlgorithm.FloodFill(visitor.Value);
 
             // 타겟 이관.
-            _collect_targets.AddRange(visitor.GetCollectTargets());
+            _collect_targets.AddRange(visitor.Value.GetCollectTargets());
 
-            ObjectPool<CollectTargetVisitor>.Return(ref visitor);
+            // ObjectPool<CollectTargetVisitor>.Return(visitor.Value);
         }
 
     }    

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,18 +13,18 @@ namespace Battle
         (int num, bool set)  range_max = (0, false); 
         (int num, bool set)  range_min = (0, false); 
 
-        // Âø¿ëÁßÀÎ ¹«±â id.
+        // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° id.
         var equip_weapon_id = StatusManager.Weapon.ItemID;
 
-        // ¼ÒÀ¯ ÁßÀÎ ¹«±âµéÀÇ ¸ñ·Ï.
-        var list_weapon = ListPool<Item>.Acquire();
+        // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ëª©ë¡.
+        using var list_weapon = ListPool<Item>.AcquireWrapper();
         
-        // ¼ÒÀ¯ ÁßÀÎ ¹«±âµéÀÇ »ç°Å¸® ¹üÀ§ Ã¼Å©.
-        Inventory.CollectItemByType(ref list_weapon, EnumItemType.Weapon);
+        // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ëª©ë¡ ì¶”ì¶œ.
+        Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
 
-        foreach(var e in list_weapon)
+        foreach(var e in list_weapon.Value)
         {
-          // Æ¯Á¤ ¹«±â°¡ ¾Æ´Ï¸é Á¦¿Ü.
+          // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸°ê°€ ì•„ë‹ˆë©´ ì œì™¸.
           if (e.ID != _weapon_id && _weapon_id != 0)
             continue;
 
@@ -32,29 +32,29 @@ namespace Battle
             continue;
 
 
-          // Âø¿ëÁßÀÎ ¹«±â¸¦ °è»êÀ» À§ÇØ ¹Ù²ãÁİ¼¼.
+          // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ì°©ìš©.
           StatusManager.Weapon.Equip(e.ID);
 
           var weapon_range_max = StatusManager.GetBuffedWeaponStatus(StatusManager.Weapon, EnumWeaponStatus.Range);
           var weapon_range_min = StatusManager.GetBuffedWeaponStatus(StatusManager.Weapon, EnumWeaponStatus.Range_Min);
 
-          // ÃÖ´ë »ç°Å¸® Ã¼Å©.
+          // ìµœëŒ€ ì‚¬ì •ê±°ë¦¬ ì²´í¬.
           if (weapon_range_max > range_max.num || range_max.set == false)
           {
             range_max = (weapon_range_max, true);
           }
 
-          // ÃÖ¼Ò »ç°Å¸® Ã¼Å©.
+          // ìµœì†Œ ì‚¬ì •ê±°ë¦¬ ì²´í¬.
           if (weapon_range_min < range_min.num || range_min.set == false)
           {
             range_min = (weapon_range_min, true);
           }
         }
 
-        // ¹«±â ¸ñ·Ï ¹İÈ¯.
-        ListPool<Item>.Return(ref list_weapon);
+        // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ëª©ë¡ ë°˜í™˜.
+        // ListPool<Item>.Return(list_weapon.Value);
 
-        // Âø¿ëÁßÀÎ ¹«±â¸¦ ¿ø·¡´ë·Î ¹Ù²ãÁİ½Ã´Ù.
+        // ì†Œìœ  ì¤‘ì¸ ë¬´ê¸° ì°©ìš©.
         StatusManager.Weapon.Equip(equip_weapon_id);
 
         return (range_min.num, range_max.num);
@@ -63,17 +63,17 @@ namespace Battle
 
     public void ApplyDamage(int _damage)
     {
-        // µ¥¹ÌÁö °ª º¸Á¤.
+        // ë°ë¯¸ì§€ ì²´í¬.
         _damage = Math.Max(0, _damage);
 
         
         var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
         var new_hp = cur_hp - _damage;
 
-        // µ¥¹ÌÁö Àû¿ë.
+        // ì²´ë ¥ ì„¤ì •.
         SetPoint(EnumUnitPoint.HP, new_hp);
 
-        // ·Î±× ÀûÀç.
+        // ë°ë¯¸ì§€ ë¡œê·¸ ì¶”ê°€.
         // BattleLogManager.Instance.AddLog(EnumBattleLogType.Damage, ID, _damage);
     }
 
@@ -90,10 +90,10 @@ namespace Battle
 
     void SetPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
     {
-        // Æ÷ÀÎÆ® °ª º¸Á¤.
+        // ë°ë¯¸ì§€ ì²´í¬.
         var new_value = CorrectPoint(_point_type, _value);//, _is_plan);
 
-        // Æ÷ÀÎÆ® °ª Àû¿ë.
+        // ë°ë¯¸ì§€ ì„¤ì •.
         StatusManager.Status.SetPoint(_point_type, new_value);//, _is_plan);
     }
 

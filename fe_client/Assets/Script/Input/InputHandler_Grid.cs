@@ -83,7 +83,7 @@ public class InputHandler_Grid_Select : InputHandler
         // }
 
 
-        ObjectPool<InputParam_Result>.Return(ref input_result);
+        ObjectPool<InputParam_Result>.Return( input_result);
         
         
         return IsFinish;

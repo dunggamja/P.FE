@@ -44,7 +44,7 @@ namespace Battle
         }
 
 
-        // ÀüÅõ ¿¹Ãø ½ÇÇà.
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         public static Result Run_Plan(
             Int64          _attacker_id,
             Int64          _target_id,
@@ -59,7 +59,7 @@ namespace Battle
                 return null;
 
 
-            // ÀüÅõ ¿¹Ãø Àü ½º³À¼¦ ÀúÀå.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             var snapshot = GameSnapshot.Save();
 
 
@@ -69,10 +69,10 @@ namespace Battle
             // Debug.Log("GameSnapshot.Save() Start");
             // Debug.Log("GameSnapshot.Save() End");
 
-            // ¹«±â ÀåÂø.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             attacker.StatusManager.Weapon.Equip(_weapon_id);
 
-            // °ø°Ý À§Ä¡ ¼ÂÆÃ.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½.
             attacker.UpdateCellPosition(
                 _attack_position,
                 (_apply: false, _immediatly: false),
@@ -81,13 +81,13 @@ namespace Battle
 
             var result = new Result();
 
-            // ÀüÅõ ¿¹Ãø ½ÇÇà.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             {
                 var combat_param = ObjectPool<CombatParam_Plan>
                     .Acquire()
                     .Set(attacker, target);
 
-                // ÀüÅõ Àü µ¥ÀÌÅÍ ¼ÂÆÃ.
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                 result.Attacker.EntityID  = attacker.ID;
                 result.Attacker.WeaponID  = _weapon_id;
                 result.Attacker.HP_Before = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
@@ -97,42 +97,42 @@ namespace Battle
                 result.Defender.HP_Before = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
 
-                // ÀüÅõ ¿¹Ãø ½ÇÇà.
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                 {
                     CombatSystemManager.Instance.Setup(combat_param);
                     while (CombatSystemManager.Instance.IsFinished == false)
                         CombatSystemManager.Instance.Update();
                 }
 
-                // ÀüÅõ ¿¹Ãø °á°ú Á¤¸®.
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                 var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
                 foreach (var damage in damage_result)
                 {
-                    // °ø°ÝÀÚ / ¹æ¾îÀÚ ±¸ºÐ.
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                     var is_attacker  = (damage.AttackerID == attacker.ID);
 
-                    // À¯´Ö Á¤º¸ ¼ÂÆÃ. (µ¥¹ÌÁö, ¸íÁß·ü, Ä¡¸íÅ¸À²)
+                    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ß·ï¿½, Ä¡ï¿½ï¿½Å¸ï¿½ï¿½)
                     var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
                     unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
                     unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
                     unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
 
 
-                    // µ¥¹ÌÁö ¼ÂÆÃ.
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                     var damage_value = damage.Result_Damage;
 
                     result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
                 }
 
-                // ÀüÅõ ÈÄ HP ¼ÂÆÃ
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ HP ï¿½ï¿½ï¿½ï¿½
                 result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
                 result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
-                ObjectPool<CombatParam_Plan>.Return(ref combat_param);
+                ObjectPool<CombatParam_Plan>.Return(combat_param);
             }
 
 
-            // ÀüÅõ ¿¹Ãø ÈÄ ½º³À¼¦ º¹¿ø
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             GameSnapshot.Load(snapshot, _is_plan: true);
 
             return result;
@@ -151,9 +151,9 @@ namespace Battle
             if (attacker == null || target == null)
                 return false;
 
-            // TODO: È¥¶õ Ã¼Å©.
+            // TODO: È¥ï¿½ï¿½ Ã¼Å©.
 
-            // ¾Æ±ºÀÌ¸é °ø°Ý ºÒ°¡.
+            // ï¿½Æ±ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½.
             var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
             if (is_alliance)
                 return false;

@@ -144,7 +144,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
                         e.OnReceiveEvent(_event);
                 }
 
-                ListPool<IEventReceiver>.Return(ref temp_receivers);
+                ListPool<IEventReceiver>.Return(temp_receivers);
             }
         }
 
@@ -183,7 +183,7 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         }
 
         // 
-        ListPool<IEventParam>.Return(ref list_event);
+        ListPool<IEventParam>.Return( list_event);
     }
 
     private void PostDispatchedEvent()

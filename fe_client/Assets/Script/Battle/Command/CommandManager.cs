@@ -11,8 +11,8 @@ namespace Battle
         enum EnumCommandAbort
         {
             None,
-            PendingOnly,    // ´ë±â ÁßÀÎ ¸í·É¸¸ Áß´Ü.
-            IncludeRunning, // ½ÇÇàÁßÀÎ ¸í·É Æ÷ÇÔ.
+            PendingOnly,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¸ï¿½ ï¿½ß´ï¿½.
+            IncludeRunning, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         }
         
         Int64            m_owner_id      = 0;
@@ -56,14 +56,14 @@ namespace Battle
 
             switch (_command)
             {
-                // Áß´Ü ¸í·ÉÀÌ ¿ÔÀ» °æ¿ì¿¡ ´ëÇÑ Ã³¸®.
+                // ï¿½ß´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
                 case Command_Abort command_abort:
                 {
                     var abort_type = (command_abort.IsPendingOnly) 
                                     ?  (int)EnumCommandAbort.PendingOnly 
                                     :  (int)EnumCommandAbort.IncludeRunning;
 
-                    // Å« °ªÀ» À¯ÁöÇÔ.
+                    // Å« ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
                     m_command_abort = (EnumCommandAbort)Math.Max((int)m_command_abort, abort_type);                                
                     break;
                 }
@@ -92,24 +92,24 @@ namespace Battle
 
         public void Update()
         {
-            // ¸í·É Áß´Ü Ã³¸®.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½ Ã³ï¿½ï¿½.
             if (m_command_abort != EnumCommandAbort.None)   
             {
-                // ¸í·É Áß´Ü Ã³¸®¿¡ ¼º°øÇÏ¸é Áß´Ü Ã³¸® »óÅÂ ÃÊ±âÈ­.
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ß´ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­.
                 if (AbortCommand(m_command_abort))
                     m_command_abort = EnumCommandAbort.None;                
             }
 
-            // ÇöÀç ½ÇÇàÇÒ ¸í·É.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             var command  = PeekCommand();
             if (command == null)
                 return;
 
 
-            // ¸í·É ½ÇÇà.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             if (command.Update() == EnumState.Finished)
             {
-                // command°¡ ¿Ï·áµÇ¸é pop Ã³¸®.
+                // commandï¿½ï¿½ ï¿½Ï·ï¿½Ç¸ï¿½ pop Ã³ï¿½ï¿½.
                 PopCommand();
             }
         }
@@ -121,7 +121,7 @@ namespace Battle
             {
                 case EnumCommandAbort.IncludeRunning:
                 {
-                    // ÇöÀç ½ÇÇàÁßÀÎ ¸í·É Áß´Ü.
+                    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½.
                     var running  = PopCommand();
                     if (running != null && running.State == EnumState.Progress)
                     {
@@ -137,7 +137,7 @@ namespace Battle
                     var running       = PeekCommand();
                     var is_not_running = (running == null) || (running.State != EnumState.Progress);
 
-                    // ½ÇÇàÁßÀÎ ¸í·ÉÀÌ ¾øÀ¸¸é Áß´Ü.
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½.
                     if (is_not_running)
                     {              
                         RemoveAbortCommands();
@@ -154,12 +154,12 @@ namespace Battle
 
         void RemoveAbortCommands()
         {
-            // Áß´Ü ¿äÃ» Àü ±îÁöÀÇ ¸í·ÉÀ» »èÁ¦ÇÕ´Ï´Ù. 
+            // ï¿½ß´ï¿½ ï¿½ï¿½Ã» ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. 
             Command last_abort = null;
 
             var command_list = ListPool<Command>.Acquire();
 
-            // ±âÁ¸ ¸í·É ¹é¾÷
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             while (m_command_queue.Count > 0)
             {
                 var command = PopCommand();
@@ -170,7 +170,7 @@ namespace Battle
                     last_abort = command;
             }
 
-            // ¸í·É Áß´Ü ¿äÃ»ÀÌ ¿À±â Àü±îÁö Ç×¸ñÀ» Á¦¿ÜÇÏ°í ¸í·É º¹¿ø.
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
             foreach (var command in command_list)
             {
                 if (last_abort != null)
@@ -186,7 +186,7 @@ namespace Battle
                 }
             }
 
-            ListPool<Command>.Return(ref command_list);
+            ListPool<Command>.Return(command_list);
         }
     }
 }

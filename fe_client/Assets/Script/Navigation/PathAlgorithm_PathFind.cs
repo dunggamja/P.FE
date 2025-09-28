@@ -125,7 +125,7 @@ public static partial class PathAlgorithm
         finally
         {
 
-            ListPool<Node>.Return(ref list_node);
+            ListPool<Node>.Return( list_node);
         }
 
         return (false, 0);
@@ -347,9 +347,9 @@ public static partial class PathAlgorithm
         }
         finally
         {
-            DictionaryPool<(int x, int y), Node>.Return(ref open_list);
-            DictionaryPool<(int x, int y), Node>.Return(ref close_list);
-            ObjectPool<MoveRangeCheck>.Return(ref move_range_check);            
+            DictionaryPool<(int x, int y), Node>.Return( open_list);
+            DictionaryPool<(int x, int y), Node>.Return( close_list);
+            ObjectPool<MoveRangeCheck>.Return( move_range_check);            
         } 
        
         // 길찾기 실패.
@@ -464,8 +464,8 @@ public static partial class PathAlgorithm
             }   
         }
 
-        HashSetPool<(int x, int y, int move_cost)>.Return(ref open_list_move);
-        HashSetPool<(int x, int y, int move_cost)>.Return(ref close_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return( open_list_move);
+        HashSetPool<(int x, int y, int move_cost)>.Return( close_list_move);
         // Debug.Log($"FloodFill, Complete, x:{_visitor.Position.x}, y:{_visitor.Position.y}");            
     }
 

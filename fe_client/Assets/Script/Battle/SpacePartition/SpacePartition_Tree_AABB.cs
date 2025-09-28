@@ -65,7 +65,7 @@ namespace Battle
         }
       }
 
-      ListPool<Node>.Return(ref stack);
+      ListPool<Node>.Return(stack);
     }
 
     public void Insert(Int64 _id, AABB _box)
@@ -98,7 +98,7 @@ namespace Battle
       RemoveLeaf(node);
       m_node_map.Remove(_id);
 
-      ObjectPool<Node>.Return(ref node);
+      ObjectPool<Node>.Return(node);
       return;
     }
 
@@ -195,7 +195,7 @@ namespace Battle
 
       // 부모노드는 더 이상 사용하지 않으니 반환.
       parent.left = parent.right = parent.parent = null;
-      ObjectPool<Node>.Return(ref parent);
+      ObjectPool<Node>.Return(parent);
     }
 
     Node ChooseBestSibling(AABB _box)
@@ -267,7 +267,7 @@ namespace Battle
         ClearNode(_node.left);
         ClearNode(_node.right);
 
-        ObjectPool<Node>.Return(ref _node);
+        ObjectPool<Node>.Return(_node);
       }
 
       ClearNode(m_root);

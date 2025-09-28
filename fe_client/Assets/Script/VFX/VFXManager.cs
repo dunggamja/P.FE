@@ -6,9 +6,9 @@ using UnityEngine;
 
 public enum EnumVFXAttachmentType
 {
-    World,      // ¿ùµå ÁÂÇ¥¿¡ °íÁ¤
-    Child,      // Æ¯Á¤ ¿ÀºêÁ§Æ®ÀÇ ÀÚ½ÄÀ¸·Î ºÎÂø
-    Track       // Æ¯Á¤ ¿ÀºêÁ§Æ®¸¦ ÃßÀû
+    World,      // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    Child,      // Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    Track       // Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 }
 
 
@@ -65,15 +65,15 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (_param == null)
             return 0;
 
-        // TODO: ÀÚµ¿ ÀÌÆåÆ®°¡ ¸±¸®Áî µÇ´Â ±â´É Ãß°¡.
+        // TODO: ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ ï¿½ß°ï¿½.
 
-        // ½Ã¸®¾ó ³Ñ¹ö »ý¼º.
+        // ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var serial_number = GenerateSerial();
 
-        // ÀÌÆåÆ® »ý¼º. (ºñµ¿±â)
+        // ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½. (ï¿½ñµ¿±ï¿½)
         CreateVFXAsync(serial_number, _param).Forget();
 
-        // ½Ã¸®¾ó ³Ñ¹ö ¹ÝÈ¯.
+        // ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ ï¿½ï¿½È¯.
         return serial_number;
     }
 
@@ -100,13 +100,13 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (_param == null)
             return null;
 
-        // Ç®¿¡¼­ °¡Á®¿À±â.
+        // Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
         VFXObject vfx_object = AcquireFromPool(_param.VFXName);
 
-        // Ç®¿¡ ¾øÀ¸¸é »ý¼º.
+        // Ç®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (vfx_object == null)
         {
-            // ÇÁ¸®ÆÕ ·Îµå ´ë±â.
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½.
             var new_object = await AssetManager.Instance.InstantiateAsync(_param.VFXName, _param.VFXRoot, _cancel_token);
             if (new_object == null)
             {
@@ -122,7 +122,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             }
         }
 
-        // »èÁ¦ ¿¹Á¤ ¸ñ·Ï¿¡ ÀÖÀ¸¸é »ý¼º Ãë¼Ò.
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
         if (m_vfx_release_list.Contains(_serial_number))
         {
             // m_vfx_release_list.Remove(_serial_number);
@@ -132,10 +132,10 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         }
         else
         {
-            // ·¹Æ÷ÁöÅä¸®¿¡ Ãß°¡.
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½ß°ï¿½.
             m_vfx_repository.Add(_serial_number, vfx_object);
 
-            // ¿ÀºêÁ§Æ® ÃÊ±âÈ­
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­
             vfx_object.OnCreate(
                 _serial_number, 
                 _param);
@@ -143,8 +143,8 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
 
 
-        // ¹ÝÈ¯.
-        ObjectPool<T>.Return(ref _param);
+        // ï¿½ï¿½È¯.
+        ObjectPool<T>.Return( _param);
 
         return vfx_object;
     }
@@ -157,15 +157,15 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         var serial_number = _vfx_object.SerialNumber;
         var vfx_name      = _vfx_object.VFXName;
 
-        // ¿ÀºêÁ§Æ® ÃÊ±âÈ­.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­.
         _vfx_object.OnRelease();
 
-        // Ç®¿¡ ¹ÝÈ¯.
+        // Ç®ï¿½ï¿½ ï¿½ï¿½È¯.
         ReturnToPool(vfx_name, _vfx_object);
         
-        // ·¹Æ÷ÁöÅä¸®¿¡¼­ Á¦°Å.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         m_vfx_repository.Remove(serial_number);
-        // »èÁ¦ ¸ñ·Ï¿¡¼­µµ Á¦°Å.
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         m_vfx_release_list.Remove(serial_number);
     }
 
@@ -199,7 +199,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
         pool.Enqueue(_vfx_object);
 
-        // Ç® ·çÆ® ¹ØÀ¸·Î ¿Å±â±â
+        // Ç® ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿½
         _vfx_object.gameObject.SetActive(false);
         _vfx_object.transform.SetParent(m_vfx_pool_root);
         _vfx_object.transform.localPosition = Vector3.zero;
@@ -216,13 +216,13 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (m_vfx_release_list.Count <= 0)
             return;
 
-        // Ç®¿¡¼­ °¡Á®¿À±â
+        // Ç®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         var release_list = HashSetPool<Int64>.Acquire();
 
-        // ¸±¸®Áî ¸ñ·Ï º¹»ç.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         release_list.UnionWith(m_vfx_release_list);
 
-        // ¸±¸®Áî ¸ñ·Ï Ã³¸®.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
         foreach (var serial_number in release_list)
         {
             if (m_vfx_repository.TryGetValue(serial_number, out var vfx_object))
@@ -231,8 +231,8 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             }
         }
 
-        // Ç®¿¡ ¹ÝÈ¯.
-        HashSetPool<Int64>.Return(ref release_list);
+        // Ç®ï¿½ï¿½ ï¿½ï¿½È¯.
+        HashSetPool<Int64>.Return( release_list);
     }
 
 

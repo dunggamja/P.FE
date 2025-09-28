@@ -171,8 +171,8 @@ namespace Battle
 
         //     // // ..정리..
         //     // m_update_flag_influencer.Clear();
-        //     // HashSetPool<Int64>.Return(ref list_influencer_update);
-        //     // ListPool<(EnumInfluenceType, (int x, int y))>.Return(ref list_block_update);
+        //     // HashSetPool<Int64>.Return(list_influencer_update);
+        //     // ListPool<(EnumInfluenceType, (int x, int y))>.Return(list_block_update);
         // }
 
         // void UpdateInfluencer_Collect(
