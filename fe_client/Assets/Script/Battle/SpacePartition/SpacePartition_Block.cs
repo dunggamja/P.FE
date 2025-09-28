@@ -184,17 +184,20 @@ namespace Battle
       {
         for (var y = block_index_min.y; y <= block_index_max.y; y++)
         {
-          foreach (var id in m_nodes[x, y].ListId)
-          {
-            // 거리 체크.
-            var position = GetIDPosition(id);
-            var distance = PathAlgorithm.Distance(_center.x, _center.y, position.x, position.y);
-            if (distance > _range)
-                continue;
+            if (m_nodes[x, y].ListId == null)
+              continue;
 
-            if (_query_filter == null || _query_filter(position, id))
-                _results.Add(id);            
-          }
+            foreach (var id in m_nodes[x, y].ListId)
+            {
+              // 거리 체크.
+              var position = GetIDPosition(id);
+              var distance = PathAlgorithm.Distance(_center.x, _center.y, position.x, position.y);
+              if (distance > _range)
+                  continue;
+
+              if (_query_filter == null || _query_filter(position, id))
+                  _results.Add(id);            
+            }
         }
       }
     }

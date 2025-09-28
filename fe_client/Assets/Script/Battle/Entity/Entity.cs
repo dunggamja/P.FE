@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -82,10 +82,10 @@ namespace Battle
 
         public void Reset()
         {
-            // ÁÂÇ¥ Á¡À¯ ÇØÁ¦. 
+            // ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. 
             UpdateCellOccupied(false);
 
-            // HUD »èÁ¦.
+            // HUD ï¿½ï¿½ï¿½ï¿½.
             DeleteHUD();
 
 
@@ -99,7 +99,7 @@ namespace Battle
 
         public void DeleteHUD()
         {
-            // HUD »èÁ¦.
+            // HUD ï¿½ï¿½ï¿½ï¿½.
             foreach((var _, var hud_id) in m_hud_list)
             {
                 GUIManager.Instance.CloseUI(hud_id);
@@ -157,7 +157,7 @@ namespace Battle
             PathAttribute    = _snapshot.PathAttribute;
             PathBasePosition = _snapshot.PathBasePosition;
 
-            // Save/Load ¿¡¼­ Á¦¿ÜµÈ µ¥ÀÌÅÍ
+            // Save/Load ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Üµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             // Skill,
             // AIManager,
             // CommandManager,

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,7 +44,7 @@ namespace Battle
         }
 
 
-        // ���� ���� ����.
+        // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
         public static Result Run_Plan(
             Int64          _attacker_id,
             Int64          _target_id,
@@ -59,7 +59,7 @@ namespace Battle
                 return null;
 
 
-            // ���� ���� �� ������ ����.
+            // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
             var snapshot = GameSnapshot.Save();
 
 
@@ -69,10 +69,10 @@ namespace Battle
             // Debug.Log("GameSnapshot.Save() Start");
             // Debug.Log("GameSnapshot.Save() End");
 
-            // ���� ����.
+            // 공격자 무기 장착.
             attacker.StatusManager.Weapon.Equip(_weapon_id);
 
-            // ���� ��ġ ����.
+            // 공격자 위치 업데이트.
             attacker.UpdateCellPosition(
                 _attack_position,
                 (_apply: false, _immediatly: false),
@@ -81,13 +81,13 @@ namespace Battle
 
             var result = new Result();
 
-            // ���� ���� ����.
+            // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
             {
                 var combat_param = ObjectPool<CombatParam_Plan>
                     .Acquire()
                     .Set(attacker, target);
 
-                // ���� �� ������ ����.
+                // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 result.Attacker.EntityID  = attacker.ID;
                 result.Attacker.WeaponID  = _weapon_id;
                 result.Attacker.HP_Before = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
@@ -97,34 +97,34 @@ namespace Battle
                 result.Defender.HP_Before = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
 
-                // ���� ���� ����.
+                // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {
                     CombatSystemManager.Instance.Setup(combat_param);
                     while (CombatSystemManager.Instance.IsFinished == false)
                         CombatSystemManager.Instance.Update();
                 }
 
-                // ���� ���� ��� ����.
+                // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
                 foreach (var damage in damage_result)
                 {
-                    // ������ / ����� ����.
+                    // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                     var is_attacker  = (damage.AttackerID == attacker.ID);
 
-                    // ���� ���� ����. (������, ���߷�, ġ��Ÿ��)
+                    // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                     var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
                     unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
                     unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
                     unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
 
 
-                    // ������ ����.
+                    // 공격자와 타겟 데미지 저장.
                     var damage_value = damage.Result_Damage;
 
                     result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
                 }
 
-                // ���� �� HP ����
+                // 공격자와 타겟 HP 상태 저장.
                 result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
                 result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
@@ -132,7 +132,7 @@ namespace Battle
             }
 
 
-            // ���� ���� �� ������ ����
+            // 공격 후 상태 복구.
             GameSnapshot.Load(snapshot, _is_plan: true);
 
             return result;
@@ -151,9 +151,10 @@ namespace Battle
             if (attacker == null || target == null)
                 return false;
 
-            // TODO: ȥ�� üũ.
+            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
 
-            // �Ʊ��̸� ���� �Ұ�.
+          
+            // 공격자와 타겟이 같은 진영인 경우 제외.
             var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
             if (is_alliance)
                 return false;

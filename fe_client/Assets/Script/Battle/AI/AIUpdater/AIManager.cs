@@ -45,17 +45,30 @@ namespace Battle
             m_ai_type = _ai_type;
             m_repository.Clear();
 
-            // 대기는 우선순위 매우 낮음.
+            // 대기 : 다른 행동들 모두 할거 없을때 처리.
             AddAIUpdater(EnumAIPriority.Others, new AI_Score_Done());
 
 
             switch(_ai_type)
             {
+                // 공격:
                 case EnumAIType.Attack:
                     // 1. 공격 가능한 적이 있으면 공격.
                     AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
                     // 2. 가까운 적을 향해 이동.
                     AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
+                    break;
+
+                // 요격:
+                case EnumAIType.Intercept:
+                    // 1. 공격 가능한 적이 있으면 공격.
+                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    break;
+
+                // 경계
+                case EnumAIType.Alert:
+                    // 1. 공격 가능한 적이 있으면 공격.
+                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
                     break;
             }
         }

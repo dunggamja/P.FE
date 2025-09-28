@@ -121,24 +121,72 @@ namespace Battle
             if (owner_entity == null)
                 return;
 
-            // 코드가 너무 길어져서 변수들 캐싱.
-            var owner_status     = owner_entity.StatusManager;
-            var owner_blackboard = owner_entity.BlackBoard;
-            var owner_inventory  = owner_entity.Inventory;
-
-            // 착용중인 무기 / 아이템 ID
-            var owner_weapon      = owner_status.Weapon;
-            var equiped_weapon_id = owner_weapon.ItemID;
-
-
-            // 행동들이 가능한 상태인지 체크.
-            var is_moveable   = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
+            // 행동들이 가능한 상태인지 체크.            
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
 
 
             // 공격 행동이 불가능한 상태면 종료
             if (is_attackable == false)
+                return;            
+
+            // 사정거리 내에 적이 없으면 종료.
+            var weapon_range = owner_entity.GetWeaponRange(0).max;
+            var move_range   = owner_entity.PathMoveRange;
+            if (Update_QueryEnemyInRange(
+                    _param.ID, 
+                    owner_entity.Cell, 
+                    weapon_range + move_range) == false)
                 return;
+
+
+            // 공격 점수 갱신.
+            Update_AttackScore(_param.ID);
+        }
+
+        private bool Update_QueryEnemyInRange(Int64 _entity_id, (int x, int y) _position, int _range)
+        {
+            var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
+            if (owner_entity == null)
+                return false;
+
+
+            using var list_target = ListPool<Int64>.AcquireWrapper();
+
+            SpacePartitionManager.Instance.Query_Position_Range(
+                list_target.Value,
+                _position, 
+                _range);
+
+            foreach(var e in list_target.Value)
+            {
+                // 공격 가능한지 체크.
+                if (CombatHelper.IsAttackable(owner_entity.ID, e) == false)
+                    continue;
+
+
+                return true;                
+            }
+
+
+            return false;
+
+        }
+
+        private void Update_AttackScore(Int64 _entity_id)
+        {
+            var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
+            if (owner_entity == null)
+                return;
+
+            // 코드가 너무 길어져서 변수들 캐싱.
+            var owner_status     = owner_entity.StatusManager;
+            var owner_blackboard = owner_entity.BlackBoard;
+            var owner_inventory  = owner_entity.Inventory;
+            var is_moveable      = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
+
+            // 착용중인 무기 / 아이템 ID
+            var owner_weapon      = owner_status.Weapon;
+            var equiped_weapon_id = owner_weapon.ItemID;
 
 
             // 점수 계산 결과값.
@@ -150,7 +198,6 @@ namespace Battle
 
             // 공격 가능한 타겟 목록.
             using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
-
 
             try
             {                            
@@ -221,12 +268,7 @@ namespace Battle
             finally
             {
                 // 무기 원상 복구.
-                owner_weapon.Equip(equiped_weapon_id);     
-
-                // pool 반환.
-                // ObjectPool<Result>.Return(current_score.Value);
-                // ListPool<Item>.Return(list_weapon.Value);
-                // ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.Return(list_collect_target);
+                owner_weapon.Equip(equiped_weapon_id);                    
             }    
         }
 

@@ -420,10 +420,10 @@ namespace Battle
                     if (entity_target == null)
                       continue;
 
-                    // 같은 진영인 경우 제외.
-                    var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(_entity.GetFaction(), entity_target.GetFaction());
-                    if (is_alliance)
+                    // 공격 가능한 타겟인지 체크.
+                    if (CombatHelper.IsAttackable(_entity.ID, entity_target.ID) == false)
                       continue;
+
                   
                     // 대상의 위치까지 길찾기 
                     var path_find = PathAlgorithm.PathFind(
