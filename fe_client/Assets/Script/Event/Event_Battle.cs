@@ -28,8 +28,8 @@ namespace Battle
 
         public void Release()
         {
-            var temp = this;
-            ObjectPool<Battle_Situation_UpdateEvent>.Return(temp);
+            // var temp = this;
+            ObjectPool<Battle_Situation_UpdateEvent>.Return(this);
         }
     }
 
@@ -41,8 +41,8 @@ namespace Battle
 
         public void Release()
         {
-            var temp = this;
-            ObjectPool<Battle_Scene_ChangeEvent>.Return(temp);
+            // var temp = this;
+            ObjectPool<Battle_Scene_ChangeEvent>.Return(this);
         }
 
         public void Reset()
@@ -139,8 +139,8 @@ namespace Battle
 
         public void Release()
         {
-            var temp = this;
-            ObjectPool<Battle_Cell_PositionEvent>.Return(temp);
+            // var temp = this;
+            ObjectPool<Battle_Cell_PositionEvent>.Return(this);
         }
     }
 
@@ -154,8 +154,8 @@ namespace Battle
 
         public void Release()
         {
-            var temp = this;
-            ObjectPool<Battle_Entity_HP_UpdateEvent>.Return(temp);
+            // var temp = this;
+            ObjectPool<Battle_Entity_HP_UpdateEvent>.Return(this);
         }
 
         public void Reset()

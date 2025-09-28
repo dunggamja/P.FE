@@ -134,17 +134,17 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
         {
             if (receivers != null)
             {
-                var temp_receivers = ListPool<IEventReceiver>.Acquire();
-                temp_receivers.AddRange(receivers);
+                using var temp_receivers = ListPool<IEventReceiver>.AcquireWrapper();
+                temp_receivers.Value.AddRange(receivers);
 
                 // 이벤트 처리.
-                foreach (var e in temp_receivers)
+                foreach (var e in temp_receivers.Value)
                 {
                     if (e != null)
                         e.OnReceiveEvent(_event);
                 }
 
-                ListPool<IEventReceiver>.Return(temp_receivers);
+                // ListPool<IEventReceiver>.Return(temp_receivers);
             }
         }
 
@@ -169,21 +169,21 @@ public class EventDispatchManager : SingletonMono<EventDispatchManager>
     private void DispatchEventQueue()
     {
         // Queue에 이벤트 추가.
-        var list_event = ListPool<IEventParam>.Acquire();
+        using var list_event = ListPool<IEventParam>.AcquireWrapper();
 
-        list_event.AddRange(m_update_event_queue);
+        list_event.Value.AddRange(m_update_event_queue);
 
         // Queue 초기화.
         m_update_event_queue.Clear();
 
         // 이벤트 처리.
-        foreach (var e in list_event)
+        foreach (var e in list_event.Value)
         {
             DispatchEvent(e);
         }
 
         // 
-        ListPool<IEventParam>.Return( list_event);
+        // ListPool<IEventParam>.Return( list_event);
     }
 
     private void PostDispatchedEvent()

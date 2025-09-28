@@ -171,19 +171,17 @@ namespace Battle
 
       public void Visit(int x, int y)
       {  
-         var temp_result = ObjectPool<Result>.Acquire();       
+         using var temp_result = ObjectPool<Result>.AcquireWrapper();       
 
          // 위치 셋팅.
-         temp_result.SetPosition(x, y);
+         temp_result.Value.SetPosition(x, y);
 
          // 타겟과의 거리에 대한 점수 셋팅.
-         temp_result.SetScore(Result.EnumScoreType.CloseToTarget, Result.CalculateScore_CloseToTarget(x, y, BestPath));
+         temp_result.Value.SetScore(Result.EnumScoreType.CloseToTarget, Result.CalculateScore_CloseToTarget(x, y, BestPath));
 
          // 점수가 더 좋다면 교체.
-         if (BestResult.CalculateScore() < temp_result.CalculateScore())
-             BestResult.CopyFrom(temp_result);
-
-         ObjectPool<Result>.Return(temp_result);
+         if (BestResult.CalculateScore() < temp_result.Value.CalculateScore())
+             BestResult.CopyFrom(temp_result.Value);
       }
     }
 
@@ -204,37 +202,35 @@ namespace Battle
 
       
       // 타겟을 향해가 봅시다.
-      switch(TargetType)
+      switch((TargetType, AggressiveType))
       {
         // 타겟을 향해서 이동.
-        case EnumAITargetType.Target:   Process_Target(_owner);         break;
+        case (EnumAITargetType.Target, EnumAIAggressiveType.Aggressive):   
+            Process_Target(_owner);
+            break;
+
+
         // 특정 위치를 향해서 이동.
-        case EnumAITargetType.Position: Process_TargetPosition(_owner); break;
+        case (EnumAITargetType.Position, EnumAIAggressiveType.Aggressive):
+            Process_TargetPosition(_owner); 
+            break;
+
+
         // 근처 가장 가까운 타겟을 향해서 이동.
-        case EnumAITargetType.None:     Process_CloseTarget(_owner);     break;
+        case (EnumAITargetType.None, EnumAIAggressiveType.Aggressive):     
+            Process_CloseTarget(_owner);     
+            break;
+
+
+        // 안전한 위치를 찾는다. 
+        // Alert: 적 사정거리 내에 있을 경우 벗어남.
+        // Evassive: 최대한 안전한 위치로 벗어남.
+        case (EnumAITargetType.None, EnumAIAggressiveType.Alert):     
+            Process_SafePosition(_owner);     
+            break;
+
+        // case (EnumAITargetType.None, EnumAIAggressiveType.Evassive):
       }
-
-
-      
-
-      
-
-      
-
-      //   score = w1 * (1f - distToNearestEnemyNorm) // 적에게 가까워질때의 점수
-      // + w2 * (1f - threatExposure) // 적에게 위험을 받을때의 점수.
-      // + w3 * terrainAdvantage      // 지형 이득 점수.
-      // - w4 * moveCost;             // 이동 비용 점수.?? <- 필요한가?
-
-        // 음... 어찌구분할지 잘 모르겠으니.. EnumAIType에 따라서 동작을 분류해봅시다.
-        // 뭔가 
-
-        // switch(_owner.AIType)
-        // {
-        //   case EnumAIType.Attack:
-        //     Process_AIType_Attack(_owner);
-        //     break;
-        // }
         
     }
 
@@ -255,17 +251,13 @@ namespace Battle
     {
       if (_owner == null)
         return;
-
-
-        
     }
 
     void Process_CloseTarget(IAIDataManager _owner)
     {
-        var list_path_nodes = ListPool<PathNode>.Acquire();
-        var visitor         = ObjectPool<PositionVisitor>.Acquire();
+        using var list_path_nodes = ListPool<PathNode>.AcquireWrapper();
+        using var visitor         = ObjectPool<PositionVisitor>.AcquireWrapper();
 
-        try
         {          
           // 가장 가까운 적에게 최대한 가까운 위치로 이동한다. 
           if (_owner == null)
@@ -277,35 +269,30 @@ namespace Battle
 
 
           // 가장 가까운 적과 경로를 찾아봅시다.
-          var target_id = Find_Closest_Enemy(entity, list_path_nodes);
+          var target_id = Find_Closest_Enemy(entity, list_path_nodes.Value);
           if (target_id == 0)
             return;
 
           // 해당 경로와 가장 가까운 위치를 찾아봅시다.
-          visitor.TerrainMap     = entity.PathNodeManager.TerrainMap;
-          visitor.Visitor        = entity;
-          visitor.Position       = entity.Cell;
-          visitor.MoveDistance   = entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
-          visitor.BestPath.AddRange(list_path_nodes);
+          visitor.Value.TerrainMap     = entity.PathNodeManager.TerrainMap;
+          visitor.Value.Visitor        = entity;
+          visitor.Value.Position       = entity.Cell;
+          visitor.Value.MoveDistance   = entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+          visitor.Value.BestPath.AddRange(list_path_nodes.Value);
           
-          PathAlgorithm.FloodFill(visitor);
+          PathAlgorithm.FloodFill(visitor.Value);
 
           // 점수 셋팅.
-          entity.BlackBoard.Score_Move.CopyFrom(visitor.BestResult);
-          entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.BestResult.CalculateScore());
+          entity.BlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
+          entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.Value.BestResult.CalculateScore());
         }
-        finally
-        {
-          ListPool<PathNode>.Return(list_path_nodes);
-          ObjectPool<PositionVisitor>.Return(visitor);
-        }
-
     }
 
     
 
     Int64 Find_Closest_Enemy(Entity _entity, List<PathNode> _path_nodes)
     {
+      // 가장 가까운 적을 찾아봅시다.
       if (_entity == null || _path_nodes == null)
           return 0;
 
@@ -329,9 +316,9 @@ namespace Battle
         // 공격자의 위치를 중심으로, 주변으로 범위를 확장해가면서 적을 찾습니다.
         while(target_id == 0 && (range_level * RANGE_STEP) < RANGE_MAX)
         {
-            var list_aabb              = HashSetPool<AABB>.Acquire();
-            var list_target            = ListPool<Int64>.Acquire();
-            var list_target_path_nodes = ListPool<PathNode>.Acquire();
+            using var list_aabb              = HashSetPool<AABB>.AcquireWrapper();
+            using var list_target            = ListPool<Int64>.AcquireWrapper();
+            using var list_target_path_nodes = ListPool<PathNode>.AcquireWrapper();
 
             // y축 좌우.
             for (int y = -range_level; y <= range_level; ++y)
@@ -350,21 +337,8 @@ namespace Battle
                       max = new Vector2(center_x_r + RANGE_STEP, center_y + RANGE_STEP)
                     };
 
-              // if (left_box.max.x >= 0 
-              // &&  left_box.max.y >= 0 
-              // &&  left_box.min.x < terrain_map_width 
-              // &&  left_box.min.y < terrain_map_height)
-              {
-                list_aabb.Add(left_box);
-              }
-
-              // if (right_box.max.x >= 0 
-              // &&  right_box.max.y >= 0 
-              // &&  right_box.min.x < terrain_map_width 
-              // &&  right_box.min.y < terrain_map_height)
-              {
-                list_aabb.Add(right_box);
-              }
+              list_aabb.Value.Add(left_box);
+              list_aabb.Value.Add(right_box);
 
             }
 
@@ -386,35 +360,22 @@ namespace Battle
                       max = new Vector2(center_x + RANGE_STEP, center_y_b + RANGE_STEP)
                     };
 
-              // if (top_box.max.x >= 0 
-              // &&  top_box.max.y >= 0 
-              // &&  top_box.min.x < terrain_map_width 
-              // &&  top_box.min.y < terrain_map_height)
-              {
-                list_aabb.Add(top_box);
-              }
-
-              // if (bottom_box.max.x >= 0 
-              // &&  bottom_box.max.y >= 0 
-              // &&  bottom_box.min.x < terrain_map_width 
-              // &&  bottom_box.min.y < terrain_map_height)
-              {
-                list_aabb.Add(bottom_box);
-              }
+              list_aabb.Value.Add(top_box);
+              list_aabb.Value.Add(bottom_box);
             }
 
 
-            foreach(var aabb in list_aabb)
+            foreach(var aabb in list_aabb.Value)
             {
-                list_target.Clear();
+                list_target.Value.Clear();
               
 
                 // 근처에 있는 적을 찾아봅시다. 
                 SpacePartitionManager.Instance.Query_Position_AABB(
-                  list_target, aabb);
+                  list_target.Value, aabb);
 
 
-                foreach(var e in list_target)
+                foreach(var e in list_target.Value)
                 {
                     var entity_target = EntityManager.Instance.GetEntity(e);
                     if (entity_target == null)
@@ -441,7 +402,7 @@ namespace Battle
                         ,
 
                         // 길찾기 경로.
-                        list_target_path_nodes
+                        list_target_path_nodes.Value
                       );
 
                     
@@ -455,22 +416,28 @@ namespace Battle
 
                           // 길찾기 경로 저장.
                           _path_nodes.Clear();
-                          _path_nodes.AddRange(list_target_path_nodes);
+                          _path_nodes.AddRange(list_target_path_nodes.Value);
                         }
                     }
                 }
             }
 
             // 탐색범위 증가.
-            ++range_level;
-
-
-            HashSetPool<AABB>.Return(list_aabb);
-            ListPool<Int64>.Return(list_target);
-            ListPool<PathNode>.Return(list_target_path_nodes);
+            ++range_level;            
         }
 
         return target_id;
+    }
+  
+  
+    void Process_SafePosition(IAIDataManager _owner)
+    {
+      if (_owner == null)
+        return;
+
+
+
+        
     }
   }
 }

@@ -69,6 +69,8 @@ namespace Battle
                 case EnumAIType.Alert:
                     // 1. 공격 가능한 적이 있으면 공격.
                     AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    // 2. 적 사정거리 내에 있을경우 도망친다.
+                    //AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
                     break;
             }
         }
