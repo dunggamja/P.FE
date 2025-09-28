@@ -41,3 +41,11 @@ fe_client/MagicaCloth2Example.csproj
 fe_client/MagicaCloth2UPMImporterShaderGraph.csproj
 fe_client/MagicaClothV2.csproj
 fe_client/MagicaClothV2.Editor.csproj
+/fe_client/Assets/Gaia User Data
+fe_client/Assets/Gaia User Data.meta
+fe_client/Assets/Procedural Worlds.meta
+/fe_client/Assets/Procedural Worlds
+fe_client/Gaia.UnityURPWater.Core.csproj
+fe_client/Gaia.UnityURPWater.Editor.csproj
+fe_client/GaiaCore.csproj
+fe_client/GaiaEditor.csproj
