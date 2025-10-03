@@ -19,7 +19,46 @@ namespace Battle
             EventDispatchManager.Instance.AttachReceiver(this);
         }
 
-        public TerrainMap TerrainMap {get; private set; } = null;
+        public  TerrainMap TerrainMap {get; private set; } = null;
+
+        private Terrain    m_world_terrain = null;
+
+        private Terrain    WorldTerrain
+        {
+            get
+            {
+                if (m_world_terrain == null)
+                {
+                    var world_terrain_object = GameObject.FindGameObjectWithTag(Battle.Constants.TAG_BATTLE_TERRAIN);
+                    if (world_terrain_object != null)
+                    {
+                        m_world_terrain = world_terrain_object.GetComponent<Terrain>();
+                    }
+                    else
+                    {
+                        Debug.LogError($"WorldTerrain not found");
+                    }
+                }
+
+                return m_world_terrain;
+            }
+        }
+
+        public float GetWorldHeight((int _x, int _y) _cell)
+        {
+            return GetWorldHeight(_cell.CellToPosition());
+        }
+
+        public float GetWorldHeight(Vector3 _world_position)
+        {
+            if (WorldTerrain == null)
+                return 0f;
+
+            var    terrin_height = WorldTerrain.SampleHeight(_world_position);
+            return terrin_height;            
+        }
+
+
 
         
         public void SetTerrainMap(TerrainMap _terrain_map)

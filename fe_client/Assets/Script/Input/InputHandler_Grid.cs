@@ -495,7 +495,8 @@ public class InputHandler_Grid_Select : InputHandler
         var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
             .SetVFXRoot_Default()
             .SetPosition(SelectCursor.CellToPosition())
-            .SetVFXName(AssetName.TILE_SELECTION);
+            .SetVFXName(AssetName.TILE_SELECTION)
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE);
 
         VFX_Select = VFXManager.Instance.CreateVFXAsync(vfx_param);
     }

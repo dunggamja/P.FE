@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using Battle;
 using UnityEngine;
 
@@ -43,12 +43,20 @@ public class WorldObject : MonoBehaviour
 
     public void SetPositionData(Vector3 _position, Vector3 _position_prev, float _position_time)
     { 
-        // ¿ùµå ¿ÀºêÁ§Æ®ÀÇ Å©±â¸¦ °í·ÁÇÏ¿© À§Ä¡ º¸Á¤
+        // ì˜¤ë¸Œì íŠ¸ í¬ê¸° ê³ ë ¤í•´ì„œ ìœ„ì¹˜ ì…‹íŒ….
         var half_size   = new Vector3(1f, 0f, 1f) * 0.5f;
         
         m_position      = _position + half_size;
         m_position_prev = _position_prev + half_size;
         m_position_time = _position_time;
+
+
+        // ë†’ì´ ê°’ ì…‹íŒ….
+        var height      = TerrainMapManager.Instance.GetWorldHeight(m_position);
+        var height_prev = TerrainMapManager.Instance.GetWorldHeight(m_position_prev);
+
+        m_position.y      = height;
+        m_position_prev.y = height_prev;
     }
 
     private void InterpolatePosition()

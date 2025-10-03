@@ -1,10 +1,12 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Battle;
 using UnityEditor.Build.Pipeline;
 using UnityEngine;
+using UnityEngine.ResourceManagement.ResourceProviders.Simulation;
 
 
 
@@ -152,32 +154,38 @@ struct VFXAttributeFloat
 }
 
 
+struct VFXAttributeTerrain
+{
+    public bool  snap_to_terrain;
+    
+    public float snap_offset;
+}
 
 
 
 public class VFXObject : MonoBehaviour
 {
-
-
     public class Param : IPoolObject
     {
         public string     VFXName           { get; set; } = string.Empty;
         public Transform  VFXRoot           { get; set; } = null;
-        public Vector3    Position          { get; set; } = default;
-        public Quaternion Rotation          { get; set; } = default;
-        public float      Scale             { get; set; } = 1f;
+        public Vector3    Position          { get; set; } = Vector3.zero;
+        public Quaternion Rotation          { get; set; } = Quaternion.identity;        public float      Scale             { get; set; } = 1f;
+
+        public (bool snap, float snap_offset) SnapToTerrain { get; set; } = (false, 0f);
 
         public (Transform target, EnumVFXAttachmentType attachment_type) 
         FollowTarget { get; set; } = (null, EnumVFXAttachmentType.World);
 
         public virtual void Reset()
         {
-            VFXName      = string.Empty;
-            VFXRoot      = null;
-            Position     = default;
-            Rotation     = default;
-            Scale        = 1f;
-            FollowTarget = (null, EnumVFXAttachmentType.World);
+            VFXName       = string.Empty;
+            VFXRoot       = null;
+            Position      = Vector3.zero;
+            Rotation      = Quaternion.identity;
+            Scale         = 1f;
+            SnapToTerrain = (false, 0f);
+            FollowTarget  = (null, EnumVFXAttachmentType.World);
         }
 
         public Param SetVFXName(string _vfx_name)
@@ -188,8 +196,8 @@ public class VFXObject : MonoBehaviour
 
         public Param SetVFXRoot_Default()
         {
-            // TODO: ¿”Ω√∑Œ ø˘µÂ ø¿∫Í¡ß∆Æ ∏≈¥œ¿˙ ø¿∫Í¡ß∆Æ∏¶ ∑Á∆Æ∑Œ ªÁøÎ.
-            // Ω«¡¶∑Œ¥¬ æ¿ø° ∑Á∆Æ ø¿∫Í¡ß∆Æ∞° ¿÷æÓæﬂ «“∞Õ ∞∞¿Ω.
+            // TODO: Ïò§Î∏åÏ†ùÌä∏ ÏÉùÏÑ± ÏúÑÏπò ÏÖãÌåÖ.
+            // Ïò§Î∏åÏ†ùÌä∏ ÏÉùÏÑ± ÏúÑÏπò ÏÖãÌåÖ.
             VFXRoot = WorldObjectManager.Instance.transform;
             return this;
         }
@@ -224,12 +232,19 @@ public class VFXObject : MonoBehaviour
             return this;
         }
 
+        public Param SetSnapToTerrain(bool _snap_to_terrain, float _snap_offset)
+        {
+            SnapToTerrain = (_snap_to_terrain, _snap_offset);
+            return this;
+        }
+
         public virtual void Apply(VFXObject _vfx_object)
         {
             _vfx_object.SetParent(VFXRoot);
             _vfx_object.SetPosition(Position);
             _vfx_object.SetRotation(Rotation);
             _vfx_object.SetScale(Scale);
+            _vfx_object.SetSnapToTerrain(SnapToTerrain.snap, SnapToTerrain.snap_offset);
         }
     }
 
@@ -248,6 +263,9 @@ public class VFXObject : MonoBehaviour
     VFXAttributeVector3      m_position = new();
     VFXAttributeQuaternion   m_rotation = new();
     VFXAttributeFloat        m_scale    = new();
+    VFXAttributeTerrain      m_terrain  = new();
+
+
     public Vector3           Position   => m_position.CurrentValue;
     public Quaternion        Rotation   => m_rotation.CurrentValue;    
     public float             Scale      => m_scale.CurrentValue;
@@ -271,7 +289,11 @@ public class VFXObject : MonoBehaviour
         UpdateTransform(true);
 
         gameObject.name = $"{VFXName}_{SerialNumber}";        
+
+        OnCreatePostProcess(_param);
     }
+
+    protected virtual void OnCreatePostProcess(VFXObject.Param _param) {}
 
     public void OnRelease()
     {
@@ -300,36 +322,44 @@ public class VFXObject : MonoBehaviour
 
     void UpdateTransform(bool _on_create = false)
     {
+        bool is_transform_changed = false;
+
+
         if (_on_create)
         {
-            // ø¿∫Í¡ß∆Æ OFF
+            // Ï≤òÏùå ÏÉùÏÑ±Ïãú Ï≤òÎ¶¨ÌïòÎäî Î∂ÄÎ∂Ñ
             gameObject.SetActive(false);
 
-            // Transform º≥¡§.
+            is_transform_changed = true;
+        }
+        else
+        {
+            // UpdateÏãú Ï≤òÎ¶¨ÌïòÎäî Î∂ÄÎ∂Ñ.
+            is_transform_changed = 
+               (transform.parent        != Parent)
+            || (transform.localPosition != Position)
+            || (transform.localRotation != Rotation)
+            || (transform.localScale    != Vector3.one * Scale);
+        }
+
+        // Transform ÏÖãÌåÖ.
+        if (is_transform_changed)
+        {
             transform.SetParent(Parent);
             transform.localPosition = Position;
             transform.localRotation = Rotation;
             transform.localScale    = Vector3.one * Scale;
-        
-            // ø¿∫Í¡ß∆Æ ON
+            ApplySnapToTerrain();
+        }
+
+
+        if (_on_create)
+        {
+            // Ïò§Î∏åÏ†ùÌä∏ ÌôúÏÑ±Ìôî
             gameObject.SetActive(true);
         }
-        else
-        {
-            if (transform.parent != Parent)
-                transform.SetParent(Parent);
-
-            if (transform.localPosition != Position)
-                transform.localPosition  = Position;
-
-            if (transform.localRotation != Rotation)
-                transform.localRotation  = Rotation;
-
-            if (transform.localScale != Vector3.one * Scale)
-                transform.localScale  = Vector3.one * Scale;
-        }
-
     }
+
 
     public void SetParent(Transform _parent)
     {
@@ -353,10 +383,28 @@ public class VFXObject : MonoBehaviour
         m_scale.SetData(Scale, _scale, _time);
     }
 
-    public virtual void FillColor(Color _color_start, Color _color_end)
+    public void SetSnapToTerrain(bool _snap_to_terrain, float _snap_offset)
     {
-        // 
-        throw new NotImplementedException();
+        m_terrain.snap_to_terrain = _snap_to_terrain;
+        m_terrain.snap_offset     = _snap_offset;
     }
+
+
+    protected virtual void ApplySnapToTerrain()
+    {
+        transform.position = SnapToTerrain(transform.position);
+    }
+
+
+    protected Vector3 SnapToTerrain(Vector3 _position)
+    {
+        if (m_terrain.snap_to_terrain == false)
+            return _position;
+
+        var new_height = TerrainMapManager.Instance.GetWorldHeight(_position) + m_terrain.snap_offset;
+
+        return new Vector3(_position.x, new_height,_position.z);
+    }
+
     
 }

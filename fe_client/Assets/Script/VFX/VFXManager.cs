@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -6,9 +6,9 @@ using UnityEngine;
 
 public enum EnumVFXAttachmentType
 {
-    World,      // ���� ��ǥ�� ����
-    Child,      // Ư�� ������Ʈ�� �ڽ����� ����
-    Track       // Ư�� ������Ʈ�� ����
+    World,      // 월드에 위치한다.
+    Child,      // 오브젝트 하위에 붙는다.
+    Track       // 오브젝트를 따라다닌다.
 }
 
 
@@ -65,15 +65,15 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (_param == null)
             return 0;
 
-        // TODO: �ڵ� ����Ʈ�� ������ �Ǵ� ��� �߰�.
+        // TODO: 오브젝트 풀링 추가.
 
-        // �ø��� �ѹ� ����.
+        // 시리얼 번호 생성.
         var serial_number = GenerateSerial();
 
-        // ����Ʈ ����. (�񵿱�)
+        // 오브젝트 생성.
         CreateVFXAsync(serial_number, _param).Forget();
 
-        // �ø��� �ѹ� ��ȯ.
+        // 오브젝트 번호 반환.
         return serial_number;
     }
 
@@ -100,13 +100,13 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (_param == null)
             return null;
 
-        // Ǯ���� ��������.
+        // 오브젝트 풀링 오브젝트 취득.
         VFXObject vfx_object = AcquireFromPool(_param.VFXName);
 
-        // Ǯ�� ������ ����.
+        // 오브젝트 풀링 오브젝트 없으면 생성.
         if (vfx_object == null)
         {
-            // ������ �ε� ���.
+            // 오브젝트 생성.
             var new_object = await AssetManager.Instance.InstantiateAsync(_param.VFXName, _param.VFXRoot, _cancel_token);
             if (new_object == null)
             {
@@ -122,7 +122,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
             }
         }
 
-        // ���� ���� ��Ͽ� ������ ���� ���.
+        // 오브젝트 릴리즈 리스트에 있으면 풀링 오브젝트 반환.
         if (m_vfx_release_list.Contains(_serial_number))
         {
             // m_vfx_release_list.Remove(_serial_number);
@@ -132,10 +132,10 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         }
         else
         {
-            // �������丮�� �߰�.
+            // 오브젝트 리포지토리에 추가.
             m_vfx_repository.Add(_serial_number, vfx_object);
 
-            // ������Ʈ �ʱ�ȭ
+            // 오브젝트 생성.
             vfx_object.OnCreate(
                 _serial_number, 
                 _param);
@@ -157,15 +157,15 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         var serial_number = _vfx_object.SerialNumber;
         var vfx_name      = _vfx_object.VFXName;
 
-        // ������Ʈ �ʱ�ȭ.
+        // 오브젝트 릴리즈.
         _vfx_object.OnRelease();
 
-        // Ǯ�� ��ȯ.
+        // 오브젝트 풀링 오브젝트 반환.
         ReturnToPool(vfx_name, _vfx_object);
         
-        // �������丮���� ����.
+        // 오브젝트 리포지토리에서 제거.
         m_vfx_repository.Remove(serial_number);
-        // ���� ��Ͽ����� ����.
+        // 오브젝트 릴리즈 리스트에서 제거.
         m_vfx_release_list.Remove(serial_number);
     }
 
@@ -199,7 +199,7 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
 
         pool.Enqueue(_vfx_object);
 
-        // Ǯ ��Ʈ ������ �ű��
+        // 오브젝트 풀링 오브젝트 셋팅.
         _vfx_object.gameObject.SetActive(false);
         _vfx_object.transform.SetParent(m_vfx_pool_root);
         _vfx_object.transform.localPosition = Vector3.zero;
@@ -216,23 +216,20 @@ public partial class VFXManager : SingletonMono<VFXManager>, IEventReceiver
         if (m_vfx_release_list.Count <= 0)
             return;
 
-        // Ǯ���� ��������
-        var release_list = HashSetPool<Int64>.Acquire();
+        // 오브젝트 릴리즈 리스트 취득.
+        using var release_list = HashSetPool<Int64>.AcquireWrapper();
 
-        // ������ ��� ����.
-        release_list.UnionWith(m_vfx_release_list);
+        // 오브젝트 릴리즈 리스트 추가.
+        release_list.Value.UnionWith(m_vfx_release_list);
 
-        // ������ ��� ó��.
-        foreach (var serial_number in release_list)
+        // 오브젝트 릴리즈 리스트 처리.
+        foreach (var serial_number in release_list.Value)
         {
             if (m_vfx_repository.TryGetValue(serial_number, out var vfx_object))
             {
                 ReleaseVFX(vfx_object);
             }
         }
-
-        // Ǯ�� ��ȯ.
-        HashSetPool<Int64>.Return( release_list);
     }
 
 

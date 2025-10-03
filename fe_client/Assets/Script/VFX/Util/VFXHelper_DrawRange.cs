@@ -189,6 +189,8 @@ namespace Battle.MoveRange
             .SetVFXRoot_Default()
             .SetVFXName(AssetName.TILE_EFFECT_BLUE)
             .SetPosition(move.CellToPosition())
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
+            
         );
 
         VFXList.Add(vfx_id);
@@ -206,6 +208,7 @@ namespace Battle.MoveRange
             .SetVFXRoot_Default()
             .SetVFXName(AssetName.TILE_EFFECT_RED)
             .SetPosition(weapon.CellToPosition())
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
         );
 
         VFXList.Add(vfx_id);
