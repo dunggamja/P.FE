@@ -151,15 +151,20 @@ namespace Battle
     /// </summary>
     public enum EnumTerrainAttribute
     {
-        Invalid  = 0, // 무효
-        FlyerOnly, // 비행 전용.
-        Water,     // 물 
-        WaterSide, // 물 옆,
-        Ground,    // 땅        
-        Forest,    // 숲        
-        Slope,     // (경사) 경사, 경사
+        Invalid   = 0, // 무효
+        Ground    = 1, // 땅        
+        Ground_Forest, // 숲        
+        Ground_Dirt,   // 거친 지형 
+        Ground_Climb,  // 등반 (경보병 위주?)       
 
-        MAX = 32,
+
+
+        Water     = 20, // 물 
+        Water_Shallow,  // 얕은 물
+
+        FlyerOnly = 30, // 비행 전용.
+
+        MAX       = 32,
         // bitflag.. 32 bit or 64 bit ?
     }
 

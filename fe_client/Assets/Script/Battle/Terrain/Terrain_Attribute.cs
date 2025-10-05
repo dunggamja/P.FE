@@ -66,7 +66,7 @@ namespace Battle
                 return 1;
             }
 
-            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.WaterSide)) != 0)
+            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water_Shallow)) != 0)
             {
                 // 물가
                 if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
@@ -95,7 +95,7 @@ namespace Battle
 
                 {
                     // 경사진 지형.
-                    if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Slope)) != 0)
+                    if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground_Climb)) != 0)
                     {
                         // 경사면 이동 가능한지 체크.
                         if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Slope)) == 0)
@@ -105,7 +105,7 @@ namespace Battle
                         return 3;
                     }
                     // 숲 지형
-                    else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Forest)) != 0)
+                    else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground_Forest)) != 0)
                     {
                         // 숲 지형 이동 Cost
                         return 2;

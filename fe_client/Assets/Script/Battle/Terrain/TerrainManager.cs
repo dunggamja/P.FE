@@ -21,6 +21,7 @@ namespace Battle
 
         public  TerrainMap TerrainMap {get; private set; } = null;
 
+        // TODO: 현재로서는 임시방편용 코드에 가까움. 맵에 높이값도 저장하도록 바꿀거임.
         private Terrain    m_world_terrain = null;
 
         private Terrain    WorldTerrain
@@ -51,6 +52,13 @@ namespace Battle
 
         public float GetWorldHeight(Vector3 _world_position)
         {
+            // TODO: 나중에 요렇게 바꾸자.
+            // var cell = _world_position.PositionToCell();
+            // return TerrainMap.GetHeight(cell.x, cell.y);
+
+
+
+            // TODO: 이것은 임시방편. 나중에 맵 데이터에 높이값을 넣어둡시다. 
             if (WorldTerrain == null)
                 return 0f;
 
