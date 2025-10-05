@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tiles:
   - Attribute: 0
-    Tile: {fileID: 11400000, guid: 6e2ecf9fd2cec43b2a1dec11c33cc5c6, type: 2}
+    Tile: {fileID: 11400000, guid: 499a9d80613754901a452dffcd85c719, type: 2}
   - Attribute: 1
-    Tile: {fileID: 11400000, guid: 4aaac40f9952b4bc4981d77d63921fd5, type: 2}
+    Tile: {fileID: 11400000, guid: 4dcd5b0f096a641c49d2f59f717adb62, type: 2}
   - Attribute: 2
-    Tile: {fileID: 11400000, guid: 75eb69ef7c14f4620b96fe224b9a3040, type: 2}
+    Tile: {fileID: 11400000, guid: 6732cfc9c8388452896146f1a007e1ab, type: 2}
   - Attribute: 3
-    Tile: {fileID: 11400000, guid: c56cfca10309942f2b45fb6b4e5e79bf, type: 2}
+    Tile: {fileID: 11400000, guid: d9b10be7324534cc7b4fbb551850a4b2, type: 2}
   - Attribute: 4
-    Tile: {fileID: 11400000, guid: c15eda464ac954f6e94789c6a2863d29, type: 2}
+    Tile: {fileID: 11400000, guid: 0f2af222162dd47a387781425dcc8a3d, type: 2}
   - Attribute: 20
-    Tile: {fileID: 11400000, guid: 1ce7e04a9ee1c430287c15a7b0fba194, type: 2}
+    Tile: {fileID: 11400000, guid: e6d06a8eeda604fb4af3fdf173112ca2, type: 2}
   - Attribute: 21
-    Tile: {fileID: 11400000, guid: 8bb4b078cbd864ef2bafc4685c2e38ff, type: 2}
+    Tile: {fileID: 11400000, guid: bf9da22d3f3fa4824b1d8efa1030e974, type: 2}
   - Attribute: 30
-    Tile: {fileID: 11400000, guid: f1052c2b16912459c9bd11ab8f8dec14, type: 2}
+    Tile: {fileID: 11400000, guid: c93cd168ec2644b40b929213f44e908d, type: 2}
