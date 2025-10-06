@@ -40,6 +40,21 @@ namespace Battle
          return false;
       }
 
+      public EnumTerrainAttribute GetTerrainAttribute(TileBase _tile)
+      {
+         if (_tile == null)
+            return EnumTerrainAttribute.Invalid;
+
+
+         foreach (var item in m_tiles)
+         {
+            if (item.Tile == _tile)
+               return item.Attribute;
+         }
+
+         return EnumTerrainAttribute.Invalid;
+      }
+
 
       [ContextMenu("SortTiles")]
       public void SortTiles()
