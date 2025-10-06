@@ -86,20 +86,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Depth: 1
-    - FlareDensity: 2500
-    - FlarePower: 18
+    - Depth: 10
+    - FlareDensity: 1111
+    - FlarePower: 15.52
     - FlareSpeed: 1
-    - FoamAmount: 0.05
-    - FoamPosition: 5
-    - FoamScale: 5000
-    - FoamSpeed: 20
+    - FoamAmount: 0.031
+    - FoamPosition: 4.4
+    - FoamScale: 100
+    - FoamSpeed: 0
     - NormalSpeed: 0.5
-    - NormalStrength: 0.5
+    - NormalStrength: 0.42
     - NormalTiling: 1
-    - WaveIntensity: 1
-    - WaveScale: 100
-    - WaveSpeed: 100
+    - WaveIntensity: 0.3
+    - WaveScale: 1
+    - WaveSpeed: 11
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
