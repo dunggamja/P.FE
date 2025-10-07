@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -24,16 +26,39 @@ public class TerrainTileOverlay : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // void Start()
+    // {
+
+    // }
 
     // Update is called once per frame
-    void Update()
+    // void Update()
+    // {
+    // }
+
+    void OnEnable()
     {
-        
-        
+        EditorSceneManager.sceneSaved += OnSceneSaved;
+        AssemblyReloadEvents.afterAssemblyReload += OnAssemblyReload;
+    }
+
+
+    void OnDisable()
+    {
+        EditorSceneManager.sceneSaved -= OnSceneSaved;
+        AssemblyReloadEvents.afterAssemblyReload -= OnAssemblyReload;
+    }
+
+    void OnSceneSaved(UnityEngine.SceneManagement.Scene _scene)
+    {
+        Debug.Log("OnSceneSaved");
+        GenerateTerrainMesh();
+    }
+
+    void OnAssemblyReload()
+    {
+        Debug.Log("OnAssemblyReload");
+        GenerateTerrainMesh();
     }
 
     /// <summary>
@@ -48,10 +73,7 @@ public class TerrainTileOverlay : MonoBehaviour
 
 
         // 텍스쳐 생성
-        RefrestTextureFromTilemap();
-        
-
-       
+        RefrestTextureFromTilemap();       
     }
 
      /// <summary>
