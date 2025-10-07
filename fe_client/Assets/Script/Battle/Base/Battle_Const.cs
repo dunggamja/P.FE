@@ -13,6 +13,9 @@ namespace Battle
         // public const string TAG_ROOT = "TAG_ROOT";
 
         public const string TAG_BATTLE_TERRAIN = "Battle_Terrain";
+
+
+        public const string LAYER_TERRAIN = "Terrain";
     }
 
 }

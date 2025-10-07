@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
+
 
 [ExecuteInEditMode]
 public class TerrainTileOverlay : MonoBehaviour
 {
-
+#if UNITY_EDITOR
     [SerializeField]
     private Terrain m_terrain = null;
 
@@ -35,6 +39,8 @@ public class TerrainTileOverlay : MonoBehaviour
     // void Update()
     // {
     // }
+
+
 
     void OnEnable()
     {
@@ -314,5 +320,5 @@ public class TerrainTileOverlay : MonoBehaviour
 
 
 
-
+#endif
 }
