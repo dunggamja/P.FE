@@ -73,6 +73,9 @@ public class TerrainTileOverlay : MonoBehaviour
     [ContextMenu("GenerateTerrainMesh")]
     public void GenerateTerrainMesh()
     {
+        // 실행 중에는 굳이...
+        if (Application.isPlaying)
+            return;
   
         // 메시 생성
         CreateMeshFromHeightMap();
