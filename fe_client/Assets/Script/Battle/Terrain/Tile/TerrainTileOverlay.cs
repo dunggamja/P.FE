@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
+using Battle;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,20 +17,23 @@ public class TerrainTileOverlay : MonoBehaviour
 {
 #if UNITY_EDITOR
     [SerializeField]
-    private Terrain m_terrain = null;
+    private Terrain           m_terrain            = null;
+          
+    [SerializeField]          
+    private Tilemap           m_tilemap            = null;
 
     [SerializeField]
-    private Tilemap m_tilemap = null;
-
-    [SerializeField]
-    private Battle.TileData m_tile_data = null;
-
-    [SerializeField]
-    private MeshFilter m_mesh_filter = null;
-
-    [SerializeField]
-    private MeshRenderer m_mesh_renderer = null;
-
+    private Battle.TileData   m_tile_data          = null;
+  
+    [SerializeField]  
+    private MeshFilter        m_mesh_filter        = null;
+     
+    [SerializeField]     
+    private MeshRenderer      m_mesh_renderer      = null;
+     
+    [SerializeField]     
+    private Transform         m_fixed_objects_root = null;
+   
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -126,21 +133,14 @@ public class TerrainTileOverlay : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                var vertex_index  = vertices.Count;
+                var vertex_index = vertices.Count;
+                var pos_x        = x;
+                var pos_z        = y;                
+                var pos_y        = GetHeight_FromTerrain(heightMap, terrainSize, x, y);
 
-                var ho = ((int)heightmap_resolution / length) - 1;
 
 
-                var hx = (int)(y * ((float)heightmap_resolution / length));
-                var hy = (int)(x * ((float)heightmap_resolution / width));
 
-                var pos_x = x;
-                var pos_z = y;
-                var pos_y_1 = heightMap[hx,      hy     ] * terrainSize.y;
-                var pos_y_2 = heightMap[hx + ho, hy     ] * terrainSize.y;
-                var pos_y_3 = heightMap[hx + ho, hy + ho] * terrainSize.y;
-                var pos_y_4 = heightMap[hx,      hy + ho] * terrainSize.y;
-                var pos_y   = Mathf.Max(pos_y_1, pos_y_2, pos_y_3, pos_y_4);
 
                 vertices.Add(new Vector3(pos_x,     pos_y, pos_z    ) + terrainPosition);
                 vertices.Add(new Vector3(pos_x + 1, pos_y, pos_z    ) + terrainPosition);
@@ -182,11 +182,61 @@ public class TerrainTileOverlay : MonoBehaviour
         }
     }
 
+    float GetHeight_FromTerrain(float[,] _height_map, Vector3 _terrain_size, int _x, int _y)
+    {
+        if (_height_map == null)
+            return 0f;
+
+        int resolution = _height_map.GetLength(0);
+        int width     = (int)_terrain_size.x;
+        int length    = (int)_terrain_size.z;
+
+        int ox = ((int)resolution / width) - 1;
+        int oy = ((int)resolution / length) - 1;
+        int hx = (int)(_x * ((float)resolution / width));
+        int hy = (int)(_y * ((float)resolution / length));
+
+
+        var pos_y_1 = _height_map[hx,      hy     ] * _terrain_size.y;
+        var pos_y_2 = _height_map[hx + ox, hy     ] * _terrain_size.y;
+        var pos_y_3 = _height_map[hx + ox, hy + oy] * _terrain_size.y;
+        var pos_y_4 = _height_map[hx,      hy + oy] * _terrain_size.y;
+        var pos_y   = Mathf.Max(pos_y_1, pos_y_2, pos_y_3, pos_y_4);
+
+        return pos_y;
+    }
+
+    float GetHeight_FromFixedObjects(int _x, int _y)
+    {
+        if (m_fixed_objects_root == null)
+            return 0f;
+
+        var fixed_objects = m_fixed_objects_root.GetComponentsInChildren<FixedObjects>();
+        if (fixed_objects == null)
+            return 0f;
+
+
+        foreach (var e in fixed_objects)
+        {
+            if (e == null)
+                continue;
+
+
+            
+                
+                
+        }
+
+        return 0f;
+    }
+
+
+
     void RefrestTextureFromTilemap()
     {
         CreateTextureFromTileData();
 
-        RefreshTextureUVFromTilemap();        
+        RefreshTextureUV();        
     }
 
     const int TILE_SIZE = 16;
@@ -200,9 +250,7 @@ public class TerrainTileOverlay : MonoBehaviour
         return (offset_x, offset_y);
     }
 
-   
-
-    void RefreshTextureUVFromTilemap()
+    void RefreshTextureUV()
     {
         if (m_tilemap == null)
             return;
@@ -218,39 +266,132 @@ public class TerrainTileOverlay : MonoBehaviour
         var tilemap_bounds = m_tilemap.cellBounds;
         var tilemap_size   = m_terrain.terrainData.size;
 
-        var width  = (int)tilemap_size.x;
-        var length = (int)tilemap_size.z;
+        var width     = (int)tilemap_size.x;
+        var length    = (int)tilemap_size.z;
+
+        var tile_data = new int[width, length];
+        Array.Clear(tile_data, 0, tile_data.Length);
+        
+        
+
+        CollectTileData_Tilemap(ref tile_data, width, length);
+
+        CollectTileData_FixedObjects(ref tile_data, width, length);
+
+        RefreshTextureUVFromTileData(ref tile_data, ref uvs, width, length);
+
+        mesh.uv = uvs;
+    }
 
 
-        for (int y = 0; y < length; y++)
+
+
+   
+
+    void CollectTileData_Tilemap(ref int[,] _tile_data, int _width, int _length)
+    {
+        if (_tile_data == null)
+            return;
+
+
+        for (int y = 0; y < _length; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < _width; x++)
             {
+                var tile           = m_tilemap.GetTile(new Vector3Int(x, y, 0));
+                var tile_attribute = m_tile_data.GetTerrainAttribute(tile);
 
-                var index      = (y * width + x) * 4;
+                _tile_data[x, y] |= 1 << (int)tile_attribute;
+            }
+        }
+    }
 
+    void CollectTileData_FixedObjects(ref int[,] _tile_data, int _width, int _length)
+    {
+       if (_tile_data == null)
+            return;       
 
-                var tile       = m_tilemap.GetTile(new Vector3Int(x, y, 0));
+        var fixed_objects = (m_fixed_objects_root) 
+                          ? m_fixed_objects_root.GetComponentsInChildren<FixedObjects>()
+                          : null;
 
-                var tile_index = (int)m_tile_data.GetTerrainAttribute(tile);
+        if (fixed_objects != null)
+        {
+            foreach (var e in fixed_objects)
+            {
+                if (e == null)
+                    continue;
 
-                var (tile_ox, tile_oy) = GetTileTextureOffset(tile_index);
-                
-                var u    = (float)tile_ox / (TILE_TEXTURE_SIZE);
-                var v    = (float)tile_oy / (TILE_TEXTURE_SIZE);
-                var size = (float)TILE_SIZE / (TILE_TEXTURE_SIZE);
+                foreach(var tile_data in e.GetTileAttributes())
+                {
+                    if (tile_data.x < 0 || tile_data.x >= _width 
+                     || tile_data.y < 0 || tile_data.y >= _length)
+                        continue;
 
-
-                uvs[index + 0] = new Vector2(u,        v);
-                uvs[index + 1] = new Vector2(u + size, v);
-                uvs[index + 2] = new Vector2(u + size, v + size);
-                uvs[index + 3] = new Vector2(u,        v + size);
+                    _tile_data[tile_data.x, tile_data.y] |= 1 << (int)tile_data.attribute;
+                }
             }
         }
 
-        mesh.uv = uvs;
+    }
+
+    void RefreshTextureUVFromTileData(ref int[,] _tile_data, ref Vector2[] _uvs, int _width, int _length)
+    {
+        if (_tile_data == null)
+            return;
 
 
+        EnumTerrainAttribute PickTileAttribute(int _tile_attribute)
+        {
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
+                return EnumTerrainAttribute.Invalid;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
+                return EnumTerrainAttribute.FlyerOnly;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
+                return EnumTerrainAttribute.Water;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Water_Shallow)) != 0)
+                return EnumTerrainAttribute.Water_Shallow;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Climb)) != 0)
+                return EnumTerrainAttribute.Ground_Climb;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Forest)) != 0)
+                return EnumTerrainAttribute.Ground_Forest;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Dirt)) != 0)
+                return EnumTerrainAttribute.Ground_Dirt;
+
+            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
+                return EnumTerrainAttribute.Ground;
+
+            return EnumTerrainAttribute.Invalid;
+        }
+        
+        
+        
+
+        for (int y = 0; y < _length; y++)
+        {
+            for (int x = 0; x < _width; x++)
+            {
+                var tile               = _tile_data[x, y];
+                var tile_attribute     = PickTileAttribute(_tile_data[x, y]);
+                var (tile_ox, tile_oy) = GetTileTextureOffset((int)tile_attribute);
+                
+                var u           = (float)tile_ox   / (TILE_TEXTURE_SIZE);
+                var v           = (float)tile_oy   / (TILE_TEXTURE_SIZE);
+                var size        = (float)TILE_SIZE / (TILE_TEXTURE_SIZE);
+
+                var index       = (y * _width + x) * 4;                
+                _uvs[index + 0] = new Vector2(u,        v);
+                _uvs[index + 1] = new Vector2(u + size, v);
+                _uvs[index + 2] = new Vector2(u + size, v + size);
+                _uvs[index + 3] = new Vector2(u,        v + size);
+            }
+        }
     }
 
     void CreateTextureFromTileData()

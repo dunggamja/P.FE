@@ -499,10 +499,10 @@ public static partial class PathAlgorithm
             _path_owner.PathAttribute, 
             _terrain_map.Attribute.GetAttribute(_cell.x, _cell.y));
 
-        if (move_cost <= 0)
+        if (move_cost.cost <= 0)
             return (false, 0);
 
-        return (true, move_cost);      
+        return (true, move_cost.cost);      
     }
 
 

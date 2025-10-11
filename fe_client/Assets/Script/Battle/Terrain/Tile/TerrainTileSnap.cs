@@ -11,8 +11,8 @@ using UnityEditor.SceneManagement;
 public class TerrainTileSnap : MonoBehaviour
 {
 #if UNITY_EDITOR
-    [SerializeField]
-    private Transform[] m_tile_objects_root = null;
+    // [SerializeField]
+    // private Transform[] m_tile_objects_root = null;
 
 
     private void SnapToTerrain(Transform _transform)
