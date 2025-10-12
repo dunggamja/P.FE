@@ -13,7 +13,12 @@ public static partial class Util
 
     public static Ray  PositionToTerrainRay(int _x, int _y)
     {
-        return new Ray(new Vector3(_x + 0.5f, TERRAIN_RAY_ORIGIN_Y, _y + 0.5f), Vector3.down);
+        return PositionToTerrainRay(new Vector3(_x + 0.5f, TERRAIN_RAY_ORIGIN_Y, _y + 0.5f));
+    }
+
+    public static Ray  PositionToTerrainRay(Vector3 _world_position)
+    {
+        return new Ray(new Vector3(_world_position.x, TERRAIN_RAY_ORIGIN_Y, _world_position.z), Vector3.down);
     }
 
     public static bool RaycastToTerrain(int _x, int _y, out RaycastHit _hit, int _layer_mask)

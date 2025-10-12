@@ -51,10 +51,10 @@ public class FixedObjects : MonoBehaviour
 
                 var bounds = e.Collider.bounds;
 
-                int min_x = (int)bounds.min.x;
-                int min_z = (int)bounds.min.z;
-                int max_x = (int)bounds.max.x;
-                int max_z = (int)bounds.max.z;
+                int min_x  = (int)bounds.min.x;
+                int min_z  = (int)bounds.min.z;
+                int max_x  = (int)bounds.max.x;
+                int max_z  = (int)bounds.max.z;
 
                 for (int y = min_z; y <= max_z; y++)
                 {

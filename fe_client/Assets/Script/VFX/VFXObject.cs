@@ -396,12 +396,13 @@ public class VFXObject : MonoBehaviour
     }
 
 
-    protected Vector3 SnapToTerrain(Vector3 _position)
+    protected Vector3 SnapToTerrain(Vector3 _position, bool _exclude_fixedobjects = false)
     {
         if (m_terrain.snap_to_terrain == false)
             return _position;
 
-        var new_height = TerrainMapManager.Instance.GetWorldHeight(_position) + m_terrain.snap_offset;
+        var new_height = TerrainMapManager.Instance.GetWorldHeight(_position, _exclude_fixedobjects)
+                       + m_terrain.snap_offset;
 
         return new Vector3(_position.x, new_height,_position.z);
     }

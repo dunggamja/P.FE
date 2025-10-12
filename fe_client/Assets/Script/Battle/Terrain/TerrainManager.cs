@@ -19,10 +19,23 @@ namespace Battle
             EventDispatchManager.Instance.AttachReceiver(this);
         }
 
-        public  TerrainMap TerrainMap {get; private set; } = null;
+        private TerrainBinder m_terrain_binder = null;
+
+        public  TerrainMap    TerrainMap    { get; private set; } = null;
+        public  TerrainBinder TerrainBinder 
+        { 
+            get
+            {
+                if (m_terrain_binder == null)
+                {
+                    m_terrain_binder = GameObject.FindGameObjectWithTag(Battle.Constants.TAG_BATTLE_TERRAIN).GetComponent<TerrainBinder>();
+                }
+
+                return m_terrain_binder;
+            }
+        }
 
         // TODO: 현재로서는 임시방편용 코드에 가까움. 맵에 높이값도 저장하도록 바꿀거임.
-        // private Terrain    m_world_terrain = null;
 
         // private Terrain    WorldTerrain
         // {
@@ -45,27 +58,22 @@ namespace Battle
         //     }
         // }
 
-        public float GetWorldHeight((int _x, int _y) _cell)
+        public float GetWorldHeight((int _x, int _y) _cell, bool _exclude_fixedobjects = false)
         {
-            return GetWorldHeight(_cell.CellToPosition());
+            var world_position  = _cell.CellToPosition();
+            world_position.x   += 0.5f;
+            world_position.z   += 0.5f;
+
+            return GetWorldHeight(world_position, _exclude_fixedobjects);
         }
 
-        public float GetWorldHeight(Vector3 _world_position)
+        public float GetWorldHeight(Vector3 _world_position, bool _exclude_fixedobjects = false)
         {
-            // TODO: 나중에 요렇게 바꾸자.
-            // var cell = _world_position.PositionToCell();
-            // return TerrainMap.GetHeight(cell.x, cell.y);
-
+            if (TerrainBinder != null)
+                return TerrainBinder.GetHeight(_world_position, _exclude_fixedobjects);
 
             return 0f;
-            // TODO: 이것은 임시방편. 나중에 맵 데이터에 높이값을 넣어둡시다. 
-            // if (WorldTerrain == null)
-            // var    terrin_height = WorldTerrain.SampleHeight(_world_position);
-            // return terrin_height;            
         }
-
-
-
         
         public void SetTerrainMap(TerrainMap _terrain_map)
         {
@@ -91,7 +99,7 @@ namespace Battle
                 return;
            
 
-            // 위치&ZOC 갱신.
+            // 위치 & ZOC 갱신.
             if (_event.IsOccupy)
             {
                 TerrainMap.EntityManager.SetCellData(_event.Cell.x,  _event.Cell.y, _event.EntityID);
