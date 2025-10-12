@@ -113,7 +113,7 @@ public class TerrainTileOverlay : MonoBehaviour
         var heightmap_resolution = terrainData.heightmapResolution;
 
         // 높이맵 데이터 가져오기
-        float[,] heightMap = terrainData.GetHeights(0, 0, heightmap_resolution, heightmap_resolution);
+        float[,] height_map = terrainData.GetHeights(0, 0, heightmap_resolution, heightmap_resolution);
 
 
         // 텍스쳐 좌표. 월드좌표가 달라서...
@@ -135,12 +135,17 @@ public class TerrainTileOverlay : MonoBehaviour
             {
                 var vertex_index = vertices.Count;
                 var pos_x        = x;
-                var pos_z        = y;                
-                var pos_y        = GetHeight_FromTerrain(heightMap, terrainSize, x, y);
+                var pos_z        = y;      
 
+                // 높이는 지형 & 고정 오브젝트 중 높은 값을 사용.          
+                var pos_y        = Mathf.Max(
+                    GetHeight_FromTerrain(
+                        height_map, 
+                        heightmap_resolution, 
+                        terrainSize, 
+                        x, y),
 
-
-
+                    GetHeight_FromFixedObjects(x, y));
 
                 vertices.Add(new Vector3(pos_x,     pos_y, pos_z    ) + terrainPosition);
                 vertices.Add(new Vector3(pos_x + 1, pos_y, pos_z    ) + terrainPosition);
@@ -182,19 +187,24 @@ public class TerrainTileOverlay : MonoBehaviour
         }
     }
 
-    float GetHeight_FromTerrain(float[,] _height_map, Vector3 _terrain_size, int _x, int _y)
+    float GetHeight_FromTerrain(
+        float[,] _height_map,
+        int      _resolution, 
+        Vector3  _terrain_size, 
+        int      _x, int _y)
     {
         if (_height_map == null)
             return 0f;
 
-        int resolution = _height_map.GetLength(0);
+
+        // x,y 좌표가 반대임.
         int width     = (int)_terrain_size.x;
         int length    = (int)_terrain_size.z;
 
-        int ox = ((int)resolution / width) - 1;
-        int oy = ((int)resolution / length) - 1;
-        int hx = (int)(_x * ((float)resolution / width));
-        int hy = (int)(_y * ((float)resolution / length));
+        int ox = ((int)_resolution / length) - 1;
+        int oy = ((int)_resolution / width) - 1;
+        int hx = (int)(_y * ((float)_resolution / width));
+        int hy = (int)(_x * ((float)_resolution / length));
 
 
         var pos_y_1 = _height_map[hx,      hy     ] * _terrain_size.y;
@@ -216,18 +226,17 @@ public class TerrainTileOverlay : MonoBehaviour
             return 0f;
 
 
+        var max_height = 0f;
         foreach (var e in fixed_objects)
         {
             if (e == null)
                 continue;
 
-
-            
-                
-                
+            var height = e.GetMaxHeight_FromColliders(_x, _y);
+            max_height = Mathf.Max(max_height, height);
         }
 
-        return 0f;
+        return max_height;
     }
 
 

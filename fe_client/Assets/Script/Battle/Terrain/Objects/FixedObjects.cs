@@ -34,6 +34,15 @@ public class FixedObjects : MonoBehaviour
     private List<TileAttribute> m_tile_attributes = null;
 
 
+    const float RAY_ORIGIN_Y = 100f;
+    const float RAY_DISTANCE = 200f;
+
+    static Ray PositionToRay(int _x, int _y)
+    {
+        return new Ray(new Vector3(_x + 0.5f, RAY_ORIGIN_Y, _y + 0.5f), Vector3.down);
+    }
+
+
 
 
     public List<(EnumTerrainAttribute attribute, int x, int y)> GetTileAttributes()
@@ -58,10 +67,7 @@ public class FixedObjects : MonoBehaviour
                 {
                     for (int x = min_x; x <= max_x; x++)
                     {
-                        var ray          = new Ray(new Vector3(x + 0.5f, 100f, y + 0.5f), Vector3.down);
-                        var ray_distance = 200f;
-
-                        if (e.Collider.Raycast(ray, out var _, ray_distance))
+                        if (e.Collider.Raycast(PositionToRay(x, y), out var _, RAY_DISTANCE))
                         {
                             tile_attributes.Add((e.Attribute, x, y));
                         }
@@ -73,6 +79,31 @@ public class FixedObjects : MonoBehaviour
         return tile_attributes;
     }
 
+
+    public float GetMaxHeight_FromColliders(int _x, int _y)
+    {
+        var max_height = 0f;
+
+        if (m_tile_attributes != null)
+        {
+            foreach (var e in m_tile_attributes)
+            {
+                if (e.Collider == null)
+                    continue;
+
+                // 바운드 범위로 1차 체크.                
+                var bounds         = e.Collider.bounds;
+                if (bounds.Contains(new Vector3(_x + 0.5f, bounds.center.y, _y + 0.5f)) == false)
+                    continue;
+
+                // 레이캐스트로 2차 체크.
+                if (e.Collider.Raycast(PositionToRay(_x, _y), out var _, RAY_DISTANCE))
+                    max_height = Mathf.Max(max_height, bounds.max.y);                
+            }
+        }
+
+        return max_height;
+    }
     // bool IsInCollider(BoxCollider _collider, Vector3 _world_position)
     // {
     //     if (_collider == null)
