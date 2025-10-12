@@ -137,7 +137,9 @@ public class TerrainTileOverlay : MonoBehaviour
                 var pos_x        = x;
                 var pos_z        = y;      
 
-                // 높이는 지형 & 고정 오브젝트 중 높은 값을 사용.          
+                // 높이는 지형 & 고정 오브젝트 중 높은 값을 사용.   
+                // TODO: 해놓고 보니 타일들 소팅 문제가 있다.  
+                // (ztest? zorder? 쉐이더 수정하면 될거 같은데..)       
                 var pos_y        = Mathf.Max(
                     GetHeight_FromTerrain(
                         height_map, 

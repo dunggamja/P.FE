@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_entity_id: 0
+  m_tile_attributes: []
 --- !u!1 &7833490966308265340
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +153,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2489672253077166549, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 3831282970780934979, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 5098323218922442764, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 1246882230782734985, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 6087087030884144950, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 7776525195568048360, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 575881359105526944, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 66948117633984667, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
+    - {fileID: 8308784096618717558, guid: 7d3f952bf0bf60e45a287c7debdb5719, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
