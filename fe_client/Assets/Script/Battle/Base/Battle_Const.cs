@@ -15,7 +15,8 @@ namespace Battle
         public const string TAG_BATTLE_TERRAIN = "Battle_Terrain";
 
 
-        public const string LAYER_TERRAIN = "Terrain";
+        public const string LAYER_TERRAIN      = "Terrain";
+        public const string LAYER_FIXED_OBJECT = "FixedObject";
     }
 
 }

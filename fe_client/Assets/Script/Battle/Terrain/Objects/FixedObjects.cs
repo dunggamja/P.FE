@@ -34,13 +34,6 @@ public class FixedObjects : MonoBehaviour
     private List<TileAttribute> m_tile_attributes = null;
 
 
-    const float RAY_ORIGIN_Y = 100f;
-    const float RAY_DISTANCE = 200f;
-
-    static Ray PositionToRay(int _x, int _y)
-    {
-        return new Ray(new Vector3(_x + 0.5f, RAY_ORIGIN_Y, _y + 0.5f), Vector3.down);
-    }
 
 
 
@@ -67,7 +60,7 @@ public class FixedObjects : MonoBehaviour
                 {
                     for (int x = min_x; x <= max_x; x++)
                     {
-                        if (e.Collider.Raycast(PositionToRay(x, y), out var _, RAY_DISTANCE))
+                        if (e.Collider.Raycast(Util.PositionToTerrainRay(x, y), out var _, Util.TERRAIN_RAY_DISTANCE))
                         {
                             tile_attributes.Add((e.Attribute, x, y));
                         }
@@ -78,65 +71,6 @@ public class FixedObjects : MonoBehaviour
 
         return tile_attributes;
     }
-
-
-    public float GetMaxHeight_FromColliders(int _x, int _y)
-    {
-        var max_height = 0f;
-
-        if (m_tile_attributes != null)
-        {
-            foreach (var e in m_tile_attributes)
-            {
-                if (e.Collider == null)
-                    continue;
-
-                // 바운드 범위로 1차 체크.                
-                var bounds         = e.Collider.bounds;
-                if (bounds.Contains(new Vector3(_x + 0.5f, bounds.center.y, _y + 0.5f)) == false)
-                    continue;
-
-                // 레이캐스트로 2차 체크.
-                if (e.Collider.Raycast(PositionToRay(_x, _y), out var _, RAY_DISTANCE))
-                    max_height = Mathf.Max(max_height, bounds.max.y);                
-            }
-        }
-
-        return max_height;
-    }
-    // bool IsInCollider(BoxCollider _collider, Vector3 _world_position)
-    // {
-    //     if (_collider == null)
-    //         return false;
-
-    //     var local_position = _collider.transform.InverseTransformPoint(_world_position);
-
-
-    //     var max_position =_collider.center + _collider.size * 0.5f;
-    //     var min_position =_collider.center - _collider.size * 0.5f;
-
-
-
-    
-    //     // Collider의 center와 size 고려 (로컬 공간에서)
-    //     var center   = _collider.center;
-    //     var halfSize = _collider.size * 0.5f;
-        
-    //     // 로컬 공간에서 AABB 체크 (회전 고려됨!)
-    //     return Mathf.Abs(local_position.x - center.x) <= halfSize.x &&
-    //         //    Mathf.Abs(local_position.y - center.y) <= halfSize.y &&
-    //            Mathf.Abs(local_position.z - center.z) <= halfSize.z;
-    // }
-
-
-
-
-
-    
-
-
-    
-
 
 }
 

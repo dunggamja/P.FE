@@ -36,16 +36,8 @@ public class TerrainTileOverlay : MonoBehaviour
    
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    // void Start()
-    // {
 
-    // }
 
-    // Update is called once per frame
-    // void Update()
-    // {
-    // }
 
 
 
@@ -80,7 +72,7 @@ public class TerrainTileOverlay : MonoBehaviour
     [ContextMenu("GenerateTerrainMesh")]
     public void GenerateTerrainMesh()
     {
-        // 실행 중에는 굳이...
+        // 실행 중에는 굳이... 할 필요 없겠지...
         if (Application.isPlaying)
             return;
   
@@ -141,26 +133,36 @@ public class TerrainTileOverlay : MonoBehaviour
                 // TODO: 해놓고 보니 타일들 소팅 문제가 있다.  
                 // (ztest? zorder? 쉐이더 수정하면 될거 같은데..)       
                 var pos_y        = Mathf.Max(
+
+                    // 지형 높이값
                     GetHeight_FromTerrain(
                         height_map, 
                         heightmap_resolution, 
                         terrainSize, 
                         x, y),
 
+                    // 고정 오브젝트 높이값
                     GetHeight_FromFixedObjects(x, y));
 
                 vertices.Add(new Vector3(pos_x,     pos_y, pos_z    ) + terrainPosition);
                 vertices.Add(new Vector3(pos_x + 1, pos_y, pos_z    ) + terrainPosition);
                 vertices.Add(new Vector3(pos_x + 1, pos_y, pos_z + 1) + terrainPosition);
                 vertices.Add(new Vector3(pos_x,     pos_y, pos_z + 1) + terrainPosition);
+                
                 normals.Add(Vector3.up);
                 normals.Add(Vector3.up);
                 normals.Add(Vector3.up);
                 normals.Add(Vector3.up);
-                uvs.Add(new Vector2((float)x       / (width - 1), (float)y       / (length - 1)));               
-                uvs.Add(new Vector2((float)(x + 1) / (width - 1), (float)y       / (length - 1)));
-                uvs.Add(new Vector2((float)(x + 1) / (width - 1), (float)(y + 1) / (length - 1)));
-                uvs.Add(new Vector2((float)x       / (width - 1), (float)(y + 1) / (length - 1)));
+
+                uvs.Add(new Vector2(0f, 0f));
+                uvs.Add(new Vector2(0f, 0f));
+                uvs.Add(new Vector2(0f, 0f));
+                uvs.Add(new Vector2(0f, 0f));
+
+                // uvs.Add(new Vector2((float)x       / (width - 1), (float)y       / (length - 1)));               
+                // uvs.Add(new Vector2((float)(x + 1) / (width - 1), (float)y       / (length - 1)));
+                // uvs.Add(new Vector2((float)(x + 1) / (width - 1), (float)(y + 1) / (length - 1)));
+                // uvs.Add(new Vector2((float)x       / (width - 1), (float)(y + 1) / (length - 1)));
 
                 triangles.Add(vertex_index);
                 triangles.Add(vertex_index + 2);
@@ -220,25 +222,15 @@ public class TerrainTileOverlay : MonoBehaviour
 
     float GetHeight_FromFixedObjects(int _x, int _y)
     {
-        if (m_fixed_objects_root == null)
-            return 0f;
+        var fixed_objects_layer = 1 << LayerMask.NameToLayer(Constants.LAYER_FIXED_OBJECT);
 
-        var fixed_objects = m_fixed_objects_root.GetComponentsInChildren<FixedObjects>();
-        if (fixed_objects == null)
-            return 0f;
-
-
-        var max_height = 0f;
-        foreach (var e in fixed_objects)
+        if (Util.RaycastToTerrain(_x, _y, out var hit, fixed_objects_layer))
         {
-            if (e == null)
-                continue;
-
-            var height = e.GetMaxHeight_FromColliders(_x, _y);
-            max_height = Mathf.Max(max_height, height);
+            if (hit.collider != null)
+                return hit.collider.bounds.max.y;
         }
 
-        return max_height;
+        return 0f;
     }
 
 
@@ -273,8 +265,8 @@ public class TerrainTileOverlay : MonoBehaviour
         var mesh           = (Application.isPlaying) ? m_mesh_filter.mesh: m_mesh_filter.sharedMesh;
         var uvs            = mesh.uv;
 
-        var resolution     = m_terrain.terrainData.heightmapResolution;                
-        var tilemap_bounds = m_tilemap.cellBounds;
+        // var resolution     = m_terrain.terrainData.heightmapResolution;                
+        // var tilemap_bounds = m_tilemap.cellBounds;
         var tilemap_size   = m_terrain.terrainData.size;
 
         var width     = (int)tilemap_size.x;
@@ -351,32 +343,28 @@ public class TerrainTileOverlay : MonoBehaviour
         if (_tile_data == null)
             return;
 
+        
 
+        // 이동불가 < 공중만 가능 < 물 < 지형 순으로 타일을 표시해봅세.
         EnumTerrainAttribute PickTileAttribute(int _tile_attribute)
         {
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
-                return EnumTerrainAttribute.Invalid;
+            Span<EnumTerrainAttribute> tile_sort_order = stackalloc EnumTerrainAttribute[] 
+            { 
+                EnumTerrainAttribute.Invalid, 
+                EnumTerrainAttribute.FlyerOnly, 
+                EnumTerrainAttribute.Water, 
+                EnumTerrainAttribute.Water_Shallow,
+                EnumTerrainAttribute.Ground_Climb,
+                EnumTerrainAttribute.Ground_Forest,
+                EnumTerrainAttribute.Ground_Dirt,
+                EnumTerrainAttribute.Ground
+            };
 
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
-                return EnumTerrainAttribute.FlyerOnly;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
-                return EnumTerrainAttribute.Water;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Water_Shallow)) != 0)
-                return EnumTerrainAttribute.Water_Shallow;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Climb)) != 0)
-                return EnumTerrainAttribute.Ground_Climb;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Forest)) != 0)
-                return EnumTerrainAttribute.Ground_Forest;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground_Dirt)) != 0)
-                return EnumTerrainAttribute.Ground_Dirt;
-
-            if ((_tile_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
-                return EnumTerrainAttribute.Ground;
+            for (int i = 0; i < tile_sort_order.Length; i++)
+            {
+                if ((_tile_attribute & (1 << (int)tile_sort_order[i])) != 0)
+                    return tile_sort_order[i];
+            }
 
             return EnumTerrainAttribute.Invalid;
         }

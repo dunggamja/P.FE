@@ -22,28 +22,28 @@ namespace Battle
         public  TerrainMap TerrainMap {get; private set; } = null;
 
         // TODO: 현재로서는 임시방편용 코드에 가까움. 맵에 높이값도 저장하도록 바꿀거임.
-        private Terrain    m_world_terrain = null;
+        // private Terrain    m_world_terrain = null;
 
-        private Terrain    WorldTerrain
-        {
-            get
-            {
-                if (m_world_terrain == null)
-                {
-                    var world_terrain_object = GameObject.FindGameObjectWithTag(Battle.Constants.TAG_BATTLE_TERRAIN);
-                    if (world_terrain_object != null)
-                    {
-                        m_world_terrain = world_terrain_object.GetComponent<Terrain>();
-                    }
-                    else
-                    {
-                        Debug.LogError($"WorldTerrain not found");
-                    }
-                }
+        // private Terrain    WorldTerrain
+        // {
+        //     get
+        //     {
+        //         if (m_world_terrain == null)
+        //         {
+        //             var world_terrain_object = GameObject.FindGameObjectWithTag(Battle.Constants.TAG_BATTLE_TERRAIN);
+        //             if (world_terrain_object != null)
+        //             {
+        //                 m_world_terrain = world_terrain_object.GetComponent<Terrain>();
+        //             }
+        //             else
+        //             {
+        //                 Debug.LogError($"WorldTerrain not found");
+        //             }
+        //         }
 
-                return m_world_terrain;
-            }
-        }
+        //         return m_world_terrain;
+        //     }
+        // }
 
         public float GetWorldHeight((int _x, int _y) _cell)
         {
@@ -57,13 +57,11 @@ namespace Battle
             // return TerrainMap.GetHeight(cell.x, cell.y);
 
 
-
+            return 0f;
             // TODO: 이것은 임시방편. 나중에 맵 데이터에 높이값을 넣어둡시다. 
-            if (WorldTerrain == null)
-                return 0f;
-
-            var    terrin_height = WorldTerrain.SampleHeight(_world_position);
-            return terrin_height;            
+            // if (WorldTerrain == null)
+            // var    terrin_height = WorldTerrain.SampleHeight(_world_position);
+            // return terrin_height;            
         }
 
 
