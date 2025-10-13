@@ -5,9 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - TAG_ROOT
-  - PW - Nature
-  - PW - Prop
-  - PW - Building
   - Battle_Terrain
   layers:
   - Default
