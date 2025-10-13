@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Battle;
 using Cysharp.Threading.Tasks;
@@ -25,29 +25,29 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
     public async UniTask CreateObject(Int64 _id, CancellationToken _cancel_token = default)//, Action<bool, Int64> _on_result = null)
     {   
-        // todo: cancellation token Ã³¸® Ãß°¡ÇÏÀÚ.        
+        // todo: cancellation token Ã³ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½.        
 
         // test code
         var load_asset_address = AssetName.TEST_PREFAB;
         
-        // unitask ´ë±â.
+        // unitask ï¿½ï¿½ï¿½.
 
         try
         {
-            // TODO: ¿ä°Ç ÀÓ½Ã·Î ºÎ¸ð ¿ÀºêÁ§Æ® Ã³¸®... 
-            // ½ÇÁ¦·Î´Â ¾À¿¡ ·çÆ® ¿ÀºêÁ§Æ®°¡ ÀÖ¾î¾ß ÇÒ°Í °°À½.
+            // TODO: ï¿½ï¿½ï¿½ ï¿½Ó½Ã·ï¿½ ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Ã³ï¿½ï¿½... 
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½Ò°ï¿½ ï¿½ï¿½ï¿½ï¿½.
             var parent_object = this.transform;            
 
-            // ¿ÀºêÁ§Æ® »ý¼º.
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½.
             var new_object    = await AssetManager.Instance.InstantiateAsync(load_asset_address, parent_object, _cancel_token);
             
-            // ´ë±â ¿Ï·á ÈÄ Ã³¸®.
+            // ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½.
             if (new_object != null)
             {
                 var entity            = EntityManager.Instance.GetEntity(_id);
                 var duplicate_object  = Seek(_id);
 
-                // Áßº¹ ¿ÀºêÁ§Æ® »ý¼º or entity°¡ ¾øÀ¸¸é »ý¼º ½ÇÆÐ Ã³¸®.
+                // ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ or entityï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
                 var is_error = (duplicate_object != null) || (entity == null);
                 if (is_error)
                 {
@@ -63,7 +63,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
                 Insert(new_actor);
 
-                // »ý¼ºÇßÀ» ¶§ ÀÌº¥Æ® Ã³¸®.
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½.
 
                 // Debug.Log($"InstantiateAsync Success, {_id}");  
             }   
@@ -88,7 +88,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
         Remove(_id);
 
-        // ºñÈ°¼ºÈ­ ÈÄ »èÁ¦ Å¥¿¡ ³Ö¾î³õÀ¾½Ã´Ù.
+        // ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¥ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½.
         world_object.gameObject.SetActive(false);
         m_remove_queue.Add(world_object);
 
@@ -106,7 +106,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
     {
         base.OnLoop();
 
-        // ¿ÀºêÁ§Æ® »èÁ¦ Ã³¸®.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
         {
             foreach(var e in m_remove_queue)
             {
@@ -129,7 +129,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
     // public async (bool, Actor) CreateActorAsync(Int64 _id)
     // {
-    //     // TODO: Addressable »ç¿ëÇØº¸ÀÚ.
+    //     // TODO: Addressable ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½.
     //     await;
 
     //     // var load_request = Resources.LoadAsync("unit/test");

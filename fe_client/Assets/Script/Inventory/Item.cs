@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using System;
 using Battle;
 
+[Serializable]
 public partial class Item 
 {
+    [SerializeField]
     private Int64 m_id        = 0;
+    [SerializeField]
     private Int32 m_kind      = 0;
+    [SerializeField]
     private Int32 m_count_cur = 0;
+    [SerializeField]
     private Int32 m_count_max = 0;
 
     private Item(Int64 _id, Int32 _kind)
@@ -23,7 +28,7 @@ public partial class Item
 
     public  long          ID           => m_id;
     public  int           Kind         => m_kind;
-    public  EnumItemType  ItemType     => EnumItemType.Weapon;    
+    public  EnumItemType  ItemType     => EnumItemType.Weapon;    // <- TODO: ì´ê±´ ìˆ˜ì •í•´ë†”ì•¼ê² ë‹¤..
     public  int           CurCount     => m_count_cur;             
     public  int           MaxCount     => m_count_max;       
     public  bool          IsDisposable => true;
@@ -70,7 +75,7 @@ public partial class Item
         var status    = DataManager.Instance.WeaponSheet.GetStatus(item.Kind);
         var attribute = DataManager.Instance.WeaponSheet.GetAttribute(item.Kind);
 
-        // ¹«±â ½ºÅÈ ¼³Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (status != null)
         {
             item.SetWeaponStatus(EnumWeaponStatus.Might_Physics,  status.PHYSICS);
@@ -84,7 +89,7 @@ public partial class Item
             item.SetWeaponStatus(EnumWeaponStatus.Range_Min,      status.RANGE_MIN);
         }
 
-        // ¹«±â ¼Ó¼º ¼³Á¤.
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (attribute != null)
         {
             foreach (var e in attribute)

@@ -62,13 +62,13 @@ namespace Battle
 
 
 
-        /// <summary> °ø°Ý·Â. </summary>
+        /// <summary> ï¿½ï¿½ï¿½Ý·ï¿½. </summary>
         public int Calc_Might_Physic()
         {
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
             if (weapon_might <= 0)
             {
-                // ¹«±â°¡ ¾øÀ¸¸é µ¥¹ÌÁöµµ ¾ø´Ù.
+                // ï¿½ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                 return 0;
             }
 
@@ -78,13 +78,13 @@ namespace Battle
             return status_unit + status_weapon;
         }
 
-        /// <summary> ¸¶¹ý°ø°Ý·Â. </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½. </summary>
         public int Calc_Might_Magic()
         {
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
             if (weapon_might <= 0)
             {
-                // ¹«±â°¡ ¾øÀ¸¸é µ¥¹ÌÁöµµ ¾ø´Ù.
+                // ï¿½ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                 return 0;
             }
 
@@ -94,7 +94,7 @@ namespace Battle
             return status_unit + status_weapon;
         }
 
-        /// <summary> ¸íÁß </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Hit()
         {
             var unit_skill = GetBuffedUnitStatus(EnumUnitStatus.Skill);
@@ -106,7 +106,7 @@ namespace Battle
             return unit_hit + weapon_hit;
         }
 
-        /// <summary> Ä¡¸í </summary>
+        /// <summary> Ä¡ï¿½ï¿½ </summary>
         public int Calc_Critical()
         {
             var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
@@ -118,7 +118,7 @@ namespace Battle
         }
 
 
-        /// <summary> È¸ÇÇ </summary>
+        /// <summary> È¸ï¿½ï¿½ </summary>
         public int Calc_Dodge()
         {
             var battle_speed = Calc_Speed();
@@ -128,7 +128,7 @@ namespace Battle
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
 
-        /// <summary> Ä¡¸í È¸ÇÇ </summary>
+        /// <summary> Ä¡ï¿½ï¿½ È¸ï¿½ï¿½ </summary>
         public int Calc_DodgeCritical()
         {
             var unit_luck             = GetBuffedUnitStatus(EnumUnitStatus.Luck);
@@ -137,7 +137,7 @@ namespace Battle
             return unit_luck + weapon_dodge_critical;
         }
 
-        /// <summary> ¼Óµµ </summary>
+        /// <summary> ï¿½Óµï¿½ </summary>
         public int Calc_Speed()
         {
             var unit_speed   = GetBuffedUnitStatus(EnumUnitStatus.Speed);
@@ -147,13 +147,13 @@ namespace Battle
             return unit_speed - Math.Max(0, wepon_weight - unit_weight);
         }
 
-        /// <summary> ¹æ¾î·Â </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Defense()
         {
             return GetBuffedUnitStatus(EnumUnitStatus.Defense);
         }
 
-        /// <summary> ¸¶¹ý¹æ¾î·Â </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ </summary>
         public int Calc_Resistance()
         {
             return GetBuffedUnitStatus(EnumUnitStatus.Resistance);
@@ -189,14 +189,14 @@ namespace Battle
 }
 
 /*
- ÆÄ¿¥ if ³ª¹«À§Å°º¸°í ´É·ÂÄ¡ °ø½Ä ±Ü¾î¿Âµí... ÀÎÄÚµùÀÌ ƒÆÁ®¹ö·È³×...
+ ï¿½Ä¿ï¿½ if ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ï¿½ï¿½ ï¿½É·ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½Âµï¿½... ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È³ï¿½...
  * ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½]     = ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½] + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½*(1[1] or 2[2] or 3[3]) + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
- * ï¿½ï¿½ï¿½ï¿½           = ï¿½ï¿½ï¿?*2 + ï¿½ï¿½ï¿?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
- * ï¿½Ê»ï¿½           = ï¿½ï¿½ï¿?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½Ê»ï¿½ + ï¿½ï¿½Å¸[A]
+ * ï¿½ï¿½ï¿½ï¿½           = ï¿½ï¿½ï¿½?*2 + ï¿½ï¿½ï¿½?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½Å¸[A](ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½)
+ * ï¿½Ê»ï¿½           = ï¿½ï¿½ï¿½?/2 + ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½Ê»ï¿½ + ï¿½ï¿½Å¸[A]
  * ï¿½ï¿½ï¿½Ø·ï¿½         = (ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½] - ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½])*(1 or 3[7])
  * ï¿½ï¿½ï¿½ï¿½[8]        = ï¿½Óµï¿½ - (ï¿½ï¿½ï¿½ï¿½ - Ã¼ï¿½ï¿½)[9]
- * È¸ï¿½ï¿½           = ï¿½ï¿½ï¿½ï¿½*2 + ï¿½ï¿½ï¿?/2 + ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
- * ï¿½Ê»ï¿½ È¸ï¿½ï¿½      = ï¿½ï¿½ï¿? + ï¿½ï¿½ï¿½ï¿½ ï¿½Ê»ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
+ * È¸ï¿½ï¿½           = ï¿½ï¿½ï¿½ï¿½*2 + ï¿½ï¿½ï¿½?/2 + ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
+ * ï¿½Ê»ï¿½ È¸ï¿½ï¿½      = ï¿½ï¿½ï¿½? + ï¿½ï¿½ï¿½ï¿½ ï¿½Ê»ï¿½ È¸ï¿½ï¿½ + ï¿½ï¿½Å¸[A]
  * ï¿½ï¿½ï¿½ß·ï¿½         = ï¿½ï¿½ï¿½ï¿½ - È¸ï¿½ï¿½
  * ï¿½Ê»ï¿½ ï¿½ß»ï¿½ È®ï¿½ï¿½  = ï¿½Ê»ï¿½ - ï¿½Ê»ï¿½ È¸ï¿½ï¿½
  */
