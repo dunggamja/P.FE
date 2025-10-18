@@ -8,14 +8,17 @@ namespace Battle
     public class TerrainBinder : MonoBehaviour
     {
         [SerializeField]
-        private Terrain          m_terrain           = null;
+        private Terrain                    m_terrain            = null;
+         
+        [SerializeField]         
+        private sheet_map_setting          m_map_setting        = null;
 
 
         [SerializeField]
-        private FactionSerialize m_faction_serialize = null;
+        private sheet_map_faction_setting  m_faction_setting    = null;
 
         [SerializeField]
-        private Transform        m_root_fixed_objects = null;
+        private Transform                  m_root_fixed_objects = null;
 
 
         public float GetHeight(Vector3 _world_position, bool _exclude_fixedobjects = false)

@@ -59,7 +59,7 @@ namespace Battle
             {
                 // 물 지형
                 if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
-                &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) == 0))
+                &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Swimmer)) == 0))
                     return (0, EnumTerrainAttribute.Water);
                 
                 // 물 지형 이동 Cost
@@ -70,7 +70,7 @@ namespace Battle
             {
                 // 물가
                 if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
-                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water))  == 0)
+                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Swimmer))  == 0)
                 &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0))
                     return (0, EnumTerrainAttribute.Water_Shallow);
 
@@ -96,7 +96,7 @@ namespace Battle
                     if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground_Climb)) != 0)
                     {
                         // 경사면 이동 가능한지 체크.
-                        if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Slope)) == 0)
+                        if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Climber)) == 0)
                             return (0, EnumTerrainAttribute.Ground_Climb);
 
                         // 경사면 이동 Cost

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class AssetName
@@ -20,4 +21,31 @@ public static class Data_Const
 {
     public const Int32 KIND_WEAPON_SWORD_IRON = 1;
     public const Int32 KIND_WEAPON_SWORD_KILL = 2;
+
+    public const char SHEET_SEPERATOR = ';';
+
+
+    static public List<T> Split<T>(string _text) where T : struct, Enum
+    {
+        var list = new List<T>();
+
+        if (string.IsNullOrEmpty(_text) == false)
+        {
+            try
+            {
+                var items = _text.Split(SHEET_SEPERATOR);
+                foreach (var item in items)
+                {
+                    if (Enum.TryParse(item, out T result))
+                        list.Add(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Split Error: {ex.Message}, text: {_text}");
+            }
+        }
+
+        return list;
+    } 
 }

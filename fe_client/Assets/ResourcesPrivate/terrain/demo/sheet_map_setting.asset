@@ -1,0 +1,183 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ee8fca72e044bd4b27b69e4018189f, type: 3}
+  m_Name: sheet_map_setting
+  m_EditorClassIdentifier: 
+  entity:
+  - ID: 2001
+    MEMO: "\uC544\uAD70\uC720\uB2DB_1"
+    FACTION: 1
+    STATUS_KIND: 1
+    ITEM_KIND: 1
+    ASSET_KIND: 1
+  - ID: 2002
+    MEMO: "\uC544\uAD70\uC720\uB2DB_2"
+    FACTION: 1
+    STATUS_KIND: 1
+    ITEM_KIND: 1
+    ASSET_KIND: 1
+  - ID: 2003
+    MEMO: "\uC544\uAD70\uC720\uB2DB_3"
+    FACTION: 1
+    STATUS_KIND: 1
+    ITEM_KIND: 1
+    ASSET_KIND: 1
+  - ID: 2004
+    MEMO: "\uC544\uAD70\uC720\uB2DB_4"
+    FACTION: 1
+    STATUS_KIND: 1
+    ITEM_KIND: 1
+    ASSET_KIND: 1
+  - ID: 2005
+    MEMO: "\uC544\uAD70\uC720\uB2DB_5"
+    FACTION: 1
+    STATUS_KIND: 1
+    ITEM_KIND: 1
+    ASSET_KIND: 1
+  - ID: 4001
+    MEMO: "\uC544\uAD70 \uBCF4\uD638\uB300\uC0C1"
+    FACTION: 3
+    STATUS_KIND: 2
+    ITEM_KIND: 2
+    ASSET_KIND: 2
+  - ID: 3001
+    MEMO: "\uC801\uAD70\uC720\uB2DB_1"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3002
+    MEMO: "\uC801\uAD70\uC720\uB2DB_2"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3003
+    MEMO: "\uC801\uAD70\uC720\uB2DB_3"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3004
+    MEMO: "\uC801\uAD70\uC720\uB2DB_4"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3005
+    MEMO: "\uC801\uAD70\uC720\uB2DB_5"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3006
+    MEMO: "\uC801\uAD70\uC720\uB2DB_6"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3007
+    MEMO: "\uC801\uAD70\uC720\uB2DB_7"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3008
+    MEMO: "\uC801\uAD70\uC720\uB2DB_8"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3009
+    MEMO: "\uC801\uAD70\uC720\uB2DB_9"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  - ID: 3010
+    MEMO: "\uC801\uAD70\uC720\uB2DB_10"
+    FACTION: 2
+    STATUS_KIND: 3
+    ITEM_KIND: 3
+    ASSET_KIND: 3
+  status:
+  - KIND: 1
+    MEMO: "\uC544\uAD70\uC720\uB2DB"
+    HP: 23
+    LEVEL: 1
+    STRENGTH: 5
+    MAGIC: 0
+    SKILL: 5
+    SPEED: 5
+    LUCK: 2
+    DEFENSE: 5
+    RESISTANCE: 0
+    MOVEMENT: 6
+    WEIGHT: 5
+    UNIT_ATTRIBUTE: Infantry
+    PATH_ATTRIBUTE: Ground
+  - KIND: 2
+    MEMO: "\uC544\uAD70 \uBCF4\uD638\uB300\uC0C1"
+    HP: 40
+    LEVEL: 1
+    STRENGTH: 0
+    MAGIC: 0
+    SKILL: 0
+    SPEED: 3
+    LUCK: 0
+    DEFENSE: 7
+    RESISTANCE: 0
+    MOVEMENT: 10
+    WEIGHT: 10
+    UNIT_ATTRIBUTE: Props
+    PATH_ATTRIBUTE: Swimmer
+  - KIND: 3
+    MEMO: "\uC801\uAD70\uC720\uB2DB"
+    HP: 21
+    LEVEL: 1
+    STRENGTH: 6
+    MAGIC: 0
+    SKILL: 1
+    SPEED: 1
+    LUCK: 0
+    DEFENSE: 1
+    RESISTANCE: 0
+    MOVEMENT: 4
+    WEIGHT: 6
+    UNIT_ATTRIBUTE: Infantry
+    PATH_ATTRIBUTE: Ground
+  item:
+  - KIND: 1
+    MEMO: "\uC544\uAD70\uC720\uB2DB_\uC7A5\uBE44_\uCCA0\uC758\uAC80"
+    ITEM_KIND: 1
+    COUNT: 40
+  - KIND: 1
+    MEMO: "\uC544\uAD70\uC720\uB2DB_\uC7A5\uBE44_\uD0AC\uC18C\uB4DC"
+    ITEM_KIND: 2
+    COUNT: 10
+  - KIND: 3
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uC7A5\uBE44_\uCCA0\uC758\uAC80"
+    ITEM_KIND: 1
+    COUNT: 40
+  asset:
+  - KIND: 1
+    MEMO: "\uC544\uAD70\uC720\uB2DB"
+    ASSET_KEY: unit/demo_unit_alliance
+  - KIND: 2
+    MEMO: "\uC544\uAD70\uC720\uB2DB_\uBCF4\uD638\uB300\uC0C1"
+    ASSET_KEY: unit/demo_unit_alliance
+  - KIND: 3
+    MEMO: "\uC801\uAD70\uC720\uB2DB"
+    ASSET_KEY: unit/demo_unit_enemy
+  - KIND: 4
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
+    ASSET_KEY: unit/demo_unit_enemy_thief

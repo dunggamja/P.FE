@@ -1,16 +1,14 @@
-﻿using UnityEngine;
+﻿
 using System;
 using System.Collections.Generic;
+using Battle;
+using UnityEngine;
 
-
-namespace Battle
-{
-
-   [CreateAssetMenu(
-      fileName = "FactionSerialize", 
-      menuName = "ScriptableObjects/Battle/FactionSerialize")
+[CreateAssetMenu(
+      fileName = "sheet_map_faction_setting", 
+      menuName = "ScriptableObjects/Battle/sheet_map_faction_setting")
    ]
-   public class FactionSerialize : ScriptableObject
+   public class sheet_map_faction_setting : ScriptableObject
    {
       [Serializable]
       public struct FactionSetting
@@ -83,7 +81,5 @@ namespace Battle
             }
          }
          
-      }
-      
+      }      
    }
-}

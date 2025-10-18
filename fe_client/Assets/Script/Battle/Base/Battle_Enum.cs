@@ -13,13 +13,14 @@ namespace Battle
     {
       None = 0,
   
-      Infantry   = 1, // 보병
-      Cavalry    = 2, // 기병
-      Flyer      = 3, // 비행
-      Undead     = 4, // 언데드
-      Beast      = 5, // 비스트
-      Large      = 6, // 대형
-      HeavyArmor = 7, // 중형
+      Infantry      = 1, // 보병
+      Cavalry       = 2, // 기병
+      Flyer         = 3, // 비행
+      Undead        = 4, // 언데드
+      Beast         = 5, // 비스트
+      Large         = 6, // 대형
+      HeavyArmor    = 7, // 중형
+      Props         = 8, // 물건.
     }
 
     /// <summary>
@@ -170,10 +171,10 @@ namespace Battle
 
     public enum EnumPathOwnerAttribute
     {
-      Ground, // 땅 이동 가능
-      Flyer, // 비행 이동 가능
-      Water, // 물 이동 가능
-      Slope, // (경사) 경사, 경사 이동 가능
+      Ground,  // 땅 이동 가능
+      Flyer,   // 비행 이동 가능
+      Swimmer, // 물 이동 가능
+      Climber, // 등산 가능.
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?

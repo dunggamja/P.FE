@@ -41,12 +41,9 @@ public class sheet_weapon_localize
 [ExcelAsset]
 public class sheet_weapon : ScriptableObject
 {
-	[SerializeField]
-	private List<sheet_weapon_status>    status;
-	[SerializeField]
-	private List<sheet_weapon_attribute> attribute;
-	[SerializeField]
-	private List<sheet_weapon_localize>  localize;
+	public List<sheet_weapon_status>    status;
+	public List<sheet_weapon_attribute> attribute;
+	public List<sheet_weapon_localize>  localize;
 
 
 	private Dictionary<Int32, sheet_weapon_status>          m_cache_status    = new ();
