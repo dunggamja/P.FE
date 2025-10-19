@@ -24,28 +24,5 @@ public static class Data_Const
 
     public const char SHEET_SEPERATOR = ';';
 
-
-    static public List<T> Split<T>(string _text) where T : struct, Enum
-    {
-        var list = new List<T>();
-
-        if (string.IsNullOrEmpty(_text) == false)
-        {
-            try
-            {
-                var items = _text.Split(SHEET_SEPERATOR);
-                foreach (var item in items)
-                {
-                    if (Enum.TryParse(item, out T result))
-                        list.Add(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Split Error: {ex.Message}, text: {_text}");
-            }
-        }
-
-        return list;
-    } 
 }
+

@@ -42,14 +42,14 @@ public class sheet_map_setting_status
    private void CacheUnitAttributes()
    {
       m_cache_attributes_unit = new HashSet<EnumUnitAttribute>(); 
-      foreach (var e in Data_Const.Split<EnumUnitAttribute>(UNIT_ATTRIBUTE))
+      foreach (var e in Util.SplitText<EnumUnitAttribute>(UNIT_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
          m_cache_attributes_unit.Add(e);
    }
 
    private void CachePathAttributes()
    {
       m_cache_attributes_path = new HashSet<EnumPathOwnerAttribute>(); 
-      foreach (var e in Data_Const.Split<EnumPathOwnerAttribute>(PATH_ATTRIBUTE))
+      foreach (var e in Util.SplitText<EnumPathOwnerAttribute>(PATH_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
          m_cache_attributes_path.Add(e);
    }
 
@@ -93,13 +93,9 @@ public class sheet_map_setting_asset
 [ExcelAsset]
 public class sheet_map_setting : ScriptableObject
 {
-   // [SerializeField]
 	public List<sheet_map_setting_entity>    entity;
-	// [SerializeField]
 	public List<sheet_map_setting_status>    status;
-	// [SerializeField]
 	public List<sheet_map_setting_item>      item;
-	// [SerializeField]
 	public List<sheet_map_setting_asset>     asset;
     
 }
