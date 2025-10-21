@@ -497,7 +497,7 @@ public static partial class PathAlgorithm
         // 이동 Cost 계산
         var move_cost = Terrain_Attribute.Calculate_MoveCost(
             _path_owner.PathAttribute, 
-            _terrain_map.Attribute.GetAttribute(_cell.x, _cell.y));
+            _terrain_map.Attribute.GetCellData(_cell.x, _cell.y));
 
         if (move_cost.cost <= 0)
             return (false, 0);

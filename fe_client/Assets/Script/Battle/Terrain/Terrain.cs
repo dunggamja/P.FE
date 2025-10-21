@@ -319,8 +319,6 @@ namespace Battle
     {
         public int Width  { get; private set; }
         public int Height { get; private set; }
-
-        // public TerrainCollision    Collision    { get; private set; }
         const int BLOCK_SIZE = 8;
 
 
@@ -328,16 +326,11 @@ namespace Battle
         public Terrain_Attribute   Attribute    { get; private set; }
         public TerrainBlockManager EntityManager { get; private set; }
 
-        private float[,] m_height_map;
-
         public void Initialize(int _width, int _height)
         {
             Width        = _width;
             Height       = _height;
 
-            m_height_map = new float[_width + 1, _height + 1];
-
-            // Collision    = new TerrainCollision(_width, _height);
             ZOC          = new Terrain_ZOC(_width, _height, BLOCK_SIZE);
             Attribute    = new Terrain_Attribute(_width, _height, BLOCK_SIZE);
 
@@ -351,14 +344,7 @@ namespace Battle
             return 0 <= _x && _x < Width && 0 <= _y && _y < Height;
         }
 
-        public float GetHeight(int _x, int _y)
-        {
-            // 범위 체크.
-            if (_x < 0 || _y < 0 || _x >= m_height_map.GetLength(0) || _y >= m_height_map.GetLength(1))
-                return 0f;
-
-            return m_height_map[_x, _y];
-        }
+       
 
         // TODO: SAVE/LOAD
         //       블록단위로 저장/로드를 만들어야 겠다 생각하다가 작업을 뭔가 해버렸다. 

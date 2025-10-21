@@ -33,6 +33,43 @@ public class FixedObjects : MonoBehaviour
     [Header("Tile Attribute, 점유 타일의 속성과 범위를 정의합니다.")]
     private List<TileAttribute> m_tile_attributes = null;
 
+    [SerializeField]
+    [Header("상호작용이 가능한 지점의 오프셋 값입니다.")]
+    private Vector3[] m_interaction_offset = null;
+
+
+    public  Int64  EntityID => m_entity_id;
+    public  (int x, int y) Cell 
+    {
+        get 
+        {        
+            // Fixed Object의 포지션이... 중요한경우가 있    
+            var center       = Vector3.zero;
+            var center_count = 0;
+
+            if (m_tile_attributes != null)
+            {
+                foreach (var e in m_tile_attributes)
+                {
+                    if (e.Collider != null)
+                    {
+                        center +=  e.Collider.bounds.center; 
+                        center_count++;
+                    }
+                }                
+            }
+
+            if (0 < center_count)
+            {
+                center /= center_count;
+                return center.PositionToCell();
+            }
+
+
+            return transform.position.PositionToCell();
+        }
+    }
+
 
 
 

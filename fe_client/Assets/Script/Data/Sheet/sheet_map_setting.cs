@@ -8,7 +8,7 @@ using Battle;
 [Serializable]
 public class sheet_map_setting_entity
 {
-	public Int32       ID;
+	public Int64       ID;
 	public string      MEMO;
 	public Int32       FACTION;
 	public Int32       STATUS_KIND;
@@ -61,6 +61,24 @@ public class sheet_map_setting_status
       return (m_cache_attributes_unit != null && m_cache_attributes_unit.Contains(_attribute));
    }
 
+	public  HashSet<EnumUnitAttribute> GetUnitAttributes()
+	{
+		if (m_cache_attributes_unit == null)
+			CacheUnitAttributes();
+
+		return m_cache_attributes_unit;
+	}
+
+	public  HashSet<EnumPathOwnerAttribute> GetPathAttributes()
+	{
+		if (m_cache_attributes_path == null)
+			CachePathAttributes();
+
+		return m_cache_attributes_path;
+	}
+
+
+
    public  bool HasPathAttribute(EnumPathOwnerAttribute _attribute)
    {
       if (m_cache_attributes_path == null)
@@ -97,6 +115,88 @@ public class sheet_map_setting : ScriptableObject
 	public List<sheet_map_setting_status>    status;
 	public List<sheet_map_setting_item>      item;
 	public List<sheet_map_setting_asset>     asset;
-    
-}
 
+
+	public sheet_map_setting_entity GetEntity(Int64 _id)
+	{
+		if (entity == null)
+			return null;
+
+		foreach(var e in entity)
+		{
+			if (e.ID == _id)
+				return e;
+		}
+		return null;
+	}
+
+
+
+	public sheet_map_setting_status GetStatus(Int32 _KIND)
+	{
+		if (status == null)
+			return null;
+
+		foreach(var e in status)
+		{
+			if (e.KIND == _KIND)
+				return e;
+		}
+		return null;
+	}
+
+	public List<sheet_map_setting_item> GetItem(Int32 _KIND)
+	{
+		var list_result = new List<sheet_map_setting_item>();
+
+		foreach(var e in item)
+		{
+			if (e.KIND == _KIND)
+				list_result.Add(e);
+		}
+
+		return list_result;	
+	}
+
+	public sheet_map_setting_asset GetAsset(Int32 _KIND)
+	{
+		if (asset == null)
+			return null;
+
+		foreach(var e in asset)
+		{
+			if (e.KIND == _KIND)
+				return e;
+		}
+		return null;
+	}
+
+
+	public sheet_map_setting_status GetStatus_EntityID(Int64 _entity_id)
+	{
+		var sheet = GetEntity(_entity_id);
+		if (sheet == null)
+			return null;
+
+		return GetStatus(sheet.STATUS_KIND);
+	}
+
+	public List<sheet_map_setting_item> GetItem_EntityID(Int64 _entity_id)
+	{
+		var sheet = GetEntity(_entity_id);
+		if (sheet == null)
+			return null;
+
+		return GetItem(sheet.ITEM_KIND);
+	}
+
+	public sheet_map_setting_asset GetAsset_EntityID(Int64 _entity_id)
+	{
+		var sheet = GetEntity(_entity_id);
+		if (sheet == null)
+			return null;
+
+		return GetAsset(sheet.ASSET_KIND);
+	}
+
+}

@@ -10,25 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: unit
+  m_Name: demo
   m_EditorClassIdentifier: 
-  m_GroupName: unit
-  m_GUID: 92fe53326406b44b6835b3745ead7785
+  m_GroupName: demo
+  m_GUID: 025beef1c1e5446509cd2949c64c89d9
   m_SerializeEntries:
+  - m_GUID: 0cf31cb3628824743b21f2a85dbb43b3
+    m_Address: demo/map_setting
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - setting
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ff0cce54952a4a4aaeef5adc44fa2d4
+    m_Address: demo/map_file
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - setting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2f043e8c52b7c4653a4d7601b0ced8b5
-    m_Address: unit/demo_unit_enemy
+    m_Address: demo/unit_enemy
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 357abf2119972406aa32ec1837c17fcf
+    m_Address: demo/map_faction_setting
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - setting
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 460d0ed3e192947788ff4c585e3c5a14
-    m_Address: unit/demo_unit_alliance
+    m_Address: demo/unit_alliance
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b7016087f866f488995afaf7968fe9d3
-    m_Address: unit/demo_unit_enemy_thief
+    m_Address: demo/unit_enemy_thief
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab

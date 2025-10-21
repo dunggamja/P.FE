@@ -35,29 +35,6 @@ namespace Battle
             }
         }
 
-        // TODO: 현재로서는 임시방편용 코드에 가까움. 맵에 높이값도 저장하도록 바꿀거임.
-
-        // private Terrain    WorldTerrain
-        // {
-        //     get
-        //     {
-        //         if (m_world_terrain == null)
-        //         {
-        //             var world_terrain_object = GameObject.FindGameObjectWithTag(Battle.Constants.TAG_BATTLE_TERRAIN);
-        //             if (world_terrain_object != null)
-        //             {
-        //                 m_world_terrain = world_terrain_object.GetComponent<Terrain>();
-        //             }
-        //             else
-        //             {
-        //                 Debug.LogError($"WorldTerrain not found");
-        //             }
-        //         }
-
-        //         return m_world_terrain;
-        //     }
-        // }
-
         public float GetWorldHeight((int _x, int _y) _cell, bool _exclude_fixedobjects = false)
         {
             var world_position  = _cell.CellToPosition();

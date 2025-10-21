@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -58,25 +59,69 @@ namespace Battle
             // 랜덤 시드 설정.
             Util.SetRandomSeed((int)System.DateTime.Now.Ticks);
 
+            // 맵 파일 로드.
+            var (map_file, map_setting, faction_setting) = await Load_Map_File(AssetName.DEMO_MAP_FILE);
+            if  (map_file == null || map_setting == null || faction_setting == null)
+            {
+                Debug.LogError("Failed to load map file");
+                return;
+            }
+
+
             // 지형 맵 셋팅.
-            Test_BattleSystem_Setup_Terrain();
+            Test_BattleSystem_Setup_Terrain(map_file);
 
             // 유닛 셋팅.
-            Test_BattleSystem_Setup_Unit();
+            Test_BattleSystem_Setup_Unit(map_file, map_setting);
+
+            Test_BattleSystem_Setup_Others(faction_setting);
+
 
             IsInitialized = true;
         }
 
 
-        void Test_BattleSystem_Setup_Terrain()
+        async UniTask<(MapBakeData, sheet_map_setting, sheet_map_faction_setting)> Load_Map_File(string _asset_name)
         {
+            var map_file = await AssetManager.Instance.LoadAssetAsync<TextAsset>(_asset_name);
+            if (map_file == null)
+                return (null, null, null);
+
+            var map_data = JsonUtility.FromJson<MapBakeData>(map_file.text);
+            if (map_data == null || map_data.Terrain == null)
+                return (null, null, null);
+
+            var map_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_setting>(AssetName.DEMO_MAP_SETTING);
+            if (map_setting == null)
+            {
+                Debug.LogError("Failed to load map setting");
+                return (null, null, null);
+            }
+
+            var faction_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_faction_setting>(AssetName.DEMO_MAP_FACTION_SETTING);
+            if (faction_setting == null)
+            {
+                Debug.LogError("Failed to load faction setting");
+                return (null, null, null);
+            }
+
+            return (map_data, map_setting, faction_setting);        
+        }
+
+
+        void Test_BattleSystem_Setup_Terrain(MapBakeData _map_data)
+        {
+            if (_map_data == null)
+                return;
+            
             var terrain_map = new TerrainMap();
-            terrain_map.Initialize(100, 100);
+            terrain_map.Initialize(_map_data.Terrain.m_width, _map_data.Terrain.m_height);
+
             for(int y = 0; y < terrain_map.Height; ++y)
             {
                 for(int x = 0; x < terrain_map.Width; ++x)
                 {
-                    terrain_map.Attribute.SetAttribute(x, y, EnumTerrainAttribute.Ground);
+                    terrain_map.Attribute.SetCellData(x, y, _map_data.Terrain.GetTileData(x, y));
                 }
             }
 
@@ -88,132 +133,116 @@ namespace Battle
         }
 
 
-        void Test_BattleSystem_Setup_Unit()
+        void Test_BattleSystem_Setup_Unit(MapBakeData _map_data, sheet_map_setting _map_setting)
         {
-            var attacker_id  = Util.GenerateID();
-            var attacker_id2 = Util.GenerateID();
-            var defender_id  = Util.GenerateID();
-            var defender_id2 = Util.GenerateID();
-            var attacker     = Entity.Create(attacker_id);
-            var attacker_2   = Entity.Create(attacker_id2);
-            var defender     = Entity.Create(defender_id);
-            var defender_2   = Entity.Create(defender_id2);
+            if (_map_data == null || _map_setting == null)
+                return;
+           
 
-
-            EntityManager.Instance.AddEntity(attacker);
-            EntityManager.Instance.AddEntity(attacker_2);
-            EntityManager.Instance.AddEntity(defender);
-            EntityManager.Instance.AddEntity(defender_2);
-
-            // 1. 플레이어, 2: 적 ai
-            attacker.SetFaction(1);
-            attacker_2.SetFaction(1);
-            defender.SetFaction(2);
-            defender_2.SetFaction(2);
-
-
-            // 2. AI 타입 셋팅.
-            attacker.SetAIType(EnumAIType.Attack);
-            attacker_2.SetAIType(EnumAIType.Attack);
-            defender.SetAIType(EnumAIType.Attack);
-            defender_2.SetAIType(EnumAIType.Attack);
-            
-            // 
-            BattleSystemManager.Instance.SetFactionCommanderType(1, EnumCommanderType.Player);
-            BattleSystemManager.Instance.SetFactionCommanderType(2, EnumCommanderType.AI);
-
-
-            var list_attacker = new []{ attacker, attacker_2 };
-            var list_defender = new []{ defender, defender_2 };
-
-
-            foreach(var e in list_attacker)
+            foreach(var e in _map_data.Entities.m_entities)
             {
-                var attacker_status = e.StatusManager.Status as UnitStatus;
+                var entity = Entity.Create(e.m_entity_id);    
+                if (entity == null)
+                {
+                    Debug.LogError($"Failed to create entity {e.m_entity_id}");
+                    continue;
+                }
+
+                // 엔티티 리포지토리에 추가.
+                EntityManager.Instance.AddEntity(entity);
+
+                // 위치 셋팅.
+                entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
+
+
+                // TODO: 이것은 임시로 해둔 코드. 나중에 고정오브젝트를 어떻게 할것인지 생각해보자.
+                // FIXEDOBJECT와 연결이 필요할 것이다.
+                if (e.m_is_fixed_object)
+                {
+                    continue;
+                }
+
+
+                var setting_entity = _map_setting.GetEntity(e.m_entity_id);
+                var setting_status = _map_setting.GetStatus_EntityID(e.m_entity_id);
+                var setting_items  = _map_setting.GetItem_EntityID(e.m_entity_id);
+                var setting_asset  = _map_setting.GetAsset_EntityID(e.m_entity_id);
+
+                
+                
+                if (setting_entity == null || setting_status == null || setting_items == null || setting_asset == null)
+                {
+                    Debug.LogError($"Failed to get setting entity {e.m_entity_id}, entity: {setting_entity != null}, status: {setting_status != null}, items: {setting_items != null}, asset: {setting_asset != null}");                    
+                    continue;
+                }
+
+                // 진영셋팅
+                // TODO: AI 타입 셋팅.
+                entity.SetFaction(setting_entity.FACTION);
+                entity.SetAIType(EnumAIType.Attack);
+
+
 
                 // 능력치 셋팅.
-                attacker_status.SetPoint(EnumUnitPoint.HP, 22);
-                attacker_status.SetPoint(EnumUnitPoint.HP_Max, 22);
-                attacker_status.SetStatus(EnumUnitStatus.Strength, 6);
-                attacker_status.SetStatus(EnumUnitStatus.Skill, 5);
-                attacker_status.SetStatus(EnumUnitStatus.Speed, 7);
-                attacker_status.SetStatus(EnumUnitStatus.Movement, 4);
-                attacker_status.SetStatus(EnumUnitStatus.Defense, 5);
-                attacker_status.SetStatus(EnumUnitStatus.Resistance, 3);
-                attacker_status.SetStatus(EnumUnitStatus.Luck, 5);
-                attacker_status.SetStatus(EnumUnitStatus.Weight, 4);
+                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP,           setting_status.HP);
+                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP_Max,       setting_status.HP);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Level,      setting_status.LEVEL);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Strength,   setting_status.STRENGTH);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Skill,      setting_status.SKILL);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Speed,      setting_status.SPEED);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,   setting_status.MOVEMENT);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Defense,    setting_status.DEFENSE);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Resistance, setting_status.RESISTANCE);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Luck,       setting_status.LUCK);
 
-                // 지형 속성.
-                e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
+                // 유닛 특성 셋팅.
+                foreach(var attribute in setting_status.GetUnitAttributes()) entity.StatusManager.Status.SetAttribute(attribute, true);
+                
+                // 유닛 지형 특성 셋팅.
+                foreach(var attribute in setting_status.GetPathAttributes()) entity.SetPathAttribute(attribute);
 
-                // TODO: 무기 셋팅은 나중에 바꾸야 할듯.
-                var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_IRON);
-                e.Inventory.AddItem(attacker_weapon);
-                e.StatusManager.Weapon.Equip(attacker_weapon.ID);
+
+                // 아이템 셋팅.
+                foreach(var item in setting_items)
+                {
+                    var item_entity = Item.Create(Util.GenerateID(), item.ITEM_KIND);
+                    entity.Inventory.AddItem(item_entity);
+
+                    //TODO: 장비 장착은 나중에 자동화 하는게 좋을듯.
+                    if (item_entity.IsEnableAction(entity, EnumItemActionType.Equip))
+                        entity.StatusManager.Weapon.Equip(item_entity.ID);
+                }               
+
+
+                // 유닛 에셋 셋팅.
+                entity.SetAssetName(setting_asset.ASSET_KEY);
+
+                // 월드 오브젝트 생성 처리.
+                entity.CreateProcess();
             }
 
-            {
-                // 킬소드?
-                var attacker_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
-                attacker_2.Inventory.AddItem(attacker_weapon);
-                attacker_2.StatusManager.Weapon.Equip(attacker_weapon.ID);
-            }
-
-            foreach(var e in list_defender)
-            {
-                // 능력치 셋팅.
-                var defender_status = e.StatusManager.Status as UnitStatus;                
-                defender_status.SetPoint(EnumUnitPoint.HP, 22);
-                defender_status.SetPoint(EnumUnitPoint.HP_Max, 22);
-                defender_status.SetStatus(EnumUnitStatus.Strength, 6);
-                defender_status.SetStatus(EnumUnitStatus.Skill, 5);
-                defender_status.SetStatus(EnumUnitStatus.Speed, 7);
-                defender_status.SetStatus(EnumUnitStatus.Movement, 4);
-                defender_status.SetStatus(EnumUnitStatus.Defense, 5);
-                defender_status.SetStatus(EnumUnitStatus.Resistance, 3);
-                defender_status.SetStatus(EnumUnitStatus.Luck, 5);
-                defender_status.SetStatus(EnumUnitStatus.Weight, 4);
-
-                // 지형 속성.
-                e.SetPathAttribute(EnumPathOwnerAttribute.Ground);
-
-                // TODO: 무기 셋팅은 나중에 바꾸야 할듯.
-                var defender_weapon = Item.Create(Util.GenerateID(), Data_Const.KIND_WEAPON_SWORD_KILL);
-                e.Inventory.AddItem(defender_weapon);
-                e.StatusManager.Weapon.Equip(defender_weapon.ID);
-            }
-
-            // 위치 셋팅.
-            {
-                attacker.UpdateCellPosition(
-                    (2, 0), 
-                    (_apply: true, _immediatly: true), 
-                    _is_plan: false);
-
-                attacker_2.UpdateCellPosition(
-                    (3, 0), 
-                    (_apply: true, _immediatly: true), 
-                    _is_plan: false);
-
-                defender.UpdateCellPosition(
-                    (2, 10), 
-                    (_apply: true, _immediatly: true), 
-                    _is_plan: false);
-
-                defender_2.UpdateCellPosition(
-                    (3, 9),  
-                    (_apply: true, _immediatly: true), 
-                    _is_plan: false);
-            }
-
-            // 생성.처리
-            attacker.CreateProcess();
-            attacker_2.CreateProcess();
-            defender.CreateProcess();
-            defender_2.CreateProcess();
         }
 
+        void Test_BattleSystem_Setup_Others(sheet_map_faction_setting _faction_setting)
+        {
+            if (_faction_setting == null)
+                return;
 
+            if (_faction_setting.FactionSettings == null)
+                return;
 
+            if (_faction_setting.AllianceSettings == null)
+                return;
+
+            foreach(var e in _faction_setting.FactionSettings)
+            {
+                BattleSystemManager.Instance.SetFactionCommanderType(e.Faction, e.CommanderType);
+            }
+
+            foreach(var e in _faction_setting.AllianceSettings)
+            {
+                BattleSystemManager.Instance.SetFactionAlliance(e.Faction_1, e.Faction_2);
+            }
+        }
     }
 }

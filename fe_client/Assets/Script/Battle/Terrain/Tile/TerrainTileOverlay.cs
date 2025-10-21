@@ -33,6 +33,8 @@ public class TerrainTileOverlay : MonoBehaviour
      
     [SerializeField]     
     private Transform         m_fixed_objects_root = null;
+    [SerializeField]
+    private Transform         m_tiled_objects_root = null;
    
 
 
@@ -253,6 +255,23 @@ public class TerrainTileOverlay : MonoBehaviour
         return (offset_x, offset_y);
     }
 
+
+    static Int64 TileAttributeToCellData(EnumTerrainAttribute _attribute)
+    {
+        Int64 data = 1L << (int)_attribute;
+
+        switch (_attribute)
+        {
+            case EnumTerrainAttribute.Ground_Forest:
+            case EnumTerrainAttribute.Ground_Dirt:
+            case EnumTerrainAttribute.Ground_Climb:
+                data |= 1L << (int)EnumTerrainAttribute.Ground;
+                break;
+        }
+
+        return data;
+    }
+
     void RefreshTextureUV()
     {
         if (m_tilemap == null)
@@ -262,24 +281,10 @@ public class TerrainTileOverlay : MonoBehaviour
             return;
 
 
-        var mesh           = (Application.isPlaying) ? m_mesh_filter.mesh: m_mesh_filter.sharedMesh;
-        var uvs            = mesh.uv;
-
-        // var resolution     = m_terrain.terrainData.heightmapResolution;                
-        // var tilemap_bounds = m_tilemap.cellBounds;
-        var tilemap_size   = m_terrain.terrainData.size;
-
-        var width     = (int)tilemap_size.x;
-        var length    = (int)tilemap_size.z;
-
-        var tile_data = new int[width, length];
-        Array.Clear(tile_data, 0, tile_data.Length);
-        
-        
-
-        CollectTileData_Tilemap(ref tile_data, width, length);
-
-        CollectTileData_FixedObjects(ref tile_data, width, length);
+        var mesh            = (Application.isPlaying) ? m_mesh_filter.mesh: m_mesh_filter.sharedMesh;
+        var uvs             = mesh.uv;
+        // 타일 데이터를 수집합니다.
+        var (tile_data, width, length) = CollectTileData();       
 
         RefreshTextureUVFromTileData(ref tile_data, ref uvs, width, length);
 
@@ -288,10 +293,35 @@ public class TerrainTileOverlay : MonoBehaviour
 
 
 
+    (int width, int length) GetTilemapSize()
+    {
+        if (m_terrain == null)
+            return (0, 0);
 
+        var tilemap_size = m_terrain.terrainData.size;
+        var width        = (int)tilemap_size.x;
+        var length       = (int)tilemap_size.z;
+
+        return (width, length);
+    }
+
+
+    public (Int64[,] _data, int _width, int _length)CollectTileData()
+    {
+        var (width, length) = GetTilemapSize();
+
+        var tile_data = new Int64[width, length];
+        Array.Clear(tile_data, 0, tile_data.Length);
+        
+        CollectTileData_Tilemap(ref tile_data, width, length);
+
+        CollectTileData_FixedObjects(ref tile_data, width, length);
+
+        return (tile_data, width, length);
+    }
    
 
-    void CollectTileData_Tilemap(ref int[,] _tile_data, int _width, int _length)
+    void CollectTileData_Tilemap(ref Int64[,] _tile_data, int _width, int _length)
     {
         if (_tile_data == null)
             return;
@@ -301,15 +331,13 @@ public class TerrainTileOverlay : MonoBehaviour
         {
             for (int x = 0; x < _width; x++)
             {
-                var tile           = m_tilemap.GetTile(new Vector3Int(x, y, 0));
-                var tile_attribute = m_tile_data.GetTerrainAttribute(tile);
-
-                _tile_data[x, y] |= 1 << (int)tile_attribute;
+                var tile          = m_tilemap.GetTile(new Vector3Int(x, y, 0));
+                _tile_data[x, y] |= TileAttributeToCellData(m_tile_data.GetTerrainAttribute(tile));
             }
         }
     }
 
-    void CollectTileData_FixedObjects(ref int[,] _tile_data, int _width, int _length)
+    void CollectTileData_FixedObjects(ref Int64[,] _tile_data, int _width, int _length)
     {
        if (_tile_data == null)
             return;       
@@ -331,14 +359,14 @@ public class TerrainTileOverlay : MonoBehaviour
                      || tile_data.y < 0 || tile_data.y >= _length)
                         continue;
 
-                    _tile_data[tile_data.x, tile_data.y] |= 1 << (int)tile_data.attribute;
+                    _tile_data[tile_data.x, tile_data.y] |= TileAttributeToCellData(tile_data.attribute);
                 }
             }
         }
 
     }
 
-    void RefreshTextureUVFromTileData(ref int[,] _tile_data, ref Vector2[] _uvs, int _width, int _length)
+    void RefreshTextureUVFromTileData(ref Int64[,] _tile_data, ref Vector2[] _uvs, int _width, int _length)
     {
         if (_tile_data == null)
             return;
@@ -346,7 +374,7 @@ public class TerrainTileOverlay : MonoBehaviour
         
 
         // 이동불가 < 공중만 가능 < 물 < 지형 순으로 타일을 표시해봅세.
-        EnumTerrainAttribute PickTileAttribute(int _tile_attribute)
+        EnumTerrainAttribute PickTileAttribute(Int64 _tile_attribute)
         {
             Span<EnumTerrainAttribute> tile_sort_order = stackalloc EnumTerrainAttribute[] 
             { 
@@ -362,12 +390,14 @@ public class TerrainTileOverlay : MonoBehaviour
 
             for (int i = 0; i < tile_sort_order.Length; i++)
             {
-                if ((_tile_attribute & (1 << (int)tile_sort_order[i])) != 0)
+                if ((_tile_attribute & (1L << (int)tile_sort_order[i])) != 0)
                     return tile_sort_order[i];
             }
 
             return EnumTerrainAttribute.Invalid;
         }
+
+        
         
         
         
@@ -462,6 +492,50 @@ public class TerrainTileOverlay : MonoBehaviour
     }
 
 
+
+    public List<TiledObject> Collect_TiledOjects()
+    {
+        List<TiledObject> result = new();
+
+        var tiled_objects = (m_tiled_objects_root) 
+                          ? m_tiled_objects_root.GetComponentsInChildren<TiledObject>()
+                          : null;
+
+        if (tiled_objects != null)
+        {
+            foreach (var e in tiled_objects)
+            {
+                if (e == null)
+                    continue;      
+
+                result.Add(e);
+            }
+        }
+
+        return result;
+    }
+
+    public List<FixedObjects> Collect_FixedObjects()
+    {
+        List<FixedObjects> result = new();
+
+        var fixed_objects = (m_fixed_objects_root) 
+                          ? m_fixed_objects_root.GetComponentsInChildren<FixedObjects>()
+                          : null;
+
+        if (fixed_objects != null)
+        {
+            foreach (var e in fixed_objects)
+            {
+                if (e == null)
+                    continue;
+
+                result.Add(e);
+            }
+        }
+
+        return result;
+    }
 
 #endif
 }

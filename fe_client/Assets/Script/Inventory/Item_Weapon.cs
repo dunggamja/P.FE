@@ -1,4 +1,4 @@
-using Battle;
+ï»¿using Battle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,20 +34,20 @@ public partial class Item
         if (owner == null)
             return false;
 
-        // ¼ÒÀ¯ÀÚ¸¦ Ã£À» ¼ö ¾øÀ½.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
         if (owner_entity == null)
             return false;
-        // ¹«±â°¡ ¾Æ´Ñ °Í À» ÀåÂø.
+        // ï¿½ï¿½ï¿½â°¡ ï¿½Æ´ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         if (ItemType != EnumItemType.Weapon)                
             return false;
         
-        // µ¿ÀÏÇÑ ¾ÆÀÌÅÛ ÀåÂø.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon == null || owner_weapon.ItemID == ID)
             return false;
         
-        // todo: owner ¹«±â ÀåÂø °¡´É Ã¼Å©
+        // todo: owner ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
         return true;
     }
 
@@ -56,29 +56,29 @@ public partial class Item
         if (owner == null)
             return false;
 
-        // ¼ÒÀ¯ÀÚ¸¦ Ã£À» ¼ö ¾øÀ½.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
         if (owner_entity == null)
             return false;
 
-        // ´Ù¸¥ ¾ÆÀÌÅÛ ÇØÁ¦.
+        // ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon == null || owner_weapon.ItemID != ID)
             return false;
 
-        // todo: ±Í¼Ó Á¦ÇÑ Ã¼Å©.?
+        // todo: ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©.?
             
         return true;
     }
 
     bool ProcessAction_Weapon_Equip(IOwner owner)
     {
-        // ¼ÒÀ¯ÀÚ¸¦ Ã£À» ¼ö ¾øÀ½.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
         if (owner_entity == null)
             return false;
 
-        // ¾ÆÀÌÅÛ ÀåÂø.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon != null)                                    
             owner_weapon.Equip(ID);
@@ -88,12 +88,12 @@ public partial class Item
 
     bool ProcessAction_Weapon_Unequip(IOwner owner)
     {
-        // ¼ÒÀ¯ÀÚ¸¦ Ã£À» ¼ö ¾øÀ½.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
         if (owner_entity == null)
             return false;
 
-        // ¾ÆÀÌÅÛ ÀåÂø.
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
         var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
         if (owner_weapon != null)                                    
             owner_weapon.Unequip();

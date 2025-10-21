@@ -171,13 +171,13 @@ MonoBehaviour:
   asset:
   - KIND: 1
     MEMO: "\uC544\uAD70\uC720\uB2DB"
-    ASSET_KEY: unit/demo_unit_alliance
+    ASSET_KEY: demo/unit_alliance
   - KIND: 2
     MEMO: "\uC544\uAD70\uC720\uB2DB_\uBCF4\uD638\uB300\uC0C1"
-    ASSET_KEY: unit/demo_unit_alliance
+    ASSET_KEY: demo/unit_alliance
   - KIND: 3
     MEMO: "\uC801\uAD70\uC720\uB2DB"
-    ASSET_KEY: unit/demo_unit_enemy
+    ASSET_KEY: demo/unit_enemy
   - KIND: 4
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
-    ASSET_KEY: unit/demo_unit_enemy_thief
+    ASSET_KEY: demo/unit_enemy_thief

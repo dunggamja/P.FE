@@ -15,6 +15,11 @@ public static class AssetName
 
     public const string SHEET_WEAPON     = "sheet/weapon";
 
+
+    // demo용 코드...
+    public const string DEMO_MAP_FILE            = "demo/map_file";
+    public const string DEMO_MAP_SETTING         = "demo/map_setting";
+    public const string DEMO_MAP_FACTION_SETTING = "demo/map_faction_setting";
 }
 
 public static class Data_Const

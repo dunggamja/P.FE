@@ -238,7 +238,7 @@ namespace Battle
     {
       while (_node != null)
       {
-        //TODO: 비용 개선을 위해서는. 리밸런싱 기능을 추가하면 좋다고 한다.
+        //TODO: 비용 개선을 위해서 리밸런싱 추가 필요...
         var left  = _node.left;
         var right = _node.right;
 

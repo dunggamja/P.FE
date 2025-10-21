@@ -28,27 +28,40 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
         // todo: cancellation token ó�� �߰�����.        
 
         // test code
-        var load_asset_address = AssetName.TEST_PREFAB;
+        // var load_asset_address = AssetName.TEST_PREFAB;
         
         // unitask ���.
 
         try
         {
-            // TODO: ��� �ӽ÷� �θ� ������Ʈ ó��... 
-            // �����δ� ���� ��Ʈ ������Ʈ�� �־�� �Ұ� ����.
+            var entity  = EntityManager.Instance.GetEntity(_id);
+            if (entity == null)
+            {
+                Debug.LogError($"error, create object, {_id} - Entity null");
+                return;
+            }
+
+            var asset_name = entity.AssetName;
+            if (string.IsNullOrEmpty(asset_name))
+            {
+                asset_name = AssetName.TEST_PREFAB;
+                Debug.LogWarning($"asset name is null, {_id} - use default asset name");
+            }
+
+            // TODO: 일단 임시로 부모 오브젝트 처리... 
+            // 나중에는 루트 오브젝트를 넣어야 할 것 같다.
             var parent_object = this.transform;            
 
-            // ������Ʈ ����.
-            var new_object    = await AssetManager.Instance.InstantiateAsync(load_asset_address, parent_object, _cancel_token);
+            // "오브젝트 생성"
+            var new_object    = await AssetManager.Instance.InstantiateAsync(asset_name, parent_object, _cancel_token);
             
-            // ��� �Ϸ� �� ó��.
+            // "로드 완료 후 처리"
             if (new_object != null)
             {
-                var entity            = EntityManager.Instance.GetEntity(_id);
                 var duplicate_object  = Seek(_id);
 
-                // �ߺ� ������Ʈ ���� or entity�� ������ ���� ���� ó��.
-                var is_error = (duplicate_object != null) || (entity == null);
+                // "중복 오브젝트 체크 or entity가 없는 경우 에러 처리"
+                var is_error = (duplicate_object != null);
                 if (is_error)
                 {
                     Debug.LogWarning($"error, create object, {_id} - Duplicate: {duplicate_object != null}, Entity null: {entity == null}"); 
@@ -56,7 +69,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
                     return;
                 }
 
-                new_object.name = $"{_id.ToString("D10")}_{load_asset_address}";
+                new_object.name = $"{_id.ToString("D10")}_{asset_name}";
                 var new_actor   = new_object.TryAddComponent<WorldObject>();
 
                 new_actor.Initialize(entity);
@@ -69,7 +82,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
             }   
             else
             {
-                Debug.Log($"InstantiateAsync Failed, {load_asset_address}");  
+                Debug.Log($"InstantiateAsync Failed, {asset_name}");  
             }  
         }
         catch (OperationCanceledException)
@@ -88,7 +101,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
 
         Remove(_id);
 
-        // ��Ȱ��ȭ �� ���� ť�� �־�����ô�.
+        // "비활성화 후 삭제 큐에 넣어서 나중에 처리"
         world_object.gameObject.SetActive(false);
         m_remove_queue.Add(world_object);
 
@@ -106,7 +119,7 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
     {
         base.OnLoop();
 
-        // ������Ʈ ���� ó��.
+        // "오브젝트 제거 처리"
         {
             foreach(var e in m_remove_queue)
             {

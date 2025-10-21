@@ -34,6 +34,9 @@ using UnityEngine;
       [SerializeField]
       private List<AllianceSetting> m_alliance_settings = new();
 
+      public List<FactionSetting>  FactionSettings  => m_faction_settings;
+      public List<AllianceSetting> AllianceSettings => m_alliance_settings;
+
       public EnumCommanderType GetCommanderType(int _faction)
       {
          foreach(var e in m_faction_settings)
@@ -57,29 +60,28 @@ using UnityEngine;
          return false;
       }
 
-      public void SetAlliance(int _faction_1, int _faction_2, bool _set_alliance)
-      {
-         var is_alliance = IsAlliance(_faction_1, _faction_2);
-         if (is_alliance == _set_alliance)
-            return;
+      // public void SetAlliance(int _faction_1, int _faction_2, bool _set_alliance)
+      // {
+      //    var is_alliance = IsAlliance(_faction_1, _faction_2);
+      //    if (is_alliance == _set_alliance)
+      //       return;
 
-         if (_set_alliance)
-         {
-            // 동맹 데이터 추가.
-            m_alliance_settings.Add(new AllianceSetting() { Faction_1 = _faction_1, Faction_2 = _faction_2 });
-         }
-         else
-         {
-            // 동맹 데이터 제거.
-            for (int i = m_alliance_settings.Count - 1; i >= 0; --i)
-            {
-               if ((m_alliance_settings[i].Faction_1 == _faction_1 && m_alliance_settings[i].Faction_2 == _faction_2) ||
-                   (m_alliance_settings[i].Faction_1 == _faction_2 && m_alliance_settings[i].Faction_2 == _faction_1))
-               {
-                  m_alliance_settings.RemoveAt(i);                  
-               }
-            }
-         }
-         
-      }      
+      //    if (_set_alliance)
+      //    {
+      //       // 동맹 데이터 추가.
+      //       m_alliance_settings.Add(new AllianceSetting() { Faction_1 = _faction_1, Faction_2 = _faction_2 });
+      //    }
+      //    else
+      //    {
+      //       // 동맹 데이터 제거.
+      //       for (int i = m_alliance_settings.Count - 1; i >= 0; --i)
+      //       {
+      //          if ((m_alliance_settings[i].Faction_1 == _faction_1 && m_alliance_settings[i].Faction_2 == _faction_2) ||
+      //              (m_alliance_settings[i].Faction_1 == _faction_2 && m_alliance_settings[i].Faction_2 == _faction_1))
+      //          {
+      //             m_alliance_settings.RemoveAt(i);                  
+      //          }
+      //       }
+      //    }         
+      // }      
    }

@@ -37,6 +37,8 @@ namespace Battle
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
 
+        public string  AssetName  { get; private set; } = string.Empty;
+
 
         private Dictionary<EnumEntityHUD, Int64> m_hud_list = new();
 
@@ -125,6 +127,11 @@ namespace Battle
             AIDataManager.SetAIType(_ai_type);
         }
 
+        public void SetAssetName(string _asset_name)
+        {
+            AssetName = _asset_name;
+        }
+
         public Entity_IO Save()
         {
             return new Entity_IO()
@@ -163,6 +170,9 @@ namespace Battle
             // CommandManager,
             // PathNodeManager,
         }
+
+
+
     
    
 

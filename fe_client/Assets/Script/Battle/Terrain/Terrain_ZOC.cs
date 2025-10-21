@@ -134,11 +134,15 @@ namespace Battle
                 terrain.Load(zoc_array);
             }
 
+            using var list_delete_faction = ListPool<int>.AcquireWrapper();
+
             foreach(var (faction, _) in m_faction_zoc)
             {
                 if (!_io.ZOC.ContainsKey(faction))
-                    m_faction_zoc.Remove(faction);
+                    list_delete_faction.Value.Add(faction);
             }
+
+            list_delete_faction.Value.ForEach(faction => m_faction_zoc.Remove(faction));            
         }
     }
 

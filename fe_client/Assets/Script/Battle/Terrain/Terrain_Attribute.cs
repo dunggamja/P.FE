@@ -14,15 +14,11 @@ namespace Battle
         {
         }
 
-        public Int64 GetAttribute(int _x, int _y)
-        {
-            return GetCellData(_x, _y);
-        }
-
         public bool HasAttribute(int _x, int _y, EnumTerrainAttribute _attribute_type)
         {
             return HasBitIndex(_x, _y, (int)_attribute_type);
         }
+
 
         public void SetAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
         {
