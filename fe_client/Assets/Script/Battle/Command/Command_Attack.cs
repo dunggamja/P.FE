@@ -27,6 +27,8 @@ namespace Battle
         public Int64          WeaponID { get; private set; } 
         public (int x, int y) Position { get; private set; } 
 
+        
+
 
         public Command_Attack(Int64 _owner_id, Int64 _target_id, Int64 _weapon_id, (int x, int y) _position)
             : base(_owner_id)

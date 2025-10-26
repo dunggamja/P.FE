@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -23,12 +23,12 @@ namespace Battle
       {
         m_sequence_is_done = false;
         
-        //  Sequence Àç»ı.
+         //  Sequence ìˆœì„œëŒ€ë¡œ ì—°ì¶œ ì§„í–‰.
          PlaySequence().Forget();
       }     
       else
       {
-        // ¿¬Ãâ ÇÒ °ÍÀÌ ¾øÀ½.
+        // ì—°ì¶œ í•  ê²ƒì´ ì—†ìŒ.
         m_sequence_is_done = true;
       } 
     }
@@ -62,25 +62,12 @@ namespace Battle
 
     async UniTask PlaySequence()
     {
-      //  Battle Scene ÁøÀÔ.
+      //  Battle Scene ì‹œì‘.
       EventDispatchManager.Instance.UpdateEvent(
                   ObjectPool<Battle_Scene_ChangeEvent>
                   .Acquire()
                   .Set(true)
-                  );
-
-
-        
-
-
-      //  Battle Scene º¹±Í   .
-        EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(false)
-                    );
-
-
-      
-
+                  );        
 
 
       var list_damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
@@ -92,17 +79,23 @@ namespace Battle
         var target_id = damage.TargetID;
         var target_hp = damage.Result_HP_Target;
 
-        // Å¸°Ù HP °»½Å.
+        // íƒ€ê²Ÿ HP ê°±ì‹ .
         EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Entity_HP_UpdateEvent>
                 .Acquire()
                 .Set(target_id, target_hp)
                 );
 
-        await UniTask.Delay(500); // ¿¬Ãâ¿ë ´ë±â ½Ã°£.
+        await UniTask.Delay(500); // ì—°ì¶œ ì‹œê°„.
       }
 
-      // ¿¬Ãâ ¿Ï·á.
+
+      //  Battle Scene ì¢…ë£Œ   .
+      EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(false)
+                    );
+
+      // ì—°ì¶œ ì™„ë£Œ.
       m_sequence_is_done = true;
     }
   }

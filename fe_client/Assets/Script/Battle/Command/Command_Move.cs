@@ -17,6 +17,8 @@ namespace Battle
         bool                  m_is_plan          = false;
         bool                  m_failed_path_find = false;
 
+        public override bool  IsAbortable => true;
+
 
         public Command_Move(
           Int64                 _owner_id

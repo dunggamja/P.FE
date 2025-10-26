@@ -40,8 +40,6 @@ namespace Battle
                     (_apply: true, _immediatly: true),
                     _is_plan: false
                 );
-
-
             }
         }
 

@@ -11,8 +11,9 @@ namespace Battle
         enum EnumCommandAbort
         {
             None,
-            PendingOnly,    // 명령 취소 명령어 처리.
-            IncludeRunning, // 명령 진행 중인 명령어 처리.
+            PendingOnly,    // 대기 중인 명령 취소.
+            RunningInclude, // 진행 중인 명령까지 취소.
+            Force,          // 강제로 모두 취소.
         }
         
         Int64            m_owner_id      = 0;
@@ -57,19 +58,26 @@ namespace Battle
             switch (_command)
             {
                 // 명령 취소 명령어 처리.
-                case Command_Abort command_abort:
-                {
-                    var abort_type = (command_abort.IsPendingOnly) 
-                                    ?  (int)EnumCommandAbort.PendingOnly 
-                                    :  (int)EnumCommandAbort.IncludeRunning;
-
-                    // 명령 취소 명령어 처리.
-                    m_command_abort = (EnumCommandAbort)Math.Max((int)m_command_abort, abort_type);                                
-                    break;
-                }
+                case Command_Abort command_abort: 
+                Update_CommandAbortState(command_abort); 
+                break;
             }
 
             return true;
+        }
+
+        void Update_CommandAbortState(Command_Abort _command)
+        {
+            if (_command == null)
+                return;
+
+            var abort_type = (_command.IsPendingOnly) 
+                                ?  (int)EnumCommandAbort.PendingOnly 
+                                :  (int)EnumCommandAbort.RunningInclude;
+
+            // 명령 취소 명령어 처리.
+            m_command_abort = (EnumCommandAbort)Math.Max((int)m_command_abort, abort_type);                                
+
         }
 
  
@@ -92,13 +100,14 @@ namespace Battle
 
         public void Update()
         {
-            // 명령 취소 명령어 처리.
-            if (m_command_abort != EnumCommandAbort.None)   
+            // 명령 취소 처리.
+            if (Verify_Abort_Command(m_command_abort))
             {
-                // 명령 취소 명령어 처리.
-                if (AbortCommand(m_command_abort))
-                    m_command_abort = EnumCommandAbort.None;                
+                Process_Abort();
+                m_command_abort = EnumCommandAbort.None;                
             }
+
+
 
             // 명령 진행 중인 명령어 처리.
             var command  = PeekCommand();
@@ -115,79 +124,66 @@ namespace Battle
         }
 
 
-        bool AbortCommand(EnumCommandAbort _command_abort)
+        bool Verify_Abort_Command(EnumCommandAbort _abort_state)
         {
-            switch (_command_abort)
+            var running_command       = PeekCommand();
+            var is_running_command    = running_command != null && running_command.State == EnumState.Progress;
+            var is_not_abortable      = running_command             != null 
+                                     && running_command.IsAbortable == false
+                                     && running_command.State       == EnumState.Progress;
+
+
+            switch (_abort_state)
             {
-                case EnumCommandAbort.IncludeRunning:
-                {
-                    // 명령 진행 중인 명령어 처리.
-                    var running  = PopCommand();
-                    if (running != null && running.State == EnumState.Progress)
-                    {
-                        running.Abort();
-                    }
+                // 명령 취소 상태가 아님.
+                case EnumCommandAbort.None:
+                    return false;
 
-                    RemoveAbortCommands();
-
-                    return true;
-                }
+                // 실행중인 명령이 있으면 취소 불가.
                 case EnumCommandAbort.PendingOnly:
                 {
-                    var running       = PeekCommand();
-                    var is_not_running = (running == null) || (running.State != EnumState.Progress);
+                    return (is_running_command == false);
+                }
 
-                    // 명령 진행 중인 명령어가 없으면 처리.
-                    if (is_not_running)
-                    {              
-                        RemoveAbortCommands();
-                        return true;
-                    }
+                // 실행중인 명령도 취소. (취소 불가능한 명령은 제외)
+                case EnumCommandAbort.RunningInclude:
+                {
+                    return (is_not_abortable == false);
+                }
 
-
-                    return false;
+                // 강제로 모두 취소.
+                case EnumCommandAbort.Force:
+                {
+                    return true;
                 }
             }
 
             return false;   
         }
 
-        void RemoveAbortCommands()
+        void Process_Abort()
         {
             // 명령 취소 명령어 처리. 
-            Command last_abort = null;
 
-            var command_list = ListPool<Command>.Acquire();
+            using var command_list = ListPool<Command>.AcquireWrapper();
 
-            // 명령 취소 명령어 처리.
+            // 일단 모든 명령을 리스트에 담는다.
             while (m_command_queue.Count > 0)
-            {
-                var command = PopCommand();
+                command_list.Value.Add(PopCommand());
 
-                command_list.Add(command);
+            // 명령 취소 이벤트 전까지의 명령들을 취소처리합시다.
+            var last_abort_index = command_list.Value.FindLastIndex(command => command is Command_Abort);
+            for (int i = 0; i <= last_abort_index; ++i)
+                command_list.Value[i].Abort();
 
-                if (command is Command_Abort)
-                    last_abort = command;
-            }
 
-            // 명령 취소 명령어 처리.
-            foreach (var command in command_list)
-            {
-                if (last_abort != null)
-                {
-                    if (command != last_abort)
-                        continue;
-
-                    last_abort = null;
-                }
-                else
-                {
-                    PushCommand(command);
-                }
-            }
-
-            ListPool<Command>.Return(command_list);
+            // 명령 취소 이벤트 이후의 명령들을 다시 큐에 추가합시다.
+            for (int i = Math.Max(0, last_abort_index + 1); i < command_list.Value.Count; ++i)
+                PushCommand(command_list.Value[i]);
         }
+
+
+
     }
 }
 

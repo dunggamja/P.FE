@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Battle;
 using Cysharp.Threading.Tasks;
@@ -8,11 +8,11 @@ public enum EnumInputHandlerType
 {
     None,
 
-    Grid_Select,    // Å¸ÀÏ ¼±ÅÃ
-    // Grid_Command,   // À¯´Ö¿¡°Ô ¸í·ÉÀ» ³»¸±¶§ (ÀÌµ¿,°ø°İ,½ºÅ³ µî) 
+    Grid_Select,    // Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    // Grid_Command,   // ï¿½ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Ìµï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½Å³ ï¿½ï¿½) 
 
-    UI_Menu,        // UI ¸Ş´º
-    UI_Command,     // À¯´Ö Çàµ¿ ¸Ş´º (ÀÌµ¿, °ø°İ, ½ºÅ³)
+    UI_Menu,        // UI ï¿½Ş´ï¿½
+    UI_Command,     // ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½Ş´ï¿½ (ï¿½Ìµï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Å³)
     
 }
 
@@ -34,9 +34,9 @@ public abstract class InputHandler
     public enum EnumState
     {
         None,
-        Update,  // ¹İº¹
-        Pause,   // ÀÏ½ÃÁ¤Áö
-        Finish,  // Á¾·á
+        Update,  // ï¿½İºï¿½
+        Pause,   // ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Finish,  // ï¿½ï¿½ï¿½ï¿½
     }
 
     protected const float  MOVE_INTERVAL      = 0.15f;
@@ -54,6 +54,8 @@ public abstract class InputHandler
     {
         Context = _context;
     }
+
+
 
 
     protected abstract void OnStart();
@@ -82,21 +84,21 @@ public abstract class InputHandler
             Context.Clear();
         }
 
-        // ÀÚ½Ä ÇÚµé·¯°¡ ÀÖÀ¸¸é ±×°É ¸ÕÀú Ã³¸®.        
+        // ìì‹ ì…ë ¥ ì²˜ë¦¬ ì¤‘ì¸ ê²½ìš° ì…ë ¥ ì²˜ë¦¬ ì§„í–‰.        
         if (ChildHandler != null)
         {
             if (State == EnumState.Update)
             {
-                // ÀÏ½ÃÁ¤Áö.
+                // ì¼ì‹œ ì •ì§€.
                 State = EnumState.Pause;
                 OnPause();
             }
 
             if (ChildHandler.Update())
             {
-                // ÀÚ½Ä ÇÚµé·¯ Á¾·á ½Ã                
+                // ìì‹ ì…ë ¥ ì²˜ë¦¬ ì™„ë£Œ.                
                 
-                // Àç°³.
+                // ì¬ê°œ.
                 State = EnumState.Update;
                 OnResume();        
 

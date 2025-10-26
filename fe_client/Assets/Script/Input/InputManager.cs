@@ -1,5 +1,6 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
+using Battle;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -15,7 +16,8 @@ using UnityEngine.InputSystem;
 //     }
 // }
 
-public partial class InputManager : SingletonMono<InputManager>
+[EventReceiver(typeof(Battle_Scene_ChangeEvent))]
+public partial class InputManager : SingletonMono<InputManager>, IEventReceiver
 {
     
     // Dictionary<EnumInputHandlerType, InputHandler> m_list_input_handler         = new();
@@ -81,15 +83,10 @@ public partial class InputManager : SingletonMono<InputManager>
     {
         base.OnInitialize();
 
-        // m_list_input_handler.Add(EnumInputHandlerType.UI,          new InputHandler_UI());
-        // m_list_input_handler.Add(EnumInputHandlerType.Grid_Select, new InputHandler_Grid_Select());
-
-        // m_stack_input_handler.Push(new InputHandler_Grid_Select());
-
-        // ÃÊ±â ÀÔ·Â ÇÚµé·¯ ¼³Á¤.
+        // ì…ë ¥ ì²˜ë¦¬ ì‹œì‘.
         m_input_handler = new InputHandler_Grid_Select(new InputHandlerContext());
 
-        // ÃÊ±â ÀÔ·Â ¸Ê ¼³Á¤.
+        // ì…ë ¥ ì²˜ë¦¬ ì¢…ë£Œ.
         if (m_player_input != null)
         {
             m_player_input.SwitchCurrentActionMap(m_player_input.defaultActionMap);
@@ -100,17 +97,17 @@ public partial class InputManager : SingletonMono<InputManager>
     {
         base.OnLoop(); 
 
-        // UI ÀÔ·ÂÀÌ ÇÊ¿äÇÑ »óÈ²ÀÏ °æ¿ì Handler º¯°æ.
+        // UI ì…ë ¥ ì²˜ë¦¬ ì¤‘ì¸ ê²½ìš° ì…ë ¥ ì²˜ë¦¬ ì¢…ë£Œ.
         if (GUIManager.Instance.HasInputFocusGUI() 
         &&  FocusInputHandlerType != EnumInputHandlerType.UI_Menu)
         {
-            // TODO: Child º¸´Ù´Â FSMÀ¸·Î?
+            // TODO: Child ì…ë ¥ ì²˜ë¦¬ ì¤‘ì¸ ê²½ìš° ì…ë ¥ ì²˜ë¦¬ ì¢…ë£Œ?
             var ui_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
             FocusInputHandler?.SetChildHandler(ui_handler);
         }
 
 
-        // InputActionÀÇ Map º¯°æ Ã³¸®...
+        // InputAction Map ì „í™˜.
         if (m_player_input != null)
         {
             var prev_input_map_name  = m_player_input.currentActionMap?.name ?? string.Empty;
@@ -119,7 +116,7 @@ public partial class InputManager : SingletonMono<InputManager>
                 m_player_input.SwitchCurrentActionMap(cur_input_map_name);
         }
 
-        // InputHandler ¾÷µ¥ÀÌÆ® Ã³¸®...
+        // InputHandler ì—…ë°ì´íŠ¸.
         if (m_input_handler != null)
             m_input_handler.Update();
     }
@@ -130,6 +127,23 @@ public partial class InputManager : SingletonMono<InputManager>
     }
 
 
-    
+
+    public void OnReceiveEvent(IEventParam _event)
+    {
+        switch (_event)
+        {
+            case Battle_Scene_ChangeEvent battle_scene_change_event:
+                OnReceiveEvent_Battle_Scene_ChangeEvent(battle_scene_change_event);
+                break;
+        }
+    }
+
+    void OnReceiveEvent_Battle_Scene_ChangeEvent(Battle_Scene_ChangeEvent _event)
+    {
+        
+    }
+
+
+
 
 }

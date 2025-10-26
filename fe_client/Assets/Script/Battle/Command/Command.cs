@@ -23,11 +23,14 @@ namespace Battle
         public Entity Owner => EntityManager.Instance.GetEntity(OwnerID);
 
 
+        public virtual bool IsAbortable => false;
+
+
         protected abstract void OnEnter();
         protected abstract bool OnUpdate();
         protected abstract void OnExit(bool _is_abort);
 
-        public void Abort() => OnExit(true);
+        public void Abort() { if (State == EnumState.Progress) OnExit(true); }
 
         public EnumState Update()
         {

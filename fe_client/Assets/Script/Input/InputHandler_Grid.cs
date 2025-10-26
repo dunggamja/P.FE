@@ -27,7 +27,6 @@ class InputParam_Result : IPoolObject
 }
 
 
-
 public class InputHandler_Grid_Select : InputHandler
 {   
 
@@ -50,6 +49,8 @@ public class InputHandler_Grid_Select : InputHandler
         : base(_context)
     {
     }
+
+
 
 
     protected override void OnStart()
