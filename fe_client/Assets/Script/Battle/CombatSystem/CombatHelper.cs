@@ -151,6 +151,10 @@ namespace Battle
             if (attacker == null || target == null)
                 return false;
 
+            // TODO: 일단 FixedObject 제외.
+            if (target.IsFixedObject)
+                return false;
+
             // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
 
           
