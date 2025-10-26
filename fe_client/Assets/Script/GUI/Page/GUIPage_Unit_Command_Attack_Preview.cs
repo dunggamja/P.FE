@@ -229,6 +229,11 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
                 .SetID(m_vfx_cursor)
                 .SetPosition(entity_target.Cell.CellToPosition())                
             ); 
+
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Camera_PositionEvent>.Acquire()
+                .SetCell(entity_target.Cell)
+            ); 
         }
 
         // 공격 가능한 타겟 찾기.
@@ -264,6 +269,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         for (int i = 0; i < result.Actions.Count; i++)
         {
             var clonedItem = Instantiate(m_grid_attack_sequence, m_grid_attack_root.transform);
+            
             clonedItem.Initialize(
                 result.Actions[i].isAttacker, 
                 result.Actions[i].Damage);

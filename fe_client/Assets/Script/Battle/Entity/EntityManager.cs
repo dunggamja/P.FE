@@ -10,17 +10,17 @@ namespace Battle
     {
         Dictionary<Int64, Entity> m_repository_by_id = new Dictionary<long, Entity>();
 
-        public Entity CreateEntity(Int64 _id)
-        {
-            if (_id == 0)
-                _id = Util.GenerateID();
+        // public Entity CreateEntity(Int64 _id)
+        // {
+        //     if (_id == 0)
+        //         _id = Util.GenerateID();
 
-            var new_entity = Entity.Create(_id);
-            if (!AddEntity(new_entity))
-                return null;
+        //     var new_entity = Entity.Create(_id);
+        //     if (!AddEntity(new_entity))
+        //         return null;
             
-            return new_entity;
-        }
+        //     return new_entity;
+        // }
 
         public Entity GetEntity(Int64 _id)
         {
@@ -129,7 +129,7 @@ namespace Battle
                 var entity = GetEntity(e.ID);
                 if (entity == null)
                 {
-                    entity = Entity.Create(e.ID);
+                    entity = Entity.Create(e.ID, e.IsFixedObject);
                     AddEntity(entity);
                 }
 

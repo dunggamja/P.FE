@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +11,8 @@ namespace Battle
         enum EnumCommandAbort
         {
             None,
-            PendingOnly,    // ��� ���� ���ɸ� �ߴ�.
-            IncludeRunning, // �������� ���� ����.
+            PendingOnly,    // 명령 취소 명령어 처리.
+            IncludeRunning, // 명령 진행 중인 명령어 처리.
         }
         
         Int64            m_owner_id      = 0;
@@ -56,14 +56,14 @@ namespace Battle
 
             switch (_command)
             {
-                // �ߴ� ������ ���� ��쿡 ���� ó��.
+                // 명령 취소 명령어 처리.
                 case Command_Abort command_abort:
                 {
                     var abort_type = (command_abort.IsPendingOnly) 
                                     ?  (int)EnumCommandAbort.PendingOnly 
                                     :  (int)EnumCommandAbort.IncludeRunning;
 
-                    // ū ���� ������.
+                    // 명령 취소 명령어 처리.
                     m_command_abort = (EnumCommandAbort)Math.Max((int)m_command_abort, abort_type);                                
                     break;
                 }
@@ -92,24 +92,24 @@ namespace Battle
 
         public void Update()
         {
-            // ���� �ߴ� ó��.
+            // 명령 취소 명령어 처리.
             if (m_command_abort != EnumCommandAbort.None)   
             {
-                // ���� �ߴ� ó���� �����ϸ� �ߴ� ó�� ���� �ʱ�ȭ.
+                // 명령 취소 명령어 처리.
                 if (AbortCommand(m_command_abort))
                     m_command_abort = EnumCommandAbort.None;                
             }
 
-            // ���� ������ ����.
+            // 명령 진행 중인 명령어 처리.
             var command  = PeekCommand();
             if (command == null)
                 return;
 
 
-            // ���� ����.
+            // 명령 진행.
             if (command.Update() == EnumState.Finished)
             {
-                // command�� �Ϸ�Ǹ� pop ó��.
+                // command 완료되면 pop 처리.
                 PopCommand();
             }
         }
@@ -121,7 +121,7 @@ namespace Battle
             {
                 case EnumCommandAbort.IncludeRunning:
                 {
-                    // ���� �������� ���� �ߴ�.
+                    // 명령 진행 중인 명령어 처리.
                     var running  = PopCommand();
                     if (running != null && running.State == EnumState.Progress)
                     {
@@ -137,7 +137,7 @@ namespace Battle
                     var running       = PeekCommand();
                     var is_not_running = (running == null) || (running.State != EnumState.Progress);
 
-                    // �������� ������ ������ �ߴ�.
+                    // 명령 진행 중인 명령어가 없으면 처리.
                     if (is_not_running)
                     {              
                         RemoveAbortCommands();
@@ -154,12 +154,12 @@ namespace Battle
 
         void RemoveAbortCommands()
         {
-            // �ߴ� ��û �� ������ ������ �����մϴ�. 
+            // 명령 취소 명령어 처리. 
             Command last_abort = null;
 
             var command_list = ListPool<Command>.Acquire();
 
-            // ���� ���� ���
+            // 명령 취소 명령어 처리.
             while (m_command_queue.Count > 0)
             {
                 var command = PopCommand();
@@ -170,7 +170,7 @@ namespace Battle
                     last_abort = command;
             }
 
-            // ���� �ߴ� ��û�� ���� ������ �׸��� �����ϰ� ���� ����.
+            // 명령 취소 명령어 처리.
             foreach (var command in command_list)
             {
                 if (last_abort != null)

@@ -4,6 +4,29 @@ using UnityEngine;
 
 namespace Battle
 {
+    public class Battle_Camera_PositionEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public (int x, int y) Cell { get; private set; } = (0, 0);
+
+        public Battle_Camera_PositionEvent SetCell((int x, int y) _cell)
+        {
+            Cell = _cell;
+            return this;
+        }
+
+        public void Release()
+        {
+            ObjectPool<Battle_Camera_PositionEvent>.Return(this);
+        }
+
+        public void Reset()
+        {
+            Cell = (0, 0);
+        }
+    }
+
+
     // public class Battle_Entity_MoveEvent : IEventParam
     // {
     //     public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;

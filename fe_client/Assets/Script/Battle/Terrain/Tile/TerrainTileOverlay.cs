@@ -284,7 +284,7 @@ public class TerrainTileOverlay : MonoBehaviour
         var mesh            = (Application.isPlaying) ? m_mesh_filter.mesh: m_mesh_filter.sharedMesh;
         var uvs             = mesh.uv;
         // 타일 데이터를 수집합니다.
-        var (tile_data, width, length) = CollectTileData();       
+        var (tile_data, width, length) = CollectTileData(true);       
 
         RefreshTextureUVFromTileData(ref tile_data, ref uvs, width, length);
 
@@ -306,22 +306,30 @@ public class TerrainTileOverlay : MonoBehaviour
     }
 
 
-    public (Int64[,] _data, int _width, int _length)CollectTileData()
+    public (Int64[,] _data, int _width, int _length) CollectTileData(bool _collect_dynamic = false)
     {
         var (width, length) = GetTilemapSize();
 
         var tile_data = new Int64[width, length];
         Array.Clear(tile_data, 0, tile_data.Length);
         
-        CollectTileData_Tilemap(ref tile_data, width, length);
+        // 타일 데이터 수집. - 정적 데이터.
+        CollectTileData_Static(ref tile_data, width, length);
 
-        CollectTileData_FixedObjects(ref tile_data, width, length);
+        // 타일 데이터 수집. - 동적 데이터.
+        if (_collect_dynamic)
+        {
+            using var list_attribute = ListPool<(int _x, int _y, int _attribute)>.AcquireWrapper();            
+            CollectTileData_Dynamic(list_attribute.Value, width, length);
+            foreach(var (x, y, attribute) in list_attribute.Value)
+                tile_data[x, y] |= (1L << attribute);
+        }
 
         return (tile_data, width, length);
     }
    
 
-    void CollectTileData_Tilemap(ref Int64[,] _tile_data, int _width, int _length)
+    void CollectTileData_Static(ref Int64[,] _tile_data, int _width, int _length)
     {
         if (_tile_data == null)
             return;
@@ -337,9 +345,40 @@ public class TerrainTileOverlay : MonoBehaviour
         }
     }
 
-    void CollectTileData_FixedObjects(ref Int64[,] _tile_data, int _width, int _length)
+    // void CollectTileData_FixedObjects(ref Int64[,] _tile_data, int _width, int _length)
+    // {
+    //    if (_tile_data == null)
+    //         return;       
+
+    //     var fixed_objects = (m_fixed_objects_root) 
+    //                       ? m_fixed_objects_root.GetComponentsInChildren<FixedObjects>()
+    //                       : null;
+
+    //     if (fixed_objects != null)
+    //     {
+    //         foreach (var e in fixed_objects)
+    //         {
+    //             if (e == null)
+    //                 continue;
+
+    //             foreach(var tile_data in e.GetTileAttributes())
+    //             {
+    //                 if (tile_data.x < 0 || tile_data.x >= _width 
+    //                  || tile_data.y < 0 || tile_data.y >= _length)
+    //                     continue;
+
+    //                 _tile_data[tile_data.x, tile_data.y] |= TileAttributeToCellData(tile_data.attribute);
+    //             }
+    //         }
+    //     }
+    // }
+
+    public void CollectTileData_Dynamic(
+        List<(int _x, int _y, int _attribute)> _attribute_list,
+        int        _width, 
+        int        _length)
     {
-       if (_tile_data == null)
+       if (_attribute_list == null)
             return;       
 
         var fixed_objects = (m_fixed_objects_root) 
@@ -359,12 +398,15 @@ public class TerrainTileOverlay : MonoBehaviour
                      || tile_data.y < 0 || tile_data.y >= _length)
                         continue;
 
-                    _tile_data[tile_data.x, tile_data.y] |= TileAttributeToCellData(tile_data.attribute);
+                    _attribute_list.Add((tile_data.x, tile_data.y, (int)tile_data.attribute));
                 }
             }
         }
 
     }
+
+
+
 
     void RefreshTextureUVFromTileData(ref Int64[,] _tile_data, ref Vector2[] _uvs, int _width, int _length)
     {
@@ -376,22 +418,10 @@ public class TerrainTileOverlay : MonoBehaviour
         // 이동불가 < 공중만 가능 < 물 < 지형 순으로 타일을 표시해봅세.
         EnumTerrainAttribute PickTileAttribute(Int64 _tile_attribute)
         {
-            Span<EnumTerrainAttribute> tile_sort_order = stackalloc EnumTerrainAttribute[] 
-            { 
-                EnumTerrainAttribute.Invalid, 
-                EnumTerrainAttribute.FlyerOnly, 
-                EnumTerrainAttribute.Water, 
-                EnumTerrainAttribute.Water_Shallow,
-                EnumTerrainAttribute.Ground_Climb,
-                EnumTerrainAttribute.Ground_Forest,
-                EnumTerrainAttribute.Ground_Dirt,
-                EnumTerrainAttribute.Ground
-            };
-
-            for (int i = 0; i < tile_sort_order.Length; i++)
+            foreach(var e in Terrain_Attribute.TerrainAttributeSortOrder)
             {
-                if ((_tile_attribute & (1L << (int)tile_sort_order[i])) != 0)
-                    return tile_sort_order[i];
+                  if ((_tile_attribute & (1L << (int)e)) != 0)
+                    return e;
             }
 
             return EnumTerrainAttribute.Invalid;

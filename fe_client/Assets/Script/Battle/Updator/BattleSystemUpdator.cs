@@ -117,11 +117,25 @@ namespace Battle
             var terrain_map = new TerrainMap();
             terrain_map.Initialize(_map_data.Terrain.m_width, _map_data.Terrain.m_height);
 
+            //  MASK 값 셋팅.
             for(int y = 0; y < terrain_map.Height; ++y)
             {
                 for(int x = 0; x < terrain_map.Width; ++x)
                 {
-                    terrain_map.Attribute.SetCellData(x, y, _map_data.Terrain.GetTileData(x, y));
+                    terrain_map.Attribute.SetAttributeMask_Static(x, y, _map_data.Terrain.GetAttributeMask_Static(x, y));
+
+                    terrain_map.Attribute.SetCellData(x, y, _map_data.Terrain.GetAttributeMask_Result(x, y));
+                }
+            }
+
+            // 카운트 셋팅.
+            foreach(var e in _map_data.Terrain.m_attribute_dynamic)
+            {
+                var x = e.m_x;
+                var y = e.m_y;
+                foreach (var (attribute, count) in e.m_attribute_count)
+                {
+                    terrain_map.Attribute.IncreaseCellAttributeCount(x, y, (EnumTerrainAttribute)attribute, count);
                 }
             }
 
@@ -141,7 +155,7 @@ namespace Battle
 
             foreach(var e in _map_data.Entities.m_entities)
             {
-                var entity = Entity.Create(e.m_entity_id);    
+                var entity = Entity.Create(e.m_entity_id, e.m_is_fixed_object);    
                 if (entity == null)
                 {
                     Debug.LogError($"Failed to create entity {e.m_entity_id}");
@@ -157,7 +171,7 @@ namespace Battle
 
                 // TODO: 이것은 임시로 해둔 코드. 나중에 고정오브젝트를 어떻게 할것인지 생각해보자.
                 // FIXEDOBJECT와 연결이 필요할 것이다.
-                if (e.m_is_fixed_object)
+                if (entity.IsFixedObject)
                 {
                     continue;
                 }

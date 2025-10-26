@@ -14,7 +14,8 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            
+            // 카메라 이동 처리.
+            Update_CameraPositionEvent();
         }
 
         protected override bool OnUpdate()
@@ -39,6 +40,8 @@ namespace Battle
                     (_apply: true, _immediatly: true),
                     _is_plan: false
                 );
+
+
             }
         }
 

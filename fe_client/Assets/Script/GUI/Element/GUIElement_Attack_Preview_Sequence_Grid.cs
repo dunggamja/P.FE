@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -31,12 +31,12 @@ public class GUIElement_Attack_Preview_Sequence_Grid : GUIElement
 
         if (_is_attacker_turn)
         {
-            // °ø°İÀÚ µ¥¹ÌÁö.
+            // ë°ë¯¸ì§€ í‘œì‹œ
             m_text_damage_defender.text = _damage.ToString();
         }
         else
         {
-            // ¼öºñÀÚ µ¥¹ÌÁö.
+            // ë°ë¯¸ì§€ í‘œì‹œ
             m_text_damage_atatcker.text = _damage.ToString();
         }
 

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -42,7 +42,7 @@ namespace Battle
 
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
-            // ½×¿©ÀÖ´Â ¸í·ÉÀ» °¢ À¯´Öµé¿¡°Ô Àü´ŞÇÕ´Ï´Ù.
+            // // ëŒ€ê¸° ì¤‘ì¸ ëª…ë ¹ì–´ë¥¼ ëª¨ë“  ì—”í‹°í‹°ì—ê²Œ ë¶„ë°°í•©ë‹ˆë‹¤.
             while (BattleSystemManager.Instance.PeekCommand() != null)
             {
                 var command = BattleSystemManager.Instance.PopCommand();
@@ -55,34 +55,35 @@ namespace Battle
 
                 entity.CommandManager.PushCommand(command);           
 
-                // ¸í·É Ã³¸® ÁßÀÎ À¯´Ö ¸ñ·Ï¿¡ Ãß°¡.
+                // ëª…ë ¹ ì§„í–‰ ì¤‘ì¸ ì—”í‹°í‹° ì¶”ê°€.
                 m_entity_progress.Add(command.OwnerID);
             }
 
-            // ¸í·É Ã³¸®°¡ ¿Ï·áµÈ À¯´Ö ¸ñ·Ï. 
+            // ëª…ë ¹ ì§„í–‰ ì™„ë£Œ ì—”í‹°í‹° ì´ˆê¸°í™”. 
             m_entity_completed.Clear();
 
-            // ¸ğµç ¿£Æ¼Æ¼µéÀÇ ¸í·ÉÀ» Ã³¸®.
+            // ëª…ë ¹ ì§„í–Œ ì¤‘ì¸ ì—”í‹°í‹° ì²˜ë¦¬.
             foreach (var entity_id in m_entity_progress)
             {
                 var entity = EntityManager.Instance.GetEntity(entity_id);
                 if (entity == null)
                     continue;
 
-                // ¸í·É Ã³¸®.
+                // ëª…ë ¹ ì§„í–‰.
                 entity.CommandManager.Update();     
 
-                // ¸í·ÉÀÌ ¿Ï·áµÇ¾ú´ÂÁö Ã¼Å©.
+                // ëª…ë ¹ ì§„í–‰ ì™„ë£Œ ì—”í‹°í‹° ì¶”ê°€.
                 if (entity.CommandManager.PeekCommand() == null)
                     m_entity_completed.Add(entity_id);
+
             }
 
-            // ¸í·É Ã³¸®°¡ ¿Ï·áµÈ À¯´ÖÀº ¸ñ·Ï¿¡¼­ Á¦°ÅÇÕ´Ï´Ù.
+            // ëª…ë ¹ ì§„í–‰ ì™„ë£Œ ì—”í‹°í‹° ì²˜ë¦¬.
             foreach (var entity_id in m_entity_completed)
                 m_entity_progress.Remove(entity_id);
 
 
-            // ¸ğµç À¯´ÖµéÀÇ Çàµ¿ÀÌ ¿Ï·áµÇ¾ú´Ù¸é Á¾·á.
+            // ëª…ë ¹ ì§„í–‰ ì¤‘ì¸ ì—”í‹°í‹°ê°€ ì—†ìœ¼ë©´ ì™„ë£Œ.
             return m_entity_progress.Count == 0;
         }
 

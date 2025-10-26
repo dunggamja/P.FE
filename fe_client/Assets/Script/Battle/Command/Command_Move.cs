@@ -57,6 +57,9 @@ namespace Battle
                 // 경로 생성 안함.
                 Owner.PathNodeManager.ClearPath(); 
             }
+
+            // 카메라 이동 처리.
+            Update_CameraPositionEvent();
         }
 
         protected override bool OnUpdate()
@@ -68,6 +71,9 @@ namespace Battle
             Owner.UpdatePathBehavior(Constants.BATTLE_SYSTEM_UPDATE_INTERVAL);
 
             //Debug.Log($"Command_Move, OnUpdate, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
+
+            // 카메라 이동 처리.
+            Update_CameraPositionEvent();
 
             // 이동이 완료되었으면 완료처리.
             return Owner.PathNodeManager.IsEmpty();
@@ -98,6 +104,9 @@ namespace Battle
                 if (m_execute_command)
                     Owner.SetCommandDone(EnumCommandFlag.Move);
             }
+
+            // 카메라 이동 처리.
+            Update_CameraPositionEvent();
         }
 
     } 

@@ -173,6 +173,9 @@ namespace Battle
         int             m_block_size;
         TerrainBlock[,] m_blocks;
 
+        public int Width  { get { return m_width; } }
+        public int Height { get { return m_height; } }
+
         public TerrainBlockManager(int _width, int _height, int _block_size)
         {
             m_width         = _width;
@@ -379,6 +382,8 @@ namespace Battle
         public TerrainBlockManager_IO Attribute     { get; set; }
         public TerrainBlockManager_IO EntityManager { get; set; }
     }
-    
+
+
+      
 }
 

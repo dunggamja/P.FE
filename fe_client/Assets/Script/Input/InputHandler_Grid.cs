@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Battle;
 using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -32,7 +33,7 @@ public class InputHandler_Grid_Select : InputHandler
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
-    (int x, int y)          SelectCursor              { get; set; } = (0, 0);         
+    (int x, int y)          SelectCursor              { get; set; } = (0, 0);  
          
     bool                    IsFinish                  { get; set; } = false;                
     float                   MoveTile_LastTime         { get; set; } = 0f;
@@ -293,6 +294,12 @@ public class InputHandler_Grid_Select : InputHandler
 
     void OnUpdate_Tile_Move()
     {
+        //  아군 턴 차례가 맞는지 체크.
+        var faction_cur       = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
+        var is_player_faction = BattleSystemManager.Instance.GetFactionCommanderType(faction_cur) == EnumCommanderType.Player;        
+        if (is_player_faction == false)
+            return;
+
         // 이동 방향 확인.
         if (MoveDirection == Vector2Int.zero)
             return;
@@ -321,7 +328,7 @@ public class InputHandler_Grid_Select : InputHandler
         var terrain_map = TerrainMapManager.Instance.TerrainMap;
         if (terrain_map == null)
         {
-            Debug.LogError("TerrainMapManager.Instance.TerrainMap is null");
+            //Debug.LogError("TerrainMapManager.Instance.TerrainMap is null");
             return;
         }
 
@@ -330,6 +337,13 @@ public class InputHandler_Grid_Select : InputHandler
         
         // 이동 범위 엔티티 ID.
         Int64 draw_entity_id = CommandEntityID > 0 ? CommandEntityID : tile_entity_id;
+
+
+        // FixedObject는 이동범위를 그리지 않는다. 
+        var entity = EntityManager.Instance.GetEntity(draw_entity_id);
+        if (entity == null || entity.IsFixedObject)
+            draw_entity_id = 0;
+
 
         BattleSystemManager.Instance.DrawRange.DrawRange(
             _draw_flag: 
@@ -367,6 +381,11 @@ public class InputHandler_Grid_Select : InputHandler
             .SetID(VFX_Select)
             .SetPosition(SelectCursor.CellToPosition())                
         );       
+
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<Battle_Camera_PositionEvent>.Acquire()
+            .SetCell(SelectCursor)
+        ); 
     }
 
     // 선택 엔티티 이동, 기존에 예약된 명령들 취소 (진행중인 것은 냅둔다.)

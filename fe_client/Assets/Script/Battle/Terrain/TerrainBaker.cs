@@ -5,6 +5,8 @@ using System;
 using UnityEditor.Localization.Plugins.XLIFF.V20;
 using System.Linq;
 using System.IO;
+using UnityEngine.Localization.SmartFormat.PersistentVariables;
+
 
 
 
@@ -17,46 +19,171 @@ using UnityEditor.SceneManagement;
 
 namespace Battle
 {
+    [Serializable]
+    public class MapBakeData_Attribute_Dynamic
+    {
+        [Serializable]
+        public struct AttributeCount
+        {
+            public int Attribute;
+            public int Count;
+
+            public AttributeCount(int _attribute, int _count)
+            {
+                Attribute = _attribute;
+                Count     = _count;
+            }
+
+            public void Deconstruct(out int _attribute, out int _count)
+            {
+                _attribute = Attribute;
+                _count     = Count;
+            }
+        }
+        public int m_x;
+        public int m_y;
+        public List<AttributeCount> m_attribute_count = new();
+
+        public MapBakeData_Attribute_Dynamic(int _x, int _y)
+        {
+            m_x               = _x;
+            m_y               = _y;
+            m_attribute_count = new();
+        }
+
+        public void IncreaseAttributeCount(int _attribute)
+        {
+            var index  = m_attribute_count.FindIndex(e => e.Attribute == _attribute);
+            if (index != -1)
+            {
+                var count                = m_attribute_count[index].Count;
+                m_attribute_count[index] = new AttributeCount(_attribute, count + 1);
+            }
+            else
+            {
+                m_attribute_count.Add(new AttributeCount(_attribute, 1));
+            }
+        }
+    }
+
+
 
     [Serializable]
     public class MapBakeData_Terrain
     {
-        public Int64[] m_tile_data = null;
         public int     m_width     = 0;
         public int     m_height    = 0;
 
+        // 정적 속성.
+        public Int64[]                             m_attribute_mask_static = null;
+
+        // 동적 속성.
+        public List<MapBakeData_Attribute_Dynamic> m_attribute_dynamic     = null;
+
+        public Int64[]                             m_attribute_mask_result = null;
+
         public MapBakeData_Terrain()
         {
-            m_tile_data = null;
+            m_attribute_mask_static = null;
+            m_attribute_dynamic     = null;
+            m_attribute_mask_result = null;
         }
 
-        public MapBakeData_Terrain(Int64[,] _tile_data)
+        public MapBakeData_Terrain(int _width, int _height)
         {
-            Initialize(_tile_data);
+            Initialize(_width, _height);
         }
 
-        public void Initialize(Int64[,] _tile_data)
+        public void Initialize(int _width, int _height)
         {
-            if (_tile_data == null)
-                return;
+            
+            m_width                 = _width;            
+            m_height                = _height;
+            m_attribute_mask_static = new Int64[m_width * m_height];
+            m_attribute_dynamic     = new List<MapBakeData_Attribute_Dynamic>();
+            m_attribute_mask_result = new Int64[m_width * m_height];
+        }
 
-            m_width     = _tile_data.GetLength(0);            
-            m_height    = _tile_data.GetLength(1);
-            m_tile_data = new Int64[m_width * m_height];
+        public void Bake(Int64[,] _attribute_static,  List<(int _x, int _y, int _attribute)> _attribute_dynamic)
+        {
+            m_attribute_dynamic.Clear();
+            Array.Clear(m_attribute_mask_result, 0, m_attribute_mask_result.Length);
+            Array.Clear(m_attribute_mask_static, 0, m_attribute_mask_static.Length);
 
-            for(int y = 0; y < m_height; y++)
+            // 지형속성 - 정적
+            if (_attribute_static != null)
             {
-                for(int x = 0; x < m_width; x++)
+                if (m_attribute_mask_static.Length != _attribute_static.Length)
                 {
-                    m_tile_data[y * m_width + x] = _tile_data[x, y];
+                    Debug.LogError($"Attribute static length mismatch: {m_attribute_mask_static.Length} != {_attribute_static.Length}");
+                    return;
+                }
+
+                for(int y = 0; y < m_height; y++)
+                {
+                    for(int x = 0; x < m_width; x++)
+                    {
+                        m_attribute_mask_static[y * m_width + x] = _attribute_static[x, y];
+                        m_attribute_mask_result[y * m_width + x] = _attribute_static[x, y];
+                    }
                 }
             }
+
+            // 지형속성 - 동적
+            if (_attribute_dynamic != null)
+            {
+                foreach(var (x, y, attribute) in _attribute_dynamic)
+                {
+                    IncreaseAttribute_Dynamic(x, y, attribute);
+
+                    m_attribute_mask_result[y * m_width + x] |= (1L << attribute);
+                }
+            }
+
         }
 
-        public Int64 GetTileData(int _x, int _y)
+        public Int64 GetAttributeMask_Static(int _x, int _y)
         {
-            return m_tile_data[_y * m_width + _x];
+            return m_attribute_mask_static[_y * m_width + _x];
         }
+
+        public Int64 GetAttributeMask_Result(int _x, int _y)
+        {
+            return m_attribute_mask_result[_y * m_width + _x];
+        }
+
+        // public Int64 GetAttributeMask_Dynamic(int _x, int _y)
+        // {
+        //     Int64 mask = 0;
+
+        //     var index = m_attribute_dynamic.FindIndex(e => e.m_x == _x && e.m_y == _y);
+        //     if (index == -1)            
+        //     {
+        //         return mask;
+        //     }
+
+        //     foreach(var (attribute, count) in m_attribute_dynamic[index].m_attribute_count)
+        //     {
+        //         mask |= (1L << attribute);
+        //     }
+            
+        //     return mask;
+        // }
+
+        public void IncreaseAttribute_Dynamic(int _x, int _y, int _attribute)
+        {
+            var index = m_attribute_dynamic.FindIndex(e => e.m_x == _x && e.m_y == _y);
+            if (index == -1)            
+            {
+                index = m_attribute_dynamic.Count;
+                m_attribute_dynamic.Add(new MapBakeData_Attribute_Dynamic(_x, _y));
+            }
+            
+
+            m_attribute_dynamic[index].IncreaseAttributeCount(_attribute);
+        }
+
+       
     }
 
     [Serializable]
@@ -138,7 +265,6 @@ namespace Battle
 
         public void Bake()
         {
-
             if (m_tile_overlay == null)
                 return;
 
@@ -146,17 +272,27 @@ namespace Battle
             if (string.IsNullOrEmpty(file_path))
                 return;
 
-            // 지형 데이터.
+            // 지형 데이터. - 정적 데이터.
             var (tile_data, width, length) = m_tile_overlay.CollectTileData();
+
+            // 지형 데이터 - 동적 데이터.
+            using var list_tile_dynamic = ListPool<(int _x, int _y, int _attribute)>.AcquireWrapper();
+            m_tile_overlay.CollectTileData_Dynamic(list_tile_dynamic.Value, width, length);
 
             // 오브젝트 데이터.
             var list_tiled_object          = m_tile_overlay.Collect_TiledOjects();
             var list_fixed_objects         = m_tile_overlay.Collect_FixedObjects();
             
             var bake_data      = new MapBakeData();
-            bake_data.Terrain  = new MapBakeData_Terrain(tile_data);
+            bake_data.Terrain  = new MapBakeData_Terrain(width, length);
             bake_data.Entities = new MapData_Entities();
 
+
+            // 지형 데이터 베이크.
+            bake_data.Terrain.Bake(tile_data, list_tile_dynamic.Value);
+
+
+            // 오브젝트 데이터 적재.
             foreach (var e in list_tiled_object)
                 if (e != null) bake_data.Entities.AddEntity(e.EntityID, e.Cell.x, e.Cell.y, false);
 

@@ -52,6 +52,9 @@ namespace Battle
                 Owner.StatusManager.Weapon.Equip(WeaponID);
             }
 
+            // 카메라 이동 처리.
+            Update_CameraPositionEvent();
+
             // 전투 시스템 셋팅.
             
             CombatParam.Cache.Reset();
