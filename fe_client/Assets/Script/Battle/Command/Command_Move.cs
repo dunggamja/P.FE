@@ -19,7 +19,7 @@ namespace Battle
         bool                  m_visual_immediate = false;
         bool                  m_execute_command  = false;
         bool                  m_is_plan          = false;
-        bool                  m_failed_path_find = false;
+        bool                  m_move_success = false;
 
 
 
@@ -37,7 +37,7 @@ namespace Battle
             m_execute_command  = _execute_command;
             m_visual_immediate = _visual_immediate;
             m_is_plan          = _is_plan;
-            m_failed_path_find = false;
+            m_move_success     = false;
         }
         
 
@@ -46,30 +46,33 @@ namespace Battle
             if (Owner == null)
                 return;
 
-            if (!m_visual_immediate)
+
+            // 이동이 가능한 상태인지 체크.
+            if (Owner.HasCommandEnable(EnumCommandFlag.Move) == false)
             {
-                // 경로 생성 & 길찾기
-                if (Owner.PathNodeManager.CreatePath(
-                    Owner.PathVehicle.Position,
-                    m_cell_to.CellToPosition(),
-                    Owner) == false)
-                {
-                    m_failed_path_find = true;
-                }
+                m_move_success = false;
+                return;
             }
-            else
+
+            // 즉시 이동여부에 따라서 길찾기 여부 결정.
+            if (m_visual_immediate)
             {
                 // 경로 생성 안함.
                 Owner.PathNodeManager.ClearPath(); 
             }
-
-            // 카메라 이동 처리.
-            // Update_CameraPositionEvent();
+            else
+            {
+                // 길찾기 시도.
+                m_move_success = Owner.PathNodeManager.CreatePath(
+                            Owner.PathVehicle.Position, 
+                            m_cell_to.CellToPosition(), 
+                            Owner);
+            }
         }
 
         protected override bool OnUpdate()
         {
-            if (Owner == null || m_failed_path_find)
+            if (Owner == null || m_move_success == false)
                 return true;
 
             // 유닛 이동 처리.
@@ -97,11 +100,13 @@ namespace Battle
                 // Owner.PathVehicle.Position
                 
                 // 좌표 이동 처리.
-                if (m_failed_path_find == false)
+                if (m_move_success)
+                {
                     Owner.UpdateCellPosition(
                           m_cell_to
                         , (_apply: true, _immediatly: m_visual_immediate)
                         , m_is_plan);
+                }
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 

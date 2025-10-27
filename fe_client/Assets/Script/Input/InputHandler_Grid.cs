@@ -398,6 +398,10 @@ public class InputHandler_Grid_Select : InputHandler
         if (_entity_id == 0)
             return;
 
+        var entity = EntityManager.Instance.GetEntity(_entity_id);
+        if (entity == null)
+            return;
+
 
         // 기존에 예약된 명령들 취소 (진행중인 것은 냅둔다.)
         BattleSystemManager.Instance.PushCommand(
