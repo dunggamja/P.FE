@@ -7,6 +7,8 @@ namespace Battle
 {
   public class Command_Abort : Command
   {
+    public override EnumCommandType CommandType => EnumCommandType.Abort;
+    
     public bool IsPendingOnly { get; private set; } = false;
 
     public Command_Abort(Int64 _owner_id, bool _is_pending_only)

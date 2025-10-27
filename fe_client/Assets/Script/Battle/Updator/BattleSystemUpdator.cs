@@ -144,6 +144,9 @@ namespace Battle
 
             // 공간 분할 초기화.
             SpacePartitionManager.Instance.Initialize(terrain_map.Width, terrain_map.Height);
+
+            // 카메라 매니저 인스턴스 생성.
+            var cam_manager = CameraMananger.Instance;
         }
 
 

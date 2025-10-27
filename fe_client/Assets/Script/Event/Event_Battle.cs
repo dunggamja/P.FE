@@ -102,12 +102,8 @@ namespace Battle
     //     }
     // }
 
-    public class Battle_Cell_PositionEvent : IEventParam
+    public class Battle_Cell_OccupyEvent : IEventParam
     {
-        
-
-        
-
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
         public Int64               EntityID        { get; private set; } = 0;
@@ -116,7 +112,7 @@ namespace Battle
         public bool                IsOccupy        { get; private set; } = false;  // 
         
 
-        public Battle_Cell_PositionEvent Set(
+        public Battle_Cell_OccupyEvent Set(
             Int64               _entity_id, 
             int                 _faction,
             (int x, int y)      _cell,
@@ -140,7 +136,7 @@ namespace Battle
         public void Release()
         {
             // var temp = this;
-            ObjectPool<Battle_Cell_PositionEvent>.Return(this);
+            ObjectPool<Battle_Cell_OccupyEvent>.Return(this);
         }
     }
 
@@ -173,5 +169,31 @@ namespace Battle
     }
 
 
+    public class Battle_Command_Event : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+        public Int64           EntityID    { get; private set; } = 0;
+        public EnumCommandType CommandType { get; private set; } = EnumCommandType.None;
+
+        public void Release()
+        {
+            // var temp = this;
+            ObjectPool<Battle_Command_Event>.Return(this);
+        }
+
+        public void Reset()
+        {
+            EntityID    = 0;
+            CommandType = EnumCommandType.None;
+        }
+
+        public Battle_Command_Event Set(Int64 _entity_id, EnumCommandType _command_type)
+        {
+            EntityID    = _entity_id;
+            CommandType = _command_type;
+            return this;
+        }
+    }
 }
 

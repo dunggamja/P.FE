@@ -75,7 +75,6 @@ namespace Battle
                 // 명령 진행 완료 엔티티 추가.
                 if (entity.CommandManager.PeekCommand() == null)
                     m_entity_completed.Add(entity_id);
-
             }
 
             // 명령 진행 완료 엔티티 처리.

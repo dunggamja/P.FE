@@ -23,7 +23,7 @@ namespace Battle
             // Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
 
             EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<Battle_Cell_PositionEvent>.Acquire().Set(
+                ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
                 ID,
                 PathZOCFaction,
                 Cell,

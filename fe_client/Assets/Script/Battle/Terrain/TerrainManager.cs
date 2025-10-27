@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Battle
 {
-    [EventReceiver(typeof(Battle_Cell_PositionEvent))]
+    [EventReceiver(typeof(Battle_Cell_OccupyEvent))]
     public class TerrainMapManager : Singleton<TerrainMapManager>, IEventReceiver
     {
 
@@ -18,6 +18,7 @@ namespace Battle
             // event receiver 
             EventDispatchManager.Instance.AttachReceiver(this);
         }
+
 
         private TerrainBinder m_terrain_binder = null;
 
@@ -61,13 +62,13 @@ namespace Battle
         {
             switch (_event)
             {
-                case Battle_Cell_PositionEvent cell_event:
+                case Battle_Cell_OccupyEvent cell_event:
                     OnReceiveEvent_CellPositionEvent(cell_event);
                     break;
             }
         }
 
-        void OnReceiveEvent_CellPositionEvent(Battle_Cell_PositionEvent _event)
+        void OnReceiveEvent_CellPositionEvent(Battle_Cell_OccupyEvent _event)
         {
              if (TerrainMap == null)
                 return;

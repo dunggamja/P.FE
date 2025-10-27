@@ -7,6 +7,8 @@ namespace Battle
 {
     public class Command_Done : Command
     {
+        public override EnumCommandType CommandType => EnumCommandType.Done;
+        
         public Command_Done(Int64 _owner_id) : base(_owner_id)
         {
 
@@ -15,7 +17,7 @@ namespace Battle
         protected override void OnEnter()
         {
             // 카메라 이동 처리.
-            Update_CameraPositionEvent();
+            // Update_CameraPositionEvent();
         }
 
         protected override bool OnUpdate()

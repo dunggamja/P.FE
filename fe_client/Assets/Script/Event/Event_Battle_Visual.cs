@@ -26,6 +26,29 @@ namespace Battle
         }
     }
 
+    public class Battle_Cursor_PositionEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public (int x, int y)         Cell { get; private set; } = (0, 0);
+
+
+        public void Release()
+        {
+            ObjectPool<Battle_Cursor_PositionEvent>.Return(this);
+        }
+
+        public Battle_Cursor_PositionEvent Set((int x, int y) _cell_position)
+        {
+            Cell = _cell_position;
+            return this;
+        }
+
+        public void Reset()
+        {
+            Cell = (0, 0);
+        }
+    }
+
 
     // public class Battle_Entity_MoveEvent : IEventParam
     // {

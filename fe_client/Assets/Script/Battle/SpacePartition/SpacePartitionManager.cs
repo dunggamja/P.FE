@@ -15,7 +15,7 @@ namespace Battle
 
 
 
-   [EventReceiver(typeof(Battle_Cell_PositionEvent))]
+   [EventReceiver(typeof(Battle_Cell_OccupyEvent))]
   public class SpacePartitionManager : Singleton<SpacePartitionManager>, IEventReceiver
   {
      
@@ -25,26 +25,30 @@ namespace Battle
 
      const int BLOCK_SIZE = 8;
 
+    protected override void Init()
+    {
+        base.Init();
+        EventDispatchManager.Instance.AttachReceiver(this);
+    }
 
-     public void Initialize(int _world_width, int _world_height)
+
+    public void Initialize(int _world_width, int _world_height)
      {
         FactionThreaten.Clear();
         EntityPosition.Initialize(_world_width, _world_height, BLOCK_SIZE);
-
-        EventDispatchManager.Instance.AttachReceiver(this);
      }
 
      public void OnReceiveEvent(IEventParam _event)
      {
         switch (_event)
         {
-            case Battle_Cell_PositionEvent cell_position_event:
+            case Battle_Cell_OccupyEvent cell_position_event:
                 OnReceiveEvent_CellPositionEvent(cell_position_event);
                 break;
         }
      }
 
-     void OnReceiveEvent_CellPositionEvent(Battle_Cell_PositionEvent _event)
+     void OnReceiveEvent_CellPositionEvent(Battle_Cell_OccupyEvent _event)
      {
         if (_event == null)
           return;

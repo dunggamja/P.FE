@@ -7,7 +7,11 @@ namespace Battle
 {
    public class Command_Move : Command
     {
-        
+
+        public override EnumCommandType CommandType => EnumCommandType.Move;
+        public override bool            IsAbortable => true;
+
+
         // List<PathNode>  m_path_node       = new ();
         // int             m_path_node_index = 0;
         (int x, int y)        m_cell_to          = (0, 0); 
@@ -17,7 +21,6 @@ namespace Battle
         bool                  m_is_plan          = false;
         bool                  m_failed_path_find = false;
 
-        public override bool  IsAbortable => true;
 
 
         public Command_Move(
@@ -61,7 +64,7 @@ namespace Battle
             }
 
             // 카메라 이동 처리.
-            Update_CameraPositionEvent();
+            // Update_CameraPositionEvent();
         }
 
         protected override bool OnUpdate()
@@ -75,7 +78,7 @@ namespace Battle
             //Debug.Log($"Command_Move, OnUpdate, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
             // 카메라 이동 처리.
-            Update_CameraPositionEvent();
+            // Update_CameraPositionEvent();
 
             // 이동이 완료되었으면 완료처리.
             return Owner.PathNodeManager.IsEmpty();
@@ -108,7 +111,7 @@ namespace Battle
             }
 
             // 카메라 이동 처리.
-            Update_CameraPositionEvent();
+            // Update_CameraPositionEvent();
         }
 
     } 

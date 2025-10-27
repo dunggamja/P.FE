@@ -5,6 +5,16 @@ using UnityEngine;
 
 namespace Battle
 {
+    public enum EnumCommandType
+    {
+        None,
+        Attack,
+        Move,
+        Done,
+        Abort,
+    }
+
+
     public class CommandManager //: Singleton<CommandManager>
     {
 
@@ -121,6 +131,13 @@ namespace Battle
                 // command 완료되면 pop 처리.
                 PopCommand();
             }
+
+            // 이벤트 발생.
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Command_Event>.Acquire().Set(
+                    m_owner_id,
+                    command.CommandType
+                ));
         }
 
 

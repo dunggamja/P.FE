@@ -28,7 +28,9 @@ namespace Battle
 
         private Queue<Command>                     m_command_queue          = new (10);
 
-        public MoveRange.VFXHelper_DrawRange       DrawRange { get; private set; } = new();
+
+        public MoveRange.VFXHelper_DrawRange       DrawRange    { get; private set; } = new();
+
         
 
 
@@ -219,7 +221,6 @@ namespace Battle
 
             return m_command_queue.Peek();
         }
-
 
         public BattleSystemManager_IO Save()
         {

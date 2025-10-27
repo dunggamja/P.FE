@@ -376,17 +376,17 @@ public class InputHandler_Grid_Select : InputHandler
         // 이동 시간 설정.
         MoveTile_LastTime = Time.time;
 
+        // X, Y 좌표.
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
+            .Set(SelectCursor));
+
         // 선택 효과 생성.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<VFX_TransformEvent>.Acquire()
             .SetID(VFX_Select)
-            .SetPosition(SelectCursor.CellToPosition())                
-        );       
+            .SetPosition(SelectCursor.CellToPosition()));       
 
-        EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<Battle_Camera_PositionEvent>.Acquire()
-            .SetCell(SelectCursor)
-        ); 
     }
 
     // 선택 엔티티 이동, 기존에 예약된 명령들 취소 (진행중인 것은 냅둔다.)

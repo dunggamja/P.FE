@@ -231,8 +231,8 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             ); 
 
             EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<Battle_Camera_PositionEvent>.Acquire()
-                .SetCell(entity_target.Cell)
+                ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
+                .Set(entity_target.Cell)
             ); 
         }
 

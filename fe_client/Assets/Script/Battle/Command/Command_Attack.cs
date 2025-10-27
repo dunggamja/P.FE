@@ -27,6 +27,8 @@ namespace Battle
         public Int64          WeaponID { get; private set; } 
         public (int x, int y) Position { get; private set; } 
 
+        public override EnumCommandType CommandType => EnumCommandType.Attack;
+
         
 
 
@@ -55,7 +57,7 @@ namespace Battle
             }
 
             // 카메라 이동 처리.
-            Update_CameraPositionEvent();
+            // Update_CameraPositionEvent();
 
             // 전투 시스템 셋팅.
             
