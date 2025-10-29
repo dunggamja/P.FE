@@ -91,14 +91,19 @@ namespace Battle
 
             else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water_Shallow)) != 0)
             {
-                // 물가
-                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))  == 0)
-                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Swimmer))  == 0)
-                &&   ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0))
-                    return (0, EnumTerrainAttribute.Water_Shallow);
+                // 얕은 물        
 
-                // 물가 지형 이동 Cost
-                return (1, EnumTerrainAttribute.Water_Shallow);
+                // 비행 또는 물 이동 가능한 유닛은 Cost 1로 통과가능.
+                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))   != 0)
+                ||  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Swimmer)) != 0))
+                    return (1, EnumTerrainAttribute.Water_Shallow);
+
+                // 땅 이동만 가능한 경우는 이동 COST 2으로 처리.
+                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) != 0)
+                    return (2, EnumTerrainAttribute.Water_Shallow);
+
+                // 그 외는 이동 불가 처리.
+                return (0, EnumTerrainAttribute.Water_Shallow);
             }
 
             else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
