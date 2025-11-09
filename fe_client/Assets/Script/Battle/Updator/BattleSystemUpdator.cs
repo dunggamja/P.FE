@@ -183,40 +183,40 @@ namespace Battle
                 var setting_entity = _map_setting.GetEntity(e.m_entity_id);
                 var setting_status = _map_setting.GetStatus_EntityID(e.m_entity_id);
                 var setting_items  = _map_setting.GetItem_EntityID(e.m_entity_id);
-                var setting_asset  = _map_setting.GetAsset_EntityID(e.m_entity_id);
-
                 
-                
-                if (setting_entity == null || setting_status == null || setting_items == null || setting_asset == null)
+                if (setting_entity == null || setting_status == null || setting_items == null)
                 {
-                    Debug.LogError($"Failed to get setting entity {e.m_entity_id}, entity: {setting_entity != null}, status: {setting_status != null}, items: {setting_items != null}, asset: {setting_asset != null}");                    
+                    Debug.LogError($"Failed to get setting entity {e.m_entity_id}, entity: {setting_entity != null}, status: {setting_status != null}, items: {setting_items != null}");                    
                     continue;
                 }
 
+                // 클래스 셋팅.
+                entity.StatusManager.Status.SetClassKIND(setting_status.CLASS);
+
+
+                // 에셋 셋팅.
+                entity.SetAssetName(DataManager.Instance.UnitSheet.GetUnitAssetName(entity.StatusManager.Status.ClassKIND, entity.ID));
+
+
                 // 진영셋팅
-                // TODO: AI 타입 셋팅.
                 entity.SetFaction(setting_entity.FACTION);
+
+                // TODO: AI 타입 셋팅.
                 entity.SetAIType(EnumAIType.Attack);
 
-
-
                 // 능력치 셋팅.
-                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP,           setting_status.HP);
-                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP_Max,       setting_status.HP);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Level,      setting_status.LEVEL);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Strength,   setting_status.STRENGTH);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Skill,      setting_status.SKILL);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Speed,      setting_status.SPEED);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,   setting_status.MOVEMENT);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Defense,    setting_status.DEFENSE);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Resistance, setting_status.RESISTANCE);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Luck,       setting_status.LUCK);
-
-                // 유닛 특성 셋팅.
-                foreach(var attribute in setting_status.GetUnitAttributes()) entity.StatusManager.Status.SetAttribute(attribute, true);
-                
-                // 유닛 지형 특성 셋팅.
-                foreach(var attribute in setting_status.GetPathAttributes()) entity.SetPathAttribute(attribute);
+                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP,            setting_status.HP);
+                entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP_Max,        setting_status.HP);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Level,       setting_status.LEVEL);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Strength,    setting_status.STRENGTH);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Magic,       setting_status.MAGIC);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Skill,       setting_status.SKILL);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Speed,       setting_status.SPEED);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,    setting_status.MOVEMENT);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Defense,     setting_status.DEFENSE);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Proficiency, setting_status.PROFICIENCY);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Resistance,  setting_status.RESISTANCE);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Luck,        setting_status.LUCK);
 
 
                 // 아이템 셋팅.
@@ -224,15 +224,13 @@ namespace Battle
                 {
                     var item_entity = Item.Create(Util.GenerateID(), item.ITEM_KIND);
                     entity.Inventory.AddItem(item_entity);
+                }    
 
-                    //TODO: 장비 장착은 나중에 자동화 하는게 좋을듯.
-                    if (item_entity.IsEnableAction(entity, EnumItemActionType.Equip))
-                        entity.StatusManager.Weapon.Equip(item_entity.ID);
-                }               
+                entity.Equip_Weapon_Auto();           
 
 
                 // 유닛 에셋 셋팅.
-                entity.SetAssetName(setting_asset.ASSET_KEY);
+                // entity.SetAssetName(setting_asset.ASSET_KEY);
 
                 // 월드 오브젝트 생성 처리.
                 entity.CreateProcess();

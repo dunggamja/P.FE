@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -11,6 +11,9 @@ public class Inventory
 
     Dictionary<Int64, Item> m_repository      = new (10);
     List<Item>              m_repository_list = new (10);
+
+    public int  Count    => m_repository_list.Count;
+    public int  MaxCount => 8; // 일단 하드코딩.
 
     public bool Initialize(IOwner _owner)
     {
@@ -55,7 +58,7 @@ public class Inventory
         return false;
     }
 
-    public void CollectItem(List<Item> _list_result, Func<Item, bool> _func_condition)
+    public void CollectItem(List<Item> _list_result, Func<Item, bool> _func_condition = null)
     {
         if (_list_result == null)
             return;
@@ -94,19 +97,20 @@ public class Inventory
         if (item == null)
             return false;
 
-        if (!item.ProcessAction(owner_entity, _action_type))
+        if (!owner_entity.ProcessAction(item, _action_type))
             return false;
 
-        // TODO: ������ ����.
+        // TODO: 아이템 버프 갱신.
 
         return true;
     }
+
 
     public Inventory_IO Save()
     {
         var items = new List<Item_IO>();
 
-        // ������ ������ ����.
+        // 아이템 저장.
         foreach(var e in m_repository_list)
         {
             items.Add(e.Save());
@@ -125,10 +129,8 @@ public class Inventory
 
         foreach (var e in _snapshot.Items)
         {
-            var item = new Item();
+            var item = new Item();            
             item.Load(e);
-
-            
             AddItem(item);
         }
     }

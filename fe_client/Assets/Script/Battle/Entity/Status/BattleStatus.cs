@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,6 +41,13 @@ namespace Battle
             {
                 buff_value += Buff.Collect(_situation_type, Owner, e);
             }
+
+
+            var weapon_item  = Weapon.ItemObject;
+            if (weapon_item != null)
+            {
+                Item.CollectAttributeValue(weapon_item.Kind, EnumItemAttribute.UnitStatusBuff, (int)_unit_status);                
+            }
             
             
             return buff_value.Calculate(status);
@@ -62,13 +69,13 @@ namespace Battle
 
 
 
-        /// <summary> ���ݷ�. </summary>
+        /// <summary> 물리 위력. </summary>
         public int Calc_Might_Physic()
         {
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Physics);
             if (weapon_might <= 0)
             {
-                // ���Ⱑ ������ �������� ����.
+                // 물리 위력이 0이면 0 리턴.
                 return 0;
             }
 
@@ -78,13 +85,13 @@ namespace Battle
             return status_unit + status_weapon;
         }
 
-        /// <summary> �������ݷ�. </summary>
+        /// <summary> 마법 위력. </summary>
         public int Calc_Might_Magic()
         {
             var weapon_might = Weapon.GetStatus(EnumWeaponStatus.Might_Magic);
             if (weapon_might <= 0)
             {
-                // ���Ⱑ ������ �������� ����.
+                // 마법 위력이 0이면 0 리턴.
                 return 0;
             }
 
@@ -94,7 +101,7 @@ namespace Battle
             return status_unit + status_weapon;
         }
 
-        /// <summary> ���� </summary>
+        /// <summary> 명중. </summary>
         public int Calc_Hit()
         {
             var unit_skill = GetBuffedUnitStatus(EnumUnitStatus.Skill);
@@ -106,7 +113,7 @@ namespace Battle
             return unit_hit + weapon_hit;
         }
 
-        /// <summary> ġ�� </summary>
+        /// <summary> 필살. </summary>
         public int Calc_Critical()
         {
             var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
@@ -118,7 +125,7 @@ namespace Battle
         }
 
 
-        /// <summary> ȸ�� </summary>
+        /// <summary> 회피. </summary>
         public int Calc_Dodge()
         {
             var battle_speed = Calc_Speed();
@@ -128,7 +135,7 @@ namespace Battle
             return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
         }
 
-        /// <summary> ġ�� ȸ�� </summary>
+        /// <summary> 필살 회피. </summary>
         public int Calc_DodgeCritical()
         {
             var unit_luck             = GetBuffedUnitStatus(EnumUnitStatus.Luck);
@@ -137,23 +144,26 @@ namespace Battle
             return unit_luck + weapon_dodge_critical;
         }
 
-        /// <summary> �ӵ� </summary>
+        /// <summary> 속도. </summary>
         public int Calc_Speed()
         {
+            // var unit_weight  = GetBuffedUnitStatus(EnumUnitStatus.Weight);
+            var use_magic    = (Weapon != null && Weapon.GetStatus(EnumWeaponStatus.Might_Magic) > 0);
+
+            var unit_power   = (use_magic) ? GetBuffedUnitStatus(EnumUnitStatus.Magic) : GetBuffedUnitStatus(EnumUnitStatus.Strength);
             var unit_speed   = GetBuffedUnitStatus(EnumUnitStatus.Speed);
-            var unit_weight  = GetBuffedUnitStatus(EnumUnitStatus.Weight);
             var wepon_weight = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Weight);
 
-            return unit_speed - Math.Max(0, wepon_weight - unit_weight);
+            return unit_speed - Math.Max(0, wepon_weight - (unit_power + 1) / 2);
         }
 
-        /// <summary> ���� </summary>
+        /// <summary> 방어. </summary>
         public int Calc_Defense()
         {
             return GetBuffedUnitStatus(EnumUnitStatus.Defense);
         }
 
-        /// <summary> �������� </summary>
+        /// <summary> 마방. </summary>
         public int Calc_Resistance()
         {
             return GetBuffedUnitStatus(EnumUnitStatus.Resistance);
@@ -189,15 +199,16 @@ namespace Battle
 }
 
 /*
- �Ŀ� if ������Ű���� �ɷ�ġ ���� �ܾ�µ�... ���ڵ��� �������ȳ�...
- * ����[����]     = ��[����] + ����[������] ����*(1[1] or 2[2] or 3[3]) + ��Ÿ[A](��ų ����ȿ�� ��)
- * ����           = ���?*2 + ���?/2 + ����[������] ���� + ��Ÿ[A](��ų ����ȿ�� ��)
- * �ʻ�           = ���?/2 + ����[������] �ʻ� + ��Ÿ[A]
- * ���ط�         = (����[����] - ����[����])*(1 or 3[7])
- * ����[8]        = �ӵ� - (���� - ü��)[9]
- * ȸ��           = ����*2 + ���?/2 + ���� ȸ�� + ��Ÿ[A]
- * �ʻ� ȸ��      = ���? + ���� �ʻ� ȸ�� + ��Ÿ[A]
- * ���߷�         = ���� - ȸ��
- * �ʻ� �߻� Ȯ��  = �ʻ� - �ʻ� ȸ��
+// 요거에서 베스타리아 사가 공식으로 일부 수정함. (속도 등.)
+// 근데 if 두 개 키우는 능력치 공식 잡았는데... 밸런스는 모르겠네...
+// * 공격[전투]     = 힘[공격] + 무기[공격력] + 숙련*(1[1] or 2[2] or 3[3]) + 기타[A](스킬 버프효과 등)
+// * 명중           = 기술*2 + 행운/2 + 무기[명중] + 기타[A](스킬 버프효과 등)
+// * 필살           = 기술/2 + 무기[필살] + 기타[A]
+// * 실제력         = (공격[전투] - 방어[전투])*(1 or 3[7])
+// * 속도[8]        = 속도 - (무게 - 체력)[9]
+// * 회피           = 속도*2 + 행운/2 + 무기 회피 + 기타[A]
+// * 필살 회피      = 행운 + 무기 필살 회피 + 기타[A]
+// * 명중력         = 명중 - 회피
+// * 필살 발생 확률  = 필살 - 필살 회피
  */
 

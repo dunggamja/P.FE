@@ -18,7 +18,7 @@ namespace Battle
 
         // 소유 중인 무기 목록.
         using var list_weapon = ListPool<Item>.AcquireWrapper();
-        
+
         // 소유 중인 무기 목록 추출.
         Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
 
@@ -77,27 +77,27 @@ namespace Battle
         // BattleLogManager.Instance.AddLog(EnumBattleLogType.Damage, ID, _damage);
     }
 
-    public void ApplyHeal(int _heal)//, bool _is_plan = false)
+    public void ApplyHeal(int _heal)
     {
         if (_heal <= 0)
             return;
 
-        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);//, _is_plan);
+        var cur_hp = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
         var new_hp = cur_hp + _heal;
 
-        SetPoint(EnumUnitPoint.HP, new_hp);//, _is_plan);
+        SetPoint(EnumUnitPoint.HP, new_hp);
     }
 
-    void SetPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
+    void SetPoint(EnumUnitPoint _point_type, int _value)
     {
         // 데미지 체크.
-        var new_value = CorrectPoint(_point_type, _value);//, _is_plan);
+        var new_value = CorrectPoint(_point_type, _value);
 
         // 데미지 설정.
-        StatusManager.Status.SetPoint(_point_type, new_value);//, _is_plan);
+        StatusManager.Status.SetPoint(_point_type, new_value);
     }
 
-    int CorrectPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
+    int CorrectPoint(EnumUnitPoint _point_type, int _value)
     {
         var min_value = 0;
         var max_value = _value;

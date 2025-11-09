@@ -2,13 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using NUnit.Framework;
+
+public enum EnumBuffContentsType
+{
+    None,
+    Item_Equipment  = 1,  // 장착 시 적용.
+    Item_Consumable = 2, // 사용 시 적용,
+    Item_Accessory  = 3,  // 소지만 하고 있어도 적용.
+}
 
 public enum EnumBuffTarget
 {
     None,
 
-    Owner,  // 소유자에게 버프 적용
-    Target, // 타겟에게 버프 적용
+    Owner  = 1,  // 소유자에게 버프 적용
+    Target = 2, // 타겟에게 버프 적용
 }
 
 public enum EnumBuffStatus
@@ -24,7 +33,7 @@ public enum EnumBuffStatus
     Unit_Defense          = 7,   // 유닛, 수비
     Unit_Resistance       = 8,   // 유닛, 마방
     Unit_Movement         = 9,   // 유닛, 이동력
-    Unit_Weight           = 10,  // 유닛, 중량(체격)
+    // Unit_Weight           = 10,  // 유닛, 중량(체격)
                           
     Weapon_Might          = 1001, // 무기, 위력
     Weapon_Hit            = 1002, // 무기, 명중
@@ -37,12 +46,13 @@ public enum EnumBuffStatus
                           
                           
     System_Damage         = 2001, // 시스템, 데미지
-    // System_Damage_Reduce  = 2002, // 시스템, 데미지 감소
-    //System_Damage_Magic   = 2002, // 시스템, 마법 데미지
     System_Critical       = 2006, // 시스템, 필살 확률
-    // System_Dodge_Critical = 2007, // 시스템, 필살 회피 확률
     System_Hit            = 2008, // 시스템, 명중 확률
     System_Dodge          = 2009, // 시스템, 회피 확률
+
+    // System_Damage_Reduce  = 2002, // 시스템, 데미지 감소
+    //System_Damage_Magic   = 2002, // 시스템, 마법 데미지
+    // System_Dodge_Critical = 2007, // 시스템, 필살 회피 확률
 
 
     System_TurnSequence   = 2100, // 시스템, 행동 순서 
@@ -210,33 +220,34 @@ public struct BuffOption
 
 public struct Buff
 {
-    public long             ID;
-    public BuffTarget       Target;
-    public BuffValue        Value;
-    public BuffOption       Option;
-    public List<ICondition> Conditions;
-
+    public long                 ID;
+    public BuffTarget           Target;
+    public BuffValue            Value;
+    public BuffOption           Option;
+    public EnumBuffContentsType ContentsType;
+    // public List<ICondition>     Conditions;    
            
 
     public readonly static Buff Empty = new Buff
     {
-        ID         = 0,
-        Target     = BuffTarget.Empty,
-        Value      = BuffValue.Empty,
-        Option     = BuffOption.Empty,
-        Conditions = null
+        ID           = 0,
+        Target       = BuffTarget.Empty,
+        Value        = BuffValue.Empty,
+        Option       = BuffOption.Empty,
+        ContentsType = EnumBuffContentsType.None
+        // Conditions   = null,
     };
 
     public bool IsValidCondition(IOwner _owner)
     {
-        if (Conditions != null)
-        {
-            foreach (var e in Conditions)
-            {
-                if (e != null && !e.IsValid(_owner))
-                    return false;
-            }
-        }
+        // if (Conditions != null)
+        // {
+        //     foreach (var e in Conditions)
+        //     {
+        //         if (e != null && !e.IsValid(_owner))
+        //             return false;
+        //     }
+        // }
 
         return true;
     }
@@ -245,12 +256,45 @@ public struct Buff
     {
         return Option.IsExpired();
     }
+
+    static public Buff Create(
+        Int64                _id,
+        EnumBuffContentsType _contents_type,
+        BuffTarget           _target,
+        BuffValue            _value,
+        BuffOption           _option
+    )
+    {
+        return new Buff()
+        {
+            ID           = _id,
+            ContentsType = _contents_type,
+            Target       = _target,
+            Value        = _value,
+            Option       = _option
+        };
+    }
+
+    static public Buff CreateBuff(Int32 _kind, EnumBuffContentsType _contents_type)
+    {
+        return Buff.Create(
+            _kind, 
+            _contents_type,
+            DataManager.Instance.BuffSheet.GetBuffTarget(_kind),
+            DataManager.Instance.BuffSheet.GetBuffValue(_kind),
+            BuffOption.Empty
+        );
+    }
 }
 
 public class BuffMananger //: IBuff
 {
-    Dictionary<long, Buff>                m_list_buff              = new Dictionary<long, Buff>();
-    Dictionary<BuffTarget, HashSet<long>> m_list_buff_id_by_target = new Dictionary<BuffTarget, HashSet<long>>();
+
+
+
+    Dictionary<long, Buff>                          m_list_buff                     = new Dictionary<long, Buff>();
+    Dictionary<BuffTarget, HashSet<long>>           m_list_buff_id_by_target        = new Dictionary<BuffTarget, HashSet<long>>();
+    Dictionary<EnumBuffContentsType, HashSet<long>> m_list_buff_id_by_contents_type = new Dictionary<EnumBuffContentsType, HashSet<long>>();
 
 
     public bool      AddBuff(Buff _buff)
@@ -267,12 +311,24 @@ public class BuffMananger //: IBuff
         m_list_buff.Add(_buff.ID, _buff);
 
         // 타겟정보에도 등록
-        if (!m_list_buff_id_by_target.TryGetValue(_buff.Target, out var list_buff_id))
         {
-            list_buff_id = new HashSet<long>();
-            m_list_buff_id_by_target.Add(_buff.Target, list_buff_id);
+            if (!m_list_buff_id_by_target.TryGetValue(_buff.Target, out var list_buff_id))
+            {
+                list_buff_id = new HashSet<long>();
+                m_list_buff_id_by_target.Add(_buff.Target, list_buff_id);
+            }
+            list_buff_id.Add(_buff.ID);
         }
-        list_buff_id.Add(_buff.ID);
+
+        // 콘텐츠 타입에 등록
+        {
+            if (!m_list_buff_id_by_contents_type.TryGetValue(_buff.ContentsType, out var list_buff_id))
+            {
+                list_buff_id = new HashSet<long>();
+                m_list_buff_id_by_contents_type.Add(_buff.ContentsType, list_buff_id);
+            }
+            list_buff_id.Add(_buff.ID);
+        }
 
 
         return true;
@@ -280,48 +336,80 @@ public class BuffMananger //: IBuff
 
     public Buff      GetBuff(long _id) => m_list_buff.TryGetValue(_id, out var node) ? node : Buff.Empty;
 
-    public BuffValue Collect_BuffValue(IOwner _owner, BuffTarget _target, bool _is_plan = false)
+
+    public void RemoveBuff(long _id)
+    {
+        var buff = GetBuff(_id);
+
+        m_list_buff.Remove(_id);
+
+        {
+            if (m_list_buff_id_by_target.TryGetValue(buff.Target, out var list_buff_id))
+                list_buff_id.Remove(buff.ID);
+        }
+
+        {
+            if (m_list_buff_id_by_contents_type.TryGetValue(buff.ContentsType, out var list_buff_id))
+                list_buff_id.Remove(buff.ID);
+        }
+    }
+
+    private HashSet<Int64> GetBuffIDList(BuffTarget _target)
+    {
+        if (m_list_buff_id_by_target.TryGetValue(_target, out var list_buff_id))
+        {
+            return list_buff_id;
+        }
+        return null;
+    }
+
+    public BuffValue Collect_BuffValue(IOwner _owner, BuffTarget _target)
     {
         var result = BuffValue.Empty;
 
-        if (m_list_buff_id_by_target.TryGetValue(_target, out var list_buff_id))
+        using var list_buff_id = HashSetPool<Int64>.AcquireWrapper();
+
+        // 
+        var target      = GetBuffIDList(_target);
+
+        // none situation 도 적용.
+        var target_none = (_target.Situation != (int)EnumSituationType.None) 
+                        ? GetBuffIDList(BuffTarget.Create(EnumSituationType.None,
+                                       (EnumBuffTarget)_target.Target, 
+                                       (EnumBuffStatus)_target.Status)) 
+                        : null; 
+
+        if (target      != null) list_buff_id.Value.UnionWith(target);
+        if (target_none != null) list_buff_id.Value.UnionWith(target_none);       
+        
+       
+        foreach (var id in list_buff_id.Value)
         {
-            if (list_buff_id != null)
-            {
-                foreach (var id in list_buff_id)
-                {
-                    var buff = GetBuff(id);
-                    if (buff.IsExpired())
-                        continue;
+            var buff = GetBuff(id);
+            if (buff.IsExpired())
+                continue;
 
-                    if (!buff.IsValidCondition(_owner))
-                        continue;
+            if (!buff.IsValidCondition(_owner))
+                continue;
 
-                    
-                    result += buff.Value;
-                    
-                    // TODO: is_plan에 대한 처리는 어디선가 전역변수로 해야할 거 같은데... 모든 함수마다 넣기에는 너무 번거로움....
-                    if (!_is_plan)
-                    {
-                        // 사용 횟 수 깍기
-                        buff.Option.Decrease_LimitOfUse();                    
-                    }
-                }
-            }
+            result += buff.Value;
+            
+            // 사용 횟 수 깍기
+            buff.Option.Decrease_LimitOfUse();                                        
         }
 
         return result;
     }
 
 
-    
+        
 
 
     // #region IBuff Interface
-    public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
-    {
-        return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
-    }
+
+
+
+
 
     public BuffValue Collect_Combat(
         EnumSituationType _situation,
@@ -340,10 +428,30 @@ public class BuffMananger //: IBuff
         return result;
     }
 
+    public BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
+    {
+        return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Owner, _status));
+    }
+
     public BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status) 
     {
         return Collect_BuffValue(_owner, BuffTarget.Create(_situation, EnumBuffTarget.Target, _status));
     }
+
+
+    public void Collect_BuffID_ByContentsType(EnumBuffContentsType _contents_type, List<Int64> _list_buff_id)
+    {
+        if (m_list_buff_id_by_contents_type.TryGetValue(_contents_type, out var list_buff_id))
+        {
+            _list_buff_id.AddRange(list_buff_id);
+        }
+    }
+
+
+    
+
+
+
     // #endregion IBuff Interface
 
     public BuffManager_IO Save()
@@ -358,6 +466,7 @@ public class BuffMananger //: IBuff
     {
         m_list_buff.Clear();
         m_list_buff_id_by_target.Clear();
+        m_list_buff_id_by_contents_type.Clear();
 
         foreach (var buff in _snapshot.Buffs)
         {

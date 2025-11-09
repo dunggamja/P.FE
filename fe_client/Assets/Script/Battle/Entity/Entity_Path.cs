@@ -102,15 +102,15 @@ namespace Battle
         }
 
 
-        public void SetPathAttribute(EnumPathOwnerAttribute _attribute)
-        {
-            PathAttribute |= 1 << (int)_attribute;
-        }
+        // public void SetPathAttribute(EnumPathOwnerAttribute _attribute)
+        // {
+        //     PathAttribute |= 1 << (int)_attribute;
+        // }
 
-        public void RemovePathAttribute(EnumPathOwnerAttribute _attribute)
-        {
-            PathAttribute &= ~(1 << (int)_attribute);
-        }
+        // public void RemovePathAttribute(EnumPathOwnerAttribute _attribute)
+        // {
+        //     PathAttribute &= ~(1 << (int)_attribute);
+        // }
 
         public bool IsIgnoreZOC(int _faction)
         {

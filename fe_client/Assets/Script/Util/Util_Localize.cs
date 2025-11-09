@@ -11,11 +11,11 @@ public static partial class Util
     {
         if (_item == null)
         {
-            // null ¿¹¿ÜÃ³¸®.
+            // null ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½.
             return LocalizeKey.Create("localization_base", "ui_empty");
         }
         
-        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeName(_item.Kind);
+        var (table, key) = DataManager.Instance.ItemSheet.GetLocalizeName(_item.Kind);
         return LocalizeKey.Create(table, key);
     }
 
@@ -23,11 +23,11 @@ public static partial class Util
     {
         if (_item == null)
         {
-            // null ¿¹¿ÜÃ³¸®.
+            // null ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½.
             return LocalizeKey.Create("localization_base", "ui_empty");
         }
         
-        var (table, key) = DataManager.Instance.WeaponSheet.GetLocalizeDesc(_item.Kind);
+        var (table, key) = DataManager.Instance.ItemSheet.GetLocalizeDesc(_item.Kind);
         return LocalizeKey.Create(table, key);
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,23 +7,32 @@ namespace Battle
 {
     public class UnitStatus //: IStatus
     {
+        public int    ClassKIND { get ; private set; } = 0;
+        
+
         BaseContainer m_point_repository     = new BaseContainer();
         BaseContainer m_status_repository    = new BaseContainer();
-        BaseContainer m_attribute_repository = new BaseContainer();
+        // BaseContainer m_attribute_repository = new BaseContainer();
 
-        public int GetPoint(EnumUnitPoint _point_type)//, bool _is_plan = false)
+        public void SetClassKIND(int _class_kind)
         {
-            return m_point_repository.GetValue((int)_point_type);//, _is_plan);
+            ClassKIND = _class_kind;
         }
 
-        public int GetStatus(EnumUnitStatus _status_type)//, bool _is_plan = false)
+        public int GetPoint(EnumUnitPoint _point_type)
         {
-            return m_status_repository.GetValue((int)_status_type);//, _is_plan);
+            return m_point_repository.GetValue((int)_point_type);
         }
 
-        public bool HasAttribute(EnumUnitAttribute _attribute_type)//, bool _is_plan = false)
+        public int GetStatus(EnumUnitStatus _status_type)
         {
-            return m_attribute_repository.HasValue((int)_attribute_type);//, _is_plan);
+            return m_status_repository.GetValue((int)_status_type);
+        }
+
+        public bool HasAttribute(EnumUnitAttribute _attribute_type)
+        {
+            return DataManager.Instance.UnitSheet.HasClassAttribute_Unit(ClassKIND, _attribute_type);
+            // return m_attribute_repository.HasValue((int)_attribute_type);
         }
 
         public void SetPoint(EnumUnitPoint _point_type, int _value)//, bool _is_plan = false)
@@ -36,18 +45,28 @@ namespace Battle
             m_status_repository.SetValue((int)_status_type, _value);//, _is_plan);
         }
 
-        public void SetAttribute(EnumUnitAttribute _attribute_type, bool _value)//, bool _is_plan = false)
+        public int GetPathAttribute()
         {
-            m_attribute_repository.SetValue((int)_attribute_type, _value);//, _is_plan);
+            return DataManager.Instance.UnitSheet.GetClassAttribute_Path(ClassKIND);
         }
+
+        public bool HasClassAttribute_Weapon(EnumWeaponCategory _weapon_category)
+        {
+            return DataManager.Instance.UnitSheet.HasClassAttribute_Weapon(ClassKIND, _weapon_category);
+        }
+
+        // public void SetAttribute(EnumUnitAttribute _attribute_type, bool _value)//, bool _is_plan = false)
+        // {
+        //     m_attribute_repository.SetValue((int)_attribute_type, _value);//, _is_plan);
+        // }
 
         public UnitStatus_IO Save()
         {
             return new UnitStatus_IO()
             {
                 Point     = m_point_repository.Save(),
-                Status    = m_status_repository.Save(), 
-                Attribute = m_attribute_repository.Save()
+                Status    = m_status_repository.Save() 
+                // Attribute = m_attribute_repository.Save()
             };
         }
 
@@ -55,7 +74,7 @@ namespace Battle
         {
             m_point_repository.Load(_snapshot.Point);
             m_status_repository.Load(_snapshot.Status);
-            m_attribute_repository.Load(_snapshot.Attribute);
+            // m_attribute_repository.Load(_snapshot.Attribute);
         }
     }
 
@@ -63,6 +82,6 @@ namespace Battle
     {
         public BaseContainer_IO Point     { get; set; } = new();
         public BaseContainer_IO Status    { get; set; } = new();
-        public BaseContainer_IO Attribute { get; set; } = new();
+        // public BaseContainer_IO Attribute { get; set; } = new();
     }
 }

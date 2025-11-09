@@ -18,7 +18,7 @@ public static partial class BuffHelper
             { EnumUnitStatus.Defense,    new List<EnumBuffStatus> { EnumBuffStatus.Unit_Defense    } },
             { EnumUnitStatus.Resistance, new List<EnumBuffStatus> { EnumBuffStatus.Unit_Resistance } },
             { EnumUnitStatus.Movement,   new List<EnumBuffStatus> { EnumBuffStatus.Unit_Movement   } },
-            { EnumUnitStatus.Weight,     new List<EnumBuffStatus> { EnumBuffStatus.Unit_Weight     } },
+            // { EnumUnitStatus.Weight,     new List<EnumBuffStatus> { EnumBuffStatus.Unit_Weight     } },
         };
 
 
@@ -57,5 +57,57 @@ public static partial class BuffHelper
 
         // empty list
         return s_empty;
+    }
+
+
+
+    static public bool IsBuffUpdateSituation(EnumItemType _item_type, EnumItemActionType _action_type)
+    {
+        switch (_action_type)
+            {
+                case EnumItemActionType.Equip:   // 장비 장착 시 버프 적용.
+                case EnumItemActionType.Unequip: // 장비 해제 시 버프 제거.
+                case EnumItemActionType.Consume: // 소모품 사용 시 버프 적용.
+                    return true;
+
+
+                case EnumItemActionType.Acquire: // 액세서리, 잡화 획득 시 버프 적용.
+                case EnumItemActionType.Dispose: // 액세서리, 잡화 버리기/매각 시 버프 제거.
+                {
+                    return _item_type switch {                        
+                        EnumItemType.Accessory => true,
+                        EnumItemType.Misc      => true,
+                        _ => false
+                    };
+                }
+            }
+
+        return false;        
+    }
+
+    static public bool IsAddBuff(EnumItemActionType _action_type)
+    {
+        switch (_action_type)
+        {
+            case EnumItemActionType.Equip:   return true;
+            case EnumItemActionType.Consume: return true;
+            case EnumItemActionType.Acquire: return true;
+            case EnumItemActionType.Unequip: return false;
+            case EnumItemActionType.Dispose: return false;
+        }
+        return false;
+    }
+
+
+
+    static public EnumBuffContentsType GetContentsTypeByItemType(EnumItemType _item_type)
+    {
+        return _item_type switch {
+            EnumItemType.Weapon     => EnumBuffContentsType.Item_Equipment,
+            EnumItemType.Consumable => EnumBuffContentsType.Item_Consumable,
+            EnumItemType.Accessory  => EnumBuffContentsType.Item_Accessory,
+            EnumItemType.Misc       => EnumBuffContentsType.Item_Accessory,
+            _ => EnumBuffContentsType.None
+        };
     }
 }

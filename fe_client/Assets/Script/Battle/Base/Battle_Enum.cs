@@ -6,6 +6,14 @@ using UnityEngine;
 
 namespace Battle
 {
+    public enum EnumUnitSex
+    {
+        None   = 0,
+        Male   = 1,
+        Female = 2
+    }
+
+
     /// <summary>
     /// 유닛 속성   
     /// </summary>
@@ -20,7 +28,8 @@ namespace Battle
       Beast         = 5, // 비스트
       Large         = 6, // 대형
       HeavyArmor    = 7, // 중형
-      Props         = 8, // 물건.
+      LightArmor    = 8, // 경갑
+      Structure     = 9, // 건물
     }
 
     /// <summary>
@@ -42,42 +51,79 @@ namespace Battle
     {
       None = 0,
 
-      Level      ,  // 레벨
-      Strength   ,  // 힘
-      Magic      ,  // 마력
-      Skill      ,  // 스킬
-      Speed      ,  // 속도
-      Luck       ,  // 행운
-      Defense    ,  // 방어
-      Resistance ,  // 마방
-      Movement   ,  // 이동력
-      Weight     ,  // 중량. 
+      Level       = 1,  // 레벨
+      Strength    = 2,  // 힘
+      Magic       = 3,  // 마력
+      Skill       = 4,  // 스킬
+      Speed       = 5,  // 속도
+      Luck        = 6,  // 행운
+      Defense     = 7,  // 방어
+      Resistance  = 8,  // 마방
+      Movement    = 9,  // 이동력
+      Weight      = 10,  // 중량. 
+      Proficiency = 11, // 숙련도
     }
 
     /// <summary>
     /// 무기 속성.
     /// </summary>
-    public enum EnumWeaponAttribute
+    public enum EnumWeaponCategory
     {
       None = 0,
   
       Sword        = 1, // 검
       Axe          = 2, // 도끼
-      Lance        = 3, // 창
+      Spear        = 3, // 창
       MartialArts  = 4, // 격투술
       Bow          = 5, // 활
-      Wand         = 6, // 마법봉
-      Grimoire     = 7, // 마법서
+      Wand         = 6, // 지팡이 (힐, 보조)
+      Grimoire     = 7, // 마법서 (마법 공격))
       Dagger       = 8, // 단검
+    }
+
+    public enum EnumItemConsumeCategory
+    {
+      None    = 0,
+      Potion  = 1, // 물약
+    }
+
+    public enum EnumResourceCategory
+    {
+      None = 0,
+
+      Gold = 1, // 골드.
+    }
+
+    
+
+    public enum EnumItemAttribute
+    {
+      None = 0,
+
+      // 장착, 적용, 사용 시 제한 조건.
+      ExclusiveClass     = 1, // 전용 클래스  ( Class KIND)
+      ExclusiveCharacter = 2, // 전용 캐릭터. ( ID )
+      ExclusiveSex       = 3, // 전용 성별 
 
 
-      KillInfantry   = 101, // 보병
-      KillCavalry    = 102, // 보병
-      KillFlyer      = 103, // 비행
-      KillUndead     = 104, // 언데드
-      KillBeast      = 105, // 비스트
-      KillLarge      = 106, // 대형
-      KillHeavyArmor = 107, // 중형
+      // 장착, 적용, 사용 시 효과
+      KillUnitAttribute  = 11, // 보병 (EnumUnitAttribute)
+      UnitStatusBuff     = 21, // 유닛 상태 보너스 (EnumUnitStatus)      
+      SkillKind          = 31, // 스킬 종류 (Skill KIND)
+      ExpBonus           = 41, // 경험치 획득량.   
+      
+
+      BuffBonus          = 100, // 버프 보너스 (EnumBuffStatus)
+
+
+      
+      Heal                 = 201, // 회복 (고정)
+      HealBonus_UnitStatus = 202, // 회복 보너스 (유닛 스탯 비례, 만분율)
+
+
+
+    //   HitBonus_UnitStatus    = 302, // 명중 보너스 (유닛 스탯 비례, 만분율)
+      
     }
 
     /// <summary>
@@ -96,7 +142,15 @@ namespace Battle
       Dodge_Critical  = 7, // 필살 회피
       Range           = 8, // 사거리
       Range_Min       = 9, // 사거리. (최소)
+      Proficiency     = 10, // 숙련도
+      MaxCount        = 11, // 최대 개수
+      Price           = 12, // 가격
+
     }
+
+
+
+
 
 
     /// <summary>
@@ -180,10 +234,11 @@ namespace Battle
 
     public enum EnumPathOwnerAttribute
     {
-      Ground,  // 땅 이동 가능
-      Flyer,   // 비행 이동 가능
-      Swimmer, // 물 이동 가능
-      Climber, // 등산 가능.
+      Ground,        // 땅 이동 가능
+      Flyer,         // 비행 이동 가능
+      Water,         // 물 이동 가능
+      Water_Shallow, // 얕은 물 이동 가능
+      Climber,       // 등산 가능.
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?
@@ -204,8 +259,8 @@ namespace Battle
     {
         // None,        
         Move,     // 이동
-        Action,   // 행동, 공격.
-        Exchange, // 행동 교환, ... 행동이 있으면 행동 취소?
+        Action,   // 공격.
+        Exchange, // 교환
         // Done,     // �ൿ ����
     }
 
@@ -240,4 +295,6 @@ namespace Battle
 
         // MAX = 32,
     }
+
+
 }

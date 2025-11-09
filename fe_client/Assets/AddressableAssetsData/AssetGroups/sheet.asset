@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: sheet
   m_GUID: f9c720819ea724776ab721c07f767729
   m_SerializeEntries:
-  - m_GUID: a50eab004daef4a4a86f54fe82ca3033
-    m_Address: sheet/weapon
+  - m_GUID: 196fd3624b40e478098c71a48dc6bf06
+    m_Address: sheet/unit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sheet
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1047f575ff4f480fbd693d9806753dd
+    m_Address: sheet/item
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - sheet
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e24c1cd5114ac406b88ca4b9e77067ad
+    m_Address: sheet/buff
     m_ReadOnly: 0
     m_SerializedLabels:
     - sheet

@@ -8,20 +8,32 @@ using UnityEngine;
 
 public static partial class Util
 {
-    static public List<T> SplitText<T>(string _text, char _seperator) where T : struct, Enum
+    static public List<string> SplitText(string _text, char _seperator) //where T : struct, Enum
     {
 
-        var list = new List<T>();
-
+        var list        = new List<string>();
         if (string.IsNullOrEmpty(_text) == false)
         {
             try
             {
-                var items = _text.Split(_seperator);
-                foreach (var item in items)
+                ReadOnlySpan<char> span_text  = _text.AsSpan();
+                ReadOnlySpan<char> span_token = ReadOnlySpan<char>.Empty;
+
+                while (span_text.IsEmpty == false)
                 {
-                    if (Enum.TryParse(item, out T result))
-                        list.Add(result);
+                    int index = span_text.IndexOf(_seperator);
+                    if (index >= 0)
+                    {
+                        span_token = span_text.Slice(0, index);
+                        span_text  = span_text.Slice(index + 1);
+                    }
+                    else
+                    {
+                        span_token = span_text;
+                        span_text  = ReadOnlySpan<char>.Empty;
+                    }
+                    
+                    list.Add(span_token.ToString());
                 }
             }
             catch (Exception ex)
@@ -32,4 +44,10 @@ public static partial class Util
 
         return list;
     } 
+
+    static public List<T> SplitEnumText<T>(string _text, char _seperator) where T : struct, Enum
+    {
+        var    list = SplitText(_text, _seperator);
+        return list.Select(item => Enum.Parse<T>(item)).ToList();
+    }
 }

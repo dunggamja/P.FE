@@ -7,36 +7,28 @@ namespace Battle
 {
     public partial class Weapon
     {
-        // 기본 무기 특효표
-        static HashSet<(EnumWeaponAttribute, EnumUnitAttribute)> s_default_effectiveness = new HashSet<(EnumWeaponAttribute, EnumUnitAttribute)>()
-        {
-            // 활 => 비행
-            (EnumWeaponAttribute.Bow, EnumUnitAttribute.Flyer),
-
-            // 그 외 특효
-            (EnumWeaponAttribute.KillInfantry  , EnumUnitAttribute.Infantry),
-            (EnumWeaponAttribute.KillCavalry   , EnumUnitAttribute.Cavalry),
-            (EnumWeaponAttribute.KillFlyer     , EnumUnitAttribute.Flyer),
-            (EnumWeaponAttribute.KillUndead    , EnumUnitAttribute.Undead),
-            (EnumWeaponAttribute.KillBeast     , EnumUnitAttribute.Beast),
-            (EnumWeaponAttribute.KillLarge     , EnumUnitAttribute.Large),
-            (EnumWeaponAttribute.KillHeavyArmor, EnumUnitAttribute.HeavyArmor), 
-        };
-
         // <summary> 무기 특효관계 체크 </summary>
         public static bool Calculate_Effectiveness(Weapon _source, UnitStatus _target)
         {
-            foreach ((var weapon_attribute, var target_attribute) in s_default_effectiveness)
+            if (_source == null || _target == null)
+                return false;
+            
+            if (_source.ItemObject == null)
+                return false;
+
+
+            // 무기 특효 리스트 가져오기.
+            using var list_collect = ListPool<(int target, int value)>.AcquireWrapper();
+            
+            Item.CollectAttribute(_source.ItemObject.Kind, EnumItemAttribute.KillUnitAttribute, list_collect.Value);
+
+            // 타겟이 해당 되는지 체크.
+            foreach ((var target, var _) in list_collect.Value)
             {
-                // TODO: 무효 상성 체크?
-
-
-                // 특효 상성 체크
-                if (!_source.HasAttribute(weapon_attribute) || !_target.HasAttribute(target_attribute))
-                    return false;
-
-                return true;
+                if (_target.HasAttribute((EnumUnitAttribute)target))
+                    return true;
             }
+
 
             return false;
         }

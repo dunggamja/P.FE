@@ -32,18 +32,18 @@ public enum EnumState
 /// </summary>
 public enum EnumSituationType
 {
-    None,
+    None = 0,                           // 버프의 경우 항시 적용?
 
-    CombatSystem_Turn_Start,       // (전투씬) 턴 시작시 스킬 사용.
+    CombatSystem_Turn_Start      = 1,   // (전투씬) 턴 시작시 스킬 사용.
+    CombatSystem_Damage_Start    = 2,   // (전투씬) 공격 전 스킬 사용
+    CombatSystem_Damage_Finish   = 3,   // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
 
-    CombatSystem_Damage_Start,     // (전투씬) 공격 전 스킬 사용
     //CombatSystem_Damage_Calculate, // (전투씬) 공격 데미지 적용 직전 마지막 보정.
     //CombatSystem_Damage_Appy,      // (전투씬) 공격 데미지 적용 후 처리
     
-    CombatSystem_Damage_Finish,    // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
 
-    BattleSystem_Turn_Changed,     // (전투) 턴 변경
-    BattleSystem_Faction_Changed,  // (전투) 진영 변경
+    BattleSystem_Turn_Changed    = 101,  // (전투) 턴 변경
+    BattleSystem_Faction_Changed = 102,  // (전투) 진영 변경
 
     //BattleSystem_Command_Dispatch_AI_Update,
 }
@@ -53,10 +53,11 @@ public enum EnumItemType
 {
     None,
 
-    Weapon,     // 무기
-    Consumable, // 소모품
-    Accessary,  // 액세서리
-    Treasure,   // 보물
+    Weapon     = 1, // 무기
+    Consumable = 2, // 소모품
+    Accessory  = 3, // 액세서리
+    Misc       = 4, // 잡화
+    Resource   = 5, // 자원 <= 얻을때 아이템이 아닌 공용 자원으로 합산 처리됨.
 }
 
 public enum EnumItemActionType
@@ -66,6 +67,7 @@ public enum EnumItemActionType
     Equip,   // 장비
     Unequip, // 장비 해제
     Consume, // 사용 (무기는 내구도 감소...)
+    Acquire, // 획득
     Dispose, // 버리기/매각
 }
 

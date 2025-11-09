@@ -15,20 +15,132 @@ MonoBehaviour:
   m_TableCollectionName: localization_item
   m_TableCollectionNameGuidString: 95ef37a24657242f297ae93075644055
   m_Entries:
-  - m_Id: 215443562496
-    m_Key: weapon_sword_1_name
+  - m_Id: 10001
+    m_Key: 1_name
     m_Metadata:
       m_Items: []
-  - m_Id: 2834214520086528
-    m_Key: weapon_sword_1_desc
+  - m_Id: 10002
+    m_Key: 1_desc
     m_Metadata:
       m_Items: []
-  - m_Id: 2838023984111616
-    m_Key: weapon_sword_2_name
+  - m_Id: 10003
+    m_Key: 1001_name
     m_Metadata:
       m_Items: []
-  - m_Id: 2837995475427328
-    m_Key: weapon_sword_2_desc
+  - m_Id: 10004
+    m_Key: 1001_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10005
+    m_Key: 1002_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10006
+    m_Key: 1002_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10007
+    m_Key: 1003_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10008
+    m_Key: 1003_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10009
+    m_Key: 1004_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10010
+    m_Key: 1004_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10011
+    m_Key: 1100_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10012
+    m_Key: 1100_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10013
+    m_Key: 2001_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10014
+    m_Key: 2001_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10015
+    m_Key: 2002_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10016
+    m_Key: 2002_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10017
+    m_Key: 3001_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10018
+    m_Key: 3001_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10019
+    m_Key: 3002_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10020
+    m_Key: 3002_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10021
+    m_Key: 3003_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10022
+    m_Key: 3003_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10023
+    m_Key: 3004_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10024
+    m_Key: 3004_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10025
+    m_Key: 6001_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10026
+    m_Key: 6001_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10027
+    m_Key: 8001_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10028
+    m_Key: 8001_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10029
+    m_Key: 8002_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10030
+    m_Key: 8002_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10031
+    m_Key: 100001_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10032
+    m_Key: 100001_desc
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -13,7 +13,6 @@ public class sheet_map_setting_entity
 	public Int32       FACTION;
 	public Int32       STATUS_KIND;
 	public Int32       ITEM_KIND;
-	public Int32       ASSET_KIND;
 }
 
 
@@ -22,70 +21,69 @@ public class sheet_map_setting_status
 {
 	public Int32       KIND;
 	public string      MEMO;
-	public Int32       HP;
 	public Int32       LEVEL;
+	public Int32       HP;
 	public Int32       STRENGTH;
 	public Int32       MAGIC;
 	public Int32       SKILL;
 	public Int32       SPEED;
 	public Int32       LUCK;
+	public Int32       PROFICIENCY;
 	public Int32       DEFENSE;
 	public Int32       RESISTANCE;
-	public Int32       MOVEMENT;
-	public Int32       WEIGHT;
-   public string      UNIT_ATTRIBUTE;
-   public string      PATH_ATTRIBUTE;
+	public Int32       MOVEMENT;	
+	public Int32       CLASS;
 
-   private HashSet<EnumUnitAttribute>      m_cache_attributes_unit = null;
-   private HashSet<EnumPathOwnerAttribute> m_cache_attributes_path = null;
+   // private HashSet<EnumUnitAttribute>      m_cache_attributes_unit = null;
+   // private HashSet<EnumPathOwnerAttribute> m_cache_attributes_path = null;
 
-   private void CacheUnitAttributes()
-   {
-      m_cache_attributes_unit = new HashSet<EnumUnitAttribute>(); 
-      foreach (var e in Util.SplitText<EnumUnitAttribute>(UNIT_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
-         m_cache_attributes_unit.Add(e);
-   }
+   // private void CacheUnitAttributes()
+   // {
+   //    m_cache_attributes_unit = new HashSet<EnumUnitAttribute>(); 
+   //    foreach (var e in Util.SplitText<EnumUnitAttribute>(UNIT_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
+   //       m_cache_attributes_unit.Add(e);
+   // }
 
-   private void CachePathAttributes()
-   {
-      m_cache_attributes_path = new HashSet<EnumPathOwnerAttribute>(); 
-      foreach (var e in Util.SplitText<EnumPathOwnerAttribute>(PATH_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
-         m_cache_attributes_path.Add(e);
-   }
+   // private void CachePathAttributes()
+   // {
+   //    m_cache_attributes_path = new HashSet<EnumPathOwnerAttribute>(); 
+   //    foreach (var e in Util.SplitText<EnumPathOwnerAttribute>(PATH_ATTRIBUTE, Data_Const.SHEET_SEPERATOR))
+   //       m_cache_attributes_path.Add(e);
+   // }
 
-   public  bool HasUnitAttribute(EnumUnitAttribute _attribute)
-   {
-      if (m_cache_attributes_unit == null)
-         CacheUnitAttributes();
+   // public  bool HasUnitAttribute(EnumUnitAttribute _attribute)
+   // {
+   //    if (m_cache_attributes_unit == null)
+   //       CacheUnitAttributes();
 
-      return (m_cache_attributes_unit != null && m_cache_attributes_unit.Contains(_attribute));
-   }
+   //    return (m_cache_attributes_unit != null && m_cache_attributes_unit.Contains(_attribute));
+   // }
 
-	public  HashSet<EnumUnitAttribute> GetUnitAttributes()
-	{
-		if (m_cache_attributes_unit == null)
-			CacheUnitAttributes();
+	// public  HashSet<EnumUnitAttribute> GetUnitAttributes()
+	// {
+	// 	if (m_cache_attributes_unit == null)
+	// 		CacheUnitAttributes();
 
-		return m_cache_attributes_unit;
-	}
+	// 	return m_cache_attributes_unit;
+	// }
 
-	public  HashSet<EnumPathOwnerAttribute> GetPathAttributes()
-	{
-		if (m_cache_attributes_path == null)
-			CachePathAttributes();
+	// public  HashSet<EnumPathOwnerAttribute> GetPathAttributes()
+	// {
+	// 	if (m_cache_attributes_path == null)
+	// 		CachePathAttributes();
 
-		return m_cache_attributes_path;
-	}
+	// 	return m_cache_attributes_path;
+	// }
 
 
 
-   public  bool HasPathAttribute(EnumPathOwnerAttribute _attribute)
-   {
-      if (m_cache_attributes_path == null)
-         CachePathAttributes();
+   // public  bool HasPathAttribute(EnumPathOwnerAttribute _attribute)
+   // {
+   //    if (m_cache_attributes_path == null)
+   //       CachePathAttributes();
 
-      return (m_cache_attributes_path != null && m_cache_attributes_path.Contains(_attribute));
-   }
+   //    return (m_cache_attributes_path != null && m_cache_attributes_path.Contains(_attribute));
+   // }
 }
 
 [Serializable]
@@ -94,17 +92,12 @@ public class sheet_map_setting_item
 	public Int32       KIND;
 	public string      MEMO;
 	public int         ITEM_KIND;
-   public int         COUNT;
+   public int         VALUE;
+	public int         DROP;
 }
 
 
-[Serializable]
-public class sheet_map_setting_asset
-{
-	public Int32       KIND;
-	public string      MEMO;
-	public string      ASSET_KEY;
-}
+
 
 
 
@@ -114,7 +107,7 @@ public class sheet_map_setting : ScriptableObject
 	public List<sheet_map_setting_entity>    entity;
 	public List<sheet_map_setting_status>    status;
 	public List<sheet_map_setting_item>      item;
-	public List<sheet_map_setting_asset>     asset;
+	// public List<sheet_map_setting_asset>     asset;
 
 
 	public sheet_map_setting_entity GetEntity(Int64 _id)
@@ -158,18 +151,18 @@ public class sheet_map_setting : ScriptableObject
 		return list_result;	
 	}
 
-	public sheet_map_setting_asset GetAsset(Int32 _KIND)
-	{
-		if (asset == null)
-			return null;
+	// public sheet_map_setting_asset GetAsset(Int32 _KIND)
+	// {
+	// 	if (asset == null)
+	// 		return null;
 
-		foreach(var e in asset)
-		{
-			if (e.KIND == _KIND)
-				return e;
-		}
-		return null;
-	}
+	// 	foreach(var e in asset)
+	// 	{
+	// 		if (e.KIND == _KIND)
+	// 			return e;
+	// 	}
+	// 	return null;
+	// }
 
 
 	public sheet_map_setting_status GetStatus_EntityID(Int64 _entity_id)
@@ -190,13 +183,13 @@ public class sheet_map_setting : ScriptableObject
 		return GetItem(sheet.ITEM_KIND);
 	}
 
-	public sheet_map_setting_asset GetAsset_EntityID(Int64 _entity_id)
-	{
-		var sheet = GetEntity(_entity_id);
-		if (sheet == null)
-			return null;
+	// public sheet_map_setting_asset GetAsset_EntityID(Int64 _entity_id)
+	// {
+	// 	var sheet = GetEntity(_entity_id);
+	// 	if (sheet == null)
+	// 		return null;
 
-		return GetAsset(sheet.ASSET_KIND);
-	}
+	// 	return GetAsset(sheet.ASSET_KIND);
+	// }
 
 }

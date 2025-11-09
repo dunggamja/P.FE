@@ -48,14 +48,17 @@ namespace Battle
             return item_object.GetWeaponStatus(_status_type);
         }
 
-        public bool HasAttribute(EnumWeaponAttribute _attribute_type)
+        public bool HasAttribute(EnumItemAttribute _attribute_type, int _target = 0)
         {
             var item_object  = ItemObject;
             if (item_object == null)
                 return false;
 
-            return item_object.HasWeaponAttribute(_attribute_type);
+            return item_object.HasAttribute(_attribute_type, _target);
         }
+
+
+
 
         public void Reset()
         {

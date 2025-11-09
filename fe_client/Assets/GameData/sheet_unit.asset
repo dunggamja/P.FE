@@ -1,0 +1,317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46a532c0c04e144ec9e64735e459c584, type: 3}
+  m_Name: sheet_unit
+  m_EditorClassIdentifier: 
+  class_status_max:
+  - KIND: 1
+    MEMO: "\uB85C\uB4DC"
+    HP: 40
+    STRENGTH: 18
+    MAGIC: 8
+    SKILL: 18
+    SPEED: 18
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 15
+    RESISTANCE: 8
+    MOVEMENT: 7
+  - KIND: 2
+    MEMO: "\uD558\uC774\uB85C\uB4DC"
+    HP: 50
+    STRENGTH: 25
+    MAGIC: 15
+    SKILL: 25
+    SPEED: 25
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 20
+    RESISTANCE: 15
+    MOVEMENT: 10
+  - KIND: 21
+    MEMO: "\uD504\uB9B0\uC138\uC2A4"
+    HP: 30
+    STRENGTH: 0
+    MAGIC: 20
+    SKILL: 12
+    SPEED: 20
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 5
+    RESISTANCE: 19
+    MOVEMENT: 5
+  - KIND: 31
+    MEMO: "\uB098\uC774\uD2B8_\uB0A8"
+    HP: 34
+    STRENGTH: 13
+    MAGIC: 10
+    SKILL: 13
+    SPEED: 13
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 13
+    RESISTANCE: 6
+    MOVEMENT: 10
+  - KIND: 32
+    MEMO: "\uD314\uB77C\uB518_\uB0A8"
+    HP: 46
+    STRENGTH: 19
+    MAGIC: 15
+    SKILL: 19
+    SPEED: 20
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 18
+    RESISTANCE: 12
+    MOVEMENT: 10
+  - KIND: 41
+    MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
+    HP: 34
+    STRENGTH: 14
+    MAGIC: 0
+    SKILL: 13
+    SPEED: 11
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 16
+    RESISTANCE: 4
+    MOVEMENT: 8
+  - KIND: 42
+    MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
+    HP: 50
+    STRENGTH: 16
+    MAGIC: 0
+    SKILL: 15
+    SPEED: 12
+    LUCK: 30
+    PROFICIENCY: 30
+    DEFENSE: 24
+    RESISTANCE: 6
+    MOVEMENT: 6
+  class_attribute:
+  - KIND: 1
+    MEMO: "\uB85C\uB4DC"
+    UNIT: Infantry
+    PATH: Ground
+    WEAPON: Sword
+  - KIND: 2
+    MEMO: "\uD558\uC774\uB85C\uB4DC"
+    UNIT: Cavalry
+    PATH: Ground
+    WEAPON: Sword
+  - KIND: 21
+    MEMO: "\uD504\uB9B0\uC138\uC2A4"
+    UNIT: Infantry
+    PATH: Ground
+    WEAPON: Wand
+  - KIND: 31
+    MEMO: "\uB098\uC774\uD2B8_\uB0A8"
+    UNIT: Cavalry
+    PATH: Ground
+    WEAPON: Sword;Spear
+  - KIND: 32
+    MEMO: "\uD314\uB77C\uB518_\uB0A8"
+    UNIT: Cavalry
+    PATH: Ground
+    WEAPON: Sword;Spear
+  - KIND: 41
+    MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
+    UNIT: Infantry;HeavyArmor
+    PATH: Ground
+    WEAPON: Spear
+  - KIND: 42
+    MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
+    UNIT: Infantry;HeavyArmor
+    PATH: Ground
+    WEAPON: Spear
+  - KIND: 1000
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
+    UNIT: Infantry
+    PATH: Ground
+    WEAPON: 
+  - KIND: 1010
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
+    UNIT: Infantry
+    PATH: Ground
+    WEAPON: 
+  - KIND: 1020
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
+    UNIT: Infantry
+    PATH: Ground
+    WEAPON: 
+  - KIND: 1030
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
+    UNIT: Infantry
+    PATH: Ground;Water_Shallow
+    WEAPON: 
+  - KIND: 10000
+    MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
+    UNIT: Structure
+    PATH: Water
+    WEAPON: 
+  class_asset:
+  - KIND: 1
+    MEMO: "\uB85C\uB4DC"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 2
+    MEMO: "\uD558\uC774\uB85C\uB4DC"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 21
+    MEMO: "\uD504\uB9B0\uC138\uC2A4"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 31
+    MEMO: "\uB098\uC774\uD2B8_\uB0A8"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 32
+    MEMO: "\uD314\uB77C\uB518_\uB0A8"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 41
+    MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 42
+    MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  - KIND: 1000
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_enemy
+  - KIND: 1010
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_enemy_thief
+  - KIND: 1020
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_enemy
+  - KIND: 1030
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_enemy
+  - KIND: 10000
+    MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
+    UNIT_ID: 0
+    ASSET_KEY: demo/unit_alliance
+  class_localization:
+  - KIND: 1
+    MEMO: "\uB85C\uB4DC"
+    NAME: localization_class/1_name
+  - KIND: 2
+    MEMO: "\uD558\uC774\uB85C\uB4DC"
+    NAME: localization_class/2_name
+  - KIND: 21
+    MEMO: "\uD504\uB9B0\uC138\uC2A4"
+    NAME: localization_class/21_name
+  - KIND: 31
+    MEMO: "\uB098\uC774\uD2B8_\uB0A8"
+    NAME: localization_class/31_name
+  - KIND: 32
+    MEMO: "\uD314\uB77C\uB518_\uB0A8"
+    NAME: localization_class/32_name
+  - KIND: 41
+    MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
+    NAME: localization_class/41_name
+  - KIND: 42
+    MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
+    NAME: localization_class/42_name
+  - KIND: 1000
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
+    NAME: localization_class/1000_name
+  - KIND: 1010
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
+    NAME: localization_class/1010_name
+  - KIND: 1020
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
+    NAME: localization_class/1020_name
+  - KIND: 1030
+    MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
+    NAME: localization_class/1030_name
+  - KIND: 10000
+    MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
+    NAME: localization_class/10000_name
+  class_change:
+  - KIND: 1
+    MEMO: "\uB85C\uB4DC -> \uD558\uC774\uB85C\uB4DC"
+    NEXT_CLASS: 2
+  - KIND: 31
+    MEMO: "\uB098\uC774\uD2B8-> \uD314\uB77C\uB518"
+    NEXT_CLASS: 32
+  - KIND: 41
+    MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8 -> \uC544\uBA38 \uB098\uC774\uD2B8"
+    NEXT_CLASS: 42
+  unit_status_levelup:
+  - KIND: 0
+    MEMO: "\uC544\uAD70_\uC81C\uC774\uB4DC"
+    HP: 60
+    STRENGTH: 35
+    MAGIC: 0
+    SKILL: 40
+    SPEED: 35
+    LUCK: 0
+    PROFICIENCY: 55
+    DEFENSE: 30
+    RESISTANCE: 5
+    MOVEMENT: 0
+  - KIND: 0
+    MEMO: "\uC544\uAD70_\uC544\uD1A8"
+    HP: 30
+    STRENGTH: 0
+    MAGIC: 50
+    SKILL: 25
+    SPEED: 25
+    LUCK: 0
+    PROFICIENCY: 45
+    DEFENSE: 5
+    RESISTANCE: 40
+    MOVEMENT: 0
+  - KIND: 0
+    MEMO: "\uC544\uAD70_\uD2B8\uB85C\uC774"
+    HP: 65
+    STRENGTH: 35
+    MAGIC: 0
+    SKILL: 30
+    SPEED: 40
+    LUCK: 0
+    PROFICIENCY: 60
+    DEFENSE: 35
+    RESISTANCE: 0
+    MOVEMENT: 0
+  - KIND: 0
+    MEMO: "\uC544\uAD70_\uBCF4\uB098\uC140"
+    HP: 70
+    STRENGTH: 40
+    MAGIC: 0
+    SKILL: 20
+    SPEED: 20
+    LUCK: 0
+    PROFICIENCY: 40
+    DEFENSE: 40
+    RESISTANCE: 0
+    MOVEMENT: 0
+  - KIND: 0
+    MEMO: "\uC544\uAD70_\uD504\uB85C\uB514"
+    HP: 80
+    STRENGTH: 40
+    MAGIC: 0
+    SKILL: 30
+    SPEED: 25
+    LUCK: 0
+    PROFICIENCY: 65
+    DEFENSE: 50
+    RESISTANCE: 0
+    MOVEMENT: 0

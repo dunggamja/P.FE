@@ -195,5 +195,46 @@ namespace Battle
             return this;
         }
     }
+
+
+    public class Battle_Item_UpdateEvent : IEventParam
+    {
+ 
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
+
+        public Int64              EntityID   { get; private set; } = 0;
+        public Int32              ItemKind   { get; private set; } = 0;
+        public EnumItemActionType ActionType { get; private set; } = EnumItemActionType.None;
+
+        
+
+        // TODO: 디테일은 나중에 생각해보자.
+        // public Int64 ItemID { get; private set; } = 0;
+
+        public void Release()
+        {
+            ObjectPool<Battle_Item_UpdateEvent>.Return(this);
+        }
+
+        public void Reset()
+        {
+            EntityID   = 0;
+            ItemKind   = 0;
+            ActionType = EnumItemActionType.None;
+        }
+
+        public Battle_Item_UpdateEvent Set(Int64 _entity_id, Int32 _item_kind, EnumItemActionType _action_type)
+        {
+            EntityID   = _entity_id;
+            ItemKind   = _item_kind;
+            ActionType = _action_type;
+            return this;
+        }
+
+        // public void Reset()
+        // {
+        //     ItemID = 0;
+        // }
+    }
 }
 

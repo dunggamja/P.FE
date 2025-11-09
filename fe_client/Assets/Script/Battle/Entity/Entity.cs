@@ -26,8 +26,8 @@ namespace Battle
         public Inventory            Inventory       { get; }
         public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
-        public int                  PathAttribute   { get; private set; }
-        public int                  PathZOCFaction    => GetFaction();
+        public int                  PathAttribute   => StatusManager.Status.GetPathAttribute();
+        public int                  PathZOCFaction  => GetFaction();
         public (int x, int y)       PathBasePosition { get; private set; } 
         public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
 
@@ -147,8 +147,8 @@ namespace Battle
                 StatusManager    = StatusManager.Save(),
                 Inventory        = Inventory.Save(),
                 PathVehicle      = PathVehicle.Save(),
-                PathAttribute    = PathAttribute,
                 PathBasePosition = PathBasePosition
+                // PathAttribute    = PathAttribute,
             };
         }
 
@@ -165,9 +165,9 @@ namespace Battle
             Inventory.Load(_snapshot.Inventory);
 
             PathVehicle.Load(_snapshot.PathVehicle);
-            PathAttribute    = _snapshot.PathAttribute;
             PathBasePosition = _snapshot.PathBasePosition;
 
+            // PathAttribute    = _snapshot.PathAttribute;
             // Save/Load ���� ���ܵ� ������
             // Skill,
             // AIManager,
@@ -197,7 +197,7 @@ namespace Battle
         public Inventory_IO        Inventory        { get; set; } = new();
 
         public PathVehicle_IO      PathVehicle      { get; set; } = new();
-        public int                 PathAttribute    { get; set; } = 0;
+        // public int                 PathAttribute    { get; set; } = 0;
         public (int x, int y)      PathBasePosition { get; set; } = (0, 0);
 
     }

@@ -3,7 +3,7 @@
         "m_width": 64,
         "m_height": 64,
         "m_attribute_mask_static": [
-            2,
+            1,
             6,
             6,
             2,
@@ -4333,7 +4333,7 @@
             }
         ],
         "m_attribute_mask_result": [
-            2,
+            1,
             6,
             6,
             2,
@@ -8434,31 +8434,31 @@
     "Entities": {
         "m_entities": [
             {
-                "m_entity_id": 2001,
+                "m_entity_id": 1,
                 "m_cell_x": 3,
                 "m_cell_y": 23,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 2002,
+                "m_entity_id": 2,
                 "m_cell_x": 3,
                 "m_cell_y": 22,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 2003,
+                "m_entity_id": 3,
                 "m_cell_x": 2,
                 "m_cell_y": 22,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 2004,
+                "m_entity_id": 4,
                 "m_cell_x": 2,
                 "m_cell_y": 23,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 2005,
+                "m_entity_id": 5,
                 "m_cell_x": 4,
                 "m_cell_y": 23,
                 "m_is_fixed_object": false
@@ -8477,48 +8477,48 @@
             },
             {
                 "m_entity_id": 3003,
-                "m_cell_x": 3,
+                "m_cell_x": 7,
                 "m_cell_y": 9,
                 "m_is_fixed_object": false
             },
             {
                 "m_entity_id": 3004,
-                "m_cell_x": 7,
-                "m_cell_y": 9,
-                "m_is_fixed_object": false
-            },
-            {
-                "m_entity_id": 3005,
                 "m_cell_x": 13,
                 "m_cell_y": 12,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 3006,
+                "m_entity_id": 3011,
+                "m_cell_x": 3,
+                "m_cell_y": 9,
+                "m_is_fixed_object": false
+            },
+            {
+                "m_entity_id": 3012,
                 "m_cell_x": 15,
                 "m_cell_y": 9,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 3007,
+                "m_entity_id": 3021,
                 "m_cell_x": 6,
                 "m_cell_y": 6,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 3008,
+                "m_entity_id": 3022,
                 "m_cell_x": 7,
                 "m_cell_y": 6,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 3009,
+                "m_entity_id": 3031,
                 "m_cell_x": 17,
                 "m_cell_y": 5,
                 "m_is_fixed_object": false
             },
             {
-                "m_entity_id": 3010,
+                "m_entity_id": 3032,
                 "m_cell_x": 13,
                 "m_cell_y": 2,
                 "m_is_fixed_object": false

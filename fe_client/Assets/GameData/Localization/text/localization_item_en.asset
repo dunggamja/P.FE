@@ -17,23 +17,7 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 95ef37a24657242f297ae93075644055, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData:
-  - m_Id: 215443562496
-    m_Localized: Iron Sword
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2834214520086528
-    m_Localized: Standard Sword
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2837995475427328
-    m_Localized: Critical Sword
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2838023984111616
-    m_Localized: Kill Sword
-    m_Metadata:
-      m_Items: []
+  m_TableData: []
   references:
     version: 2
     RefIds: []

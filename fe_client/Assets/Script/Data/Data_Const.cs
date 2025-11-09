@@ -13,8 +13,10 @@ public static class AssetName
     public const string TILE_EFFECT      = "vfx/tile_effect";
 
 
-    public const string SHEET_WEAPON     = "sheet/weapon";
-
+    // public const string SHEET_WEAPON     = "sheet/weapon";
+    public const string SHEET_ITEM       = "sheet/item";
+    public const string SHEET_UNIT       = "sheet/unit";
+    public const string SHEET_BUFF       = "sheet/buff";
 
     // demo용 코드...
     public const string DEMO_MAP_FILE            = "demo/map_file";
@@ -28,6 +30,7 @@ public static class Data_Const
     public const Int32 KIND_WEAPON_SWORD_KILL = 2;
 
     public const char SHEET_SEPERATOR = ';';
+    public const char SHEET_LOCALIZATION_SEPERATOR = '/';
 
 }
 

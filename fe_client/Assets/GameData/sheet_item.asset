@@ -1,0 +1,379 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aefa650b704d44fff829f28f090e6d8f, type: 3}
+  m_Name: sheet_item
+  m_EditorClassIdentifier: 
+  status:
+  - KIND: 1
+    MEMO: " \uAE08\uD654"
+    TYPE: 5
+    CATEGORY: 1
+    PHYSICS: 0
+    MAGIC: 0
+    HIT: 0
+    CRITICAL: 0
+    WEIGHT: 0
+    PROFICIENCY: 0
+    RANGE: 0
+    RANGE_MIN: 0
+    MAX_COUNT: 0
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 0
+  - KIND: 1001
+    MEMO: "\uCCA0\uC758 \uAC80"
+    TYPE: 1
+    CATEGORY: 1
+    PHYSICS: 7
+    MAGIC: 0
+    HIT: 75
+    CRITICAL: 0
+    WEIGHT: 7
+    PROFICIENCY: 7
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 20
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 500
+  - KIND: 1002
+    MEMO: "\uD0AC \uC18C\uB4DC"
+    TYPE: 1
+    CATEGORY: 1
+    PHYSICS: 7
+    MAGIC: 0
+    HIT: 85
+    CRITICAL: 25
+    WEIGHT: 5
+    PROFICIENCY: 12
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 20
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 50
+  - KIND: 1003
+    MEMO: "\uC20F \uC18C\uB4DC"
+    TYPE: 1
+    CATEGORY: 1
+    PHYSICS: 4
+    MAGIC: 0
+    HIT: 65
+    CRITICAL: 0
+    WEIGHT: 3
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 30
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 300
+  - KIND: 1004
+    MEMO: "\uB871 \uC18C\uB4DC"
+    TYPE: 1
+    CATEGORY: 1
+    PHYSICS: 5
+    MAGIC: 0
+    HIT: 70
+    CRITICAL: 0
+    WEIGHT: 5
+    PROFICIENCY: 2
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 20
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 240
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uB784"
+    TYPE: 1
+    CATEGORY: 1
+    PHYSICS: 7
+    MAGIC: 0
+    HIT: 120
+    CRITICAL: 15
+    WEIGHT: 3
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 30
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 0
+  - KIND: 2001
+    MEMO: "\uB179\uC2A8 \uB3C4\uB07C"
+    TYPE: 1
+    CATEGORY: 2
+    PHYSICS: 5
+    MAGIC: 0
+    HIT: 50
+    CRITICAL: 0
+    WEIGHT: 10
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 20
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 120
+  - KIND: 2002
+    MEMO: "\uB098\uBB34\uAFBC \uB3C4\uB07C"
+    TYPE: 1
+    CATEGORY: 2
+    PHYSICS: 6
+    MAGIC: 0
+    HIT: 55
+    CRITICAL: 0
+    WEIGHT: 10
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 30
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 180
+  - KIND: 3001
+    MEMO: "\uD578\uB4DC\uC2A4\uD53C\uC5B4"
+    TYPE: 1
+    CATEGORY: 3
+    PHYSICS: 5
+    MAGIC: 0
+    HIT: 60
+    CRITICAL: 0
+    WEIGHT: 5
+    PROFICIENCY: 2
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 30
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 240
+  - KIND: 3002
+    MEMO: "\uD314\uB791\uD06C\uC2A4"
+    TYPE: 1
+    CATEGORY: 3
+    PHYSICS: 11
+    MAGIC: 0
+    HIT: 65
+    CRITICAL: 0
+    WEIGHT: 12
+    PROFICIENCY: 9
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 30
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 1200
+  - KIND: 3003
+    MEMO: "\uC20F \uC2A4\uD53C\uC5B4"
+    TYPE: 1
+    CATEGORY: 3
+    PHYSICS: 6
+    MAGIC: 0
+    HIT: 65
+    CRITICAL: 0
+    WEIGHT: 7
+    PROFICIENCY: 3
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 35
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 350
+  - KIND: 3004
+    MEMO: "\uD544\uB8F8"
+    TYPE: 1
+    CATEGORY: 3
+    PHYSICS: 7
+    MAGIC: 0
+    HIT: 60
+    CRITICAL: 0
+    WEIGHT: 11
+    PROFICIENCY: 1
+    RANGE: 2
+    RANGE_MIN: 1
+    MAX_COUNT: 16
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 240
+  - KIND: 6001
+    MEMO: "\uCE58\uC720\uC758 \uC9C0\uD321\uC774"
+    TYPE: 1
+    CATEGORY: 6
+    PHYSICS: 0
+    MAGIC: 7
+    HIT: 100
+    CRITICAL: 50
+    WEIGHT: 0
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 22
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 660
+  - KIND: 8001
+    MEMO: "\uB2E8\uAC80"
+    TYPE: 1
+    CATEGORY: 8
+    PHYSICS: 1
+    MAGIC: 0
+    HIT: 65
+    CRITICAL: 0
+    WEIGHT: 1
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 40
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 400
+  - KIND: 8002
+    MEMO: "\uBCF4\uC625\uC758 \uB2E8\uAC80"
+    TYPE: 1
+    CATEGORY: 8
+    PHYSICS: 1
+    MAGIC: 0
+    HIT: 50
+    CRITICAL: 0
+    WEIGHT: 1
+    PROFICIENCY: 1
+    RANGE: 1
+    RANGE_MIN: 1
+    MAX_COUNT: 1
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 1200
+  - KIND: 100001
+    MEMO: "\uC57D\uCD08"
+    TYPE: 2
+    CATEGORY: 1
+    PHYSICS: 0
+    MAGIC: 0
+    HIT: 0
+    CRITICAL: 0
+    WEIGHT: 0
+    PROFICIENCY: 0
+    RANGE: 0
+    RANGE_MIN: 0
+    MAX_COUNT: 3
+    DODGE: 0
+    DODGE_CRITICAL: 0
+    PRICE: 300
+  attribute:
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uD2B8\uB784 - \uCE90\uB9AD\uD130 \uC804\uC6A9"
+    TYPE: 2
+    TARGET: 1
+    VALUE: 1
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uD2B8\uB784 - \uD2B9\uD6A8 \uAE30\uB9C8"
+    TYPE: 11
+    TARGET: 2
+    VALUE: 1
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uD2B8\uB784 - \uD2B9\uD6A8 \uC911\uAC11"
+    TYPE: 11
+    TARGET: 7
+    VALUE: 1
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uD2B8\uB784 - \uACF5\uACA9 \uD69F\uC218 2\uD68C"
+    TYPE: 100
+    TARGET: 0
+    VALUE: 110000
+  - KIND: 3004
+    MEMO: "\uD314\uB8F8 - \uBC29\uC5B4\uB825 + 3"
+    TYPE: 100
+    TARGET: 0
+    VALUE: 300400
+  - KIND: 6001
+    MEMO: "\uCE58\uC720\uC758 \uC9C0\uD321\uC774_\uD790\uB7C9 7"
+    TYPE: 201
+    TARGET: 0
+    VALUE: 7
+  - KIND: 6001
+    MEMO: "\uCE58\uC720\uC758 \uC9C0\uD321\uC774_\uD790\uB7C9 \uBCF4\uB108\uC2A4
+      (\uB9C8\uB825 x 50%)"
+    TYPE: 202
+    TARGET: 3
+    VALUE: 50
+  - KIND: 100001
+    MEMO: "\uC57D\uCD08_\uD790\uB7C9 10"
+    TYPE: 201
+    TARGET: 0
+    VALUE: 10
+  skill: []
+  localize:
+  - KIND: 1
+    MEMO: " \uAE08\uD654"
+    NAME: localization_item/1_name
+    DESC: localization_item/1_desc
+  - KIND: 1001
+    MEMO: "\uCCA0\uC758 \uAC80"
+    NAME: localization_item/1001_name
+    DESC: localization_item/1001_desc
+  - KIND: 1002
+    MEMO: "\uD0AC \uC18C\uB4DC"
+    NAME: localization_item/1002_name
+    DESC: localization_item/1002_desc
+  - KIND: 1003
+    MEMO: "\uC20F \uC18C\uB4DC"
+    NAME: localization_item/1003_name
+    DESC: localization_item/1003_desc
+  - KIND: 1004
+    MEMO: "\uB871 \uC18C\uB4DC"
+    NAME: localization_item/1004_name
+    DESC: localization_item/1004_desc
+  - KIND: 1100
+    MEMO: "\uB85C\uB4DC \uC544\uC2A4\uB784"
+    NAME: localization_item/1100_name
+    DESC: localization_item/1100_desc
+  - KIND: 2001
+    MEMO: "\uB179\uC2A8 \uB3C4\uB07C"
+    NAME: localization_item/2001_name
+    DESC: localization_item/2001_desc
+  - KIND: 2002
+    MEMO: "\uB098\uBB34\uAFBC \uB3C4\uB07C"
+    NAME: localization_item/2002_name
+    DESC: localization_item/2002_desc
+  - KIND: 3001
+    MEMO: "\uD578\uB4DC\uC2A4\uD53C\uC5B4"
+    NAME: localization_item/3001_name
+    DESC: localization_item/3001_desc
+  - KIND: 3002
+    MEMO: "\uD314\uB791\uD06C\uC2A4"
+    NAME: localization_item/3002_name
+    DESC: localization_item/3002_desc
+  - KIND: 3003
+    MEMO: "\uC20F \uC2A4\uD53C\uC5B4"
+    NAME: localization_item/3003_name
+    DESC: localization_item/3003_desc
+  - KIND: 3004
+    MEMO: "\uD544\uB8F8"
+    NAME: localization_item/3004_name
+    DESC: localization_item/3004_desc
+  - KIND: 6001
+    MEMO: "\uCE58\uC720\uC758 \uC9C0\uD321\uC774"
+    NAME: localization_item/6001_name
+    DESC: localization_item/6001_desc
+  - KIND: 8001
+    MEMO: "\uB2E8\uAC80"
+    NAME: localization_item/8001_name
+    DESC: localization_item/8001_desc
+  - KIND: 8002
+    MEMO: "\uBCF4\uC625\uC758 \uB2E8\uAC80"
+    NAME: localization_item/8002_name
+    DESC: localization_item/8002_desc
+  - KIND: 100001
+    MEMO: "\uC57D\uCD08"
+    NAME: localization_item/100001_name
+    DESC: localization_item/100001_desc

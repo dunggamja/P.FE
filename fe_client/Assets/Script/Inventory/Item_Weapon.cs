@@ -7,99 +7,123 @@ using UnityEngine;
 
 public partial class Item 
 {
+    
 
     public int  GetWeaponStatus(EnumWeaponStatus _status_type)
     {
-        return m_status.GetValue((int)_status_type);
+        var status = DataManager.Instance.ItemSheet.GetStatus(Kind);
+        if (status == null)
+            return 0;
+
+        switch(_status_type)
+        {
+            case EnumWeaponStatus.Might_Physics:  return status.PHYSICS;
+            case EnumWeaponStatus.Might_Magic:    return status.MAGIC;
+            case EnumWeaponStatus.Hit:            return status.HIT;
+            case EnumWeaponStatus.Critical:       return status.CRITICAL;
+            case EnumWeaponStatus.Weight:         return status.WEIGHT;
+            case EnumWeaponStatus.Dodge:          return status.DODGE;
+            case EnumWeaponStatus.Dodge_Critical: return status.DODGE_CRITICAL;
+            case EnumWeaponStatus.Range:          return status.RANGE;
+            case EnumWeaponStatus.Range_Min:      return status.RANGE_MIN;
+            case EnumWeaponStatus.Proficiency:    return status.PROFICIENCY;
+            case EnumWeaponStatus.MaxCount:       return status.MAX_COUNT;
+            case EnumWeaponStatus.Price:          return status.PRICE;
+        }
+
+        return 0;
     }
 
-    public bool HasWeaponAttribute(EnumWeaponAttribute _attribute_type)
+    
+    public bool HasAttribute(EnumItemAttribute _attribute_type, int _target = 0)
     {
-        return m_attribute.HasValue((int)_attribute_type);
+        return GetAttribute(_attribute_type, _target) != 0;
     }
 
-    public void SetWeaponStatus(EnumWeaponStatus _status_type, int _value)
+
+
+    public int GetAttribute(EnumItemAttribute _attribute_type, int _target = 0)
     {
-        m_status.SetValue((int)_status_type, _value);
-    }
-
-    public void SetWeaponAttribute(EnumWeaponAttribute _attribute_type, bool _value)
-    {
-        m_attribute.SetValue((int)_attribute_type, _value);
-    }   
+        var attributes = DataManager.Instance.ItemSheet.GetAttribute(Kind);
+        if (attributes == null)
+            return 0;
 
 
-    bool IsEnableAction_Weapon_Equip(IOwner owner)
-    {
-        if (owner == null)
-            return false;
+        int total_value = 0;
 
-        // �����ڸ� ã�� �� ����.
-        var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
-        if (owner_entity == null)
-            return false;
-        // ���Ⱑ �ƴ� �� �� ����.
-        if (ItemType != EnumItemType.Weapon)                
-            return false;
-        
-        // ������ ������ ����.
-        var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
-        if (owner_weapon == null || owner_weapon.ItemID == ID)
-            return false;
-        
-        // todo: owner ���� ���� ���� üũ
-        return true;
-    }
-
-    bool IsEnableAction_Weapon_Unequip(IOwner owner)
-    {
-        if (owner == null)
-            return false;
-
-        // �����ڸ� ã�� �� ����.
-        var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
-        if (owner_entity == null)
-            return false;
-
-        // �ٸ� ������ ����.
-        var owner_weapon = owner_entity.StatusManager.Weapon; //as Weapon;
-        if (owner_weapon == null || owner_weapon.ItemID != ID)
-            return false;
-
-        // todo: �ͼ� ���� üũ.?
+        foreach (var attribute in attributes)
+        {
+            if (attribute.TYPE != (int)_attribute_type)
+                continue;
             
-        return true;
-    }
+            if (attribute.TARGET != _target && 0 < _target)
+                continue;
 
-    bool ProcessAction_Weapon_Equip(IOwner owner)
-    {
-        // �����ڸ� ã�� �� ����.
-        var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
-        if (owner_entity == null)
-            return false;
-
-        // ������ ����.
-        var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
-        if (owner_weapon != null)                                    
-            owner_weapon.Equip(ID);
-
-        return true;
-    }
-
-    bool ProcessAction_Weapon_Unequip(IOwner owner)
-    {
-        // �����ڸ� ã�� �� ����.
-        var owner_entity  = EntityManager.Instance.GetEntity(owner.ID);
-        if (owner_entity == null)
-            return false;
-
-        // ������ ����.
-        var owner_weapon  = owner_entity.StatusManager.Weapon; //as Weapon;
-        if (owner_weapon != null)                                    
-            owner_weapon.Unequip();
+            total_value += attribute.VALUE;
+        }
             
-        return true;
+        return total_value;
     }
+
+    static public void CollectBuffID(Int32 _item_kind, List<Int64> _list_buff_id)
+    {
+        if (_list_buff_id == null)
+            return;
+
+        using var list_collect = ListPool<(int target, int value)>.AcquireWrapper();
+
+        Item.CollectAttribute(_item_kind, EnumItemAttribute.BuffBonus, list_collect.Value);
+
+        foreach (var (_, buff_id) in list_collect.Value)
+            _list_buff_id.Add(buff_id);
+    }
+
+
+    static public void CollectAttribute(Int32 _item_kind, EnumItemAttribute _attribute_type, List<(int target, int value)> _list_collect)
+    {
+        if (_list_collect == null)
+            return;
+
+
+        var attributes = DataManager.Instance.ItemSheet.GetAttribute(_item_kind);
+        if (attributes == null)
+            return;
+
+        foreach (var attribute in attributes)
+        {
+            if (attribute.TYPE != (int)_attribute_type)
+                continue;
+            
+            if (attribute.VALUE == 0)
+                continue;
+
+            _list_collect.Add((attribute.TARGET, attribute.VALUE));
+        }
+    }
+
+    static public int CollectAttributeValue(Int32 _item_kind, EnumItemAttribute _type, int _target)
+    {
+        var attributes = DataManager.Instance.ItemSheet.GetAttribute(_item_kind);
+        if (attributes == null)
+            return 0;
+
+        int total_value = 0;
+
+        foreach (var attribute in attributes)
+        {
+            if (attribute.TYPE != (int)_type)
+                continue;
+
+            if (attribute.TARGET != _target && 0 < _target)
+                continue;
+
+            total_value += attribute.VALUE;
+        }
+
+        return total_value;
+    }
+
+
 
 
 }

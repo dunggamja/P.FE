@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +6,8 @@ using UnityEngine;
 namespace Battle
 {
     [EventReceiver(
-        typeof(Battle_Situation_UpdateEvent)
-        //,
-        // typeof(Battle_AI_Command_DecisionEvent)
-        // typeof(Battle_Entity_MoveEvent)
+        typeof(Battle_Situation_UpdateEvent),
+        typeof(Battle_Item_UpdateEvent)
         )]
     public partial class Entity
     {
@@ -19,67 +17,116 @@ namespace Battle
             switch (_event)
             {
                 case Battle_Situation_UpdateEvent situation_updated:
-                    // Áø¿µ °»½Å 
+                    // ìƒí™© ê°±ì‹ .
                     OnReceiveEvent_Battle_Situation_UpdateEvent(situation_updated);
-                    
-                    
                     break;
-                // case Battle_AI_Command_DecisionEvent ai_update_event:
-                //     // AI °»½Å
-                //     OnReceiveEvent_Battle_AI_Command_DecisionEvent(ai_update_event);
-                //     break;
 
-                // case Battle_Entity_MoveEvent entity_move_event:
-                //     // ÀÌµ¿ ÀÌº¥Æ®
-                //     OnReceiveEvent_Battle_Entity_MoveEvent(entity_move_event);
-                //     break;
+                case Battle_Item_UpdateEvent item_updated:
+                    // ì•„ì´í…œ ê°±ì‹ .
+                    OnReceiveEvent_Battle_Item_UpdateEvent(item_updated);
+                    break;
             }
         }
 
+        private void OnReceiveEvent_Battle_Item_UpdateEvent(Battle_Item_UpdateEvent _event)
+        {
+            if (_event == null)
+                return;
+
+            if (_event.EntityID != ID)
+                return;
+
+            OnRefreshBuff_Item(_event.ItemKind, _event.ActionType);
+        }
 
         void OnReceiveEvent_Battle_Situation_UpdateEvent(Battle_Situation_UpdateEvent _event)
         {
             if (_event == null)
                 return;
 
-            // if (_event.IsPlan)
-            // {
-            //     // TODO: ÇöÀç·Î¼­´Â ÇÃ·£ ¸ğµåÀÏ ¶§´Â ¾Æ¹«°Íµµ ¾ÈÇÔ.
-            //     // °¢ ½ºÅ³º°·Î Plan ¸ğµå Ã³¸®°¡ ÇÊ¿äÇÒ±î?
-            //     return;
-            // }
+
 
             if (_event.Situation == EnumSituationType.BattleSystem_Turn_Changed)
             {
-                // ÅÏÀÌ º¯°æµÇ¾úÀ» ¶§.
-                // Çàµ¿ °¡´ÉÇÏ°Ô²û...
+                // í„´ ë³€ê²½ ì‹œ ëª¨ë“  ëª…ë ¹ ê°€ëŠ¥ ìƒíƒœë¡œ ë³€ê²½.
                 SetAllCommandEnable();
             }
 
 
-            // ½ºÅ³ »ç¿ë.
+            // ìŠ¤í‚¬ ì‚¬ìš©.
             Skill.UseSkill(_event.Situation, this);
         }   
 
 
+        void OnRefreshBuff_ItemAll()
+        {
+            // ê¸°ì¡´ì— ìˆëŠ” ì¥ë¹„ ë²„í”„ ì œê±°.
+            {
+                using var list_buff_id = ListPool<Int64>.AcquireWrapper();
+                StatusManager.Buff.Collect_BuffID_ByContentsType(EnumBuffContentsType.Item_Equipment, list_buff_id.Value);
+
+                foreach(var buff_id in list_buff_id.Value)
+                {
+                    StatusManager.Buff.RemoveBuff(buff_id);
+                }
+            }
+
+            {
+                using var list_item = ListPool<Item>.AcquireWrapper();
+                Inventory.CollectItem(list_item.Value);
+            }
+        }
+
+        void OnRefreshBuff_Item(Int32 _item_kind, EnumItemActionType _action_type)
+        {
+            // ì•„ì´í…œ íƒ€ì…ì— ë”°ë¼ì„œ ë²„í”„ ì²˜ë¦¬ ë°©ì‹ì´ ë‹¤ë¥´ë‹¤.
+            var sheet_item = DataManager.Instance.ItemSheet.GetStatus(_item_kind);
+            if (sheet_item == null)
+                return;
+            
+            // ë²„í”„ ê°±ì‹ ì„ í•˜ëŠ” ìƒí™©ì¸ì§€ í™•ì¸.
+            var update_buff = BuffHelper.IsBuffUpdateSituation((EnumItemType)sheet_item.TYPE, _action_type);
+            if (update_buff == false)
+                return;
+
+            // ì²˜ë¦¬í•  ë²„í”„ê°€ ìˆëŠ”ì§€ í™•ì¸.
+            using var list_buff_id = ListPool<Int64>.AcquireWrapper();
+            Item.CollectBuffID(_item_kind, list_buff_id.Value);
+            if (list_buff_id.Value.Count == 0)
+                return;
+
+            var is_add_buff        = BuffHelper.IsAddBuff(_action_type);
+            var buff_contents_type = BuffHelper.GetContentsTypeByItemType((EnumItemType)sheet_item.TYPE);
+            
+                
+            foreach (var buff_id in list_buff_id.Value)
+            {
+                if (is_add_buff)
+                    StatusManager.Buff.AddBuff(Buff.CreateBuff((int)buff_id, buff_contents_type));
+                else
+                    StatusManager.Buff.RemoveBuff(buff_id);
+            }
+        }
+
+
         // void OnReceiveEvent_Battle_AI_Command_DecisionEvent(Battle_AI_Command_DecisionEvent _event)
         // {
-        //     // Á×¾úÀ¸¸é ¾Ï°Íµµ ¾ÈÇÔ.
+        //     // ï¿½×¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï°Íµï¿½ ï¿½ï¿½ï¿½ï¿½.
         //     if (IsDead)
         //         return;
 
-        //     // Áø¿µÀÌ ´Ù¸§.
+        //     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½.
         //     if (_event.Faction != GetFaction())
         //         return;
 
-        //     // Çàµ¿ ¿ì¼±¼øÀ§°¡ ´Ù¸§.
+        //     // ï¿½àµ¿ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½.
         //     if (_event.Priority != GetCommandPriority())
         //         return;
             
-        //     // TODO: ³ªÁß¿¡ ÇÊ¿äÇÑ Sensor¸¸ ¾÷µ¥ÀÌÆ® ÇÒ ¼ö ÀÖ°Ô Á¤¸® ÇÊ¿ä.
+        //     // TODO: ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ Sensorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½.
         //     AIManager.Update(this);
 
-        //     // event param¿¡ µî·Ï.
+        //     // event paramï¿½ï¿½ ï¿½ï¿½ï¿½.
         //     _event.TrySetScore(ID, GetAIScoreMax().score);
         // }
 
