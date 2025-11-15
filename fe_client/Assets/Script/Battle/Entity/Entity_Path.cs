@@ -52,7 +52,7 @@ namespace Battle
             // 
             if (_is_plan == false)
             {
-                // 선택 셀 점유 해제.
+                // 선택 셀 점유 셋팅.
                 UpdateCellOccupied(true);
 
                 // 선택 셀 기준 위치.

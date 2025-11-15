@@ -168,14 +168,15 @@ namespace Battle
                 // 엔티티 리포지토리에 추가.
                 EntityManager.Instance.AddEntity(entity);
 
-                // 위치 셋팅.
-                entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
-
+                
 
                 // TODO: 이것은 임시로 해둔 코드. 나중에 고정오브젝트를 어떻게 할것인지 생각해보자.
                 // FIXEDOBJECT와 연결이 필요할 것이다.
                 if (entity.IsFixedObject)
                 {
+                    // 위치 셋팅.
+                    entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
+
                     continue;
                 }
 
@@ -226,7 +227,12 @@ namespace Battle
                     entity.Inventory.AddItem(item_entity);
                 }    
 
+                // 무기 장착.
                 entity.Equip_Weapon_Auto();           
+
+                // 위치 셋팅.
+                entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
+
 
 
                 // 유닛 에셋 셋팅.
