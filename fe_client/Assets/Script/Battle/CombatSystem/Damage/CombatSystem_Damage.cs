@@ -207,13 +207,28 @@ namespace Battle
         {
             // 공격자 무기 상태 체크.
             var dealer = GetDealer(_param);
-            if (dealer == null)
+            var target = GetTarget(_param);
+            if (dealer == null || target == null)
                 return false;
 
             // 공격자 무기가 셋팅되있는지, 남은 수량이 0보다 작은지 체크합니다. 
-            var dealer_weapon = dealer.StatusManager.Weapon.ItemObject;
-            if (dealer_weapon == null || dealer_weapon.ID == 0 || dealer_weapon.CurCount <= 0)
+            var dealer_weapon = dealer.StatusManager.Weapon;
+            if (dealer_weapon == null || dealer_weapon.ItemID == 0)
                 return false;
+
+            var dealer_weapon_item = dealer.StatusManager.Weapon.ItemObject;
+            if (dealer_weapon_item == null || dealer_weapon_item.ID == 0 || dealer_weapon_item.CurCount <= 0)
+                return false;
+
+
+            // 사거리 체크.
+            var weapon_range_max = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon, EnumWeaponStatus.Range);
+            var weapon_range_min = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon, EnumWeaponStatus.Range_Min);
+
+            var distance = PathAlgorithm.Distance(dealer.Cell.x, dealer.Cell.y, target.Cell.x, target.Cell.y);
+            if (distance < weapon_range_min || weapon_range_max < distance)
+                return false;
+
 
             return true;
         }
