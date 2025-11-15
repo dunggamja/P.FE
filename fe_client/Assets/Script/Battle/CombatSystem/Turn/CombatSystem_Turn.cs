@@ -114,7 +114,7 @@ namespace Battle
 
 
         // 속도가 특정 값 이상으로 차이가 나면 행동을 2번 합니다.
-        const int ADD_EXTRA_TURN_SPEED = 5; 
+        const int ADD_EXTRA_TURN_SPEED = 3; 
 
 
         public  EnumCombatTurn CombatTurn   { get; private set; } = EnumCombatTurn.None;

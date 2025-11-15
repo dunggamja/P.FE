@@ -196,13 +196,22 @@ namespace Battle
 
         float Calculate_HitRate(ICombatSystemParam _param)
         {
+
+
+
             // 명중률 = 명중 - 회피
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
  
             // 스탯  & 버프 계산.
-            var hit        = dealer.StatusManager.Calc_Hit();
-            var dodge      = target.StatusManager.Calc_Dodge();
+            var hit         = dealer.StatusManager.Calc_Hit();
+            var dodge       = target.StatusManager.Calc_Dodge();
+
+
+            //  지형 효과
+            var dodge_bonus =  TerrainMapManager.Instance.TerrainMap.Attribute.GetDodgeBonus(target.Cell.x, target.Cell.y);
+            dodge           += dodge_bonus;
+
 
             var buff_hit   = dealer.StatusManager
                 .Buff

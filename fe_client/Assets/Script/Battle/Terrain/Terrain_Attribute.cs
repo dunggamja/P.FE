@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Battle;
 using UnityEngine;
 
@@ -55,6 +56,18 @@ namespace Battle
         public void RemoveAttribute(int _x, int _y, Battle.EnumTerrainAttribute _attribute_type)
         {
             RemoveBitIndex(_x, _y, (int)_attribute_type);
+        }
+
+        public int GetDodgeBonus(int _x, int _y)
+        {
+            int dodge_bonus = 0;
+
+            // 숲 지형에서 회피 보너스 적용.
+            if (HasAttribute(_x, _y, EnumTerrainAttribute.Ground_Forest))
+                dodge_bonus += 20;
+
+            return dodge_bonus;
+            
         }
 
         public static (int cost, EnumTerrainAttribute attribute) Calculate_MoveCost(int _path_owner_attribute, Int64 _terrain_attribute)

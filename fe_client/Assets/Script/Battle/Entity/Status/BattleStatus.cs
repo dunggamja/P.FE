@@ -122,10 +122,9 @@ namespace Battle
         /// <summary> 명중. </summary>
         public int Calc_Hit()
         {
-            var unit_skill = GetBuffedUnitStatus(EnumUnitStatus.Skill);
-            var unit_luck  = GetBuffedUnitStatus(EnumUnitStatus.Luck);
-            
-            var unit_hit   = unit_skill * 2 + unit_luck / 2;
+            // var unit_luck  = GetBuffedUnitStatus(EnumUnitStatus.Luck);
+            var unit_skill = GetBuffedUnitStatus(EnumUnitStatus.Skill);            
+            var unit_hit   = unit_skill * 3 ;//+ unit_luck / 2;
             var weapon_hit = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Hit);
 
             return unit_hit + weapon_hit;
@@ -134,23 +133,23 @@ namespace Battle
         /// <summary> 필살. </summary>
         public int Calc_Critical()
         {
-            var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
-
-            var unit_critical   = unit_skill / 2;
-            var weapon_critical = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Critical);
-
-            return unit_critical + weapon_critical;
+            // var unit_skill      = GetBuffedUnitStatus(EnumUnitStatus.Skill);
+            // var unit_critical   = unit_skill / 2;
+            // return unit_critical + weapon_critical;
+            var    weapon_critical = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Critical);
+            return weapon_critical;
         }
 
 
         /// <summary> 회피. </summary>
         public int Calc_Dodge()
         {
+            // var unit_luck    = GetBuffedUnitStatus(EnumUnitStatus.Luck);
             var battle_speed = Calc_Speed();
-            var unit_luck    = GetBuffedUnitStatus(EnumUnitStatus.Luck);
             var weapon_dodge = GetBuffedWeaponStatus(Weapon, EnumWeaponStatus.Dodge);
+            
 
-            return battle_speed * 2 + unit_luck / 2 + weapon_dodge;
+            return battle_speed * 2 + weapon_dodge; //+ unit_luck / 2
         }
 
         /// <summary> 필살 회피. </summary>
