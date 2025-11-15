@@ -203,8 +203,9 @@ namespace Battle
             {                            
                 foreach(var e in list_weapon.Value)
                 {
-                    // 테스트 전투를 연산하기 위해 착용중인 무기를 바꿔줍니다.
-                    owner_weapon.Equip(e.ID);
+                    // 무기 장착.
+                    if (owner_entity.ProcessAction(e, EnumItemActionType.Equip) == false)
+                        continue;
                     
                     // 최대 이동 거리. 
                     var move_distance = (is_moveable) ? owner_entity.PathMoveRange : 0;
@@ -268,7 +269,7 @@ namespace Battle
             finally
             {
                 // 무기 원상 복구.
-                owner_weapon.Equip(equiped_weapon_id);                    
+                owner_entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Unequip);
             }    
         }
 

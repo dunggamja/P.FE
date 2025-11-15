@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,9 +18,9 @@ namespace Battle
     public class BattleSkill //: ISkill
     {
         // 
-        // Å¸ÀÌ¹ÖÀÌ ¸ÂÀ» ¶§  ¹ßµ¿.
-        EnumSystem m_system_type;
-        int        m_system_skill_timing;
+        // Å¸ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½  ï¿½ßµï¿½.
+        // EnumSystem m_system_type;
+        // int        m_system_skill_timing;
 
         public bool UseSkill(EnumSituationType _system_timing, IOwner _owner)
         {
@@ -29,6 +29,20 @@ namespace Battle
             
             return true;
         }
+
+        public BattleSkill_IO Save()
+        {
+            return new BattleSkill_IO();
+        }
+
+        public void Load(BattleSkill_IO _snapshot)
+        {
+        }
+    }
+
+    public class BattleSkill_IO
+    {
+        
     }
     
 }

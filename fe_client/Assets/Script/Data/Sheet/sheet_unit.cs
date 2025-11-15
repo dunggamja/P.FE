@@ -87,7 +87,7 @@ public class sheet_class_change
 [Serializable]
 public class sheet_unit_status_levelup
 {
-	public Int32       KIND;
+	public Int32       ID;
 	public string      MEMO;
 	public Int32       HP;
 	public Int32       STRENGTH;
@@ -200,7 +200,7 @@ public class sheet_unit : ScriptableObject
 
       foreach (var item in unit_status_levelup)
       {
-         m_cache_unit_status_levelup.Add(item.KIND, item);
+         m_cache_unit_status_levelup.Add(item.ID, item);
       }
    }
 

@@ -21,8 +21,8 @@ MonoBehaviour:
     OPTION: 
     VALUE_MULTIPLY: 0
     VALUE_ADD: 1
-  - KIND: 300400
-    MEMO: "\uD314\uB8F8 - \uBC29\uC5B4\uB825 + 3"
+  - KIND: 300200
+    MEMO: "\uD314\uB791\uD06C\uC2A4 - \uBC29\uC5B4\uB825 + 3"
     SITUATION: None
     TARGET: Owner
     STATUS: Unit_Defense

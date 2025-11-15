@@ -43,7 +43,6 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            // TODO : 무기 장착은 나중에 Command_Equip 으로 변경.?
             if (Owner != null)
             {
                 // 공격 유닛 위치 셋팅.
@@ -53,7 +52,7 @@ namespace Battle
                     _is_plan: false);
 
                 // 무기 장착.
-                Owner.StatusManager.Weapon.Equip(WeaponID);
+                Owner.ProcessAction(Owner.Inventory.GetItem(WeaponID), EnumItemActionType.Equip);
             }
 
             // 카메라 이동 처리.

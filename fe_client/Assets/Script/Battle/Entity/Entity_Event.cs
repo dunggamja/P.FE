@@ -36,7 +36,10 @@ namespace Battle
             if (_event.EntityID != ID)
                 return;
 
-            OnRefreshBuff_Item(_event.ItemKind, _event.ActionType);
+            // 버프 적용.
+            ApplyBuff_Item(_event.ItemKind, _event.ActionType);
+
+            // 그외 처리.
         }
 
         void OnReceiveEvent_Battle_Situation_UpdateEvent(Battle_Situation_UpdateEvent _event)
@@ -58,26 +61,44 @@ namespace Battle
         }   
 
 
-        void OnRefreshBuff_ItemAll()
+        void ApplyBuff_Inventory()
         {
-            // 기존에 있는 장비 버프 제거.
+            // 소지, 장비한 아이템의 버프 제거.
             {
                 using var list_buff_id = ListPool<Int64>.AcquireWrapper();
                 StatusManager.Buff.Collect_BuffID_ByContentsType(EnumBuffContentsType.Item_Equipment, list_buff_id.Value);
-
+                StatusManager.Buff.Collect_BuffID_ByContentsType(EnumBuffContentsType.Item_Accessory, list_buff_id.Value);
                 foreach(var buff_id in list_buff_id.Value)
                 {
                     StatusManager.Buff.RemoveBuff(buff_id);
                 }
             }
 
+            // 소지한 아이템의 버프 적용.
             {
-                using var list_item = ListPool<Item>.AcquireWrapper();
+                using var list_item    = ListPool<Item>.AcquireWrapper();
                 Inventory.CollectItem(list_item.Value);
+                
+                foreach(var item in list_item.Value)
+                {
+                    ApplyBuff_Item(item.Kind, EnumItemActionType.Acquire);
+                }
+            }
+
+            // 장비한 아이템의 버프 적용.
+            {
+                if (0 < StatusManager.Weapon.ItemID)
+                {
+                    var item_object = StatusManager.Weapon.ItemObject;
+                    if (item_object != null)
+                    {
+                        ApplyBuff_Item(item_object.Kind, EnumItemActionType.Equip);
+                    }
+                }
             }
         }
 
-        void OnRefreshBuff_Item(Int32 _item_kind, EnumItemActionType _action_type)
+        void ApplyBuff_Item(Int32 _item_kind, EnumItemActionType _action_type)
         {
             // 아이템 타입에 따라서 버프 처리 방식이 다르다.
             var sheet_item = DataManager.Instance.ItemSheet.GetStatus(_item_kind);

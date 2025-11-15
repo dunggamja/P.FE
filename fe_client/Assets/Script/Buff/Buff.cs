@@ -7,9 +7,9 @@ using NUnit.Framework;
 public enum EnumBuffContentsType
 {
     None,
-    Item_Equipment  = 1,  // 장착 시 적용.
+    Item_Equipment  = 1, // 장착 시 적용.
     Item_Consumable = 2, // 사용 시 적용,
-    Item_Accessory  = 3,  // 소지만 하고 있어도 적용.
+    Item_Accessory  = 3, // 소지만 하고 있어도 적용.
 }
 
 public enum EnumBuffTarget

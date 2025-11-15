@@ -100,59 +100,59 @@ MonoBehaviour:
   class_attribute:
   - KIND: 1
     MEMO: "\uB85C\uB4DC"
-    UNIT: Infantry
+    UNIT: Infantry;Male
     PATH: Ground
     WEAPON: Sword
   - KIND: 2
     MEMO: "\uD558\uC774\uB85C\uB4DC"
-    UNIT: Cavalry
+    UNIT: Cavalry;Male
     PATH: Ground
     WEAPON: Sword
   - KIND: 21
     MEMO: "\uD504\uB9B0\uC138\uC2A4"
-    UNIT: Infantry
+    UNIT: Infantry;Female
     PATH: Ground
     WEAPON: Wand
   - KIND: 31
     MEMO: "\uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Cavalry
+    UNIT: Cavalry;Male
     PATH: Ground
     WEAPON: Sword;Spear
   - KIND: 32
     MEMO: "\uD314\uB77C\uB518_\uB0A8"
-    UNIT: Cavalry
+    UNIT: Cavalry;Male
     PATH: Ground
     WEAPON: Sword;Spear
   - KIND: 41
     MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Infantry;HeavyArmor
+    UNIT: Infantry;HeavyArmor;Male
     PATH: Ground
     WEAPON: Spear
   - KIND: 42
     MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Infantry;HeavyArmor
+    UNIT: Infantry;HeavyArmor;Male
     PATH: Ground
     WEAPON: Spear
   - KIND: 1000
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
-    UNIT: Infantry
+    UNIT: Infantry;Male
     PATH: Ground
-    WEAPON: 
+    WEAPON: Axe
   - KIND: 1010
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
-    UNIT: Infantry
+    UNIT: Infantry;Male
     PATH: Ground
-    WEAPON: 
+    WEAPON: Dagger
   - KIND: 1020
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
-    UNIT: Infantry
+    UNIT: Infantry;Male
     PATH: Ground
-    WEAPON: 
+    WEAPON: Axe
   - KIND: 1030
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
     UNIT: Infantry
     PATH: Ground;Water_Shallow
-    WEAPON: 
+    WEAPON: Axe
   - KIND: 10000
     MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
     UNIT: Structure
@@ -255,7 +255,7 @@ MonoBehaviour:
     MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8 -> \uC544\uBA38 \uB098\uC774\uD2B8"
     NEXT_CLASS: 42
   unit_status_levelup:
-  - KIND: 0
+  - ID: 1
     MEMO: "\uC544\uAD70_\uC81C\uC774\uB4DC"
     HP: 60
     STRENGTH: 35
@@ -267,7 +267,7 @@ MonoBehaviour:
     DEFENSE: 30
     RESISTANCE: 5
     MOVEMENT: 0
-  - KIND: 0
+  - ID: 2
     MEMO: "\uC544\uAD70_\uC544\uD1A8"
     HP: 30
     STRENGTH: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
     DEFENSE: 5
     RESISTANCE: 40
     MOVEMENT: 0
-  - KIND: 0
+  - ID: 3
     MEMO: "\uC544\uAD70_\uD2B8\uB85C\uC774"
     HP: 65
     STRENGTH: 35
@@ -291,7 +291,7 @@ MonoBehaviour:
     DEFENSE: 35
     RESISTANCE: 0
     MOVEMENT: 0
-  - KIND: 0
+  - ID: 4
     MEMO: "\uC544\uAD70_\uBCF4\uB098\uC140"
     HP: 70
     STRENGTH: 40
@@ -303,7 +303,7 @@ MonoBehaviour:
     DEFENSE: 40
     RESISTANCE: 0
     MOVEMENT: 0
-  - KIND: 0
+  - ID: 5
     MEMO: "\uC544\uAD70_\uD504\uB85C\uB514"
     HP: 80
     STRENGTH: 40

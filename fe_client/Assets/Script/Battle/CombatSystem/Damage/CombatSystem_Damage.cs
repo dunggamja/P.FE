@@ -267,14 +267,26 @@ namespace Battle
             var target = GetTarget(_param);
 
             // 스탯 계산.
-            var might_physic   = dealer.StatusManager.Calc_Might_Physic();
-            var might_magic    = dealer.StatusManager.Calc_Might_Magic();
-            var defense_physic = target.StatusManager.Calc_Defense();
-            var defense_magic  = target.StatusManager.Calc_Resistance();
+            var might_physic           = dealer.StatusManager.Calc_Might_Physic();
+            var might_magic            = dealer.StatusManager.Calc_Might_Magic();
+            var penetration_defense    = dealer.StatusManager.Calc_Penetration_Defense();
+            var penetration_resistance = target.StatusManager.Calc_Penetration_Resistance();
+            
+            var defense_physic         = target.StatusManager.Calc_Defense();
+            var defense_magic          = target.StatusManager.Calc_Resistance();
+
+            // 방어/저항력 관통력 적용.
+            if (0f < penetration_defense)
+                defense_physic = (int)(defense_physic * Mathf.Clamp01(1f - penetration_defense));
+            if (0f < penetration_resistance)
+                defense_magic  = (int)(defense_magic * Mathf.Clamp01(1f - penetration_resistance));
+
 
             var damage_physic = (0 < might_physic) ? Math.Max(0, might_physic - defense_physic) : 0;
             var damage_magic  = (0 < might_magic)  ? Math.Max(0, might_magic  - defense_magic) : 0;
             var damage_total  = damage_physic + damage_magic;
+
+            Debug.Log($"atid:{dealer.ID}, deid:{target.ID}, atk:{might_physic}, def:{defense_physic}");
 
             // 버프 계산.
             var buff_value     = dealer.StatusManager

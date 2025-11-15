@@ -287,6 +287,8 @@ namespace Battle
 
             return new TerrainBlockManager_IO 
             { 
+                Width     = m_width,
+                Height    = m_height,
                 BlockSize = m_block_size, 
                 Blocks    = blocks
             };
@@ -294,6 +296,8 @@ namespace Battle
 
         public void Load(TerrainBlockManager_IO _io)
         {
+            m_width      = _io.Width;
+            m_height     = _io.Height;
             m_block_size = _io.BlockSize;
             m_blocks     = new TerrainBlock[m_blocks.GetLength(0), m_blocks.GetLength(1)];
 
@@ -309,6 +313,8 @@ namespace Battle
 
     public class TerrainBlockManager_IO
     {
+        public int Width { get; set; }
+        public int Height { get; set; }
         public int BlockSize { get; set; }
         public TerrainBlock_IO[,] Blocks { get; set; }
     }
@@ -379,7 +385,7 @@ namespace Battle
         public int                    Width         { get; set; }
         public int                    Height        { get; set; }
         public Terrain_ZOC_IO         ZOC           { get; set; }
-        public TerrainBlockManager_IO Attribute     { get; set; }
+        public Terrain_Attribute_IO   Attribute     { get; set; }
         public TerrainBlockManager_IO EntityManager { get; set; }
     }
 

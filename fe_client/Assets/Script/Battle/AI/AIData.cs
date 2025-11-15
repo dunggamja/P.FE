@@ -60,6 +60,29 @@ namespace Battle
         {
             AIType = _ai_type;
         }
+
+        public AIDataManager_IO Save()
+        {
+            return new AIDataManager_IO()
+            {
+                ID     = ID,
+                AIType = AIType,
+            };
+        }
+        
+        public void Load(AIDataManager_IO _snapshot)
+        {
+            ID     = _snapshot.ID;
+            AIType = _snapshot.AIType;
+        }
+    }
+
+    public class AIDataManager_IO
+    {
+        public Int64             ID     { get; set; } = 0;
+        public EnumAIType        AIType { get; set; } = EnumAIType.None;
+
+
     }
 
 }

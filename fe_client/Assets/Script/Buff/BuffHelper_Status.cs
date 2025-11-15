@@ -89,11 +89,12 @@ public static partial class BuffHelper
     {
         switch (_action_type)
         {
-            case EnumItemActionType.Equip:   return true;
-            case EnumItemActionType.Consume: return true;
-            case EnumItemActionType.Acquire: return true;
-            case EnumItemActionType.Unequip: return false;
-            case EnumItemActionType.Dispose: return false;
+            case EnumItemActionType.Equip:   return true;  // 버프 추가.
+            case EnumItemActionType.Consume: return true;  // 버프 추가.
+            case EnumItemActionType.Acquire: return true;  // 버프 추가.
+            
+            case EnumItemActionType.Unequip: return false; // 버프 제거.
+            case EnumItemActionType.Dispose: return false; // 버프 제거.
         }
         return false;
     }

@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,14 +16,14 @@ namespace Battle
 
     void CreateHUD_HP()
     {
-      // ±‚¡∏ HUD ∞° ¿÷¿∏∏È ªË¡¶.
+      // HUD ÏÉùÏÑ±.
       if (m_hud_list.TryGetValue(EnumEntityHUD.HP, out var hud_id))
       {
         GUIManager.Instance.CloseUI(hud_id);
         m_hud_list.Remove(EnumEntityHUD.HP);
       }
       
-      // HUD ª˝º∫.
+      // HUD ÏÉùÏÑ±.
       var gui_id = GUIManager.Instance.OpenUI(
         HUD_Unit_HP.PARAM.Create(
           ID, 

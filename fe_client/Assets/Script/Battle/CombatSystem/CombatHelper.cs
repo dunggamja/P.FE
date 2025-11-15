@@ -58,84 +58,81 @@ namespace Battle
             if (attacker == null || target == null)
                 return null;
 
-
             // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-            var snapshot = GameSnapshot.Save();
+            var snapshot = GameSnapshot.Save();            
 
-
-
-
-
-            // Debug.Log("GameSnapshot.Save() Start");
-            // Debug.Log("GameSnapshot.Save() End");
-
-            // 공격자 무기 장착.
-            attacker.StatusManager.Weapon.Equip(_weapon_id);
-
-            // 공격자 위치 업데이트.
-            attacker.UpdateCellPosition(
-                _attack_position,
-                (_apply: false, _immediatly: false),
-                _is_plan: false);
-
-
-            var result = new Result();
-
-            // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
+            try
             {
-                var combat_param = ObjectPool<CombatParam_Plan>
-                    .Acquire()
-                    .Set(attacker, target);
+                // 공격자 무기 장착. 실패시 종료 처리.
+                if (attacker.ProcessAction(attacker.Inventory.GetItem(_weapon_id), EnumItemActionType.Equip) == false)
+                    return null;
 
-                // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-                result.Attacker.EntityID  = attacker.ID;
-                result.Attacker.WeaponID  = _weapon_id;
-                result.Attacker.HP_Before = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
-                result.Defender.EntityID  = target.ID;
-                result.Defender.WeaponID  = target.StatusManager.Weapon.ItemID;
-                result.Defender.HP_Before = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
+                var result = new Result();
 
+                // 공격자 위치 업데이트.
+                attacker.UpdateCellPosition(
+                    _attack_position,
+                    (_apply: false, _immediatly: false),
+                    _is_plan: false);
 
                 // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {
-                    CombatSystemManager.Instance.Setup(combat_param);
-                    while (CombatSystemManager.Instance.IsFinished == false)
-                        CombatSystemManager.Instance.Update();
-                }
-
-                // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-                var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
-                foreach (var damage in damage_result)
-                {
-                    // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-                    var is_attacker  = (damage.AttackerID == attacker.ID);
+                    var combat_param = ObjectPool<CombatParam_Plan>
+                        .Acquire()
+                        .Set(attacker, target);
 
                     // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-                    var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
-                    unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
-                    unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
-                    unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
+                    result.Attacker.EntityID  = attacker.ID;
+                    result.Attacker.WeaponID  = _weapon_id;
+                    result.Attacker.HP_Before = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
+
+                    result.Defender.EntityID  = target.ID;
+                    result.Defender.WeaponID  = target.StatusManager.Weapon.ItemID;
+                    result.Defender.HP_Before = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
 
-                    // 공격자와 타겟 데미지 저장.
-                    var damage_value = damage.Result_Damage;
+                    // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
+                    {
+                        CombatSystemManager.Instance.Setup(combat_param);
+                        while (CombatSystemManager.Instance.IsFinished == false)
+                            CombatSystemManager.Instance.Update();
+                    }
 
-                    result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
+                    // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
+                    var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
+                    foreach (var damage in damage_result)
+                    {
+                        // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
+                        var is_attacker  = (damage.AttackerID == attacker.ID);
+
+                        // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
+                        var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
+                        unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
+                        unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
+                        unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
+
+
+                        // 공격자와 타겟 데미지 저장.
+                        var damage_value = damage.Result_Damage;
+
+                        result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
+                    }
+
+                    // 공격자와 타겟 HP 상태 저장.
+                    result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
+                    result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
+
+                    ObjectPool<CombatParam_Plan>.Return(combat_param);
                 }
 
-                // 공격자와 타겟 HP 상태 저장.
-                result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
-                result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
-
-                ObjectPool<CombatParam_Plan>.Return(combat_param);
+                return result;
             }
-
-
-            // 공격 후 상태 복구.
-            GameSnapshot.Load(snapshot, _is_plan: true);
-
-            return result;
+            finally
+            {
+                // 공격 후 상태 복구.
+                GameSnapshot.Load(snapshot, _is_plan: true);
+            }
         }
     
     

@@ -101,6 +101,24 @@ namespace Battle
             return status_unit + status_weapon;
         }
 
+        public float Calc_Penetration_Defense()
+        {
+            var item_object = Weapon.ItemObject;
+            if (item_object != null)
+            {
+                // 단검은 방어력을 무시.
+                if (item_object.WeaponCategory == EnumWeaponCategory.Dagger)
+                    return 1f;
+            }
+            
+            return 0f;
+        }
+
+        public float Calc_Penetration_Resistance()
+        {
+            return 0f;
+        }
+
         /// <summary> 명중. </summary>
         public int Calc_Hit()
         {

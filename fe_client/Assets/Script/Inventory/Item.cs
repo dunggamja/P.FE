@@ -52,44 +52,27 @@ public partial class Item
     }
 
 
-    // private BaseContainer m_status    = new BaseContainer();
-    // private BaseContainer m_attribute = new BaseContainer();
+    public EnumWeaponCategory WeaponCategory 
+    {
+        get
+        {
+            if (ItemType != EnumItemType.Weapon)
+                return EnumWeaponCategory.None;
+            
+            return (EnumWeaponCategory)ItemCategory;
+        }
+    }
 
 
-    // public bool IsEnableAction(IOwner owner, EnumItemActionType _action)
-    // {
-    //     //var is_system_action = (owner == null);
 
-    //     switch(_action)
-    //     {
-    //         case EnumItemActionType.Equip:  return IsEnableAction_Weapon_Equip(owner);
-    //         case EnumItemActionType.Unequip:return IsEnableAction_Weapon_Unequip(owner);            
-    //     }
+    public bool DecreaseCount()
+    {
+        if (CurCount <= 0)
+            return false;
 
-    //     return false;
-    // }
-
-    // public bool ProcessAction(IOwner owner, EnumItemActionType _action)
-    // {
-    //     if (!IsEnableAction(owner, _action))
-    //         return false;
-
-
-    //     var is_success = false;
-
-    //     switch (_action)
-    //     {
-    //         case EnumItemActionType.Equip:   is_success = ProcessAction_Weapon_Equip(owner);   break;
-    //         case EnumItemActionType.Unequip: is_success = ProcessAction_Weapon_Unequip(owner); break;
-    //     }
-
-    //     // if (is_success)
-    //     // {
-    //     //     OnRefreshBuff_Item(Kind, _action);
-    //     // }
-
-    //     return false;
-    // }
+        --m_count_cur;
+        return true;
+    }
 
 
 
@@ -112,9 +95,6 @@ public partial class Item
             Kind      = Kind,
             Count     = CurCount,
             ItemType  = (int)ItemType,
-            // MaxCount  = MaxCount,
-            // Status    = m_status.Save(),
-            // Attribute = m_attribute.Save()
         };
     }
 
@@ -124,9 +104,6 @@ public partial class Item
         m_kind      = _snapshot.Kind;
         m_count_cur = _snapshot.Count;
         m_item_type = (EnumItemType)_snapshot.ItemType;
-        // m_count_max = _snapshot.MaxCount;
-        // m_status.Load(_snapshot.Status);
-        // m_attribute.Load(_snapshot.Attribute);
     }
 
 
@@ -142,7 +119,7 @@ public class Item_IO
     public Int32        ItemType  { get; set; } = 0;
     // public Int32        MaxCount  { get; set; } = 0;
 
-    public BaseContainer_IO Status    { get; set; } = new();
-    public BaseContainer_IO Attribute { get; set; } = new();
+    // public BaseContainer_IO Status    { get; set; } = new();
+    // public BaseContainer_IO Attribute { get; set; } = new();
 
 }

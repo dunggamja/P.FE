@@ -26,9 +26,9 @@ namespace Battle
         public Inventory            Inventory       { get; }
         public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
+        public (int x, int y)       PathBasePosition { get; private set; } 
         public int                  PathAttribute   => StatusManager.Status.GetPathAttribute();
         public int                  PathZOCFaction  => GetFaction();
-        public (int x, int y)       PathBasePosition { get; private set; } 
         public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
 
         public AIManager            AIManager       { get; }
@@ -86,10 +86,10 @@ namespace Battle
 
         public void Reset()
         {
-            // ��ǥ ���� ����. 
+            // 좌표 초기화. 
             UpdateCellOccupied(false);
 
-            // HUD ����.
+            // HUD 삭제.
             DeleteHUD();
 
 
@@ -103,7 +103,7 @@ namespace Battle
 
         public void DeleteHUD()
         {
-            // HUD ����.
+            // HUD 삭제.
             foreach((var _, var hud_id) in m_hud_list)
             {
                 GUIManager.Instance.CloseUI(hud_id);
@@ -140,15 +140,26 @@ namespace Battle
             {
                 ID               = ID,
                 IsFixedObject    = IsFixedObject,
+
                 Cell             = Cell,
                 Cell_Prev        = Cell_Prev,
                 Cell_Occupied    = Cell_Occupied,
+
                 BlackBoard       = BlackBoard.Save(),
+                Skill            = Skill.Save(),
                 StatusManager    = StatusManager.Save(),
                 Inventory        = Inventory.Save(),
+
+
                 PathVehicle      = PathVehicle.Save(),
-                PathBasePosition = PathBasePosition
+                PathBasePosition = PathBasePosition,
+                // PathNodeManager  = PathNodeManager.Save(), 
                 // PathAttribute    = PathAttribute,
+
+                AIDataManager    = AIDataManager.Save(),
+                // AIManager        = AIManager.Save(),
+                // CommandManager   = CommandManager.Save(),                
+                // AssetName        = AssetName,
             };
         }
 
@@ -161,25 +172,16 @@ namespace Battle
             Cell_Occupied = _snapshot.Cell_Occupied;
 
             BlackBoard.Load(_snapshot.BlackBoard);
+            Skill.Load(_snapshot.Skill);
             StatusManager.Load(_snapshot.StatusManager);
             Inventory.Load(_snapshot.Inventory);
 
             PathVehicle.Load(_snapshot.PathVehicle);
             PathBasePosition = _snapshot.PathBasePosition;
 
-            // PathAttribute    = _snapshot.PathAttribute;
-            // Save/Load ���� ���ܵ� ������
-            // Skill,
-            // AIManager,
-            // CommandManager,
-            // PathNodeManager,
+            AIDataManager.Load(_snapshot.AIDataManager);
+
         }
-
-
-
-    
-   
-
     }
 
 
@@ -193,12 +195,19 @@ namespace Battle
         public bool                Cell_Occupied    { get; set; } = false;
     
         public BlackBoard_IO       BlackBoard       { get; set; } = new();
+        public BattleSkill_IO      Skill            { get; set; } = new();
         public StatusManager_IO    StatusManager    { get; set; } = new();
         public Inventory_IO        Inventory        { get; set; } = new();
 
         public PathVehicle_IO      PathVehicle      { get; set; } = new();
-        // public int                 PathAttribute    { get; set; } = 0;
         public (int x, int y)      PathBasePosition { get; set; } = (0, 0);
+
+
+
+        // public AIManager_IO      AIManager        { get; set; } = new();
+        public AIDataManager_IO  AIDataManager    { get; set; } = new();
+        // public CommandManager_IO CommandManager   { get; set; } = new();
+        // public string            AssetName        { get; set; } = string.Empty;
 
     }
 

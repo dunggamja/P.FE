@@ -31,9 +31,9 @@ namespace Battle
           if (e.ID == 0)
             continue;
 
-
-          // 소유 중인 무기 착용.
-          StatusManager.Weapon.Equip(e.ID);
+          // 무기 장착.
+          if (ProcessAction(e, EnumItemActionType.Equip) == false)
+            continue;
 
           var weapon_range_max = StatusManager.GetBuffedWeaponStatus(StatusManager.Weapon, EnumWeaponStatus.Range);
           var weapon_range_min = StatusManager.GetBuffedWeaponStatus(StatusManager.Weapon, EnumWeaponStatus.Range_Min);
@@ -55,7 +55,7 @@ namespace Battle
         // ListPool<Item>.Return(list_weapon.Value);
 
         // 소유 중인 무기 착용.
-        StatusManager.Weapon.Equip(equip_weapon_id);
+        ProcessAction(Inventory.GetItem(equip_weapon_id), EnumItemActionType.Equip);
 
         return (range_min.num, range_max.num);
      }

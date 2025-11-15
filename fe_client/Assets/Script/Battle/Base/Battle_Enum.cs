@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace Battle
 {
-    public enum EnumUnitSex
-    {
-        None   = 0,
-        Male   = 1,
-        Female = 2
-    }
+    // public enum EnumUnitSex
+    // {
+    //     None   = 0,
+    //     Male   = 1,
+    //     Female = 2
+    // }
 
 
     /// <summary>
@@ -30,6 +30,10 @@ namespace Battle
       HeavyArmor    = 7, // 중형
       LightArmor    = 8, // 경갑
       Structure     = 9, // 건물
+
+
+      Male   = 100, // 남성 
+      Female = 101, // 여성 
     }
 
     /// <summary>
@@ -103,7 +107,7 @@ namespace Battle
       // 장착, 적용, 사용 시 제한 조건.
       ExclusiveClass     = 1, // 전용 클래스  ( Class KIND)
       ExclusiveCharacter = 2, // 전용 캐릭터. ( ID )
-      ExclusiveSex       = 3, // 전용 성별 
+      ExclusiveAttribute = 3, // 전용 속성.
 
 
       // 장착, 적용, 사용 시 효과

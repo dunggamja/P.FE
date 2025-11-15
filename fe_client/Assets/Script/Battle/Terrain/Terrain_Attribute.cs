@@ -16,7 +16,7 @@ namespace Battle
 
 
 
-        static readonly EnumTerrainAttribute[] s_terrain_attribute_sort_order =  new EnumTerrainAttribute[]
+        static readonly EnumTerrainAttribute[]   s_terrain_attribute_sort_order =  new EnumTerrainAttribute[]
         {
             EnumTerrainAttribute.Invalid, 
             EnumTerrainAttribute.FlyerOnly, 
@@ -213,9 +213,44 @@ namespace Battle
         }
 
 
+        new public Terrain_Attribute_IO Save()
+        {
+            var attribute_count_dynamic = new Dictionary<EnumTerrainAttribute, int[,]>();
+            foreach(var e in m_attribute_count_dynamic)
+            {
+                attribute_count_dynamic.Add(e.Key, (int[,])e.Value.Clone());
+            }
 
 
+            return new Terrain_Attribute_IO()
+            {
+                Base                  = base.Save(),
+                AttributeMaskStatic   = (Int64[,])m_attribute_mask_static.Clone(),
+                AttributeCountDynamic = attribute_count_dynamic,
+            };
+        }
+        
+        public void Load(Terrain_Attribute_IO _snapshot)
+        {
+            base.Load(_snapshot.Base);
+            m_attribute_mask_static   = _snapshot.AttributeMaskStatic;
+            m_attribute_count_dynamic = _snapshot.AttributeCountDynamic;
+        }
 
        
     }
+
+
+    public class Terrain_Attribute_IO 
+    {
+        public TerrainBlockManager_IO                   Base                  { get; set; }
+        public Int64[,]                                 AttributeMaskStatic   { get; set; }
+        public Dictionary<EnumTerrainAttribute, int[,]> AttributeCountDynamic { get; set; }       
+    }
+
+
 }
+
+
+
+

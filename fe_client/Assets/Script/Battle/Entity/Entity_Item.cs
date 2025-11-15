@@ -52,26 +52,42 @@ namespace Battle
          if (!IsEnableAction(_item, _action))
             return false;
 
-         var is_success = false;
-
          switch (_action)
          {
-               case EnumItemActionType.Equip:   is_success = ProcessAction_Weapon_Equip(_item);   break;
-               case EnumItemActionType.Unequip: is_success = ProcessAction_Weapon_Unequip(_item); break;
-               case EnumItemActionType.Consume: is_success = ProcessAction_Weapon_Consume(_item); break;
-               case EnumItemActionType.Acquire: is_success = ProcessAction_Weapon_Acquire(_item); break;
-               case EnumItemActionType.Dispose: is_success = ProcessAction_Weapon_Dispose(_item); break;
+               case EnumItemActionType.Equip:   
+               if (ProcessAction_Weapon_Equip(_item))
+               {
+                  return true;
+               }
+               break;
+               case EnumItemActionType.Unequip: 
+               if (ProcessAction_Weapon_Unequip(_item))
+               {
+                  return true;
+               }
+               break;
+               case EnumItemActionType.Consume:
+               if (ProcessAction_Weapon_Consume(_item))
+               {
+                  return true;
+               }
+               break;
+               case EnumItemActionType.Acquire:
+               if (ProcessAction_Weapon_Acquire(_item))
+               {
+                  return true;
+               }
+               break;
+
+               case EnumItemActionType.Dispose:
+               if (ProcessAction_Weapon_Dispose(_item))
+               {
+                  return true;
+               }
+               break;
          }
 
-         if (is_success)
-         {
-            OnRefreshBuff_Item(_item.Kind, _action);
-            return true;
-         }
-         else
-         {
-            return false;
-         }
+         return false;
       }
 
 
@@ -89,10 +105,8 @@ namespace Battle
          if (owner_weapon == null || owner_weapon.ItemID == ID)
              return false;
 
-
          // 장착이 가능한 무기인지 체크.
-         var weapon_category = (EnumWeaponCategory)_item.ItemCategory;
-         if (StatusManager.Status.HasClassAttribute_Weapon(weapon_category) == false)
+         if (StatusManager.Status.HasClassAttribute_Weapon(_item.WeaponCategory) == false)
              return false;
          
          return true;
@@ -117,18 +131,27 @@ namespace Battle
          if (_item == null)
             return false;
 
-         // 소유중인 아이템 체크.
+         // 소유중인 아이템 수량 체크.
          var item = Inventory.GetItem(_item.ID);
          if (item == null || item.CurCount <= 0)
             return false;
 
+         // 소모 가능한 아이템인지 체크.
          if (item.ItemType != EnumItemType.Consumable)
             return false;
 
-         var consume_category = (EnumItemConsumeCategory) item.ItemCategory;
+         var    consume_category = (EnumItemConsumeCategory) item.ItemCategory;
          switch(consume_category)
          {
-            // TODO: 소모품 카테고리별 체크.
+            // 회복 아이템 : 체력 최대치 체크.
+            case EnumItemConsumeCategory.Potion:
+            {
+               var hp_cur = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
+               var hp_max = StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max);
+               if (hp_max <= hp_cur)
+                  return false;
+            }
+            break;
 
          }
 
@@ -152,6 +175,13 @@ namespace Battle
 
       bool IsEnableAction_Weapon_Dispose(Item _item)
       {
+         if (_item == null)
+            return false;
+
+         // 소유하지 않은 아이템.
+         if (Inventory.GetItem(_item.ID) == null)
+            return false;
+
          return true;
       }
 
@@ -165,6 +195,8 @@ namespace Battle
          if (owner_weapon != null)                                    
              owner_weapon.Equip(_item.ID);
 
+         ApplyBuff_Inventory();
+
          return true;
       }
 
@@ -173,27 +205,56 @@ namespace Battle
          var owner_weapon  = StatusManager.Weapon; //as Weapon;
          if (owner_weapon != null)                                    
              owner_weapon.Unequip();
+
+         ApplyBuff_Inventory();
                
          return true;
       }
 
       bool ProcessAction_Weapon_Consume(Item _item)
       {
+         if (_item == null)
+            return false;
 
+         var item = Inventory.GetItem(_item.ID);
+         if (item == null)
+            return false;
 
+         if (item.DecreaseCount() == false)
+            return false;
+
+         ApplyBuff_Item(_item.Kind, EnumItemActionType.Consume);
 
          return true;
       }
 
       bool ProcessAction_Weapon_Acquire(Item _item)
       {
+         if (_item == null)
+            return false;
 
+         if (Inventory.AddItem(_item) == false)
+            return false;
+
+         ApplyBuff_Inventory();
 
          return true;
       }
 
       bool ProcessAction_Weapon_Dispose(Item _item)
       {
+         if (_item == null)
+            return false;
+
+         
+         if (Inventory.RemoveItem(_item.ID) == false)
+            return false;
+
+         // 소유중인 무기 체크.
+         if (StatusManager.Weapon.ItemID == _item.ID)
+             StatusManager.Weapon.Unequip();
+
+         ApplyBuff_Inventory();
 
          return true;
       }
