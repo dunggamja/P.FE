@@ -186,12 +186,16 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
           var item_id = m_menu_item_datas[i].ItemID;
           var item  = owner.Inventory.GetItem(item_id);
           if (item == null)
-            continue;          
+            continue;         
+
+
+          var item_cur_count = item.CurCount;
+          var item_max_count = item.MaxCount;
 
           var localize_key = item.GetLocalizeName();
           var text_subject = LocalizationManager.Instance.GetTextObservable(
             localize_key.Table, 
-            localize_key.Key);
+            localize_key.Key).Select(text => $"{text} ({item_cur_count}/{item_max_count})");
 
           // 
           //for (int k = 0; k < 10; k++)
@@ -216,6 +220,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
         // 메뉴 이동 방향이 없으면 종료.
         if (_event.MoveDirection.y  == 0)
+            return;
+        
+        // 데이터 없음.
+        if (m_menu_item_datas.Count == 0)
             return;
 
         

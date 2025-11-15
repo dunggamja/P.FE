@@ -106,6 +106,11 @@ namespace Battle
             if (dealer == null || target == null)
                 return true;
 
+
+            // 공격자 무기 상태 체크.
+            if (Verify_Dealer_Weapon(_param) == false)
+                return true;                       
+
             
             // 무기 상성에 따른 명중률 보정은 일단 제거.
             // WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
@@ -157,6 +162,10 @@ namespace Battle
             }
 
 
+            // 데미지 적용 후 후처리.
+            PostProcess_DamageAction(_param);
+            
+
             CombatSystemManager.Instance.AddCombatDamageResult(
                 Combat_DamageResult.Create
                 (
@@ -175,7 +184,8 @@ namespace Battle
                     Result_Damage
                 )
             );
-            // 1 Tick에 완료 처리.
+
+            // 바로 완료처리.
             return true;
         }
 
@@ -193,11 +203,25 @@ namespace Battle
         }
 
 
+        bool  Verify_Dealer_Weapon(ICombatSystemParam _param)
+        {
+            // 공격자 무기 상태 체크.
+            var dealer = GetDealer(_param);
+            if (dealer == null)
+                return false;
+
+            // 공격자 무기가 셋팅되있는지, 남은 수량이 0보다 작은지 체크합니다. 
+            var dealer_weapon = dealer.StatusManager.Weapon.ItemObject;
+            if (dealer_weapon == null || dealer_weapon.ID == 0 || dealer_weapon.CurCount <= 0)
+                return false;
+
+            return true;
+        }
+
+
 
         float Calculate_HitRate(ICombatSystemParam _param)
         {
-
-
 
             // 명중률 = 명중 - 회피
             var dealer = GetDealer(_param);
@@ -370,6 +394,22 @@ namespace Battle
             return weapon_effectiveness;
         }
 
+        void PostProcess_DamageAction(ICombatSystemParam _param)
+        {
+            var dealer = GetDealer(_param);
+            var target = GetTarget(_param);
+
+            // 무기 사용 후 수량 감소.
+            var dealer_weapon = dealer.StatusManager.Weapon.ItemObject;
+            if (dealer_weapon != null)
+            {
+                dealer_weapon.DecreaseCount();
+
+                // 무기 수량이 0이 되면 버리기.
+                if (dealer_weapon.CurCount <= 0)
+                    dealer.ProcessAction(dealer_weapon, EnumItemActionType.Dispose);
+            }
+        }
     }
 
 }

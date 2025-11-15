@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using R3;
@@ -147,10 +147,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         var param   = _param as PARAM;
         m_entity_id = param?.EntityID ?? 0;
 
-        // ¸Ş´º ¾ÆÀÌÅÛ »ı¼º
+        // ë©”ë‰´ ì•„ì´í…œ ê·¸ë¦¬ê¸°.
         UpdateMenuItems();  
 
-        // ·¹ÀÌ¾Æ¿ô °»½Å
+        // ê·¸ë¦¬ë“œ ë©”ë‰´ ë ˆì´ì•„ì›ƒ ì—…ë°ì´íŠ¸.
         UpdateLayout();
     }
 
@@ -158,13 +158,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     {
         base.OnLoop();
 
-        // ¹üÀ§ Ç¥½Ã.
+        // ë©”ë‰´ íƒ€ì…ì— ë”°ë¼ ë²”ìœ„ ê·¸ë¦¬ê¸°.
         UpdateDrawRange();
     }
 
     protected override void OnClose()
     {
-        // ¹üÀ§ Ç¥½Ã ÇØÁ¦.
+        // ë©”ë‰´ íƒ€ì…ì— ë”°ë¼ ë²”ìœ„ ì´ˆê¸°í™”.
         BattleSystemManager.Instance.DrawRange.Clear();
     }
 
@@ -177,7 +177,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     private void UpdateMenuItems()
     {
-         // TESTCODE: ¸Ş´º ¾ÆÀÌÅÛ µ¥ÀÌÅÍ »ı¼º.
+         // TESTCODE: ë©”ë‰´ ì•„ì´í…œ ê·¸ë¦¬ê¸°.
         m_menu_item_datas = new MENU_ITEM_DATA[]
         {
             new MENU_ITEM_DATA(0, MENU_ITEM_DATA.EnumMenuType.Attack),
@@ -187,25 +187,24 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             // new MENU_ITEM_DATA(4, "Item")
         };
 
-        // ¸Ş´º ¾ÆÀÌÅÛ »ı¼º.
+        // ë©”ë‰´ ì•„ì´í…œ ê·¸ë¦¬ê¸°.
         for (int i = 0; i < m_menu_item_datas.Length; i++)
         {
             var localizeKey  = m_menu_item_datas[i].GetLocalizeKey();
             var text_subject = LocalizationManager.Instance.GetTextObservable(localizeKey.Table, localizeKey.Key);
 
-            // TODO: ¿ÀºêÁ§Æ® Ç®¸µÇÏ´Â°Ô ´õ ÁÁÀ»±î?
             var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
             
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
         }
 
-        // ÃÊ±â ¼±ÅÃ ÀÎµ¦½º ¼³Á¤ (0¹ø ÀÎµ¦½º ¼±ÅÃ)
+        // ì„ íƒ ì¸ë±ìŠ¤ ì„¤ì • (0 ì¸ë±ìŠ¤ ì„¤ì •)
         m_selected_index_subject.OnNext(0);
     }
 
     private void UpdateLayout()
     {
-        // ¸Ş´º ¾ÆÀÌÅÛ °¹¼ö¿¡ µû¶ó¼­ »çÀÌÁî Á¶Àı.
+        // ê·¸ë¦¬ë“œ ë©”ë‰´ íŒ¨ë”© ê³„ì‚°.
         {
             if (m_grid_menu_padding.init == false)
             {
@@ -227,36 +226,36 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         }
     }
 
-    // // ÀÎµ¦½º º¯°æ ¸Ş¼­µå
+    // // ì„ íƒ ì¸ë±ìŠ¤ ì„¤ì •
     // public void SetSelectedIndex(int index)
     // {
     //     m_selected_index_subject.OnNext(index);
     // }
 
     
-    // ¸Ş´º ÀÌµ¿ ÀÌº¥Æ® ¼ö½Å.
+    // ë©”ë‰´ ì´ë™ ì´ë²¤íŠ¸.
     void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
     {
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // ÀÌµ¿ ¹æÇâÀÌ ¾øÀ¸¸é Á¾·á.
+        // ë©”ë‰´ ì´ë™ ë°©í–¥ì´ ì—†ìœ¼ë©´ ì¢…ë£Œ.
         if (_event.MoveDirection.y  == 0)
             return;
 
         
-        // ÀÌµ¿ ¹æÇâ¿¡ µû¶ó¼­ ¸Ş´º ¾ÆÀÌÅÛ ¼±ÅÃ.
+        // ë©”ë‰´ ì´ë™ ë°©í–¥ì— ë”°ë¼ ì¸ë±ìŠ¤ ì¶”ê°€.
         var add_index = _event.MoveDirection.y > 0 ? -1 : +1;
         var cur_index = m_selected_index_subject.Value;
         var new_index = cur_index + add_index;
 
-        // ÀÎµ¦½º ¹üÀ§ Ã¼Å©.
+        // ì¸ë±ìŠ¤ í´ë¨í”„.
         new_index     = Math.Clamp(new_index, 0, m_menu_item_datas.Length - 1);
         
-        // ÀÎµ¦½º º¯°æ.
+        // ì„ íƒ ì¸ë±ìŠ¤ ì„¤ì •.
         m_selected_index_subject.OnNext(new_index);
 
-        // ¹üÀ§ Ç¥½Ã.
+        // ê³µê²© ë²”ìœ„ íƒìƒ‰.
         UpdateDrawRange();
     }
 
@@ -265,12 +264,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        // ¼±ÅÃ ÀÌº¥Æ® Ã³¸®.        
+        // ì„ íƒ ë©”ë‰´ íƒ€ì…ì— ë”°ë¼ ì²˜ë¦¬.        
         switch (SelectedItemData.MenuType)
         {
             case MENU_ITEM_DATA.EnumMenuType.Attack:
             {
-                // °ø°İ GUI ¿­±â.
+                // ê³µê²© GUI ì˜¤í”ˆ.
                 GUIManager.Instance.OpenUI(
                     GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id)
                     );
@@ -278,12 +277,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;
             case MENU_ITEM_DATA.EnumMenuType.Wait:   
             {
-                // ´ë±â ¸í·É
+                // ëŒ€ê¸° ëª…ë ¹ ì¶”ê°€.
                 BattleSystemManager.Instance.PushCommand(
                     new Command_Done(m_entity_id)
                     );
 
-                // GUI ´İ±â.
+                // GUI ë‹«ê¸°.
                 GUIManager.Instance.CloseUI(ID);
             }             
                 break;
@@ -303,12 +302,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
         if (_focused)
         {
-            // Æ÷Ä¿½Ì.
+            // í¬ì»¤ìŠ¤ ì¼œê¸°.
             Show();
         }
         else
         {
-            // Æ÷Ä¿½Ì ÇØÁ¦.
+            // í¬ì»¤ìŠ¤ ë„ê¸°.
             Hide();
         }
     }
@@ -326,7 +325,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;
         }
 
-        // ¹üÀ§ Ç¥½Ã.
+        // ë©”ë‰´ íƒ€ì…ì— ë”°ë¼ ë²”ìœ„ ê·¸ë¦¬ê¸°.
         BattleSystemManager.Instance.DrawRange.DrawRange(
             _draw_flag: draw_flag,
             _entityID: m_entity_id,

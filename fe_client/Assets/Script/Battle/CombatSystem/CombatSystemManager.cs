@@ -31,11 +31,14 @@ namespace Battle
             base.Init();
 
             // 현재는 파엠을 의식하고 1대1 전투를 상정하고 만들어져 있음.
-           
 
-            var turn_sytem         = new CombatSystem_Turn();        
-            var damage_sytem       = new CombatSystem_Damage();      
-            var post_process_sytem = new CombatSystem_PostProcess(); 
+
+            // TODO: combatsyste_turn + combatsystem_damage 를 1개로 합쳐야 구조가 좀 깔끔할 것 같음.
+            // 지금은 코드가 뭔가 좀 지저분하다....
+
+            var turn_sytem         = new CombatSystem_Turn();        // 전투 공/방 순서 진행.
+            var damage_sytem       = new CombatSystem_Damage();      // 전투 공/방 데미지 처리.
+            var post_process_sytem = new CombatSystem_PostProcess(); // 전투 연산 종료 후 연출 
             // var effect_sytem = new CombatSystem_Effect(); m_repository.Add((int)effect_sytem.SystemType, effect_sytem);
 
             m_repository.Add((int)turn_sytem.SystemType, turn_sytem);

@@ -21,11 +21,12 @@ public partial class Item
     // [SerializeField]
     // private Int32 m_count_max = 0;
 
-    private Item(EnumItemType _item_type, Int64 _id, Int32 _kind)
+    private Item(EnumItemType _item_type, Int64 _id, Int32 _kind, Int32 _count_cur)
     {
         m_id        = _id;
         m_kind      = _kind;
-        m_item_type =  _item_type;
+        m_item_type = _item_type;
+        m_count_cur = _count_cur;
     }
 
     public Item()
@@ -63,6 +64,18 @@ public partial class Item
         }
     }
 
+    public int MaxCount
+    {
+        get
+        {
+            var sheet_item = DataManager.Instance.ItemSheet.GetStatus(Kind);
+            if (sheet_item == null)
+                return 0;
+
+            return sheet_item.MAX_COUNT;
+        }
+    }
+
 
 
     public bool DecreaseCount()
@@ -81,7 +94,8 @@ public partial class Item
     {
         var sheet_item = DataManager.Instance.ItemSheet.GetStatus(_kind);
         var item_type  = (sheet_item != null) ? (EnumItemType)sheet_item.TYPE : EnumItemType.None;
-        var item       = new Item(item_type, _id, _kind);
+        var item_count = (sheet_item != null) ? sheet_item.MAX_COUNT : 0;
+        var item       = new Item(item_type, _id, _kind, item_count);
 
         return item;
     }

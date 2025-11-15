@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -19,7 +19,8 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
     private int             m_index = 0;
     private IDisposable     m_selected_index_subscription;
     private IDisposable     m_text_subscription;
-    public void Initialize(int _index,
+    public void Initialize(
+        int                    _index,
         Observable<int>        _subject_select_index,
         Observable<string>     _subject_text)
     {
@@ -29,13 +30,13 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
 
         m_cursor.gameObject.SetActive(false);        
         
-        // »õ·Î¿î ±¸µ¶.
+        // ì»¤ì„œ
         m_selected_index_subscription = _subject_select_index.Subscribe(i => 
             {
                 m_cursor.gameObject.SetActive(i == m_index);
             });
 
-        // ÅØ½ºÆ® ±¸µ¶.
+        // í…ìŠ¤íŠ¸.
         m_text_subscription = _subject_text.Subscribe(text =>
         {
             m_text.text = text;
