@@ -80,7 +80,7 @@ namespace Battle
       Spear        = 3, // 창
       MartialArts  = 4, // 격투술
       Bow          = 5, // 활
-      Wand         = 6, // 지팡이 (힐, 보조)
+      Wand         = 6, // 지팡이 (힐, 보조) : 지팡이는 ItemType을 따로 뺄까?
       Grimoire     = 7, // 마법서 (마법 공격))
       Dagger       = 8, // 단검
     }

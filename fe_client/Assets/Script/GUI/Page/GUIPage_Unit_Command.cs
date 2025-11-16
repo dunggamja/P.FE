@@ -48,10 +48,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         public enum EnumMenuType
         {
             None,
-            Attack,
-            Skill,
-            Item,
-            Wait,
+            Attack, // 공격
+            Wand,   // 지팡이
+            Skill,  // 스킬
+            Item,   // 아이템
+            Wait,   // 대기.
         }
 
         public int          Index    { get; private set; }
@@ -74,10 +75,23 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     table = "localization_base";
                     key   = "ui_menu_attack";                    
                     break;
+                case EnumMenuType.Wand:
+                    table = "localization_base";
+                    key   = "ui_menu_wand";
+                    break;
+                case EnumMenuType.Skill:
+                    table = "localization_base";
+                    key   = "ui_menu_skill";
+                    break;
+                case EnumMenuType.Item:
+                    table = "localization_base";
+                    key   = "ui_menu_item";
+                    break;
                 case EnumMenuType.Wait:  
                     table = "localization_base";
                     key   = "ui_menu_wait";
                     break;
+                
             }
 
             // ui_turn_number: Turn {0}
@@ -104,8 +118,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     private GUIElement_Grid_Item_MenuText m_grid_menu_item;
 
 
-    private Int64                         m_entity_id = 0;           
-    private MENU_ITEM_DATA[]              m_menu_item_datas;
+    private Int64                         m_entity_id              = 0;           
+    private List<MENU_ITEM_DATA>          m_menu_item_datas        = new();
     private (bool init, Vector2 value)    m_grid_menu_padding      = (false, Vector2.zero);  
     private BehaviorSubject<int>          m_selected_index_subject = new(0);
 
@@ -114,7 +128,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         get
         {
             var cur_index = m_selected_index_subject.Value;
-            if (cur_index < 0 || cur_index >= m_menu_item_datas.Length)
+            if (cur_index < 0 || cur_index >= m_menu_item_datas.Count)
                 return MENU_ITEM_DATA.Empty;
 
             return m_menu_item_datas[cur_index];
@@ -177,22 +191,50 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     private void UpdateMenuItems()
     {
-         // TESTCODE: 메뉴 아이템 그리기.
-        m_menu_item_datas = new MENU_ITEM_DATA[]
-        {
-            new MENU_ITEM_DATA(0, MENU_ITEM_DATA.EnumMenuType.Attack),
-            new MENU_ITEM_DATA(1, MENU_ITEM_DATA.EnumMenuType.Wait),
-            // new MENU_ITEM_DATA(2, "Move"),
-            // new MENU_ITEM_DATA(3, "Skill"),
-            // new MENU_ITEM_DATA(4, "Item")
-        };
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+        // 사용 가능한 무기목록 추출,
+        // 사용 가능한 지팡이 목록 추출,
+        // TODO: 스킬 목록 추출,
+        // 소지한 아이템 목록 추출.
+
+        using var list_weapon = ListPool<Item>.AcquireWrapper();
+        using var list_wand   = ListPool<Item>.AcquireWrapper();
+        using var list_item   = ListPool<Item>.AcquireWrapper();
+
+        entity.Inventory.CollectItem(list_item.Value);
+        entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
+        entity.Inventory.CollectItemByType(list_wand.Value,   EnumItemType.Weapon);
+        
+        // 타입에 맞지 않는 무기 제외.
+        list_wand.Value.RemoveAll(e => e == null || e.WeaponCategory != EnumWeaponCategory.Wand);
+        list_weapon.Value.RemoveAll(e => e == null || e.WeaponCategory == EnumWeaponCategory.Wand);
+
+        // 사용 불가능한 무기 제외.
+        list_wand.Value.RemoveAll(e => entity.Verify_Weapon_Use(e.Kind) == false);
+        list_weapon.Value.RemoveAll(e => entity.IsEnableAction(e, EnumItemActionType.Equip) == false);
+
+
+        m_menu_item_datas.Clear();
+
+        int menu_index = 0;
+
+        // 공격
+        if (0 < list_weapon.Value.Count) m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Attack));
+        // 지팡이
+        if (0 < list_wand.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Wand));
+        // 아이템
+        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Item));
+
+        m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Wait));
 
         // 메뉴 아이템 그리기.
-        for (int i = 0; i < m_menu_item_datas.Length; i++)
+        for (int i = 0; i < m_menu_item_datas.Count; i++)
         {
             var localizeKey  = m_menu_item_datas[i].GetLocalizeKey();
             var text_subject = LocalizationManager.Instance.GetTextObservable(localizeKey.Table, localizeKey.Key);
-
             var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
             
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
@@ -250,7 +292,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         var new_index = cur_index + add_index;
 
         // 인덱스 클램프.
-        new_index     = Math.Clamp(new_index, 0, m_menu_item_datas.Length - 1);
+        new_index     = Math.Clamp(new_index, 0, m_menu_item_datas.Count - 1);
         
         // 선택 인덱스 설정.
         m_selected_index_subject.OnNext(new_index);

@@ -27,6 +27,30 @@ namespace Battle
          }
       }
 
+      public bool Verify_Weapon_Use(int _item_kind)
+      {
+         if (_item_kind == 0)
+            return false;
+
+         // 아이템 데이터 체크.
+         var item_data =DataManager.Instance.ItemSheet.GetStatus(_item_kind);
+         if (item_data == null)
+            return false;
+
+         // 숙련도 체크.
+         var proficiency = StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Proficiency);
+         if (proficiency < item_data.PROFICIENCY)
+            return false;
+
+         // 클래스 속성 체크.
+         if (StatusManager.Status.HasClassAttribute_Weapon((EnumWeaponCategory)item_data.CATEGORY) == false)
+            return false;
+
+         
+         return true;
+      }
+
+
 
       public bool IsEnableAction(Item _item, EnumItemActionType _action)
       {
@@ -99,17 +123,13 @@ namespace Battle
          // 아이템 타입 체크.
          if (_item.ItemType != EnumItemType.Weapon)                
              return false;         
-         
-         // 소유자 무기 체크.
-         var owner_weapon = StatusManager.Weapon; //as Weapon;
-         if (owner_weapon == null || owner_weapon.ItemID == ID)
-             return false;
 
-         // 장착이 가능한 무기인지 체크.
-         if (StatusManager.Status.HasClassAttribute_Weapon(_item.WeaponCategory) == false)
-             return false;
+         // 지팡이는 장착하는 무기가 아니다...;; <- TODO: 이것때문에 코드가 지저분... 지팡이를 무기에서 빼는게 맞긴 할거 같다.
+         if (_item.WeaponCategory == EnumWeaponCategory.Wand)
+            return false;
          
-         return true;
+         
+         return Verify_Weapon_Use(_item.Kind);
       }
 
       bool IsEnableAction_Weapon_Unequip(Item _item)
@@ -196,6 +216,12 @@ namespace Battle
              owner_weapon.Equip(_item.ID);
 
          ApplyBuff_Inventory();
+
+
+         // 장착한 아이템이 첫번째 순서로 오도록 변경.
+         if (Inventory.GetItemOrder(_item.ID) > 0)
+             Inventory.SetItemOrder(_item.ID, 0);
+
 
          return true;
       }

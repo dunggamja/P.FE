@@ -71,9 +71,9 @@ public class Inventory
         }
     }
 
-    public void CollectItemByType(List<Item> _list_result, EnumItemType _item_type)
+    public void CollectItemByType(List<Item> _list_result, EnumItemType _item_type, Func<Item, bool> _func_condition = null)
     {
-        CollectItem(_list_result, (e) => e.ItemType == _item_type);
+        CollectItem(_list_result, (e) => e.ItemType == _item_type && (_func_condition == null || _func_condition(e)));
     }
 
     public void ForEachItem(Action<Item> _action)
@@ -103,6 +103,31 @@ public class Inventory
         // TODO: 아이템 버프 갱신.
 
         return true;
+    }
+
+    public int GetItemOrder(Int64 _id)
+    {
+        var item = GetItem(_id);
+        if (item == null)
+            return -1;
+
+        return m_repository_list.IndexOf(item);
+    }
+
+
+    public void SetItemOrder(Int64 _id, int _order)
+    {
+        var item = GetItem(_id);
+        if (item == null)
+            return;
+
+        // 아이템 정렬순서 변경.
+
+        m_repository_list.Remove(item);
+
+        _order = Math.Clamp(_order, 0, m_repository_list.Count);
+
+        m_repository_list.Insert(_order, item);
     }
 
 

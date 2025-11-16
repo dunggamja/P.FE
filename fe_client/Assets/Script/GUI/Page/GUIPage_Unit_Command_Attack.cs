@@ -254,7 +254,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             return;
 
 
+        
         var weapon_id = SelectedItemData.ItemID;
+        var weapon_item =entity.Inventory.GetItem(weapon_id);
+
+        // 선택한 무기 장착. (실패시 처리 없음.)
+        if (entity.ProcessAction(weapon_item, EnumItemActionType.Equip) == false)
+            return;
 
 
         // 무기 종류가 1개 이상이면 종료.

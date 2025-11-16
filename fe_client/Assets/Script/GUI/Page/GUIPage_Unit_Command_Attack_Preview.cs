@@ -205,13 +205,15 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (entity == null)
             return;
 
+        // 무기 장착
+        if (entity.ProcessAction(entity.Inventory.GetItem(m_weapon_id), EnumItemActionType.Equip) == false)
+            return;
 
         var result = CombatHelper.Run_Plan(
             m_entity_id, 
             m_target_id, 
             m_weapon_id,
-            entity.Cell
-            );
+            entity.Cell);
 
 
         if (result == null)
@@ -395,10 +397,15 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             Int64 new_weapon_id = 0;
             Int64 new_target_id = 0;
 
-            // 소유 중인 무기 목록 추출.
-            entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
+            // 소유 중인 무기중 장비가 가능한 목록을 추출.
+            entity.Inventory.CollectItemByType(
+                list_weapon.Value, 
+                EnumItemType.Weapon, 
+                e => entity.IsEnableAction(e, EnumItemActionType.Equip));
+
+
             if (1 < list_weapon.Value.Count)
-            {            
+            {   
                 var index  = list_weapon.Value.FindIndex(e => e.ID == m_weapon_id);
                 for(int i = 1; i < list_weapon.Value.Count; ++i)
                 {

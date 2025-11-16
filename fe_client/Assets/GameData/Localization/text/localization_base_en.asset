@@ -18,20 +18,64 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 27671986692096
+  - m_Id: 100
     m_Localized: Attack
     m_Metadata:
       m_Items: []
-  - m_Id: 28213957877760
+  - m_Id: 101
     m_Localized: Wait
     m_Metadata:
       m_Items: []
-  - m_Id: 32995246227841024
+  - m_Id: 102
+    m_Localized: "\uC9C0\uD321\uC774"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103
+    m_Localized: "\uC2A4\uD0AC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104
+    m_Localized: "\uC18C\uC9C0\uD488"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 105
+    m_Localized: "\uC7A5\uBE44"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106
+    m_Localized: "\uC7A5\uBE44 \uD574\uC81C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107
+    m_Localized: "\uC0AC\uC6A9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 108
+    m_Localized: "\uD68D\uB4DD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109
+    m_Localized: "\uBC84\uB9AC\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 110
     m_Localized: Empty
     m_Metadata:
       m_Items: []
-  - m_Id: 40406579353214976
+  - m_Id: 111
     m_Localized: Turn {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112
+    m_Localized: "\uC608"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113
+    m_Localized: "\uC544\uB2C8\uC624"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114
+    m_Localized: "\uCDE8\uC18C"
     m_Metadata:
       m_Items: []
   references:
