@@ -204,18 +204,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         using var list_wand   = ListPool<Item>.AcquireWrapper();
         using var list_item   = ListPool<Item>.AcquireWrapper();
 
+        // 소지한 아이템 목록 추출
         entity.Inventory.CollectItem(list_item.Value);
-        entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
-        entity.Inventory.CollectItemByType(list_wand.Value,   EnumItemType.Weapon);
-        
-        // 타입에 맞지 않는 무기 제외.
-        list_wand.Value.RemoveAll(e => e == null || e.WeaponCategory != EnumWeaponCategory.Wand);
-        list_weapon.Value.RemoveAll(e => e == null || e.WeaponCategory == EnumWeaponCategory.Wand);
 
-        // 사용 불가능한 무기 제외.
-        list_wand.Value.RemoveAll(e => entity.Verify_Weapon_Use(e.Kind) == false);
-        list_weapon.Value.RemoveAll(e => entity.IsEnableAction(e, EnumItemActionType.Equip) == false);
+        // 장착 가능한 무기 목록
+        entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon,
+         e => entity.IsEnableAction(e, EnumItemActionType.Equip));
 
+        // 사용가능한 지팡이 목록
+        entity.Inventory.CollectItemByType(list_wand.Value,   EnumItemType.Weapon,
+         e => e.WeaponCategory == EnumWeaponCategory.Wand && entity.Verify_Weapon_Use(e.Kind));
 
         m_menu_item_datas.Clear();
 
@@ -313,7 +311,15 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             {
                 // 공격 GUI 오픈.
                 GUIManager.Instance.OpenUI(
-                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id)
+                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, false)
+                    );
+            }
+                break;
+            case MENU_ITEM_DATA.EnumMenuType.Wand:
+            {
+                // 지팡이 GUI 오픈.
+                GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, true)
                     );
             }
                 break;
@@ -364,6 +370,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             case MENU_ITEM_DATA.EnumMenuType.Attack:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+                break;
+            case MENU_ITEM_DATA.EnumMenuType.Wand:
+                draw_flag = (int)Battle.MoveRange.EnumDrawFlag.WandRange;
                 break;
         }
 

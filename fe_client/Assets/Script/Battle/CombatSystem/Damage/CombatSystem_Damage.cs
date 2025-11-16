@@ -107,8 +107,8 @@ namespace Battle
                 return true;
 
 
-            // 공격자 무기 상태 체크.
-            if (Verify_Dealer_Weapon(_param) == false)
+            // 공격자 공격 가능 여부 체크.
+            if (Verify_Dealer_Attackable(_param) == false)
                 return true;                       
 
             
@@ -203,9 +203,9 @@ namespace Battle
         }
 
 
-        bool  Verify_Dealer_Weapon(ICombatSystemParam _param)
+        bool  Verify_Dealer_Attackable(ICombatSystemParam _param)
         {
-            // 공격자 무기 상태 체크.
+            // 공격자 공격 가능 여부 체크.
             var dealer = GetDealer(_param);
             var target = GetTarget(_param);
             if (dealer == null || target == null)
@@ -219,11 +219,9 @@ namespace Battle
             var dealer_weapon_item = dealer.StatusManager.Weapon.ItemObject;
             if (dealer_weapon_item == null || dealer_weapon_item.ID == 0 || dealer_weapon_item.CurCount <= 0)
                 return false;
-
-
             // 사거리 체크.
-            var weapon_range_max = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon, EnumWeaponStatus.Range);
-            var weapon_range_min = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon, EnumWeaponStatus.Range_Min);
+            var weapon_range_max = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon_item, EnumWeaponStatus.Range);
+            var weapon_range_min = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon_item, EnumWeaponStatus.Range_Min);
 
             var distance = PathAlgorithm.Distance(dealer.Cell.x, dealer.Cell.y, target.Cell.x, target.Cell.y);
             if (distance < weapon_range_min || weapon_range_max < distance)

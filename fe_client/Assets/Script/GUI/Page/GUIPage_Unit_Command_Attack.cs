@@ -15,10 +15,11 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 {
     public class PARAM : GUIOpenParam
     {
-        public Int64 EntityID { get; private set; }
+        public Int64    EntityID { get; private set; }
+        public bool     IsWand   { get; private set; }
         public override EnumGUIType GUIType => EnumGUIType.Screen;
 
-        private PARAM(Int64 _entity_id) 
+        private PARAM(Int64 _entity_id, bool _is_wand) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -34,12 +35,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             )             
         { 
             EntityID = _entity_id;  
+            IsWand   = _is_wand;
         }
 
 
-        static public PARAM Create(Int64 _entity_id)
+        static public PARAM Create(Int64 _entity_id, bool _is_wand)
         {
-            return new PARAM(_entity_id);
+            return new PARAM(_entity_id, _is_wand);
         }
     }
 
@@ -73,7 +75,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     private GUIElement_Grid_Item_MenuText m_grid_menu_item;
 
 
-    private Int64                         m_entity_id              = 0;           
+    private Int64                         m_entity_id              = 0;    
+    private bool                          m_is_wand                = false;
     private List<MENU_ITEM_DATA>          m_menu_item_datas        = new();
     private BehaviorSubject<int>          m_selected_index_subject = new(0);
 
@@ -97,7 +100,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     {
         var param   = _param as PARAM;
         m_entity_id = param?.EntityID ?? 0;
-
+        m_is_wand   = param?.IsWand ?? false;
         UpdateMenuItems();
     }
 
@@ -163,8 +166,18 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
       // 소유 중인 무기 목록 추출.
       {     
         using var list_weapons = ListPool<Item>.AcquireWrapper();
-        owner.Inventory.CollectItemByType(list_weapons.Value, EnumItemType.Weapon);
 
+        if (m_is_wand)
+        {
+            owner.Inventory.CollectItemByType(list_weapons.Value, EnumItemType.Weapon,
+             e => e.WeaponCategory == EnumWeaponCategory.Wand && owner.Verify_Weapon_Use(e.Kind));
+        }
+        else
+        {
+            owner.Inventory.CollectItemByType(list_weapons.Value, EnumItemType.Weapon,
+             e => owner.IsEnableAction(e, EnumItemActionType.Equip));
+        }
+        
         //
         m_menu_item_datas.Clear();
         for(int i = 0; i < list_weapons.Value.Count; i++)
@@ -266,8 +279,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         // 무기 종류가 1개 이상이면 종료.
 
         // 공격 범위 탐색.
-        var attack_range_visit = ObjectPool<AttackRangeVisitor>.Acquire();
-        attack_range_visit.SetData(
+        using var attack_range_visit = ObjectPool<AttackRangeVisitor>.AcquireWrapper();
+        attack_range_visit.Value.SetData(
             _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
@@ -276,11 +289,11 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         );
 
         // 공격 범위 탐색.
-        PathAlgorithm.FloodFill(attack_range_visit);
+        PathAlgorithm.FloodFill(attack_range_visit.Value);
 
         // 공격 가능한 타겟 찾기.
         Int64 target_entity_id = 0;
-        foreach (var pos in attack_range_visit.List_Weapon)
+        foreach (var pos in attack_range_visit.Value.List_Weapon)
         {
             var target_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
 
@@ -291,7 +304,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             }
         }
 
-        ObjectPool<AttackRangeVisitor>.Return( attack_range_visit);
+        // ObjectPool<AttackRangeVisitor>.Return( attack_range_visit);
 
 
         // 공격 가능한 타겟이 있으면 UI 출력.
@@ -315,10 +328,23 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
         var select_item_id = SelectedItemData.ItemID;
 
-        // ���� ������ �׷��ݴϴ�.
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+        var item_object = entity.Inventory.GetItem(select_item_id);
+        if (item_object == null)
+            return;
+
+        var draw_flag = (item_object.WeaponCategory == EnumWeaponCategory.Wand)
+                      ? (int)Battle.MoveRange.EnumDrawFlag.WandRange 
+                      : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+
+
+        // 공격 범위 그리기.
         BattleSystemManager.Instance.DrawRange.DrawRange
         (
-            (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _draw_flag:         draw_flag,
             _entityID:          m_entity_id,
             _use_base_position: false,
             _use_weapon_id:     select_item_id

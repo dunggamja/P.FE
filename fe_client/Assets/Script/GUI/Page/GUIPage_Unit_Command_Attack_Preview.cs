@@ -67,7 +67,8 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
     private Int64       m_entity_id   = 0;     
     private Int64       m_target_id   = 0;
-    private Int64       m_weapon_id   = 0;
+    private Int64       m_weapon_id   = 0;    
+    private bool        m_is_wand     = false;
     private Int64       m_vfx_cursor  = 0;
 
     private List<Int64> m_target_list = new();
@@ -283,10 +284,24 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (IsInputFocused == false)
             return;
 
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+        var item_object = entity.Inventory.GetItem(m_weapon_id);
+        if (item_object == null)
+            return;
+
+        var draw_flag = (item_object.WeaponCategory == EnumWeaponCategory.Wand)
+                      ? (int)Battle.MoveRange.EnumDrawFlag.WandRange 
+                      : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+
+     
+
         // 공격 범위 탐색.
         BattleSystemManager.Instance.DrawRange.DrawRange
         (
-            (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _draw_flag:         draw_flag,
             _entityID:          m_entity_id,
             _use_base_position: false,
             _use_weapon_id:     m_weapon_id

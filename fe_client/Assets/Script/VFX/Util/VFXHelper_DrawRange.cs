@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +8,9 @@ namespace Battle.MoveRange
 {
   public enum EnumDrawFlag
   {    
-    MoveRange   = 1 << 0,    // �̵� �Ÿ�
-    AttackRange = 1 << 1,  // ���� ����
+    MoveRange   = 1 << 0,  // 이동 범위 포함.
+    AttackRange = 1 << 1,  // 공격 범위
+    WandRange   = 1 << 2,  // 지팡이 범위
   }
 
   // 위치별로 체크하는 인터페이스, 1칸 이상 이동하는지 체크하고, 
@@ -38,51 +39,62 @@ namespace Battle.MoveRange
 
     public Int64              VisitorID    { get; set; } = 0;
     public (int min, int max) WeaponRange  { get; set; } = (0, 0);
+    public (int min, int max) WandRange    { get; set; } = (0, 0);
 
     public HashSet<(int x, int y)> List_Move   { get; set; } = new();
     public HashSet<(int x, int y)> List_Weapon { get; set; } = new();
-
+    public HashSet<(int x, int y)> List_Wand   { get; set; } = new();
 
 
     public void Visit(int _visit_x, int _visit_y)
     {
-        // bool result = false;
-
+        // 이동 범위에 넣어두자.
         List_Move.Add((_visit_x, _visit_y));
         
         var weapon_range_min = WeaponRange.min;
-        var weapon_range_max = WeaponRange.max;
+        var weapon_range_max = WeaponRange.max;        
 
-        
+        var wand_range_min   = WandRange.min;
+        var wand_range_max   = WandRange.max;
 
-        // 범위 체크.
-        for(int x = -weapon_range_max; x <= weapon_range_max; ++x)
+        var min_range        = Math.Min(weapon_range_min, wand_range_min);
+        var max_range        = Math.Max(weapon_range_max, wand_range_max);
+
+
+        // if (0 < min_range && 0 < max_range)
         {
-            for(int y = -weapon_range_max; y <= weapon_range_max; ++y)
-            {
-                var weapon_x = _visit_x + x;
-                var weapon_y = _visit_y + y;
+          // 범위 체크.
+          for(int x = -max_range; x <= max_range; ++x)
+          {
+              for(int y = -max_range; y <= max_range; ++y)
+              {
+                  var pos_x = _visit_x + x;
+                  var pos_y = _visit_y + y;
 
-                // 범위 체크.
-                var distance = PathAlgorithm.Distance(_visit_x, _visit_y, weapon_x, weapon_y);
-                if (distance < weapon_range_min || weapon_range_max < distance)
-                {
-                    continue;
-                }
+                  // 맵 바운더리 체크.
+                  if (TerrainMap != null && TerrainMap.IsInBound(pos_x, pos_y) == false)
+                      continue;
 
-                // 범위 체크.
-                if (TerrainMap != null && TerrainMap.IsInBound(weapon_x, weapon_y) == false)
-                {
-                  continue;
-                }
+                  // 사거리 체크.
+                  var distance = PathAlgorithm.Distance(_visit_x, _visit_y, pos_x, pos_y);
 
-                List_Weapon.Add((weapon_x, weapon_y));
+                  // 공격 사거리.
+                  if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
+                  {
+                    if (weapon_range_min <= distance && distance <= weapon_range_max)
+                        List_Weapon.Add((pos_x, pos_y));
+                  }
 
-                // result = true;
-            }
+                  // 지팡이 사거리.
+                  if ((DrawFlag & (int)EnumDrawFlag.WandRange) != 0)
+                  {
+                    if (wand_range_min <= distance && distance <= wand_range_max)
+                        List_Wand.Add((pos_x, pos_y));
+                  }
+              }
+          }
         }
 
-        // return result;
     }
 
 
@@ -113,6 +125,11 @@ namespace Battle.MoveRange
             {
               WeaponRange  = _entity_object.GetWeaponRange(_use_weapon_id);
             }
+
+            if ((DrawFlag & (int)EnumDrawFlag.WandRange) != 0)
+            {
+              WandRange = _entity_object.GetWandRange(_use_weapon_id);
+            }
         }
 
         return this;
@@ -126,8 +143,10 @@ namespace Battle.MoveRange
         MoveDistance   = 0;
         VisitorID      = 0;
         WeaponRange    = (0, 0);
+        WandRange      = (0, 0);
         List_Move.Clear();
         List_Weapon.Clear();
+        List_Wand.Clear();
     }
 
   };
@@ -180,39 +199,61 @@ namespace Battle.MoveRange
           UseBasePosition, 
           UseWeaponID));
 
+      using var list_draw = HashSetPool<(int x, int y)>.AcquireWrapper();
 
-      // 이동 범위 체크.
-      foreach(var move in AttackRangeVisitor.List_Move)
+
+      // 이동 범위 표시.
+      foreach(var pos in AttackRangeVisitor.List_Move)
       {
         var vfx_id = VFXManager.Instance.CreateVFXAsync(
             ObjectPool<VFXShape.Param>.Acquire()
             .SetVFXRoot_Default()
             .SetVFXName(AssetName.TILE_EFFECT_BLUE)
-            .SetPosition(move.CellToPosition())
-            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
-            
+            .SetPosition(pos.CellToPosition())
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)            
         );
 
         VFXList.Add(vfx_id);
+        list_draw.Value.Add(pos);
       }
 
-      // 공격 범위 체크.
-      foreach(var weapon in AttackRangeVisitor.List_Weapon)
+      // 공격 범위 표시.
+      foreach(var pos in AttackRangeVisitor.List_Weapon)
       {
-        // 이동 범위 체크.
-        if (AttackRangeVisitor.List_Move.Contains(weapon))
+        // 이미 표시한 위치면 제외.
+        if (list_draw.Value.Contains(pos))
           continue;
 
         var vfx_id = VFXManager.Instance.CreateVFXAsync(
             ObjectPool<VFXShape.Param>.Acquire()
             .SetVFXRoot_Default()
             .SetVFXName(AssetName.TILE_EFFECT_RED)
-            .SetPosition(weapon.CellToPosition())
+            .SetPosition(pos.CellToPosition())
             .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
         );
 
         VFXList.Add(vfx_id);
-      }     
+        list_draw.Value.Add(pos);
+      }   
+
+      // 지팡이 범위 표시.
+      foreach(var pos in AttackRangeVisitor.List_Wand)
+      {
+        // 이미 표시한 위치면 제외.
+        if (list_draw.Value.Contains(pos))
+          continue;
+
+        var vfx_id = VFXManager.Instance.CreateVFXAsync(
+            ObjectPool<VFXShape.Param>.Acquire()
+            .SetVFXRoot_Default()
+            .SetVFXName(AssetName.TILE_EFFECT_GREEN)
+            .SetPosition(pos.CellToPosition())
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
+        );
+
+        VFXList.Add(vfx_id);
+        list_draw.Value.Add(pos);
+      }  
 
 
     }

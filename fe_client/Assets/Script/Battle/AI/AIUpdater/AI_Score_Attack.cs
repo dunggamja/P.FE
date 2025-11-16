@@ -211,8 +211,8 @@ namespace Battle
                     var move_distance = (is_moveable) ? owner_entity.PathMoveRange : 0;
 
                     // 무기 사정거리. (최소/최대)
-                    var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range_Min);
-                    var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon, EnumWeaponStatus.Range);
+                    var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon.ItemObject, EnumWeaponStatus.Range_Min);
+                    var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon.ItemObject, EnumWeaponStatus.Range);
 
 
                     // 공격 가능한 타겟 목록 초기화.

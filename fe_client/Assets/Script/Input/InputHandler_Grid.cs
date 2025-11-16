@@ -349,7 +349,8 @@ public class InputHandler_Grid_Select : InputHandler
         BattleSystemManager.Instance.DrawRange.DrawRange(
             _draw_flag: 
                   (int)Battle.MoveRange.EnumDrawFlag.MoveRange 
-                | (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+                | (int)Battle.MoveRange.EnumDrawFlag.AttackRange
+                | (int)Battle.MoveRange.EnumDrawFlag.WandRange,
 
             _entityID:    
                 draw_entity_id,
