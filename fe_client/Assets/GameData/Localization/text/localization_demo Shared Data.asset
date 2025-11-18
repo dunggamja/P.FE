@@ -14,7 +14,87 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: localization_demo
   m_TableCollectionNameGuidString: 4fc106e1aaf34421395d50dfead5528e
-  m_Entries: []
+  m_Entries:
+  - m_Id: 1000
+    m_Key: 1_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1001
+    m_Key: 1_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1002
+    m_Key: 2_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1003
+    m_Key: 2_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1004
+    m_Key: 3_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1005
+    m_Key: 3_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1006
+    m_Key: 4_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1007
+    m_Key: 4_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1008
+    m_Key: 5_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1009
+    m_Key: 5_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1010
+    m_Key: 3000_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1011
+    m_Key: 3000_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1012
+    m_Key: 3010_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1013
+    m_Key: 3020_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1013
+    m_Key: 3020_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1014
+    m_Key: 3020_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1015
+    m_Key: 3030_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1016
+    m_Key: 3030_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1017
+    m_Key: 4000_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1018
+    m_Key: 4000_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

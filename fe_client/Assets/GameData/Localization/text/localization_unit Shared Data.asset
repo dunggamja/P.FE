@@ -14,7 +14,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: localization_unit
   m_TableCollectionNameGuidString: 1a79366372b754720a052fb14d8ada66
-  m_Entries: []
+  m_Entries:
+  - m_Id: 1000
+    m_Key: 1_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1001
+    m_Key: 1_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1002
+    m_Key: 2_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1003
+    m_Key: 2_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1004
+    m_Key: 3_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1005
+    m_Key: 3_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1006
+    m_Key: 4_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1007
+    m_Key: 4_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1008
+    m_Key: 5_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1009
+    m_Key: 5_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

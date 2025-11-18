@@ -17,7 +17,83 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 4fc106e1aaf34421395d50dfead5528e, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 1000
+    m_Localized: "\uC81C\uC774\uB4DC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1001
+    m_Localized: "\uC81C\uC774\uB4DC \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1002
+    m_Localized: "\uC544\uD1A8"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1003
+    m_Localized: "\uC544\uD1A8 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1004
+    m_Localized: "\uD2B8\uB85C\uC774"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1005
+    m_Localized: "\uD2B8\uB85C\uC774 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1006
+    m_Localized: "\uBCF4\uB098\uC140"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1007
+    m_Localized: "\uBCF4\uB098\uC140 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1008
+    m_Localized: "\uD504\uB85C\uB514"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1009
+    m_Localized: "\uD504\uB85C\uB514 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1010
+    m_Localized: "\uC0B0\uC801"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1011
+    m_Localized: "\uC0B0\uC801 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1012
+    m_Localized: "\uB3C4\uB451"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1013
+    m_Localized: "\uBD88\uB7C9\uBC30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1014
+    m_Localized: "\uBD88\uB7C9\uBC30 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1015
+    m_Localized: "\uD574\uC801"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1016
+    m_Localized: "\uD574\uC801 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1017
+    m_Localized: "\uBCF4\uD638\uB300\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1018
+    m_Localized: "\uBCF4\uD638\uB300\uC0C1 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
