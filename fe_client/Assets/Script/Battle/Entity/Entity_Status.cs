@@ -20,7 +20,7 @@ namespace Battle
         using var list_weapon = ListPool<Item>.AcquireWrapper();
 
         // 소유 중인 무기 목록 추출. (지팡이 제외.)
-        Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon, e => e.WeaponCategory != EnumWeaponCategory.Wand);
+        Inventory.CollectItem_Weapon_Available(list_weapon.Value, this);
 
         foreach(var e in list_weapon.Value)
         {
@@ -64,7 +64,7 @@ namespace Battle
         using var list_wand = ListPool<Item>.AcquireWrapper();
 
         // 소유 중인 지팡이 목록 추출.
-        Inventory.CollectItemByType(list_wand.Value, EnumItemType.Weapon, e => e.WeaponCategory == EnumWeaponCategory.Wand);
+        Inventory.CollectItem_Wand_Available(list_wand.Value, this);
 
         foreach(var e in list_wand.Value)
         {
@@ -75,7 +75,7 @@ namespace Battle
           if (e.ID == 0)
             continue;
 
-          if (Verify_Weapon_Use(e.Kind) == false)
+          if (IsEnableAction(e, EnumItemActionType.Equip) == false)
             continue;
 
           var weapon_range_max = StatusManager.GetBuffedWeaponStatus(e, EnumWeaponStatus.Range);

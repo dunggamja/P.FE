@@ -413,10 +413,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             Int64 new_target_id = 0;
 
             // 소유 중인 무기중 장비가 가능한 목록을 추출.
-            entity.Inventory.CollectItemByType(
-                list_weapon.Value, 
-                EnumItemType.Weapon, 
-                e => entity.IsEnableAction(e, EnumItemActionType.Equip));
+            entity.Inventory.CollectItem_Weapon_Available(list_weapon.Value, entity);
 
 
             if (1 < list_weapon.Value.Count)

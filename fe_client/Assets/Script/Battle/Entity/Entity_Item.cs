@@ -15,7 +15,7 @@ namespace Battle
 
          using var list_weapon = ListPool<Item>.AcquireWrapper();
 
-         Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
+         Inventory.CollectItem_Weapon_Available(list_weapon.Value, this);
 
          foreach(var e in list_weapon.Value)
          {
@@ -124,9 +124,9 @@ namespace Battle
          if (_item.ItemType != EnumItemType.Weapon)                
              return false;         
 
-         // 지팡이는 장착하는 무기가 아니다...;; <- TODO: 이것때문에 코드가 지저분... 지팡이를 무기에서 빼는게 맞긴 할거 같다.
-         if (_item.WeaponCategory == EnumWeaponCategory.Wand)
-            return false;
+         // // 지팡이는 장착하는 무기가 아니다...;; <- TODO: 이것때문에 코드가 지저분... 지팡이를 무기에서 빼는게 맞긴 할거 같다.
+         // if (_item.WeaponCategory == EnumWeaponCategory.Wand)
+         //    return false;
          
          
          return Verify_Weapon_Use(_item.Kind);
@@ -137,11 +137,23 @@ namespace Battle
          if (_item == null)
             return false;
 
-         // 소유자 무기 체크.
-         var owner_weapon = StatusManager.Weapon; //as Weapon;
-         if (owner_weapon == null || owner_weapon.ItemID != _item.ID)
-            return false;
+         if (_item.WeaponCategory == EnumWeaponCategory.Wand)
+         {
+            // 소유자 지팡이 체크.
+            var owner_wand = StatusManager.Wand; //as Weapon;
+            if (owner_wand == null || owner_wand.ItemID != _item.ID)
+               return false;
+         }
+         else
+         {            
+            // 소유자 무기 체크.
+            var owner_weapon = StatusManager.Weapon; //as Weapon;
+            if (owner_weapon == null || owner_weapon.ItemID != _item.ID)
+               return false;
+         }
 
+
+         
                         
          return true;
       }
@@ -211,12 +223,13 @@ namespace Battle
                return false;
 
          
+
+         
          var owner_weapon  = StatusManager.Weapon; //as Weapon;
          if (owner_weapon != null)                                    
              owner_weapon.Equip(_item.ID);
 
          ApplyBuff_Inventory();
-
 
          // 장착한 아이템이 첫번째 순서로 오도록 변경.
          if (Inventory.GetItemOrder(_item.ID) > 0)
@@ -228,6 +241,10 @@ namespace Battle
 
       bool ProcessAction_Weapon_Unequip(Item _item)
       {
+         if (_item == null)
+            return false;
+
+
          var owner_weapon  = StatusManager.Weapon; //as Weapon;
          if (owner_weapon != null)                                    
              owner_weapon.Unequip();
@@ -279,6 +296,9 @@ namespace Battle
          // 소유중인 무기 체크.
          if (StatusManager.Weapon.ItemID == _item.ID)
              StatusManager.Weapon.Unequip();
+
+         if (StatusManager.Wand.ItemID == _item.ID)
+             StatusManager.Wand.Unequip();
 
          ApplyBuff_Inventory();
 

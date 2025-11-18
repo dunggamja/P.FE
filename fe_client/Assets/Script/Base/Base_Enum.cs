@@ -34,9 +34,13 @@ public enum EnumSituationType
 {
     None = 0,                           // 버프의 경우 항시 적용?
 
-    CombatSystem_Turn_Start      = 1,   // (전투씬) 턴 시작시 스킬 사용.
-    CombatSystem_Damage_Start    = 2,   // (전투씬) 공격 전 스킬 사용
-    CombatSystem_Damage_Finish   = 3,   // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
+    CombatSystem_Turn_Start    = 1,   // (전투씬) 턴 시작시 스킬 사용.
+    CombatSystem_Damage_Start  = 2,   // (전투씬) 공격 전 스킬 사용
+    CombatSystem_Damage_Finish = 3,   // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
+
+    CombatSystem_Wand_Turn_Start      = 11,   // (전투씬) 지팡이 시전 시작.
+    CombatSystem_Wand_Action_Start    = 12,   // (전투씬) 지팡이 시전 시작.
+    CombatSystem_Wand_Action_Finish   = 13,   // (전투씬) 지팡이 시전 완료.
 
     //CombatSystem_Damage_Calculate, // (전투씬) 공격 데미지 적용 직전 마지막 보정.
     //CombatSystem_Damage_Appy,      // (전투씬) 공격 데미지 적용 후 처리

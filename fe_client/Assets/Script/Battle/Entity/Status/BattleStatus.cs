@@ -18,6 +18,7 @@ namespace Battle
         public UnitStatus     Status  { get; private set; }
         public BuffMananger   Buff    { get; private set; }
         public Weapon         Weapon  { get; private set; }
+        public Weapon         Wand    { get; private set; }
         // public ITerrain       Terrain { get; private set; }
         //public IBlackBoard    BlackBoard    { get; }
         //public IActionCounter ActionCounter { get; }
@@ -29,6 +30,7 @@ namespace Battle
             Status  = new UnitStatus();
             Buff    = new BuffMananger();
             Weapon  = new Weapon(_owner.ID, 0);
+            Wand    = new Weapon(_owner.ID, 0);
             // Terrain = null;
         }
 
@@ -195,7 +197,8 @@ namespace Battle
             {
                 UnitStatus  = Status.Save(),
                 BuffManager = Buff.Save(),
-                Weapon      = Weapon.Save()
+                Weapon      = Weapon.Save(),
+                Wand        = Wand.Save()
             };
         }
 
@@ -204,6 +207,7 @@ namespace Battle
             Status.Load(_snapshot.UnitStatus);
             Buff.Load(_snapshot.BuffManager);
             Weapon.Load(_snapshot.Weapon);
+            Wand.Load(_snapshot.Wand);
         }
     }
 
@@ -213,7 +217,7 @@ namespace Battle
         public UnitStatus_IO  UnitStatus  { get; set; } = new();
         public BuffManager_IO BuffManager { get; set; } = new();
         public Weapon_IO      Weapon      { get; set; } = new();
-
+        public Weapon_IO      Wand        { get; set; } = new();
     }
 
 }

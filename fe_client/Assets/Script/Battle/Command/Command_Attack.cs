@@ -60,10 +60,13 @@ namespace Battle
 
             // 전투 시스템 셋팅.
             
-            CombatParam.Cache.Reset();
-            CombatParam.Cache.Set(Owner, EntityManager.Instance.GetEntity(Target.MainTargetID));
+            // var combat_param = ObjectPool<CombatParam>.Acquire();
+            var combat_param = new CombatParam().Set(
+                _attacker: Owner, 
+                _defender: EntityManager.Instance.GetEntity(Target.MainTargetID), 
+                _use_wand: false);
             
-            CombatSystemManager.Instance.Setup(CombatParam.Cache);
+            CombatSystemManager.Instance.Setup(combat_param);
         }
 
         protected override bool OnUpdate()
@@ -75,16 +78,15 @@ namespace Battle
 
         protected override void OnExit(bool _is_abort)
         {
-            CombatParam.Cache.Reset();
+            // CombatParam.Cache.Reset();
 
             if (_is_abort)
                 return;
 
             if (Owner != null)
             {
-
                 // Owner.SetCommandDone(EnumCommandFlag.Action);
-                // TODO: 일단 모든 행동 종료처리로 해둔다.
+                // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
                 Owner.SetAllCommandDone();
             }
 

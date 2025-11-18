@@ -208,12 +208,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         entity.Inventory.CollectItem(list_item.Value);
 
         // 장착 가능한 무기 목록
-        entity.Inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon,
-         e => entity.IsEnableAction(e, EnumItemActionType.Equip));
+        entity.Inventory.CollectItem_Weapon_Available(list_weapon.Value, entity);
 
         // 사용가능한 지팡이 목록
-        entity.Inventory.CollectItemByType(list_wand.Value,   EnumItemType.Weapon,
-         e => e.WeaponCategory == EnumWeaponCategory.Wand && entity.Verify_Weapon_Use(e.Kind));
+        entity.Inventory.CollectItem_Wand_Available(list_wand.Value, entity);
 
         m_menu_item_datas.Clear();
 

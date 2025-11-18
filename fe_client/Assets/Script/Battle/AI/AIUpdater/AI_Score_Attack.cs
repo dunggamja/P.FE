@@ -194,7 +194,7 @@ namespace Battle
 
             // 소유 중인 무기들로 테스트 전투를 돌립니다.
             using var list_weapon = ListPool<Item>.AcquireWrapper();
-            owner_inventory.CollectItemByType(list_weapon.Value, EnumItemType.Weapon);
+            owner_inventory.CollectItem_Weapon_Available(list_weapon.Value, owner_entity);
 
             // 공격 가능한 타겟 목록.
             using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
@@ -269,7 +269,7 @@ namespace Battle
             finally
             {
                 // 무기 원상 복구.
-                owner_entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Unequip);
+                owner_entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Equip);
             }    
         }
 

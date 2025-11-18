@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace Battle
 
         public bool HasCommandEnable()
         {
-            // °¡´ÉÇÑ Çàµ¿ÀÌ ÀÖ´ÂÁö Ã¼Å©.
+            // ì‹¤í–‰ ê°€ëŠ¥í•œ ëª…ë ¹ì´ 1ê°œë¼ë„ ìˆëŠ”ì§€ íƒìƒ‰.
             foreach(var e in Util.CachedEnumValues<EnumCommandFlag>())
             {
                 if (HasCommandEnable(e))
@@ -60,14 +60,13 @@ namespace Battle
 
         public bool HasCommandDone()
         {
-            // ÁøÇàÇÑ Çàµ¿ÀÌ ÀÖ´ÂÁö Ã¼Å©.
+            // ì™„ë£Œí•œ ëª…ë ¹ì´ 1ê°œë¼ë„ ìˆëŠ”ì§€ ì²´í¬.
             foreach(var e in Util.CachedEnumValues<EnumCommandFlag>())
             {
-                if (!HasCommandEnable(e))
+                if (HasCommandEnable(e) == false)
                     return true;                
             }
-
-            // ÁøÇàÇÑ Çàµ¿ÀÌ ¾ø´Â »óÅÂ.
+            
             return false;
         }
 
@@ -96,7 +95,7 @@ namespace Battle
 
         public void SetAllCommandEnable()
         {            
-            // ¸ğµç ºñÆ®ÇÃ·¡±×¸¦ 1·Î ÇØÁØ´Ù.
+            // ëª¨ë“  ì»¤ë§¨ë“œ ì‹¤í–‰ ê°€ëŠ¥ ì²˜ë¦¬. (ëª¨ë“  ë¹„íŠ¸ë¥¼ 1ë¡œ ì„¤ì •)
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, -1);
 
             // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
@@ -105,7 +104,7 @@ namespace Battle
 
         public void SetAllCommandDone()
         {
-            // ¸ğµç ºñÆ®ÇÃ·¡±×¸¦ 0À¸·Î ÇØÁØ´Ù.
+            // ëª¨ë“  ì»¤ë§¨ë“œ ì™„ë£Œ ì²˜ë¦¬.
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
 
             // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
@@ -115,19 +114,19 @@ namespace Battle
 
         public EnumCommandProgressState GetCommandProgressState()
         {
-            // Á×¾ú´Ù.
+            // ì£½ì—ˆìŒ.
             if (IsDead)
                 return EnumCommandProgressState.Invalid;
 
-            // °¡´ÉÇÑ Çàµ¿ÀÌ ¾ø´Ù.
-            if (!HasCommandEnable())
+            // ì‹¤í–‰ ê°€ëŠ¥í•œ ëª…ë ¹ì´ 1ê°œë„ ì—†ìœ¼ë©´ ì™„ë£Œ ì²˜ë¦¬.
+            if (HasCommandEnable() == false)
                 return EnumCommandProgressState.Done;
 
-            // ÁøÇàÇÑ Çàµ¿ÀÌ ÀÖÀ½.
+            // ì‹¤í–‰í•œ ëª…ë ¹ì´ 1ê°œë¼ë„ ìˆìœ¼ë©´, ëª…ë ¹ì„ ì§„í–‰ì¤‘ì¸ ìƒíƒœ. <- ì¬ì´ë™ì‹œì—ëŠ” ì´ê±¸ ì–´ë–»ê²Œ í•œë‹¤... 
             if (HasCommandDone())
                 return EnumCommandProgressState.Progress;
 
-            // ´ë±â »óÅÂ.
+            // ì‹¤í–‰í•œ ëª…ë ¹ì´ 1ê°œë„ ì—†ìœ¼ë©´ ëª…ë ¹ ëŒ€ê¸°ì¤‘ì¸ ìƒíƒœ.
             return EnumCommandProgressState.None;
         }
 
@@ -149,7 +148,7 @@ namespace Battle
         //     if (GetCommandProgressState() == EnumCommandProgressState.Progress)
         //         return EnumCommandPriority.Critical;
 
-        //     // TODO: Çàµ¿ ¿ì¼±¼øÀ§...;
+        //     // TODO: ï¿½àµ¿ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½...;
         //     return EnumCommandPriority.Normal;
         // }
         
@@ -157,11 +156,11 @@ namespace Battle
 
         // public bool ShouldSetCommandDone()
         // {
-        //     // ÁøÇà ÁßÀÎ Çàµ¿ÀÌ ¾øÀ¸¸é ¿Ï·áÃ³¸® ÇÒ ÇÊ¿ä ¾øÀ½.
+        //     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
         //     if (!BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
         //         return false;
 
-        //     // ÀÌ¹Ì ¿Ï·á »óÅÂ¸é ¿Ï·áÃ³¸® ÇÒ ÇÊ¿ä ¾øÀ½.  
+        //     // ï¿½Ì¹ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½Ï·ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½.  
         //     if (HasCommandFlag(EnumCommandFlag.Done))
         //         return false;
             

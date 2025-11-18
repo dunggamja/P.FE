@@ -169,15 +169,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
         if (m_is_wand)
         {
-            owner.Inventory.CollectItemByType(list_weapons.Value, EnumItemType.Weapon,
-             e => e.WeaponCategory == EnumWeaponCategory.Wand && owner.Verify_Weapon_Use(e.Kind));
+            owner.Inventory.CollectItem_Wand_Available(list_weapons.Value, owner);
         }
         else
         {
-            owner.Inventory.CollectItemByType(list_weapons.Value, EnumItemType.Weapon,
-             e => owner.IsEnableAction(e, EnumItemActionType.Equip));
+            owner.Inventory.CollectItem_Weapon_Available(list_weapons.Value, owner);
         }
-        
+
         //
         m_menu_item_datas.Clear();
         for(int i = 0; i < list_weapons.Value.Count; i++)

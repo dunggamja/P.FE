@@ -76,6 +76,23 @@ public class Inventory
         CollectItem(_list_result, (e) => e.ItemType == _item_type && (_func_condition == null || _func_condition(e)));
     }
 
+
+    public void CollectItem_Weapon_Available(List<Item> _list_result, Entity _entity)
+    {
+        CollectItemByType(
+            _list_result, 
+            EnumItemType.Weapon,
+            e => e.WeaponCategory != EnumWeaponCategory.Wand && _entity.IsEnableAction(e, EnumItemActionType.Equip));
+    }
+
+    public void CollectItem_Wand_Available(List<Item> _list_result, Entity _entity)
+    {
+        CollectItemByType(
+            _list_result, 
+            EnumItemType.Weapon,
+            e => e.WeaponCategory == EnumWeaponCategory.Wand && _entity.IsEnableAction(e, EnumItemActionType.Equip));
+    }
+
     public void ForEachItem(Action<Item> _action)
     {
         foreach(var e in m_repository_list)

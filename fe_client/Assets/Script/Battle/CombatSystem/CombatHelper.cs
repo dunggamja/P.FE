@@ -59,7 +59,10 @@ namespace Battle
                 return null;
 
             // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-            var snapshot = GameSnapshot.Save();            
+            var snapshot = GameSnapshot.Save();   
+
+            
+
 
             try
             {
@@ -78,9 +81,8 @@ namespace Battle
 
                 // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {
-                    var combat_param = ObjectPool<CombatParam_Plan>
-                        .Acquire()
-                        .Set(attacker, target);
+                    // var combat_param = //ObjectPool<CombatParam_Plan>
+                    var combat_param = new CombatParam_Plan().Set(attacker, target, false);
 
                     // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                     result.Attacker.EntityID  = attacker.ID;
@@ -123,7 +125,7 @@ namespace Battle
                     result.Attacker.HP_After     = attacker.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
                     result.Defender.HP_After     = target.StatusManager.Status.GetPoint(EnumUnitPoint.HP);
 
-                    ObjectPool<CombatParam_Plan>.Return(combat_param);
+                    // ObjectPool<CombatParam_Plan>.Return(combat_param);
                 }
 
                 return result;

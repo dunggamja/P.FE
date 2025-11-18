@@ -98,6 +98,8 @@ namespace Battle
             // 모든 시스템이 순차적으로 완료처리된다는 보장이 없어서... 여기서 종료처리 합니다...;;;
             foreach (var e in m_repository.Values)
                 e.Release();
+
+            Param = null;
         }
 
 

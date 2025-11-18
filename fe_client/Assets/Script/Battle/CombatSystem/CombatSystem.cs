@@ -10,7 +10,8 @@ namespace Battle
     {
         // BHManager BHManager { get; }
         Entity    Attacker  { get; }
-        Entity    Defender  { get; }
+        Entity    Defender  { get; }        
+        bool      UseWand   { get; }
         bool      IsPlan    { get; }
 
 
@@ -18,18 +19,20 @@ namespace Battle
         // List<IBHEffect> Results { get; }
     }
 
-    public class CombatParam_Plan : ICombatSystemParam, IPoolObject
+    public class CombatParam_Plan : ICombatSystemParam
     {
         // public BHManager BHManager { get; private set; } = new();
-        public Entity    Attacker  { get; private set; }
-        public Entity    Defender  { get; private set; }
+        public Entity    Attacker       { get; private set; } = null;
+        public Entity    Defender       { get; private set; } = null;
+        public bool      UseWand        { get; private set; } = false;
         public bool      IsPlan => true;
 
 
-        public CombatParam_Plan Set(Entity _attacker, Entity _defender)
+        public CombatParam_Plan Set(Entity _attacker, Entity _defender, bool _use_wand)
         {
             Attacker = _attacker;
             Defender = _defender;
+            UseWand  = _use_wand;
             return this;
         }
 
@@ -37,8 +40,10 @@ namespace Battle
         {
             // BHManager.Clear();
             // Results.Clear();
-            Attacker = null;
-            Defender = null;
+            Attacker  = null;
+            Defender  = null;
+            UseWand   = false;
+            // IsWand   = false;
         }
 
     }
@@ -48,25 +53,23 @@ namespace Battle
         // public BHManager BHManager { get; private set; } = new();
         public Entity          Attacker  { get; private set; }
         public Entity          Defender  { get; private set; }
+        public bool            UseWand   { get; private set; }
         public bool            IsPlan    => false;
 
 
-
-        public static CombatParam Cache = new ();
-
-
-        public CombatParam Set(Entity _attacker, Entity _defender)
+        public CombatParam Set(Entity _attacker, Entity _defender, bool _use_wand)
         {
             Attacker = _attacker;
             Defender = _defender;
+            UseWand  = _use_wand;
             return this;
         }
 
-        public CombatParam Reset()
+        public void Reset()
         {
             Attacker = null;
             Defender = null;
-            return this;
+            UseWand  = false;
         }
 
     }   
