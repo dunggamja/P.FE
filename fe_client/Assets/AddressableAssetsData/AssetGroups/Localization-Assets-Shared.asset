@@ -15,19 +15,18 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: d271eb8dada864c78acd71433a1037f4
   m_SerializeEntries:
-  - m_GUID: 95ef37a24657242f297ae93075644055
-    m_Address: Assets/Localization/text/test_table Shared Data.asset
+  - m_GUID: 1a79366372b754720a052fb14d8ada66
+    m_Address: Assets/GameData/localization_unit Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bbc0bc032d1c74a388deb3b99b9f95c6
-    m_Address: localization_shared
+  - m_GUID: 4fc106e1aaf34421395d50dfead5528e
+    m_Address: Assets/GameData/Localization/text/localization_demo Shared Data.asset
     m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dbfb4bf5d1a904563b7ab6555cb6d5cd
-    m_Address: Assets/GameData/Localization/localization_character Shared Data.asset
+  - m_GUID: 95ef37a24657242f297ae93075644055
+    m_Address: Assets/Localization/text/test_table Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
