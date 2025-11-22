@@ -56,6 +56,12 @@ namespace Battle
         //     return item_object.HasAttribute(_attribute_type, _target);
         // }
 
+        // public static EnumTargetType GetTargetType(Int32 _item_kind)
+        // {
+
+
+        // }
+
 
         public void Reset()
         {
@@ -77,6 +83,10 @@ namespace Battle
             OwnerID = _snapshot.OwnerID;
             ItemID  = _snapshot.ItemID;
         }
+
+        // public bool IsEnemyTarget(Int32 _item_kind)
+        // {
+        // }
     }
 
     public class Weapon_IO

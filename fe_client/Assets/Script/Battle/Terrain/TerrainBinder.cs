@@ -10,12 +10,10 @@ namespace Battle
         [SerializeField]
         private Terrain                    m_terrain            = null;
          
-        [SerializeField]         
-        private sheet_map_setting          m_map_setting        = null;
-
-
-        [SerializeField]
-        private sheet_map_faction_setting  m_faction_setting    = null;
+        // [SerializeField]         
+        // private sheet_map_setting          m_map_setting        = null;
+        // [SerializeField]
+        // private sheet_map_faction_setting  m_faction_setting    = null;
 
         [SerializeField]
         private Transform                  m_root_fixed_objects = null;

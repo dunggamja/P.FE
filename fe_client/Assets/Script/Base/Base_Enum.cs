@@ -76,38 +76,39 @@ public enum EnumItemActionType
 }
 
 
-public enum EnumConditionAttribute
-{
-    None,
-}
 
-public enum EnumEffectAttribute
-{
-    None,
+// public enum EnumConditionAttribute
+// {
+//     None,
+// }
+
+// public enum EnumEffectAttribute
+// {
+//     None,
     
-    //Damage      = 1, // 데미지
-    Recovery    = 2, // 회복
-    Buff        = 3, // 버프
-    Skill       = 4, // 스킬
+//     //Damage      = 1, // 데미지
+//     Recovery    = 2, // 회복
+//     Buff        = 3, // 버프
+//     Skill       = 4, // 스킬
 
 
-    // 스킬    
-    SkillGet    = 1001, // 스킬 획득    
-    ClassUp     = 1002, // 클래스 업
-    ClassChange = 1003, // 클래스 체인지
-}
+//     // 스킬    
+//     SkillGet    = 1001, // 스킬 획득    
+//     ClassUp     = 1002, // 클래스 업
+//     ClassChange = 1003, // 클래스 체인지
+// }
 
-public enum EnumEffectTargetAttribute
-{
-    None,
+// public enum EnumEffectTargetAttribute
+// {
+//     None,
 
-    Owner       = 1,   // 소유자 대상
-    Ally        = 2,   // 아군 대상인가
-    Enemy       = 3,   // 적 대상인가
+//     Owner       = 1,   // 소유자 대상
+//     Ally        = 2,   // 아군 대상인가
+//     Enemy       = 3,   // 적 대상인가
 
-    AreaEffect  = 4, // 범위 효과인가.
-    FocusOwner  = 5, // 소유자를 타겟팅
-    FocusGround = 6, // 위치를 중점으로
-}
+//     AreaEffect  = 4, // 범위 효과인가.
+//     FocusOwner  = 5, // 소유자를 타겟팅
+//     FocusGround = 6, // 위치를 중점으로
+// }
 
 

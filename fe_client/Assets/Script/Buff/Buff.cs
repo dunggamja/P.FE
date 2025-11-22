@@ -16,7 +16,7 @@ public enum EnumBuffTarget
 {
     None,
 
-    Owner  = 1,  // 소유자에게 버프 적용
+    Owner  = 1, // 소유자에게 버프 적용
     Target = 2, // 타겟에게 버프 적용
 }
 

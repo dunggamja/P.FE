@@ -137,9 +137,8 @@ namespace Battle
             }
         }
     
-    
-    
-        public static bool IsAttackable(Int64 _attacker_id, Int64 _target_id)
+
+        public static bool IsAlly(Int64 _attacker_id, Int64 _target_id)
         {
             if (_attacker_id <= 0 || _target_id <= 0)
                 return false;
@@ -154,15 +153,78 @@ namespace Battle
             if (target.IsFixedObject)
                 return false;
 
-            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
+            
 
-          
-            // 공격자와 타겟이 같은 진영인 경우 제외.
-            var is_alliance = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
-            if (is_alliance)
+            // 공격자와 타겟이 같은 진영인지 체크.
+            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+
+
+            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
+            {
+                // is_ally = rand() %2 ?;;;
+                // is_ally = !is_ally;;;;
+            }
+
+            return is_ally == true;
+        }
+    
+    
+        public static bool IsEnemy(Int64 _attacker_id, Int64 _target_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0)
                 return false;
 
-            return true;
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            // TODO: 일단 FixedObject 제외.
+            if (target.IsFixedObject)
+                return false;
+
+                      
+            // 공격자와 타겟이 같은 진영인지 체크.
+            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+
+            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
+            {
+                // is_ally = rand() %2 ?;;;
+                // is_ally = !is_ally;;;;
+            }
+
+            return is_ally == false;
+        }
+
+        public static bool IsTargetable(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0 || _weapon_id <= 0)
+                return false;
+
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            var item = attacker.Inventory.GetItem(_weapon_id);
+            if (item == null)
+                return false;
+
+            var target_type = DataManager.Instance.GetItemTargetType(item.Kind);
+            if (target_type == EnumTargetType.None)
+                return false;
+
+
+            switch(target_type)
+            {
+                case EnumTargetType.Owner: return _attacker_id == _target_id;
+                case EnumTargetType.Ally : return _attacker_id != _target_id && IsAlly(_attacker_id, _target_id);
+                case EnumTargetType.Enemy: return _attacker_id != _target_id && IsEnemy(_attacker_id, _target_id);
+            }          
+
+            return false;
         }
     }
 }

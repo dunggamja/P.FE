@@ -22,8 +22,9 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         public Int64 EntityID { get; private set; }
         public Int64 TargetID { get; private set; }
         public Int64 WeaponID { get; private set; }
+        public bool  IsWand   { get; private set; }
 
-        private PARAM(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id) 
+        private PARAM(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, bool _is_wand) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -41,11 +42,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             EntityID = _entity_id;
             TargetID = _target_id;
             WeaponID = _weapon_id;
+            IsWand   = _is_wand;
         }
 
-        static public PARAM Create(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id)
+        static public PARAM Create(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, bool _is_wand)
         {
-            return new PARAM(_entity_id, _target_id, _weapon_id);
+            return new PARAM(_entity_id, _target_id, _weapon_id, _is_wand);
         }
     }
     
@@ -72,6 +74,20 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     private Int64       m_vfx_cursor  = 0;
 
     private List<Int64> m_target_list = new();
+
+
+    // private bool        IsWandWeapon 
+    // {
+    //     get
+    //     {
+    //         var entity = EntityManager.Instance.GetEntity(m_entity_id);
+    //         if (entity == null)
+    //             return false;
+
+    //         var    weapon_item  = entity.Inventory.GetItem(m_weapon_id);
+    //         return weapon_item != null && weapon_item.WeaponCategory == EnumWeaponCategory.Wand;
+    //     }
+    // }
 
     public void OnReceiveEvent(IEventParam _event)
     {
@@ -101,7 +117,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         m_entity_id = param?.EntityID ?? 0;
         m_target_id = param?.TargetID ?? 0;
         m_weapon_id = param?.WeaponID ?? 0;
-
+        m_is_wand   = param?.IsWand ?? false;
 
         CreateCursorVFX();
 
@@ -161,10 +177,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (entity == null)
             return 0;
 
+        
+        var draw_flag   = m_is_wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+
         // 공격 범위 탐색.
         using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
         attack_range_visit.Value.SetData(
-            _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _draw_flag:         draw_flag,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
             _use_base_position: false,
@@ -173,28 +192,26 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
         PathAlgorithm.FloodFill(attack_range_visit.Value);
 
-        // 공격 가능한 타겟 찾기.
-        foreach(var pos in attack_range_visit.Value.List_Weapon)
+
+        // 타겟 목록 순회.
+        var target_list = (m_is_wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        foreach(var pos in target_list)
         {
             var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
             if (target_id > 0)
             {   
                 // 공격 가능한 타겟 찾기.
-                if (CombatHelper.IsAttackable(m_entity_id, target_id) == false)
+                if (CombatHelper.IsTargetable(m_entity_id, target_id, _weapon_id) == false)
                     continue;             
 
                 _target_list.Add(target_id);
             }
         }
 
-        //ObjectPool<Battle.MoveRange.AttackRangeVisitor>.Return( attack_range_visit.Value);
-
         // 공격 가능한 타겟 찾기.
         Int64 new_target_id = m_target_id;        
         if (_target_list.Contains(m_target_id) == false)
-        {
-            new_target_id = _target_list.Count > 0 ? _target_list[0] : 0;
-        }
+              new_target_id = _target_list.Count > 0 ? _target_list[0] : 0;
 
         return new_target_id;
     }
@@ -208,6 +225,10 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
         // 무기 장착
         if (entity.ProcessAction(entity.Inventory.GetItem(m_weapon_id), EnumItemActionType.Equip) == false)
+            return;
+
+        // 잠시.. 막아두자...
+        if (m_is_wand)
             return;
 
         var result = CombatHelper.Run_Plan(

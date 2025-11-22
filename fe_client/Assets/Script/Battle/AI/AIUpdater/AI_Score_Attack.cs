@@ -160,7 +160,7 @@ namespace Battle
             foreach(var e in list_target.Value)
             {
                 // 공격 가능한지 체크.
-                if (CombatHelper.IsAttackable(owner_entity.ID, e) == false)
+                if (CombatHelper.IsEnemy(owner_entity.ID, e) == false)
                     continue;
 
 
@@ -241,7 +241,7 @@ namespace Battle
                             continue;     
 
                         // 공격 가능한지 체크.
-                        if (CombatHelper.IsAttackable(owner_entity.ID, target_id) == false)
+                        if (CombatHelper.IsEnemy(owner_entity.ID, target_id) == false)
                             continue;
 
                         // 점수 계산 결과값 초기화.

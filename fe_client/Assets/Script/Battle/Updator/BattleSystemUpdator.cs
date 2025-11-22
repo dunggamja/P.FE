@@ -67,6 +67,8 @@ namespace Battle
                 return;
             }
 
+            map_setting.Initialize();
+
 
             // 지형 맵 셋팅.
             Test_BattleSystem_Setup_Terrain(map_file);

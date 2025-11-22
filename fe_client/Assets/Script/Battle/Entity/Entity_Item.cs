@@ -222,12 +222,7 @@ namespace Battle
          if (_item == null)
                return false;
 
-         
-
-         
-         var owner_weapon  = StatusManager.Weapon; //as Weapon;
-         if (owner_weapon != null)                                    
-             owner_weapon.Equip(_item.ID);
+         StatusManager.Equip_Weapon(_item);
 
          ApplyBuff_Inventory();
 
@@ -244,10 +239,7 @@ namespace Battle
          if (_item == null)
             return false;
 
-
-         var owner_weapon  = StatusManager.Weapon; //as Weapon;
-         if (owner_weapon != null)                                    
-             owner_weapon.Unequip();
+         StatusManager.Unequip_Weapon(_item);
 
          ApplyBuff_Inventory();
                
@@ -293,12 +285,7 @@ namespace Battle
          if (Inventory.RemoveItem(_item.ID) == false)
             return false;
 
-         // 소유중인 무기 체크.
-         if (StatusManager.Weapon.ItemID == _item.ID)
-             StatusManager.Weapon.Unequip();
-
-         if (StatusManager.Wand.ItemID == _item.ID)
-             StatusManager.Wand.Unequip();
+         StatusManager.Unequip_Weapon(_item);
 
          ApplyBuff_Inventory();
 

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -27,9 +27,16 @@ namespace Battle
             // 
             _entity.Reset();
 
-            // ¿ÀºêÁ§Æ® »èÁ¦.
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½.
             WorldObjectManager.Instance.DeleteObject(_entity.ID);
             EntityManager.Instance.Remove(_entity.ID);
         }
+
+        // public static (string table, string key) GetLocalizeName(this Entity _entity)
+        // {
+        //     if (_entity == null)
+        //         return (string.Empty, string.Empty);
+        //     DataManager.Instance.MapSettingSheet.GetLocalizeName(_entity.ID);
+        // }
     }
 }

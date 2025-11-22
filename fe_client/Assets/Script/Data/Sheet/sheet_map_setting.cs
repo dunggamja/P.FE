@@ -13,6 +13,7 @@ public class sheet_map_setting_entity
 	public Int32       FACTION;
 	public Int32       STATUS_KIND;
 	public Int32       ITEM_KIND;
+	public Int32       LOCALIZATION_KIND;
 }
 
 
@@ -97,6 +98,15 @@ public class sheet_map_setting_item
 }
 
 
+[Serializable]
+public class sheet_map_setting_localize
+{
+	public Int32       KIND;
+	public string      MEMO;
+	public string      NAME;
+	public string      DESC;
+}
+
 
 
 
@@ -107,7 +117,27 @@ public class sheet_map_setting : ScriptableObject
 	public List<sheet_map_setting_entity>    entity;
 	public List<sheet_map_setting_status>    status;
 	public List<sheet_map_setting_item>      item;
-	// public List<sheet_map_setting_asset>     asset;
+	public List<sheet_map_setting_localize>  localization	;
+
+
+	private Dictionary<Int32, (string table, string key)>   m_cache_localize_name  = new ();
+	private Dictionary<Int32, (string table, string key)>   m_cache_localize_desc  = new ();
+
+
+	public void Initialize()
+	{
+		foreach (var item in localization)
+		{
+			var name_split = Util.SplitText(item.NAME, Data_Const.SHEET_LOCALIZATION_SEPERATOR);
+			var desc_split = Util.SplitText(item.DESC, Data_Const.SHEET_LOCALIZATION_SEPERATOR);
+
+			if (name_split.Count >= 2)
+			 	m_cache_localize_name.Add(item.KIND, (name_split[0], name_split[1]));
+
+			if (desc_split.Count >= 2)
+			 	m_cache_localize_desc.Add(item.KIND, (desc_split[0], desc_split[1]));
+		}
+	}
 
 
 	public sheet_map_setting_entity GetEntity(Int64 _id)

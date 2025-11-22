@@ -382,7 +382,7 @@ namespace Battle
                       continue;
 
                     // 공격 가능한 타겟인지 체크.
-                    if (CombatHelper.IsAttackable(_entity.ID, entity_target.ID) == false)
+                    if (CombatHelper.IsEnemy(_entity.ID, entity_target.ID) == false)
                       continue;
 
                   

@@ -120,7 +120,7 @@ namespace Battle
       BuffBonus          = 100, // 버프 보너스 (EnumBuffStatus)
 
 
-      
+      TargetType           = 200, // 아이템 대상 타입 (EnumTargetType)
       Heal                 = 201, // 회복 (고정)
       HealBonus_UnitStatus = 202, // 회복 보너스 (유닛 스탯 비례, 만분율)
 
@@ -225,6 +225,8 @@ namespace Battle
         Ground_Dirt,   // 거친 지형 
         Ground_Climb,  // 등반 (경보병 위주?)       
 
+        // Building  = 10, // 건물
+                        // 
 
 
         Water     = 20, // 물 
@@ -238,14 +240,24 @@ namespace Battle
 
     public enum EnumPathOwnerAttribute
     {
-      Ground,        // 땅 이동 가능
-      Flyer,         // 비행 이동 가능
-      Water,         // 물 이동 가능
-      Water_Shallow, // 얕은 물 이동 가능
-      Climber,       // 등산 가능.
+      Ground = 0,        // 땅 이동 가능
+      Flyer = 1,         // 비행 이동 가능
+      Water = 2,         // 물 이동 가능
+      Water_Shallow = 3, // 얕은 물 이동 가능
+      Climber = 4,       // 등산 가능.
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?
+    }
+
+    public enum EnumTargetType
+    {
+        None  = 0,
+        Owner = 1, // 소유자
+        Ally  = 2, // 아군
+        Enemy = 3, // 적
+
+        // Both  = 4, // 아군 + 적군 구분 없음.
     }
 
 
@@ -299,6 +311,9 @@ namespace Battle
 
         // MAX = 32,
     }
+
+
+
 
 
 }

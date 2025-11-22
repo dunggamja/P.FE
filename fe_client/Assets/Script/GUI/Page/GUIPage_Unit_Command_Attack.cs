@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Battle;
 using Battle.MoveRange;
 using R3;
@@ -263,23 +264,20 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         var entity = EntityManager.Instance.GetEntity(m_entity_id);
         if (entity == null)
             return;
-
-
         
-        var weapon_id = SelectedItemData.ItemID;
-        var weapon_item =entity.Inventory.GetItem(weapon_id);
+        var weapon_id   = SelectedItemData.ItemID;
+        var weapon_item = entity.Inventory.GetItem(weapon_id);
 
         // 선택한 무기 장착. (실패시 처리 없음.)
         if (entity.ProcessAction(weapon_item, EnumItemActionType.Equip) == false)
             return;
 
-
-        // 무기 종류가 1개 이상이면 종료.
+        var draw_flag = m_is_wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
 
         // 공격 범위 탐색.
         using var attack_range_visit = ObjectPool<AttackRangeVisitor>.AcquireWrapper();
         attack_range_visit.Value.SetData(
-            _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.AttackRange,
+            _draw_flag:         draw_flag,
             _terrain:           TerrainMapManager.Instance.TerrainMap,
             _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
             _use_base_position: false,
@@ -287,35 +285,37 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         );
 
         // 공격 범위 탐색.
-        PathAlgorithm.FloodFill(attack_range_visit.Value);
+        PathAlgorithm.FloodFill(attack_range_visit.Value);        
 
-        // 공격 가능한 타겟 찾기.
-        Int64 target_entity_id = 0;
-        foreach (var pos in attack_range_visit.Value.List_Weapon)
+        
+
+        Int64  FindTarget(HashSet<(int x, int y)> _target_list)
         {
-            var target_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
-
-            if (CombatHelper.IsAttackable(m_entity_id, target_id))
+            if (_target_list != null)
             {
-                target_entity_id = target_id;
-                break;
+                foreach (var pos in _target_list)
+                {
+                    var target_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
+                    if (CombatHelper.IsTargetable(m_entity_id, target_id, weapon_id))
+                        return target_id;
+                }
             }
+
+            return 0;
         }
 
-        // ObjectPool<AttackRangeVisitor>.Return( attack_range_visit);
+        // 공격 대상 순회.
+        var target_list      = (m_is_wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        var target_entity_id = FindTarget(target_list);
 
+        
 
         // 공격 가능한 타겟이 있으면 UI 출력.
         if (target_entity_id > 0)
-        {      
-            // Debug.Log($"target_entity_id: {target_entity_id}");
-
-            // 공격 가능한 타겟 UI 출력    
+        {   
             GUIManager.Instance.OpenUI(
-                GUIPage_Unit_Command_Attack_Preview
-                .PARAM
-                .Create(m_entity_id, target_entity_id, weapon_id)
-                );
+                GUIPage_Unit_Command_Attack_Preview.PARAM
+                .Create(m_entity_id, target_entity_id, weapon_id, m_is_wand));
         }
     }
 

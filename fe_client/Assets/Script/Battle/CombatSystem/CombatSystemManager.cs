@@ -80,6 +80,14 @@ namespace Battle
             m_is_post_process_finished = false;
             m_list_damage_result.Clear();
             // Debug.LogWarning("list_damage_result.Clear()");
+
+
+            // 공격자 / 방어자 무기 장착이 안되어 있을 경우, 자동 장착 처리.
+            if (Param.Attacker != null)
+                Param.Attacker.Equip_Weapon_Auto();
+
+            if (Param.Defender != null)
+                Param.Defender.Equip_Weapon_Auto();
         }
 
         bool OnUpdate()

@@ -345,3 +345,44 @@ MonoBehaviour:
     ITEM_KIND: 2001
     VALUE: 0
     DROP: 0
+  localization:
+  - KIND: 1
+    MEMO: "\uC544\uAD70_\uC81C\uC774\uB4DC"
+    NAME: localization_demo/1_name
+    DESC: localization_demo/1_desc
+  - KIND: 2
+    MEMO: "\uC544\uAD70_\uC544\uD1A8"
+    NAME: localization_demo/2_name
+    DESC: localization_demo/2_desc
+  - KIND: 3
+    MEMO: "\uC544\uAD70_\uD2B8\uB85C\uC774"
+    NAME: localization_demo/3_name
+    DESC: localization_demo/3_desc
+  - KIND: 4
+    MEMO: "\uC544\uAD70_\uBCF4\uB098\uC140"
+    NAME: localization_demo/4_name
+    DESC: localization_demo/4_desc
+  - KIND: 5
+    MEMO: "\uC544\uAD70_\uD504\uB85C\uB514"
+    NAME: localization_demo/5_name
+    DESC: localization_demo/5_desc
+  - KIND: 3000
+    MEMO: "\uC11C\uC7A5_\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
+    NAME: localization_demo/3000_name
+    DESC: localization_demo/3000_name
+  - KIND: 3010
+    MEMO: "\uC11C\uC7A5_\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
+    NAME: localization_demo/3010_name
+    DESC: localization_demo/3010_name
+  - KIND: 3020
+    MEMO: "\uC11C\uC7A5_\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
+    NAME: localization_demo/3020_name
+    DESC: localization_demo/3020_name
+  - KIND: 3030
+    MEMO: "\uC11C\uC7A5_\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
+    NAME: localization_demo/3030_name
+    DESC: localization_demo/3030_name
+  - KIND: 4000
+    MEMO: "\uC11C\uC7A5_\uC544\uAD70 \uBCF4\uD638\uB300\uC0C1"
+    NAME: localization_demo/4000_name
+    DESC: localization_demo/4000_name

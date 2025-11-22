@@ -34,6 +34,42 @@ namespace Battle
             // Terrain = null;
         }
 
+        public bool Equip_Weapon(Item _item)
+        {
+            if (_item == null)
+                return false;
+
+            if (_item.WeaponCategory == EnumWeaponCategory.Wand)
+            {
+                Wand.Equip(_item.ID);
+            }
+            else
+            {
+                Weapon.Equip(_item.ID);
+            }
+            
+            return true;
+        }
+
+        public bool Unequip_Weapon(Item _item)
+        {
+            if (_item == null)
+                return false;
+
+            if (Wand.ItemID == _item.ID)
+            {
+                Wand.Unequip();
+                return true;
+            }
+            else if (Weapon.ItemID == _item.ID)
+            {
+                Weapon.Unequip();
+                return true;
+            }
+
+            return false;
+        }
+
         public int GetBuffedUnitStatus(EnumUnitStatus _unit_status, EnumSituationType _situation_type = EnumSituationType.None)
         {
             var status     = Status.GetStatus(_unit_status);
