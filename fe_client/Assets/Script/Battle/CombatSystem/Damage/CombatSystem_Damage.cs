@@ -6,65 +6,7 @@ using UnityEngine;
 namespace Battle
 {
 
-        public struct Combat_DamageResult
-        {
-            public Int64  AttackerID         { get; private set; }
-            public Int64  TargetID           { get; private set; }
-            public Int64  WeaponID           { get; private set; }
-
-            public int    Result_HP_Attacker { get; private set; }
-            public int    Result_HP_Target   { get; private set; }
-            
-
-
-            public bool   WeaponEffectiveness { get; private set; }
-            public bool   Result_Hit          { get; private set; }
-            public bool   Result_Critical     { get; private set; }
-            public bool   Result_Guard        { get; private set; }
-
-            public float  Result_HitRate      { get; private set; }
-            public float  Result_CriticalRate { get; private set; }
-            public float  Result_GuardRate    { get; private set; }
-            public int    Result_Damage       { get; private set; }   
-
-            public int    Result_HitRate_Percent      => Math.Clamp((int)(Result_HitRate * 100), 0, 100);
-            public int    Result_CriticalRate_Percent => Math.Clamp((int)(Result_CriticalRate * 100), 0, 100);
-            public int    Result_GuardRate_Percent    => Math.Clamp((int)(Result_GuardRate * 100), 0, 100);
-
-            public static Combat_DamageResult Create(
-                Int64 _attacker_id,
-                Int64 _target_id,
-                Int64 _weapon_id,
-                int   _result_hp_attacker,
-                int   _result_hp_target,
-                bool  _weapon_effectiveness, 
-                bool  _result_hit,
-                bool  _result_critical, 
-                bool  _result_guard, 
-                float _result_hit_rate, 
-                float _result_critical_rate,
-                float _result_guard_rate, 
-                int   _result_damage)
-            {
-                return new Combat_DamageResult
-                {
-                    AttackerID          = _attacker_id,
-                    TargetID            = _target_id,
-                    WeaponID            = _weapon_id,
-                    Result_HP_Attacker  = _result_hp_attacker,
-                    Result_HP_Target    = _result_hp_target,
-                    WeaponEffectiveness = _weapon_effectiveness,
-                    Result_Hit          = _result_hit,
-                    Result_Critical     = _result_critical,
-                    Result_Guard        = _result_guard,
-                    Result_HitRate      = _result_hit_rate,
-                    Result_CriticalRate = _result_critical_rate,
-                    Result_GuardRate    = _result_guard_rate,
-                    Result_Damage       = _result_damage,
-                };
-            }
-        }
-
+    
 
 
 
@@ -114,6 +56,7 @@ namespace Battle
             
             // 무기 상성에 따른 명중률 보정은 일단 제거.
             // WeaponAdvantage     = Calculate_WeaponAdvantage(_param);
+
             // 무기 특효에 대한 값 셋팅.
             bool WeaponEffectiveness = Calculate_WeaponEffectiveness(_param);
 
@@ -162,9 +105,7 @@ namespace Battle
             }
 
 
-            // 데미지 적용 후 후처리.
-            PostProcess_DamageAction(_param);
-            
+           
 
             CombatSystemManager.Instance.AddCombatDamageResult(
                 Combat_DamageResult.Create
@@ -194,6 +135,10 @@ namespace Battle
             // var dealer = GetDealer(_param);
             // var target = GetTarget(_param);
 
+             // 데미지 적용 후 후처리.
+            PostProcess_DamageAction(_param);
+            
+
             // 공격 후 스킬 사용.
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Situation_UpdateEvent>
@@ -219,6 +164,7 @@ namespace Battle
             var dealer_weapon_item = dealer.StatusManager.Weapon.ItemObject;
             if (dealer_weapon_item == null || dealer_weapon_item.ID == 0 || dealer_weapon_item.CurCount <= 0)
                 return false;
+
             // 사거리 체크.
             var weapon_range_max = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon_item, EnumWeaponStatus.Range);
             var weapon_range_min = dealer.StatusManager.GetBuffedWeaponStatus(dealer_weapon_item, EnumWeaponStatus.Range_Min);
@@ -265,7 +211,7 @@ namespace Battle
             // }
 
             // 100분율 
-            return Math.Max(0, buff_hit.Calculate(hit - dodge)) * 0.01f;
+            return Util.PERCENT(buff_hit.Calculate(hit - dodge), true);
         }
 
         float Calculate_CriticalRate(ICombatSystemParam _param)
@@ -292,7 +238,7 @@ namespace Battle
 
 
             // 100분율 
-            return Math.Max(0, hit_buff.Calculate(hit - dodge)) * 0.01f;
+            return Util.PERCENT(hit_buff.Calculate(hit - dodge), true);
         }
 
         float Calculate_GuardRate(ICombatSystemParam _param)
@@ -332,7 +278,7 @@ namespace Battle
             var damage_magic  = (0 < might_magic)  ? Math.Max(0, might_magic  - defense_magic) : 0;
             var damage_total  = damage_physic + damage_magic;
 
-            Debug.Log($"atid:{dealer.ID}, deid:{target.ID}, atk:{might_physic}, def:{defense_physic}");
+            // Debug.Log($"atid:{dealer.ID}, deid:{target.ID}, atk:{might_physic}, def:{defense_physic}");
 
             // 버프 계산.
             var buff_value     = dealer.StatusManager

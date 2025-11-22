@@ -289,10 +289,11 @@ namespace Battle
             
 
             var result = CombatHelper.Run_Plan(
-                _owner.ID, 
-                _target.ID, 
-                _owner.StatusManager.Weapon.ItemID,
-                _attack_position);
+                _attacker_id: _owner.ID, 
+                _target_id:   _target.ID, 
+                _weapon_id:   _owner.StatusManager.Weapon.ItemID,
+                _use_wand:    false,
+                _attack_position: _attack_position);
 
             if (result == null)
                 return;
@@ -303,8 +304,10 @@ namespace Battle
             var damage_taken       = result.Attacker.HP_Before - result.Attacker.HP_After;
             var damage_dealt       = result.Defender.HP_Before - result.Defender.HP_After;
 
-            var hit_rate           = Mathf.Clamp01(result.Attacker.HitRate / 100f);
-            var dodge_rate         = Mathf.Clamp01((100 - result.Defender.HitRate) / 100f);
+            
+
+            var hit_rate           = Util.PERCENT(result.Attacker.HitRate, true);
+            var dodge_rate         = Util.PERCENT(100 - result.Defender.HitRate, true);
 
 
             // 공격자/타겟 HP

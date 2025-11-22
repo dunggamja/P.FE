@@ -227,14 +227,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (entity.ProcessAction(entity.Inventory.GetItem(m_weapon_id), EnumItemActionType.Equip) == false)
             return;
 
-        // 잠시.. 막아두자...
-        if (m_is_wand)
-            return;
 
         var result = CombatHelper.Run_Plan(
             m_entity_id, 
             m_target_id, 
             m_weapon_id,
+            m_is_wand,
             entity.Cell);
 
 
@@ -397,16 +395,34 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
 
 
+        if (m_is_wand)
+        {
+            BattleSystemManager.Instance.PushCommand(
+                                new Command_Wand
+                                (
+                                    m_entity_id,
+                                    m_target_id,
+                                    m_weapon_id,
+                                    entity.Cell                        
+                                ));
+
+        }
+        else
+        {
+            BattleSystemManager.Instance.PushCommand(
+                                new Command_Attack
+                                (
+                                    m_entity_id,
+                                    m_target_id,
+                                    m_weapon_id,
+                                    entity.Cell                        
+                                ));
+        }
+
+
         // Command_Attack
         // 공격 가능한 타겟 찾기: 공격 가능한 타겟 찾기.
-         BattleSystemManager.Instance.PushCommand(
-                    new Command_Attack
-                    (
-                        m_entity_id,
-                        m_target_id,
-                        m_weapon_id,
-                        entity.Cell                        
-                    ));
+       
 
 
         // 공격 가능한 타겟 UI 출력.

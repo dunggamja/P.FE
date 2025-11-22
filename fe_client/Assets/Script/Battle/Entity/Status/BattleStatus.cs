@@ -56,18 +56,21 @@ namespace Battle
             if (_item == null)
                 return false;
 
+            var result = false;
+
             if (Wand.ItemID == _item.ID)
             {
                 Wand.Unequip();
-                return true;
-            }
-            else if (Weapon.ItemID == _item.ID)
-            {
-                Weapon.Unequip();
-                return true;
+                result = true;
             }
 
-            return false;
+            if (Weapon.ItemID == _item.ID)
+            {
+                Weapon.Unequip();
+                result = true;
+            }
+
+            return result;
         }
 
         public int GetBuffedUnitStatus(EnumUnitStatus _unit_status, EnumSituationType _situation_type = EnumSituationType.None)

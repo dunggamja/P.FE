@@ -49,6 +49,7 @@ namespace Battle
             Int64          _attacker_id,
             Int64          _target_id,
             Int64          _weapon_id,
+            bool           _use_wand,
             (int x, int y) _attack_position)
         {
             
@@ -59,10 +60,7 @@ namespace Battle
                 return null;
 
             // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-            var snapshot = GameSnapshot.Save();   
-
-            
-
+            var snapshot = GameSnapshot.Save(); 
 
             try
             {
@@ -75,14 +73,14 @@ namespace Battle
 
                 // 공격자 위치 업데이트.
                 attacker.UpdateCellPosition(
-                    _attack_position,
-                    (_apply: false, _immediatly: false),
-                    _is_plan: false);
+                    _cell:          _attack_position,
+                    _visual_update: (_apply: false, _immediatly: false),
+                    _is_plan:       false);
 
                 // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {
                     // var combat_param = //ObjectPool<CombatParam_Plan>
-                    var combat_param = new CombatParam_Plan().Set(attacker, target, false);
+                    var combat_param = new CombatParam_Plan().Set(attacker, target, _use_wand);
 
                     // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                     result.Attacker.EntityID  = attacker.ID;
@@ -129,6 +127,11 @@ namespace Battle
                 }
 
                 return result;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"CombatHelper: Run_Plan failed. {_attacker_id} -> {_target_id}, e:{e.Message}");
+                return null;
             }
             finally
             {

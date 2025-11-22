@@ -5,6 +5,65 @@ using UnityEngine;
 
 namespace Battle
 {
+    public struct Combat_DamageResult
+    {
+        public Int64  AttackerID         { get; private set; }
+        public Int64  TargetID           { get; private set; }
+        public Int64  WeaponID           { get; private set; }
+
+        public int    Result_HP_Attacker { get; private set; }
+        public int    Result_HP_Target   { get; private set; }
+        
+
+
+        public bool   WeaponEffectiveness { get; private set; }
+        public bool   Result_Hit          { get; private set; }
+        public bool   Result_Critical     { get; private set; }
+        public bool   Result_Guard        { get; private set; }
+
+        public float  Result_HitRate      { get; private set; }
+        public float  Result_CriticalRate { get; private set; }
+        public float  Result_GuardRate    { get; private set; }
+        public int    Result_Damage       { get; private set; }   
+
+        public int    Result_HitRate_Percent      => Math.Clamp((int)(Result_HitRate * 100), 0, 100);
+        public int    Result_CriticalRate_Percent => Math.Clamp((int)(Result_CriticalRate * 100), 0, 100);
+        public int    Result_GuardRate_Percent    => Math.Clamp((int)(Result_GuardRate * 100), 0, 100);
+
+        public static Combat_DamageResult Create(
+            Int64 _attacker_id,
+            Int64 _target_id,
+            Int64 _weapon_id,
+            int   _result_hp_attacker,
+            int   _result_hp_target,
+            bool  _weapon_effectiveness, 
+            bool  _result_hit,
+            bool  _result_critical, 
+            bool  _result_guard, 
+            float _result_hit_rate, 
+            float _result_critical_rate,
+            float _result_guard_rate, 
+            int   _result_damage)
+        {
+            return new Combat_DamageResult
+            {
+                AttackerID          = _attacker_id,
+                TargetID            = _target_id,
+                WeaponID            = _weapon_id,
+                Result_HP_Attacker  = _result_hp_attacker,
+                Result_HP_Target    = _result_hp_target,
+                WeaponEffectiveness = _weapon_effectiveness,
+                Result_Hit          = _result_hit,
+                Result_Critical     = _result_critical,
+                Result_Guard        = _result_guard,
+                Result_HitRate      = _result_hit_rate,
+                Result_CriticalRate = _result_critical_rate,
+                Result_GuardRate    = _result_guard_rate,
+                Result_Damage       = _result_damage,
+            };
+        }
+    }
+
     
     /// <summary>
     /// 전투 씬 관리용
@@ -21,9 +80,9 @@ namespace Battle
         public bool IsFinished => State == EnumState.Finished;
 
 
-        private bool                      m_is_combat_logic_finished = false;
+        private bool                      m_is_logic_finished        = false;
         private bool                      m_is_post_process_finished = false;
-        private List<Combat_DamageResult> m_list_damage_result              = new List<Combat_DamageResult>();
+        private List<Combat_DamageResult> m_list_damage_result       = new List<Combat_DamageResult>();
 
 
         protected override void Init()
@@ -38,11 +97,13 @@ namespace Battle
 
             var turn_sytem         = new CombatSystem_Turn();        // 전투 공/방 순서 진행.
             var damage_sytem       = new CombatSystem_Damage();      // 전투 공/방 데미지 처리.
+            var wand_sytem         = new CombatSystem_Wand();        // 전투 지팡이 처리.
             var post_process_sytem = new CombatSystem_PostProcess(); // 전투 연산 종료 후 연출 
             // var effect_sytem = new CombatSystem_Effect(); m_repository.Add((int)effect_sytem.SystemType, effect_sytem);
 
             m_repository.Add((int)turn_sytem.SystemType, turn_sytem);
             m_repository.Add((int)damage_sytem.SystemType, damage_sytem);
+            m_repository.Add((int)wand_sytem.SystemType, wand_sytem);
             m_repository.Add((int)post_process_sytem.SystemType, post_process_sytem);
 
             foreach (var e in m_repository.Values)
@@ -56,7 +117,7 @@ namespace Battle
             State = EnumState.None;
 
 
-            m_is_combat_logic_finished = false;
+            m_is_logic_finished = false;
             m_is_post_process_finished = false;
             m_list_damage_result.Clear();
 
@@ -76,26 +137,33 @@ namespace Battle
 
         void OnEnter()
         {
-            m_is_combat_logic_finished = false;
+            m_is_logic_finished = false;
             m_is_post_process_finished = false;
             m_list_damage_result.Clear();
             // Debug.LogWarning("list_damage_result.Clear()");
 
 
             // 공격자 / 방어자 무기 장착이 안되어 있을 경우, 자동 장착 처리.
-            if (Param.Attacker != null)
-                Param.Attacker.Equip_Weapon_Auto();
+            if (Param.UseWand == false)
+            {
+                if (Param.Attacker != null)
+                    Param.Attacker.Equip_Weapon_Auto();
 
-            if (Param.Defender != null)
-                Param.Defender.Equip_Weapon_Auto();
+                if (Param.Defender != null)
+                    Param.Defender.Equip_Weapon_Auto();
+            }
         }
 
         bool OnUpdate()
         {
-            OnUpdate_Combat_Logic();
+            if (Param.UseWand)
+                OnUpdate_Wand_Logic();
+            else
+                OnUpdate_Combat_Logic();
+
             OnUpdate_PostProcess();
 
-            return m_is_combat_logic_finished && m_is_post_process_finished;
+            return m_is_logic_finished && m_is_post_process_finished;
         }
 
 
@@ -194,7 +262,7 @@ namespace Battle
 
         void OnUpdate_Combat_Logic()
         {
-            if (m_is_combat_logic_finished)
+            if (m_is_logic_finished)
                 return;
 
 
@@ -202,7 +270,7 @@ namespace Battle
             if (UpdateSystem(EnumSystem.CombatSystem_Turn, Param) == EnumState.Finished)
             {
                 // 전투로직 종료 
-                m_is_combat_logic_finished = true;
+                m_is_logic_finished = true;
                 return;
             }
 
@@ -216,15 +284,26 @@ namespace Battle
                 if (Check_Dead())
                 {
                     // 전투 로직 종료.
-                    m_is_combat_logic_finished = true;
+                    m_is_logic_finished = true;
                     return;
                 }
             }            
         }
 
+        void OnUpdate_Wand_Logic()
+        {
+            if (m_is_logic_finished)
+                return;
+
+            if (UpdateSystem(EnumSystem.CombatSystem_Wand, Param) == EnumState.Finished)
+            {
+                m_is_logic_finished = true;
+            }
+        }
+
         void OnUpdate_PostProcess()
         {
-            if (m_is_combat_logic_finished == false)
+            if (m_is_logic_finished == false)
                 return;
 
             if (m_is_post_process_finished)

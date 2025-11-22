@@ -87,9 +87,10 @@ public class CameraMananger : Singleton<CameraMananger>, IEventReceiver
         var command_type = _event.CommandType;
         switch (command_type)
         {
-            // 공격, 이동 명령은 카메라 추적을 진행합시다.
+            // 카메라 추적을 진행하는 명령들.
             case EnumCommandType.Attack:
             case EnumCommandType.Move:
+            case EnumCommandType.Wand:
                m_last_tracking_entity_id = _event.EntityID;
                break;
         }

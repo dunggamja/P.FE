@@ -9,7 +9,7 @@ public enum EnumSystem
     None,
     CombatSystem_Turn,                // (전투씬), 공/방 턴  관리
     CombatSystem_Damage,              // (전투씬), 데미지 관리
-    CombatSystem_Visual,              // (전투씬), 연출 관리.
+    CombatSystem_Wand,                // (전투씬), 지팡이 로직은 여기서.
     CombatSystem_PostProcess,         // (전투씬), 전투 결과 후처리. (HUD 갱신, 유닛 제거 등)
     // CombatSystem_Effect,              // (전투씬), 데미지 처리
      
@@ -38,7 +38,7 @@ public enum EnumSituationType
     CombatSystem_Damage_Start  = 2,   // (전투씬) 공격 전 스킬 사용
     CombatSystem_Damage_Finish = 3,   // (전투씬) 공격 데미지 적용 완료 후 마지막 처리.
 
-    CombatSystem_Wand_Turn_Start      = 11,   // (전투씬) 지팡이 시전 시작.
+    // CombatSystem_Wand_Turn_Start      = 11,   // (전투씬) 지팡이 시전 시작.
     CombatSystem_Wand_Action_Start    = 12,   // (전투씬) 지팡이 시전 시작.
     CombatSystem_Wand_Action_Finish   = 13,   // (전투씬) 지팡이 시전 완료.
 

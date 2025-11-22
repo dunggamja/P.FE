@@ -10,6 +10,7 @@ namespace Battle
         None,
         Attack,
         Move,
+        Wand,
         Done,
         Abort,
     }

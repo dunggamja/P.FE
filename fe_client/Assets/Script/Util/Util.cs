@@ -91,4 +91,15 @@ public static partial class Util
 
     public static Vector3        CellToPosition(this (int x, int y) _cell) => new Vector3(_cell.x, 0f, _cell.y);
     public static (int x, int y) PositionToCell(this Vector3 _position)    => ((int)_position.x, (int)_position.z);
+
+
+    public static float PERCENT(int _percent, bool _clamp01 = true)
+    {
+        var value = _percent * 0.01f;
+
+        if (_clamp01)
+            value = Mathf.Clamp01(value);
+
+        return value;
+    }
 }
