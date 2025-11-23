@@ -45,20 +45,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
     struct MENU_ITEM_DATA
     {
-        public enum EnumMenuType
-        {
-            None,
-            Attack, // 공격
-            Wand,   // 지팡이
-            Skill,  // 스킬
-            Item,   // 아이템
-            Wait,   // 대기.
-        }
+        
 
-        public int          Index    { get; private set; }
-        public EnumMenuType MenuType { get; private set; }
+        public int                 Index    { get; private set; }
+        public EnumUnitCommandType MenuType { get; private set; }
         // public string       Text  { get; private set; } = "";
-        public MENU_ITEM_DATA(int _index, EnumMenuType _type)
+        public MENU_ITEM_DATA(int _index, EnumUnitCommandType _type)
         {
             Index    = _index;
             MenuType = _type;
@@ -71,23 +63,23 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
             switch (MenuType)
             {
-                case EnumMenuType.Attack: 
+                case EnumUnitCommandType.Attack: 
                     table = "localization_base";
                     key   = "ui_menu_attack";                    
                     break;
-                case EnumMenuType.Wand:
+                case EnumUnitCommandType.Wand:
                     table = "localization_base";
                     key   = "ui_menu_wand";
                     break;
-                case EnumMenuType.Skill:
+                case EnumUnitCommandType.Skill:
                     table = "localization_base";
                     key   = "ui_menu_skill";
                     break;
-                case EnumMenuType.Item:
+                case EnumUnitCommandType.Item:
                     table = "localization_base";
                     key   = "ui_menu_item";
                     break;
-                case EnumMenuType.Wait:  
+                case EnumUnitCommandType.Wait:  
                     table = "localization_base";
                     key   = "ui_menu_wait";
                     break;
@@ -99,7 +91,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             return LocalizeKey.Create(table, key);
         }
 
-        public static MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0, EnumMenuType.None);
+        public static MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0, EnumUnitCommandType.None);
     }
 
     
@@ -218,13 +210,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         int menu_index = 0;
 
         // 공격
-        if (0 < list_weapon.Value.Count) m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Attack));
+        if (0 < list_weapon.Value.Count) m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Attack));
         // 지팡이
-        if (0 < list_wand.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Wand));
+        if (0 < list_wand.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wand));
         // 아이템
-        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Item));
+        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Item));
 
-        m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, MENU_ITEM_DATA.EnumMenuType.Wait));
+        m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wait));
 
         // 메뉴 아이템 그리기.
         for (int i = 0; i < m_menu_item_datas.Count; i++)
@@ -305,23 +297,23 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 선택 메뉴 타입에 따라 처리.        
         switch (SelectedItemData.MenuType)
         {
-            case MENU_ITEM_DATA.EnumMenuType.Attack:
+            case EnumUnitCommandType.Attack:
             {
                 // 공격 GUI 오픈.
                 GUIManager.Instance.OpenUI(
-                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, false)
+                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, EnumUnitCommandType.Attack)
                     );
             }
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Wand:
+            case EnumUnitCommandType.Wand:
             {
                 // 지팡이 GUI 오픈.
                 GUIManager.Instance.OpenUI(
-                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, true)
+                    GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, EnumUnitCommandType.Wand)
                     );
             }
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Wait:   
+            case EnumUnitCommandType.Wait:   
             {
                 // 대기 명령 추가.
                 BattleSystemManager.Instance.PushCommand(
@@ -332,9 +324,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 GUIManager.Instance.CloseUI(ID);
             }             
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Skill:
+            case EnumUnitCommandType.Skill:
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Item:
+            case EnumUnitCommandType.Item:
                 break;                
         }
 
@@ -366,10 +358,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         int draw_flag = 0;
         switch (SelectedItemData.MenuType)
         {
-            case MENU_ITEM_DATA.EnumMenuType.Attack:
+            case EnumUnitCommandType.Attack:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
                 break;
-            case MENU_ITEM_DATA.EnumMenuType.Wand:
+            case EnumUnitCommandType.Wand:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.WandRange;
                 break;
         }

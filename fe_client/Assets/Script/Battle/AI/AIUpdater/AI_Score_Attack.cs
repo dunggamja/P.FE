@@ -292,7 +292,7 @@ namespace Battle
                 _attacker_id: _owner.ID, 
                 _target_id:   _target.ID, 
                 _weapon_id:   _owner.StatusManager.Weapon.ItemID,
-                _use_wand:    false,
+                _command_type: EnumUnitCommandType.Attack,
                 _attack_position: _attack_position);
 
             if (result == null)

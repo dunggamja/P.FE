@@ -50,7 +50,8 @@ namespace Battle
          var combat_param = new CombatParam().Set(
             _attacker: Owner, 
             _defender: EntityManager.Instance.GetEntity(Target.MainTargetID), 
-            _use_wand: true);
+            _command_type: EnumUnitCommandType.Wand);
+            
          CombatSystemManager.Instance.Setup(combat_param);
        }
 

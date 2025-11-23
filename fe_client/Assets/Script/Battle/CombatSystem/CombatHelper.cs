@@ -46,11 +46,11 @@ namespace Battle
 
         // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
         public static Result Run_Plan(
-            Int64          _attacker_id,
-            Int64          _target_id,
-            Int64          _weapon_id,
-            bool           _use_wand,
-            (int x, int y) _attack_position)
+            Int64               _attacker_id,
+            Int64               _target_id,
+            Int64               _weapon_id,
+            EnumUnitCommandType _command_type,
+            (int x, int y)      _attack_position)
         {
             
             var attacker     = EntityManager.Instance.GetEntity(_attacker_id);
@@ -80,7 +80,7 @@ namespace Battle
                 // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {
                     // var combat_param = //ObjectPool<CombatParam_Plan>
-                    var combat_param = new CombatParam_Plan().Set(attacker, target, _use_wand);
+                    var combat_param = new CombatParam_Plan().Set(attacker, target, _command_type);
 
                     // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                     result.Attacker.EntityID  = attacker.ID;

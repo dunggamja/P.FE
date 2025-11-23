@@ -144,7 +144,7 @@ namespace Battle
 
 
             // 공격자 / 방어자 무기 장착이 안되어 있을 경우, 자동 장착 처리.
-            if (Param.UseWand == false)
+            if (Param.CommandType == EnumUnitCommandType.Attack)
             {
                 if (Param.Attacker != null)
                     Param.Attacker.Equip_Weapon_Auto();
@@ -156,11 +156,16 @@ namespace Battle
 
         bool OnUpdate()
         {
-            if (Param.UseWand)
-                OnUpdate_Wand_Logic();
-            else
-                OnUpdate_Combat_Logic();
-
+            switch(Param.CommandType)
+            {
+                case EnumUnitCommandType.Attack:
+                    OnUpdate_Combat_Logic();
+                    break;
+                case EnumUnitCommandType.Wand:
+                    OnUpdate_Wand_Logic();
+                    break;
+            }
+            
             OnUpdate_PostProcess();
 
             return m_is_logic_finished && m_is_post_process_finished;

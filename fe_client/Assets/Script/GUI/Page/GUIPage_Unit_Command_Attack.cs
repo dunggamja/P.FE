@@ -17,10 +17,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     public class PARAM : GUIOpenParam
     {
         public Int64    EntityID { get; private set; }
-        public bool     IsWand   { get; private set; }
+        public EnumUnitCommandType  MenuType  { get; private set; }
         public override EnumGUIType GUIType => EnumGUIType.Screen;
 
-        private PARAM(Int64 _entity_id, bool _is_wand) 
+        private PARAM(Int64 _entity_id, EnumUnitCommandType _menu_type) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -36,13 +36,13 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             )             
         { 
             EntityID = _entity_id;  
-            IsWand   = _is_wand;
+            MenuType = _menu_type;
         }
 
 
-        static public PARAM Create(Int64 _entity_id, bool _is_wand)
+        static public PARAM Create(Int64 _entity_id, EnumUnitCommandType _menu_type)
         {
-            return new PARAM(_entity_id, _is_wand);
+            return new PARAM(_entity_id, _menu_type);
         }
     }
 
@@ -77,7 +77,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
 
     private Int64                         m_entity_id              = 0;    
-    private bool                          m_is_wand                = false;
+    private EnumUnitCommandType           m_menu_type              = EnumUnitCommandType.None;
     private List<MENU_ITEM_DATA>          m_menu_item_datas        = new();
     private BehaviorSubject<int>          m_selected_index_subject = new(0);
 
@@ -101,7 +101,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     {
         var param   = _param as PARAM;
         m_entity_id = param?.EntityID ?? 0;
-        m_is_wand   = param?.IsWand ?? false;
+        m_menu_type = param?.MenuType ?? EnumUnitCommandType.None;
         UpdateMenuItems();
     }
 
@@ -168,7 +168,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
       {     
         using var list_weapons = ListPool<Item>.AcquireWrapper();
 
-        if (m_is_wand)
+        if (m_menu_type == EnumUnitCommandType.Wand)
         {
             owner.Inventory.CollectItem_Wand_Available(list_weapons.Value, owner);
         }
@@ -272,7 +272,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         if (entity.ProcessAction(weapon_item, EnumItemActionType.Equip) == false)
             return;
 
-        var draw_flag = m_is_wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+        var draw_flag = m_menu_type == EnumUnitCommandType.Wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
 
         // 공격 범위 탐색.
         using var attack_range_visit = ObjectPool<AttackRangeVisitor>.AcquireWrapper();
@@ -305,7 +305,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         }
 
         // 공격 대상 순회.
-        var target_list      = (m_is_wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        var target_list      = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
         var target_entity_id = FindTarget(target_list);
 
         
@@ -315,7 +315,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         {   
             GUIManager.Instance.OpenUI(
                 GUIPage_Unit_Command_Attack_Preview.PARAM
-                .Create(m_entity_id, target_entity_id, weapon_id, m_is_wand));
+                .Create(m_entity_id, target_entity_id, weapon_id, m_menu_type));
         }
     }
 

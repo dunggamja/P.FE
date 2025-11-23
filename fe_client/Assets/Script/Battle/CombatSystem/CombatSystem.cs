@@ -9,10 +9,10 @@ namespace Battle
     public interface ICombatSystemParam : ISystemParam
     {
         // BHManager BHManager { get; }
-        Entity    Attacker  { get; }
-        Entity    Defender  { get; }        
-        bool      UseWand   { get; }
-        bool      IsPlan    { get; }
+        Entity                Attacker  { get; }
+        Entity                Defender  { get; }        
+        EnumUnitCommandType   CommandType   { get; }
+        bool                  IsPlan    { get; }
 
 
 
@@ -22,17 +22,17 @@ namespace Battle
     public class CombatParam_Plan : ICombatSystemParam
     {
         // public BHManager BHManager { get; private set; } = new();
-        public Entity    Attacker       { get; private set; } = null;
-        public Entity    Defender       { get; private set; } = null;
-        public bool      UseWand        { get; private set; } = false;
-        public bool      IsPlan => true;
+        public Entity                Attacker       { get; private set; } = null;
+        public Entity                Defender       { get; private set; } = null;
+        public EnumUnitCommandType   CommandType   { get; private set; } = EnumUnitCommandType.None;
+        public bool                  IsPlan => true;
 
 
-        public CombatParam_Plan Set(Entity _attacker, Entity _defender, bool _use_wand)
+        public CombatParam_Plan Set(Entity _attacker, Entity _defender, EnumUnitCommandType _command_type)
         {
-            Attacker = _attacker;
-            Defender = _defender;
-            UseWand  = _use_wand;
+            Attacker    = _attacker;
+            Defender    = _defender;
+            CommandType = _command_type;
             return this;
         }
 
@@ -40,9 +40,9 @@ namespace Battle
         {
             // BHManager.Clear();
             // Results.Clear();
-            Attacker  = null;
-            Defender  = null;
-            UseWand   = false;
+            Attacker    = null;
+            Defender    = null;
+            CommandType = EnumUnitCommandType.None;
             // IsWand   = false;
         }
 
@@ -51,25 +51,25 @@ namespace Battle
     public class CombatParam : ICombatSystemParam
     {
         // public BHManager BHManager { get; private set; } = new();
-        public Entity          Attacker  { get; private set; }
-        public Entity          Defender  { get; private set; }
-        public bool            UseWand   { get; private set; }
-        public bool            IsPlan    => false;
+        public Entity                Attacker    { get; private set; }
+        public Entity                Defender    { get; private set; }
+        public EnumUnitCommandType   CommandType { get; private set; } = EnumUnitCommandType.None;
+        public bool                  IsPlan    => false;
 
 
-        public CombatParam Set(Entity _attacker, Entity _defender, bool _use_wand)
+        public CombatParam Set(Entity _attacker, Entity _defender, EnumUnitCommandType _command_type)
         {
-            Attacker = _attacker;
-            Defender = _defender;
-            UseWand  = _use_wand;
+            Attacker    = _attacker;
+            Defender    = _defender;
+            CommandType = _command_type;
             return this;
         }
 
         public void Reset()
         {
-            Attacker = null;
-            Defender = null;
-            UseWand  = false;
+            Attacker    = null;
+            Defender    = null;
+            CommandType = EnumUnitCommandType.None;
         }
 
     }   

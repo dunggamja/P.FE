@@ -19,12 +19,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     {
         public override EnumGUIType GUIType => EnumGUIType.Screen;
 
-        public Int64 EntityID { get; private set; }
-        public Int64 TargetID { get; private set; }
-        public Int64 WeaponID { get; private set; }
-        public bool  IsWand   { get; private set; }
+        public Int64                EntityID { get; private set; }
+        public Int64                TargetID { get; private set; }
+        public Int64                WeaponID { get; private set; }
+        public EnumUnitCommandType  MenuType { get; private set; }
 
-        private PARAM(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, bool _is_wand) 
+        private PARAM(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, EnumUnitCommandType _menu_type) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -42,12 +42,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             EntityID = _entity_id;
             TargetID = _target_id;
             WeaponID = _weapon_id;
-            IsWand   = _is_wand;
+            MenuType = _menu_type;
         }
 
-        static public PARAM Create(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, bool _is_wand)
+        static public PARAM Create(Int64 _entity_id, Int64 _target_id, Int64 _weapon_id, EnumUnitCommandType _menu_type)
         {
-            return new PARAM(_entity_id, _target_id, _weapon_id, _is_wand);
+            return new PARAM(_entity_id, _target_id, _weapon_id, _menu_type);
         }
     }
     
@@ -67,13 +67,13 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
 
-    private Int64       m_entity_id   = 0;     
-    private Int64       m_target_id   = 0;
-    private Int64       m_weapon_id   = 0;    
-    private bool        m_is_wand     = false;
-    private Int64       m_vfx_cursor  = 0;
-
-    private List<Int64> m_target_list = new();
+    private Int64                m_entity_id   = 0;     
+    private Int64                m_target_id   = 0;
+    private Int64                m_weapon_id   = 0;    
+    private EnumUnitCommandType  m_menu_type = EnumUnitCommandType.None;
+    private Int64                m_vfx_cursor  = 0;
+         
+    private List<Int64>          m_target_list = new();
 
 
     // private bool        IsWandWeapon 
@@ -117,7 +117,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         m_entity_id = param?.EntityID ?? 0;
         m_target_id = param?.TargetID ?? 0;
         m_weapon_id = param?.WeaponID ?? 0;
-        m_is_wand   = param?.IsWand ?? false;
+        m_menu_type = param?.MenuType ?? EnumUnitCommandType.None;
 
         CreateCursorVFX();
 
@@ -178,7 +178,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return 0;
 
         
-        var draw_flag   = m_is_wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+        var draw_flag   = m_menu_type == EnumUnitCommandType.Wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
 
         // 공격 범위 탐색.
         using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
@@ -194,7 +194,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
         // 타겟 목록 순회.
-        var target_list = (m_is_wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        var target_list = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
         foreach(var pos in target_list)
         {
             var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
@@ -232,7 +232,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             m_entity_id, 
             m_target_id, 
             m_weapon_id,
-            m_is_wand,
+            m_menu_type,
             entity.Cell);
 
 
@@ -395,7 +395,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
 
 
-        if (m_is_wand)
+        if (m_menu_type == EnumUnitCommandType.Wand)
         {
             BattleSystemManager.Instance.PushCommand(
                                 new Command_Wand
