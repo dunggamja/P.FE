@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -69,7 +69,9 @@ public abstract class GUIPage : GUIBase
 
     private Tween m_do_show = null;
     private Tween m_do_hide = null;
-    public  bool  IsVisible { get; private set; } = false;
+
+    // public  bool  IsVisible { get; private set; } = false; // í•„ìš”í• ê²½ìš° ë‹¤ì‹œ ì‚´ë¦¬ì.
+
     private bool  IsShowing => m_do_show != null && m_do_show.IsPlaying();
     private bool  IsHiding  => m_do_hide != null && m_do_hide.IsPlaying();
     
@@ -125,7 +127,7 @@ public abstract class GUIPage : GUIBase
         OnOpen(_param);
 
 
-        // Æ÷Ä¿½º Ã³¸®.
+        // í¬ì»¤ìŠ¤ ì¼œê¸°.
         if (IsInputFocusing)
         {
              SetInputFocus(true);
@@ -146,21 +148,21 @@ public abstract class GUIPage : GUIBase
 
     public void Show()
     {
-        // Ç¥½Ã Ã³¸®Áß
+        // í¬ì»¤ìŠ¤ ì¼œê¸°.
         if (IsShowing)
         {
             return;
         }
 
-        // ¼û±è Ã³¸®Áß
+        // í¬ì»¤ìŠ¤ ë„ê¸°.
         if (IsHiding)
         {
             m_do_hide.Kill();
             m_do_hide = null;
         }
 
-        // Ç¥½Ã »óÅÂ.
-        IsVisible = true;
+        // // í¬ì»¤ìŠ¤ ì¼œê¸°.
+        // IsVisible = true;
 
         if (RootCanvasGroup != null)
         {
@@ -176,21 +178,21 @@ public abstract class GUIPage : GUIBase
 
     public void Hide()
     {
-        // ¼û±è Ã³¸®Áß
+        // ì´ë¯¸ ìˆ¨ê¸°ëŠ” ì²˜ë¦¬ì¤‘.
         if (IsHiding)
         {
             return;
         }
 
-        // Ç¥½Ã Ã³¸®Áß
+        // í˜„ì¬ ë³´ì´ëŠ” ì²˜ë¦¬ì¤‘ì´ë©´ ì¢…ë£Œ ì²˜ë¦¬.
         if (IsShowing)
         {
             m_do_show.Kill();
             m_do_show = null;
         }
 
-        // ¼û±è »óÅÂ.
-        IsVisible = false;        
+        // í¬ì»¤ìŠ¤ ë„ê¸°.
+        // IsVisible = false;        
 
         if (RootCanvasGroup != null)
         {
@@ -202,7 +204,7 @@ public abstract class GUIPage : GUIBase
                 .SetUpdate(true);
         }
 
-        // ºñÈ°¼ºÈ­µµ ÇÒ°ÍÀÎÁö´Â ¾ÆÁ÷ ¹ÌÁ¤.
+        // í¬ì»¤ìŠ¤ ë„ê¸°.
     }
 
     protected abstract void OnOpen(GUIOpenParam _param);
@@ -215,7 +217,7 @@ public abstract class GUIPage : GUIBase
     // {
     //     base.OnLoop();
 
-    //     // Æ÷Ä¿½º Ã³¸®.
+    //     // í¬ì»¤ìŠ¤ ì¼œê¸°.
     //     // SetInputFocus(IsInputFocusing);
     // }
 
@@ -228,16 +230,16 @@ public abstract class GUIPage : GUIBase
     {
         try
         {
-            // Æ÷Ä¿½º ÇØÁ¦.
+            // í¬ì»¤ìŠ¤ ë„ê¸°.
             SetInputFocus(false);
 
-            // ÆäÀÌÁö ´İ±â.
+            // ì¢…ë£Œ ì²˜ë¦¬.
             OnClose();
 
-            // ÆäÀÌÁö ¼û±â±â.
+            // UI ìˆ¨ê¸°ê¸°. (ì•ŒíŒŒê°’ Dotween)
             Hide();
             
-            // TODO: ÀÌ°ÍÀº ÀÓ½Ã·Î ÃßÈÄ ºñµ¿±â Ã³¸®¸¦ À§ÇØ ³ÖÀº ÄÚµåÀÓ.
+            // TODO: UIë§ˆë‹¤ ë‹«íˆëŠ” ì‹œê°„ ì œì–´ í•„ìš”.
             await UniTask.Delay(100, cancellationToken: _token);
 
             if (this != null && this.gameObject != null)
@@ -245,14 +247,13 @@ public abstract class GUIPage : GUIBase
                 gameObject.SetActive(false);    
             }
 
-            // TODO: ÇÏÀ§¿¡ ºÙÀº GUIELement Á¾·á Ã³¸®.
+            // TODO: GUIELement ì— ëŒ€í•œ ì²˜ë¦¬ê°€ ì• ë§¤í•´ì„œ ì ì–´ë†“ì€ë“¯.
 
             OnPostProcess_Close();
 
             IsInitialized = false;
 
-            // TODO: GUI¸¦ ÆÄ±« ÇÒÁö ÀçÈ°¿ëÇÒÁö´Â ³ªÁß¿¡ ´Ù½Ã °í¹ÎÇØº¸ÀÚ.
-            // ÀÏ´ÜÀº ÆÄ±« Ã³¸®.
+            // TODO: GUI í’€ë§ ì²˜ë¦¬ê°€ ì—†ì–´ì„œ ì ì–´ë†“ì€ë“¯.
             if (this != null && this.gameObject != null)
             {
                 Destroy(this.gameObject);
@@ -266,7 +267,7 @@ public abstract class GUIPage : GUIBase
 
     public void SetInputFocus(bool _focused)
     {
-        // µ¿ÀÏÇÑ »óÅÂ¸é Ã³¸®ÇÏÁö ¾ÊÀ½.
+        // í¬ì»¤ìŠ¤ ìƒíƒœê°€ ë™ì¼í• ê²½ìš°.
         if (IsInputFocused == _focused)
             return;
         

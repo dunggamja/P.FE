@@ -201,22 +201,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             continue;         
 
 
-          var item_cur_count = item.CurCount;
-          var item_max_count = item.MaxCount;
 
-          var localize_key = item.GetLocalizeName();
-          var text_subject = LocalizationManager.Instance.GetTextObservable(
-            localize_key.Table, 
-            localize_key.Key).Select(text => $"{text} ({item_cur_count}/{item_max_count})");
-
-          // 
-          //for (int k = 0; k < 10; k++)
-          //{
-            var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
-            clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
-          //}
-       
-        //   clonedItem.gameObject.SetActive(true);
+          var text_subject = item.GetNameText(item, true);
+          var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
+          clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
       }
 
       // 선택 인덱스 설정 (0 인덱스 설정)

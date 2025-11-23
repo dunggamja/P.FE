@@ -15,44 +15,70 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
 
     [SerializeField]
     private RectTransform   m_cursor;
+
+
+    [SerializeField]
+    private RectTransform   m_select_rect;
   
     private int             m_index = 0;
-    private IDisposable     m_selected_index_subscription;
+    private IDisposable     m_cursor_index_subscription;
     private IDisposable     m_text_subscription;
+    private IDisposable     m_select_index_subscription;
+
     public void Initialize(
         int                    _index,
-        Observable<int>        _subject_select_index,
-        Observable<string>     _subject_text)
+        Observable<int>        _subject_cursor_index = null,
+        Observable<string>     _subject_text         = null,
+        Observable<int>        _subject_select_index = null)
     {
         Clear();
         
         m_index = _index;
 
-        m_cursor.gameObject.SetActive(false);        
-        
-        // 커서
-        m_selected_index_subscription = _subject_select_index.Subscribe(i => 
-            {
-                m_cursor.gameObject.SetActive(i == m_index);
-            });
-
-        // 텍스트.
-        m_text_subscription = _subject_text.Subscribe(text =>
+        if (m_cursor)
         {
-            m_text.text = text;
-        });
+            m_cursor.gameObject.SetActive(false);        
+            
+            m_cursor_index_subscription = _subject_cursor_index?.Subscribe(i => 
+                {
+                    m_cursor.gameObject.SetActive(i == m_index);
+                }) ?? Disposable.Empty;
+        }
+
+        if (m_text)
+        {
+            m_text.gameObject.SetActive(false);
+
+            m_text_subscription = _subject_text?.Subscribe(text =>
+                {
+                    m_text.gameObject.SetActive(true);
+                    m_text.text = text;
+                }) ?? Disposable.Empty;
+        }        
+
+        if (m_select_rect)
+        {
+            m_select_rect.gameObject.SetActive(false);
+
+            m_select_index_subscription = _subject_select_index?.Subscribe(i => 
+                {
+                    m_select_rect.gameObject.SetActive(i == m_index);
+                }) ?? Disposable.Empty;
+        }
 
         gameObject.SetActive(true);
     }
 
     protected override void Clear()
     {
-        m_selected_index_subscription?.Dispose();
+        m_cursor_index_subscription?.Dispose();
         m_text_subscription?.Dispose();
+        m_select_index_subscription?.Dispose();
 
-        m_selected_index_subscription = null;
-        m_text_subscription           = null;
-        m_index                       = 0;
+        m_cursor_index_subscription = null;
+        m_text_subscription         = null;
+        m_select_index_subscription = null;
+        m_index                     = 0;
     }
 
 

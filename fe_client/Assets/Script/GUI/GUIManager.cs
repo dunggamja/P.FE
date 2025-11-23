@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -25,7 +25,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
     Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
-    Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // ÀÌ¸§, serial number
+    Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // ï¿½Ì¸ï¿½, serial number
     List<Int64>                        m_focus_gui_stack         = new();
 
 
@@ -48,7 +48,7 @@ public class GUIManager : SingletonMono<GUIManager>
         }
         else
         {
-            // HUD Äµ¹ö½º´Â ¸ŞÀÎ Ä«¸Ş¶ó¸¦ ÂüÁ¶ÇÏµµ·Ï ¼³Á¤. (ÀÓ½Ã?)
+            // HUD Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. (ï¿½Ó½ï¿½?)
             m_canvas_root_hud.worldCamera = main_camera;            
         }
     }
@@ -77,18 +77,18 @@ public class GUIManager : SingletonMono<GUIManager>
 
         var cts           = new CancellationTokenSource();
 
-        // Ãë¼Ò ÅäÅ« ÃßÀû.  
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½Å« ï¿½ï¿½ï¿½ï¿½.  
         m_async_operation_tracker.TrackOperation(_param.ID, cts);
 
         
         {
-            // UI ¿­±â Àü Æ÷Ä¿½º µÈ GUI ID
+            // UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ ï¿½ï¿½ GUI ID
             var prev_focus_gui = GetInputFocusGUI();
 
-            // È°¼ºÈ­µÈ UI ¸ñ·Ï¿¡ Ãß°¡.
+            // È°ï¿½ï¿½È­ï¿½ï¿½ UI ï¿½ï¿½Ï¿ï¿½ ï¿½ß°ï¿½.
             m_active_gui.Add(_param.ID, null);
 
-            // ÀÌ¸§¿¡ ÇØ´çÇÏ´Â UI ¸ñ·Ï¿¡ Ãß°¡.
+            // ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ UI ï¿½ï¿½Ï¿ï¿½ ï¿½ß°ï¿½.
             if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id) == false)
             {
                 list_gui_id = new HashSet<Int64>(); 
@@ -96,17 +96,17 @@ public class GUIManager : SingletonMono<GUIManager>
             }
             list_gui_id.Add(_param.ID);
 
-            // ÀÔ·Â °¡´ÉÇÑ UI ½ºÅÃ¿¡ Ãß°¡.
+            // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ß°ï¿½.
             if (_param.IsInputEnabled)
             {
                 m_focus_gui_stack.Add(_param.ID);
             }
 
-            // UI ¿­±â Àü Æ÷Ä¿½ÌµÇ¾ú´ø GUI Ã³¸®.
+            // UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ÌµÇ¾ï¿½ï¿½ï¿½ GUI Ã³ï¿½ï¿½.
             Process_ChangeFocusGUI(prev_focus_gui);
         }
 
-        // UI ¿­±â.
+        // UI ï¿½ï¿½ï¿½ï¿½.
         OpenUIAsync(_param, cts.Token).Forget();
 
         return _param.ID;
@@ -132,7 +132,7 @@ public class GUIManager : SingletonMono<GUIManager>
                 break;
             }
 
-            // Ç®¿¡¼­ °¡Á®¿Ã¼ö ÀÖ´ÂÁö Ã¼Å©.
+            // í’€ë§ ì˜¤ë¸Œì íŠ¸ ì°¾ê¸°.
             GameObject gui_object = null;
             GUIPage    gui_page   = AcquireFromPool(_param.GUIName);
 
@@ -148,7 +148,7 @@ public class GUIManager : SingletonMono<GUIManager>
                     throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
                 }
 
-                // GUIPage ÄÄÆ÷³ÍÆ® Ã¼Å©.
+                // GUIPage ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°.
                 if (gui_object.TryGetComponent<GUIPage>(out gui_page) == false)
                 {
                     Debug.LogError($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
@@ -159,21 +159,23 @@ public class GUIManager : SingletonMono<GUIManager>
             }
 
 
-            // Ãë¼Ò ½Ã gui_object Á¦°Å.
+            // ì·¨ì†Œ ìš”ì²­ì´ ìˆì„ ê²½ìš° ì¢…ë£Œ ì²˜ë¦¬.
             if (_cancel_token.IsCancellationRequested)
             {
                 Debug.Log($"GUIManager: OpenUIAsync canceled. {_param.GUIName}");
                 GameObject.Destroy(gui_object);
 
+
+                // ì˜ˆì™¸ ë°œìƒ ì²˜ë¦¬.
                 _cancel_token.ThrowIfCancellationRequested();
             }
             
 
 
-            // È°¼ºÈ­µÈ UI ¸ñ·Ï¿¡ Ãß°¡.
+            // í™œì„± UI ëª©ë¡ì— ì¶”ê°€.
             m_active_gui[_param.ID] = gui_page;
 
-            // UI ¿­±â.
+            // UI ì˜¤í”ˆ.
             gui_page.Open(_param);            
 
             
@@ -190,46 +192,50 @@ public class GUIManager : SingletonMono<GUIManager>
 
     public void CloseUI(string name)
     {
-        // ÀÌ¸§¿¡ ÇØ´çÇÏ´Â UI °´Ã¼¸¦ ¸ğµÎ ´İ´Â´Ù.
-        if (m_active_gui_by_name.TryGetValue(name, out var list_gui_id))
+        // UI ì´ë¦„ë³„ ëª©ë¡ì—ì„œ ì°¾ê¸°.
+        var list_gui_id = HashSetPool<Int64>.Acquire();
+
+        if (m_active_gui_by_name.TryGetValue(name, out list_gui_id))
         {
             foreach (var e in list_gui_id)
                 CloseUI(e);
         }   
+
+        HashSetPool<Int64>.Return(list_gui_id);
     }
 
     public void CloseUI(Int64 _id)
     {
-        // ÄÁÅ×ÀÌ³Ê Á¦°Å Ã³¸®.
+        // UI ëª©ë¡ì—ì„œ ì°¾ê¸°.
         if (m_active_gui.TryGetValue(_id, out var gui_object))
         {
             if (gui_object != null)
             {
-                // ÄÁÅ×ÀÌ³Ê Á¦°Å 1.
+                // UI ëª©ë¡ì—ì„œ ì œê±°.
                 m_active_gui.Remove(_id);
 
-                // ÄÁÅ×ÀÌ³Ê Á¦°Å 2.
+                // UI ì´ë¦„ë³„ ëª©ë¡ì—ì„œ ì œê±°.
                 if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var list_gui_id))
                     list_gui_id.Remove(_id);
 
-                // ÀÔ·Â °¡´ÉÇÑ UI ½ºÅÃ¿¡¼­ Á¦°Å.
+                // í¬ì»¤ì‹± UI ìŠ¤íƒì—ì„œ ì œê±°.
                 if (m_focus_gui_stack.Contains(_id))
                     m_focus_gui_stack.Remove(_id);
 
-                // UI ´İ±â Ã³¸®.
+                // UI ì¢…ë£Œ.
                 gui_object.Close();
             }
 
         }
 
-        // Ãë¼Ò ÅäÅ«¿¡ ´ëÇØ¼­µµ Ã³¸®.
+        // ë¹„ë™ê¸° ì²˜ë¦¬ê°€ ì§„í–‰ì¤‘ì¸ê²Œ ìˆì„ ê²½ìš° ì·¨ì†Œ ì²˜ë¦¬.
         m_async_operation_tracker.TryCancelOperation(_id);
 
         // 
         Process_ChangeFocusGUI(GetInputFocusGUI());
     }
 
-    // ·¹Æ÷ÁöÅä¸® º¯°æ ÈÄ Ã³¸®.
+    // í¬ì»¤ì‹± UI ë³€ê²½ ì²˜ë¦¬.
     void Process_ChangeFocusGUI(Int64 _gui_id)
     {
         if (_gui_id == 0)
@@ -241,12 +247,12 @@ public class GUIManager : SingletonMono<GUIManager>
             var is_focus = (GetInputFocusGUI() == _gui_id);
             if (is_focus)
             {
-                // Æ÷Ä¿½º Ã³¸®.
+                // í¬ì»¤ì‹± UI
                 focus_gui.SetInputFocus(true);
             }
             else
             {
-                // Æ÷Ä¿½º ÇØÁ¦.
+                // í¬ì»¤ì‹± ë˜ì§€ ì•Šì€ UI
                 focus_gui.SetInputFocus(false);
             }
         }
@@ -307,7 +313,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
         pool.Enqueue(_gui_object);
 
-        // Ç® ·çÆ® ¹ØÀ¸·Î ¿Å±â±â
+        // í’€ë§ì‹œ ì´ˆê¸°í™” ì²˜ë¦¬.
         _gui_object.gameObject.SetActive(false);
         _gui_object.transform.SetParent(m_gui_pool_root);
         _gui_object.transform.localPosition = Vector3.zero;

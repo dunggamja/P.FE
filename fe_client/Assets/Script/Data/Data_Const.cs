@@ -33,5 +33,9 @@ public static class Data_Const
     public const char SHEET_SEPERATOR = ';';
     public const char SHEET_LOCALIZATION_SEPERATOR = '/';
 
+
+
+    public const int  UNIT_INVENTORY_MAX = 8;
+
 }
 

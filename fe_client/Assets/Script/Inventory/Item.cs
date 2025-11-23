@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using Battle;
 using Shapes;
+using R3;
 
 [Serializable]
 public partial class Item 
@@ -87,6 +88,20 @@ public partial class Item
         return true;
     }
 
+    public Observable<string> GetNameText(Item _item, bool _show_count = false)
+    {
+        if (_item == null)
+            return Observable.Empty<string>();
+
+        var localize_key = _item.GetLocalizeName();
+        var text_subject = LocalizationManager.Instance.GetTextObservable(localize_key.Table, localize_key.Key);
+
+        if (_show_count)
+            text_subject = text_subject.Select(text => $"{text} ({_item.CurCount}/{_item.MaxCount})");
+
+        return text_subject;
+    }
+
 
 
 
@@ -119,11 +134,7 @@ public partial class Item
         m_count_cur = _snapshot.Count;
         m_item_type = (EnumItemType)_snapshot.ItemType;
     }
-
-
-
 }
-
 
 public class Item_IO
 {
@@ -135,5 +146,4 @@ public class Item_IO
 
     // public BaseContainer_IO Status    { get; set; } = new();
     // public BaseContainer_IO Attribute { get; set; } = new();
-
 }

@@ -15,6 +15,13 @@ MonoBehaviour:
   m_GroupName: gui_unit
   m_GUID: becda09b979f84c73b3cdae9ffe18b94
   m_SerializeEntries:
+  - m_GUID: 09aee8df09db44256bba4feb1a6f9292
+    m_Address: gui/page/unit_command_exchange
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3c66a1cdabd6444d3abb4664a180bc40
     m_Address: gui/hud/unit_hp
     m_ReadOnly: 0
