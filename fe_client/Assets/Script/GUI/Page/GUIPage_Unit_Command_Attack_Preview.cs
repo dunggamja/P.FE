@@ -108,6 +108,10 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             case Battle_Scene_ChangeEvent:
                 GUIManager.Instance.CloseUI(ID);
                 break;
+
+            case GUI_Menu_CancelEvent menu_cancel_event:
+                OnReceiveEvent_GUI_Menu_CancelEvent(menu_cancel_event);
+                break;
         }
     }
 
@@ -194,7 +198,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
 
         // 타겟 목록 순회.
-        var target_list = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        var target_list = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.Visit_Wand : attack_range_visit.Value.Visit_Weapon;
         foreach(var pos in target_list)
         {
             var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
@@ -228,6 +232,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
 
 
+        // 전투 예측 실행.
         var result = CombatHelper.Run_Plan(
             m_entity_id, 
             m_target_id, 
@@ -242,7 +247,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
         }
 
-        // 공격 가능한 타겟 찾기.
+        // 타겟에게 커서 이동.
         var entity_target = EntityManager.Instance.GetEntity(m_target_id);
         if (entity_target != null)
         {
@@ -258,7 +263,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             ); 
         }
 
-        // 공격 가능한 타겟 찾기.
+        // 전투 예측 결과 셋팅.
         m_preview_attacker.Initialize(
             result.Attacker.EntityID,
             result.Attacker.WeaponID,
@@ -268,7 +273,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Attacker.HP_Before,
             result.Attacker.HP_After);
 
-        // 공격 가능한 타겟 찾기.
+        // 전투 예측 결과 셋팅.
         m_preview_defender.Initialize(
             result.Defender.EntityID,
             result.Defender.WeaponID,
@@ -278,16 +283,15 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             result.Defender.HP_Before,
             result.Defender.HP_After);
 
-        // 공격 가능한 타겟 찾기.
+        // 기존에 존재하던 데미지 표시용 그리드 아이템 초기화.
         {           
-            var list_delete = ListPool<Transform>.Acquire();
+            using var list_delete = ListPool<Transform>.AcquireWrapper();
             for (int i = 0; i < m_grid_attack_root.transform.childCount; i++)
-                list_delete.Add(m_grid_attack_root.transform.GetChild(i)); 
-            list_delete.ForEach(e => { if (e != null) GameObject.Destroy(e.gameObject);});
-            ListPool<Transform>.Return( list_delete);
+                list_delete.Value.Add(m_grid_attack_root.transform.GetChild(i)); 
+            list_delete.Value.ForEach(e => { if (e != null) GameObject.Destroy(e.gameObject);});            
         }
 
-        // 공격 가능한 타겟 찾기.
+        // 데미지 표시용 그리드 아이템 셋팅.
         for (int i = 0; i < result.Actions.Count; i++)
         {
             var clonedItem = Instantiate(m_grid_attack_sequence, m_grid_attack_root.transform);
@@ -494,5 +498,11 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         
     }
 
+    void OnReceiveEvent_GUI_Menu_CancelEvent(GUI_Menu_CancelEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
 
+        GUIManager.Instance.CloseUI(ID);
+    }
 }

@@ -25,7 +25,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
     Dictionary<Int64,  GUIPage>        m_active_gui              = new (); // serial number, GUIObject
-    Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // �̸�, serial number
+    Dictionary<string, HashSet<Int64>> m_active_gui_by_name      = new (); // 이름, serial number
     List<Int64>                        m_focus_gui_stack         = new();
 
 
@@ -48,7 +48,7 @@ public class GUIManager : SingletonMono<GUIManager>
         }
         else
         {
-            // HUD ĵ������ ���� ī�޶� �����ϵ��� ����. (�ӽ�?)
+            // HUD 카메라 설정. (추후 필요시 추가)
             m_canvas_root_hud.worldCamera = main_camera;            
         }
     }
@@ -77,18 +77,18 @@ public class GUIManager : SingletonMono<GUIManager>
 
         var cts           = new CancellationTokenSource();
 
-        // ��� ��ū ����.  
+        // 비동기 처리 추적.  
         m_async_operation_tracker.TrackOperation(_param.ID, cts);
 
         
         {
-            // UI ���� �� ��Ŀ�� �� GUI ID
+            // UI 이전 포커스 GUI 처리.
             var prev_focus_gui = GetInputFocusGUI();
 
-            // Ȱ��ȭ�� UI ��Ͽ� �߰�.
+            // 활성 UI 목록에 추가.
             m_active_gui.Add(_param.ID, null);
 
-            // �̸��� �ش��ϴ� UI ��Ͽ� �߰�.
+            // UI 이름별 목록에 추가.
             if (m_active_gui_by_name.TryGetValue(_param.GUIName, out var list_gui_id) == false)
             {
                 list_gui_id = new HashSet<Int64>(); 
@@ -96,17 +96,17 @@ public class GUIManager : SingletonMono<GUIManager>
             }
             list_gui_id.Add(_param.ID);
 
-            // �Է� ������ UI ���ÿ� �߰�.
+            // 입력 가능한 UI 추가.
             if (_param.IsInputEnabled)
             {
                 m_focus_gui_stack.Add(_param.ID);
             }
 
-            // UI ���� �� ��Ŀ�̵Ǿ��� GUI ó��.
+            // UI 이전 포커스 GUI 처리.
             Process_ChangeFocusGUI(prev_focus_gui);
         }
 
-        // UI ����.
+        // UI 오픈.
         OpenUIAsync(_param, cts.Token).Forget();
 
         return _param.ID;
@@ -231,7 +231,7 @@ public class GUIManager : SingletonMono<GUIManager>
         // 비동기 처리가 진행중인게 있을 경우 취소 처리.
         m_async_operation_tracker.TryCancelOperation(_id);
 
-        // 
+        // 포커스 GUI 처리.
         Process_ChangeFocusGUI(GetInputFocusGUI());
     }
 

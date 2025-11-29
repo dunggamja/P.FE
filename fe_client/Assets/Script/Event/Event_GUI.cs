@@ -80,3 +80,26 @@ public class GUI_Menu_ForwardEvent : IEventParam
         GUI_ID = 0;
     }
 }
+
+public class GUI_Menu_CancelEvent : IEventParam
+{
+    public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+    public Int64 GUI_ID { get; private set; }
+
+    public void Release()
+    {
+        ObjectPool<GUI_Menu_CancelEvent>.Return(this);
+    }
+
+    public GUI_Menu_CancelEvent Set(Int64 _gui_id)
+    {
+        GUI_ID = _gui_id;
+        return this;
+    }
+
+    public void Reset()
+    {
+        GUI_ID = 0;
+    }
+}

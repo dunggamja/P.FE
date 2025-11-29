@@ -155,6 +155,10 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
             case Battle_Scene_ChangeEvent:
                 GUIManager.Instance.CloseUI(ID);
                 break;
+
+            case GUI_Menu_CancelEvent menu_cancel_event:
+                OnReceiveEvent_GUI_Menu_CancelEvent(menu_cancel_event);
+                break;
         }
     }
 
@@ -202,7 +206,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
 
 
-          var text_subject = item.GetNameText(item, true);
+          var text_subject = Item.GetNameText(item, true);
           var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root.transform);
           clonedItem.Initialize(item_index++, m_selected_index_subject, text_subject);
       }
@@ -293,7 +297,9 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         }
 
         // 공격 대상 순회.
-        var target_list      = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.List_Wand : attack_range_visit.Value.List_Weapon;
+        var target_list = (m_menu_type == EnumUnitCommandType.Wand) 
+                        ?  attack_range_visit.Value.Visit_Wand 
+                        :  attack_range_visit.Value.Visit_Weapon;
         var target_entity_id = FindTarget(target_list);
 
         
@@ -307,6 +313,14 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         }
     }
 
+
+    void OnReceiveEvent_GUI_Menu_CancelEvent(GUI_Menu_CancelEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        GUIManager.Instance.CloseUI(ID);
+    }
     void UpdateDrawRange()
     {
         if (IsInputFocused == false)

@@ -88,7 +88,7 @@ public partial class Item
         return true;
     }
 
-    public Observable<string> GetNameText(Item _item, bool _show_count = false)
+    static public Observable<string> GetNameText(Item _item, bool _show_count = false)
     {
         if (_item == null)
             return Observable.Empty<string>();

@@ -110,7 +110,7 @@ public class InputHandler_UI_Menu : InputHandler
         ObjectPool<InputParam_Result>.Return( input_result);
 
 
-        // �޴��� ������ ����.
+        // 열린 GUI 없을 경우 종료.
         if (FocusGUI == 0)
         {
             IsFinish = true;
@@ -190,6 +190,14 @@ public class InputHandler_UI_Menu : InputHandler
     private void OnUpdate_Input_Process_Cancel()
     {
         Close_FocusGUI();
+
+
+        var gui_id = FocusGUI;
+        if (gui_id == 0)
+            return;
+
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<GUI_Menu_CancelEvent>.Acquire().Set(gui_id));
     }
 
     private void OnUpdate_Input_Process_Forward()
@@ -219,25 +227,25 @@ public class InputHandler_UI_Menu : InputHandler
             input_direction_y = _move_direction.y > 0 ? 1 : -1;
         }
 
-        // �޴��� ����� �̵� ó��.
+        // 이동 방향 설정.
         MoveDirection = new Vector2Int(input_direction_x, input_direction_y);
     }
 
     void OnUpdate_Menu_Move()
     {
-        // �̵� ������ ������ ����.
+        // 이동 방향이 없을 경우 처리하지 않는다.
         if (MoveDirection == Vector2Int.zero)
             return;
         
-        // �̵� �ð��� �������� Ȯ��.
+        // 이동 시간이 지났는지 확인.
         var is_time_passed = (Time.time - MoveInput_LastTime > MOVE_INTERVAL);
         if (is_time_passed == false)
             return;
 
-        // �̵� �ð� ����.
+        // 이동 시간 초기화.
         MoveInput_LastTime = Time.time;
 
-        // �̵� ���� �̺�Ʈ �߻�.
+        // 이동 이벤트 발생.
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<GUI_Menu_MoveEvent>.Acquire().Set(FocusGUI, MoveDirection));
     }
@@ -246,14 +254,14 @@ public class InputHandler_UI_Menu : InputHandler
     {
         //Debug.LogWarning($"InputHandler_UI_Menu OnFinish, GUI_ID: {GUI_ID}");
 
-        // �����ִ� GUI ��� �ݾ��ݽô�.
+        // 열린 GUI 종료.
         while(Close_FocusGUI())
         {
-            // ���� ���鼭 �ݾ��ݽô�.
+           
         }
 
 
-        // �ʱ�ȭ.
+        // 초기화.
         Reset();
     }
 

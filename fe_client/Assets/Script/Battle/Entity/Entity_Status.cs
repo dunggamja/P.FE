@@ -7,7 +7,7 @@ namespace Battle
 {
   public partial class Entity
   {
-     public (int min, int max) GetWeaponRange(Int64 _weapon_id = 0)
+    public (int min, int max) GetWeaponRange(Int64 _weapon_id = 0)
      {
         
         (int num, bool set)  range_max = (0, false); 
@@ -94,6 +94,7 @@ namespace Battle
         return (range_min.num, range_max.num);
     }
 
+    public (int min, int max) GetExchangeRange() => (1, 1);
 
     public void ApplyDamage(int _damage)
     {

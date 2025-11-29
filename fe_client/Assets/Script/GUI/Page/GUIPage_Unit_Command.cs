@@ -9,6 +9,7 @@ using Battle;
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
     typeof(GUI_Menu_SelectEvent),
+    typeof(GUI_Menu_CancelEvent),
     typeof(Battle_Scene_ChangeEvent)
     )]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
@@ -142,6 +143,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
             case Battle_Scene_ChangeEvent:
                 GUIManager.Instance.CloseUI(ID);
+                break;
+
+            case GUI_Menu_CancelEvent menu_cancel_event:
+                OnReceiveEvent_GUI_Menu_CancelEvent(menu_cancel_event);
                 break;
         }
         // throw new NotImplementedException();
@@ -333,6 +338,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         
     }
 
+    void OnReceiveEvent_GUI_Menu_CancelEvent(GUI_Menu_CancelEvent _event)
+    {
+        if (_event == null || _event.GUI_ID != ID)
+            return;
+
+        GUIManager.Instance.CloseUI(ID);
+    }
 
     protected override void OnInputFocusChanged(bool _focused)
     {
