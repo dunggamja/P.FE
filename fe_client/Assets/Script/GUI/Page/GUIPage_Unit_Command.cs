@@ -80,11 +80,14 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     table = "localization_base";
                     key   = "ui_menu_item";
                     break;
+                case EnumUnitCommandType.Exchange:
+                    table = "localization_base";
+                    key   = "ui_menu_item_exchange";
+                    break;
                 case EnumUnitCommandType.Wait:  
                     table = "localization_base";
                     key   = "ui_menu_wait";
                     break;
-                
             }
 
             // ui_turn_number: Turn {0}
@@ -177,10 +180,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     {
         // 메뉴 타입에 따라 범위 초기화.
         BattleSystemManager.Instance.DrawRange.Clear();
+
+         Debug.Log("GUIPage_Unit_Command: OnClose");
     }
 
     protected override void OnPostProcess_Close()
     {
+        Debug.Log("GUIPage_Unit_Command: OnPostProcess_Close");
         
     }
 
@@ -218,9 +224,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (0 < list_weapon.Value.Count) m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Attack));
         // 지팡이
         if (0 < list_wand.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wand));
+        // 교환
+        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Exchange));
         // 아이템
         if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Item));
-
+        // 대기
         m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wait));
 
         // 메뉴 아이템 그리기.
@@ -332,7 +340,15 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             case EnumUnitCommandType.Skill:
                 break;
             case EnumUnitCommandType.Item:
-                break;                
+                break;  
+            case EnumUnitCommandType.Exchange:
+            {
+                // 교환 GUI 오픈.
+                GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Command_Exchange.PARAM.Create(m_entity_id)
+                    );
+            }
+                break;              
         }
 
         
@@ -375,6 +391,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;
             case EnumUnitCommandType.Wand:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.WandRange;
+                break;
+
+            case EnumUnitCommandType.Exchange:
+                draw_flag = (int)Battle.MoveRange.EnumDrawFlag.ExchangeRange;
                 break;
         }
 

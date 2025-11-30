@@ -264,47 +264,18 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
         if (entity.ProcessAction(weapon_item, EnumItemActionType.Equip) == false)
             return;
 
-        var draw_flag = m_menu_type == EnumUnitCommandType.Wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
 
-        // 공격 범위 탐색.
-        using var attack_range_visit = ObjectPool<AttackRangeVisitor>.AcquireWrapper();
-        attack_range_visit.Value.SetData(
-            _draw_flag:         draw_flag,
-            _terrain:           TerrainMapManager.Instance.TerrainMap,
-            _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
-            _use_base_position: false,
-            _use_weapon_id:     weapon_id
-        );
+        var is_wand = (m_menu_type == EnumUnitCommandType.Wand);
 
-        // 공격 범위 탐색.
-        PathAlgorithm.FloodFill(attack_range_visit.Value);        
 
+        using var list_target = ListPool<Int64>.AcquireWrapper();
+        CombatHelper.FindWeaponTargetableList(is_wand, m_entity_id, weapon_id, list_target.Value);
         
-
-        Int64  FindTarget(HashSet<(int x, int y)> _target_list)
-        {
-            if (_target_list != null)
-            {
-                foreach (var pos in _target_list)
-                {
-                    var target_id = terrain_map.EntityManager.GetCellData(pos.x, pos.y);
-                    if (CombatHelper.IsTargetable(m_entity_id, target_id, weapon_id))
-                        return target_id;
-                }
-            }
-
-            return 0;
-        }
-
-        // 공격 대상 순회.
-        var target_list = (m_menu_type == EnumUnitCommandType.Wand) 
-                        ?  attack_range_visit.Value.Visit_Wand 
-                        :  attack_range_visit.Value.Visit_Weapon;
-        var target_entity_id = FindTarget(target_list);
 
         
 
         // 공격 가능한 타겟이 있으면 UI 출력.
+        var target_entity_id = (list_target.Value.Count > 0) ? list_target.Value[0] : 0;
         if (target_entity_id > 0)
         {   
             GUIManager.Instance.OpenUI(

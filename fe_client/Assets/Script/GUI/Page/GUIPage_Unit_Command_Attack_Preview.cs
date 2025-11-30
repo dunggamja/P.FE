@@ -175,42 +175,10 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
     Int64 FindTarget(Int64 _weapon_id, List<Int64> _target_list)
     {
         _target_list.Clear();
+       
+        var is_wand = (m_menu_type == EnumUnitCommandType.Wand);
+        CombatHelper.FindWeaponTargetableList(is_wand, m_entity_id, _weapon_id, _target_list);
 
-        // 공격 가능한 타겟 찾기.
-        var entity = EntityManager.Instance.GetEntity(m_entity_id);
-        if (entity == null)
-            return 0;
-
-        
-        var draw_flag   = m_menu_type == EnumUnitCommandType.Wand ? (int)Battle.MoveRange.EnumDrawFlag.WandRange : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
-
-        // 공격 범위 탐색.
-        using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
-        attack_range_visit.Value.SetData(
-            _draw_flag:         draw_flag,
-            _terrain:           TerrainMapManager.Instance.TerrainMap,
-            _entity_object:     EntityManager.Instance.GetEntity(m_entity_id),
-            _use_base_position: false,
-            _use_weapon_id:     _weapon_id
-        );
-
-        PathAlgorithm.FloodFill(attack_range_visit.Value);
-
-
-        // 타겟 목록 순회.
-        var target_list = (m_menu_type == EnumUnitCommandType.Wand) ? attack_range_visit.Value.Visit_Wand : attack_range_visit.Value.Visit_Weapon;
-        foreach(var pos in target_list)
-        {
-            var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
-            if (target_id > 0)
-            {   
-                // 공격 가능한 타겟 찾기.
-                if (CombatHelper.IsTargetable(m_entity_id, target_id, _weapon_id) == false)
-                    continue;             
-
-                _target_list.Add(target_id);
-            }
-        }
 
         // 공격 가능한 타겟 찾기.
         Int64 new_target_id = m_target_id;        

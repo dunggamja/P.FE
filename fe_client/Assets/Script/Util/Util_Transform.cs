@@ -13,7 +13,7 @@ public static partial class Util
       if (_transform == null)
          return;
 
-      for(int i = _transform.childCount; i >= 0; --i)
+      for(int i = _transform.childCount - 1; i >= 0; --i)
       {
          var child = _transform.GetChild(i);
          if (child == null)

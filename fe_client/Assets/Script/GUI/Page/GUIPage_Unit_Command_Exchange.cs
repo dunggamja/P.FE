@@ -29,9 +29,9 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       public override EnumGUIType GUIType => EnumGUIType.Screen;
 
       public Int64                EntityID { get; private set; }
-      public Int64                TargetID { get; private set; }
+      // public Int64                TargetID { get; private set; }
 
-      private PARAM(Int64 _entity_id, Int64 _target_id) 
+      private PARAM(Int64 _entity_id) 
       : base(
           // id      
           GUIPage.GenerateID(),           
@@ -47,12 +47,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       )
       {
          EntityID = _entity_id;
-         TargetID = _target_id;
+         // TargetID = _target_id;
       }
 
-      static public PARAM Create(Int64 _entity_id, Int64 _target_id)
+      static public PARAM Create(Int64 _entity_id)//, Int64 _target_id)
       {
-         return new PARAM(_entity_id, _target_id);
+         return new PARAM(_entity_id);//, _target_id);
       }
    }
 
@@ -84,6 +84,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
             if (TextSubject == null)
                return;
 
+            if (ItemObject == null)
+            {
+               TextSubject.OnNext(string.Empty);
+               return;
+            }
+
             var text_subject = TextSubject;
             Item.GetNameText(ItemObject, true).Subscribe(text => text_subject.OnNext(text));
         }
@@ -101,12 +107,17 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
 
 
-   private Int64                   m_entity_id    = 0;
-   private Int64                   m_target_id    = 0;
-   private EnumUIState             m_ui_state     = EnumUIState.SelectTarget;
+   private Int64                   m_entity_id             = 0;
+   private List<Int64>             m_exchange_target_list  = new();
+   private int                     m_exchange_target_index = 0;
+   private EnumUIState             m_ui_state              = EnumUIState.SelectTarget;
 
-   private (int target, int index) m_cursor_index = (-1, -1); // 0: actor, 1: target
-   private (int target, int index) m_select_index = (-1, -1); // 0: actor, 1: target
+    private Int64                  m_vfx_exchange_target  = 0;
+
+
+   private (int target, int index) m_cursor_index          = (-1, -1); // 0: actor, 1: target
+   private (int target, int index) m_select_index          = (-1, -1); // 0: actor, 1: target
+
 
    private List<MENU_ITEM_DATA>    m_menu_item_datas_actor       = new();
    private BehaviorSubject<int>    m_cursor_index_subject_actor  = new(0);
@@ -116,6 +127,19 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
    private List<MENU_ITEM_DATA>    m_menu_item_datas_target      = new();
    private BehaviorSubject<int>    m_cursor_index_subject_target = new(0);
    private BehaviorSubject<int>    m_select_index_subject_target = new(0);
+
+
+
+   private Int64 ExchangeTargetID
+   {
+      get
+      {
+         if (m_exchange_target_index < 0 || m_exchange_target_index >= m_exchange_target_list.Count)
+            return 0;
+
+         return m_exchange_target_list[m_exchange_target_index];
+      }
+   }
 
 
 
@@ -209,31 +233,52 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
     {
       var param   = _param as PARAM;
       m_entity_id = param?.EntityID ?? 0;
-      m_target_id = param?.TargetID ?? 0;  
+      // m_target_id = param?.TargetID ?? 0;  
 
 
+      // 각자 인벤토리 아이템 8개까지 생성.
       for (int i = 0; i < Data_Const.UNIT_INVENTORY_MAX; i++)
       {
          m_menu_item_datas_actor.Add(new MENU_ITEM_DATA(i));
          m_menu_item_datas_target.Add(new MENU_ITEM_DATA(i));
       }
 
-      var actor  = EntityManager.Instance.GetEntity(m_entity_id);
-      var target = EntityManager.Instance.GetEntity(m_target_id);
+      // 교환 타겟 업데이트.
+      CombatHelper.FindExchangeTargetList(m_entity_id, m_exchange_target_list);
 
-      // 교환 아이템 데이터 업데이트
-      UpdateItemData(actor, m_menu_item_datas_actor);
-      UpdateItemData(target, m_menu_item_datas_target);
+      // 
+      var actor  = EntityManager.Instance.GetEntity(m_entity_id);
+      var target = EntityManager.Instance.GetEntity(ExchangeTargetID);
+      
 
       // 교환 아이템 UI 오브젝트 생성.
-      CreateItemUIObject();
+      CreateItemUIObject(m_menu_item_datas_actor, m_menu_item_datas_target);
+
+      // 교환 아이템 데이터 업데이트
+      UpdateUI_ItemData(actor, m_menu_item_datas_actor);
+      UpdateUI_ItemData(target, m_menu_item_datas_target);
 
       // 커서, 선택 UI 업데이트.
       UpdateUI_CursorAndSelect();
+
+      // 교환 타겟 VFX 생성.
+      CreateExchangeTargetVFX();
+      UpdateExchangeTargetVFX();
+
+      
+    }
+
+    protected override void OnLoop()
+    {
+        base.OnLoop();
+
+        UpdateDrawRange();
     }
 
     protected override void OnClose()
     {
+         VFXManager.Instance.ReserveReleaseVFX(m_vfx_exchange_target);
+         m_vfx_exchange_target = 0;
     }
 
     protected override void OnPostProcess_Close()
@@ -255,7 +300,18 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
         }
     }
 
-    void UpdateItemData(Entity _entity, List<MENU_ITEM_DATA> _menu_item_datas)
+    void UpdateDrawRange()
+    {
+        if (IsInputFocused == false)
+            return;
+
+        BattleSystemManager.Instance.DrawRange.DrawRange(
+            _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.ExchangeRange,
+            _entityID:          m_entity_id,
+            _use_base_position: false);
+    }
+
+    void UpdateUI_ItemData(Entity _entity, List<MENU_ITEM_DATA> _menu_item_datas)
     {
       if (_entity == null || _menu_item_datas == null)
          return;
@@ -265,20 +321,20 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
       for(int i = 0; i < _menu_item_datas.Count; ++i)
       {
-         if (_menu_item_datas[i] == null)
-            continue;
-
-         var item_object = (i < list_items.Value.Count) ? list_items.Value[i] : null;
+         var item_object = i < list_items.Value.Count ? list_items.Value[i] : null;
 
          _menu_item_datas[i].SetItemObject(item_object);
          _menu_item_datas[i].UpdateText();
       }
     }
 
-    void CreateItemUIObject()
+    void CreateItemUIObject(List<MENU_ITEM_DATA> _menu_item_datas_actor, List<MENU_ITEM_DATA> _menu_item_datas_target)
     {
        if (m_grid_menu_item == null || m_grid_menu_root_actor == null || m_grid_menu_root_target == null)
           return;
+
+      if (_menu_item_datas_actor == null || _menu_item_datas_target == null)
+         return;
 
       // 기존 메뉴 아이템 삭제.
       m_grid_menu_root_actor.transform.DestroyAllChildren();
@@ -286,34 +342,28 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
 
        // 내 아이템 그리기.
-       for(int i = 0; i < Data_Const.UNIT_INVENTORY_MAX; i++)
+       for(int i = 0; i < _menu_item_datas_actor.Count; i++)
        {
-          var item_data    = (i < m_menu_item_datas_actor.Count) ? m_menu_item_datas_actor[i] : MENU_ITEM_DATA.Empty;
+          var item_data    = _menu_item_datas_actor[i];
           var clonedItem   = Instantiate(m_grid_menu_item, m_grid_menu_root_actor.transform);          
 
           clonedItem.Initialize(i, 
                m_cursor_index_subject_actor, 
                item_data.TextSubject,
                m_select_index_subject_actor);
-
-          // 텍스트 갱신.
-          item_data.UpdateText();
        }
 
 
        // 타겟 아이템 그리기.
-       for(int i = 0; i <  Data_Const.UNIT_INVENTORY_MAX; i++)
+       for(int i = 0; i < _menu_item_datas_target.Count; i++)
        {
-          var item_data   = (i < m_menu_item_datas_target.Count) ? m_menu_item_datas_target[i] : MENU_ITEM_DATA.Empty;
+          var item_data   = _menu_item_datas_target[i];
           var clonedItem  = Instantiate(m_grid_menu_item, m_grid_menu_root_target.transform);
    
           clonedItem.Initialize(i, 
                m_cursor_index_subject_target, 
                item_data.TextSubject,
                m_select_index_subject_target);
-
-          // 텍스트 갱신.
-          item_data.UpdateText();
        }
     }
 
@@ -324,6 +374,40 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       m_cursor_index_subject_target.OnNext(CursorIndex_Target);
       m_select_index_subject_actor.OnNext(SelectIndex_Actor);
       m_select_index_subject_target.OnNext(SelectIndex_Target);
+   }
+
+   void CreateExchangeTargetVFX()
+   {
+      var entity = EntityManager.Instance.GetEntity(m_entity_id);
+      if (entity == null)
+         return;
+
+      // 커서 VFX 생성.
+      var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
+         .SetVFXRoot_Default()
+         .SetPosition(entity.Cell.CellToPosition())
+         .SetVFXName(AssetName.TILE_SELECTION)
+         .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE);
+
+      m_vfx_exchange_target = VFXManager.Instance.CreateVFXAsync(vfx_param);
+   }
+
+   void UpdateExchangeTargetVFX()
+   {
+      var entity = EntityManager.Instance.GetEntity(ExchangeTargetID);
+      if (entity == null)
+         return;
+
+      EventDispatchManager.Instance.UpdateEvent(
+         ObjectPool<VFX_TransformEvent>.Acquire()
+         .SetID(m_vfx_exchange_target)
+         .SetPosition(entity.Cell.CellToPosition())                
+      ); 
+
+      EventDispatchManager.Instance.UpdateEvent(
+         ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
+         .Set(entity.Cell)
+      ); 
    }
 
    private void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
@@ -359,6 +443,41 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
    {
       if (_event == null)
          return;
+
+      if (m_exchange_target_list.Count == 0)
+         return;
+
+
+      var move_x       = Math.Clamp(_event.MoveDirection.x, -1, 1);
+      var move_y       = Math.Clamp(_event.MoveDirection.y, -1, 1);
+
+      // 타겟 이동 방향에 따라 인덱스 추가.
+      int offset =
+          (_event.MoveDirection.x != 0) 
+        ? (_event.MoveDirection.x > 0 ? 1 : -1) 
+        : (_event.MoveDirection.y != 0) 
+        ? (_event.MoveDirection.y > 0 ? 1 : -1) 
+        : 0;
+
+
+
+      var prev_target_id       = ExchangeTargetID;
+
+      m_exchange_target_index += offset;
+      m_exchange_target_index += m_exchange_target_list.Count;
+      m_exchange_target_index %= m_exchange_target_list.Count;
+
+      var new_target_id        = ExchangeTargetID;
+
+      // 타겟 변경시 처리.
+      if (prev_target_id != new_target_id)
+      {
+         var target = EntityManager.Instance.GetEntity(new_target_id);
+         UpdateUI_ItemData(target, m_menu_item_datas_target);
+         UpdateExchangeTargetVFX();
+      }
+
+
    }
 
    private void OnReceiveEvent_GUI_Menu_MoveEvent_ExchangeItem(GUI_Menu_MoveEvent _event)
@@ -417,11 +536,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
                   // 타겟 선택 상태로 이동.
                   m_ui_state = EnumUIState.SelectTarget;
                }
+
+               UpdateUI_CursorAndSelect();
             
            }
            break;
-        }
-
-        
+        }        
     }
+
 }

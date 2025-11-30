@@ -277,6 +277,25 @@ namespace Battle.MoveRange
         list_draw.Value.Add(pos);
       }  
 
+      // 교환 범위 표시.
+      foreach(var pos in AttackRangeVisitor.Visit_Exchange)
+      {
+        // 이미 표시한 위치면 제외.
+        if (list_draw.Value.Contains(pos))
+          continue;
+
+        var vfx_id = VFXManager.Instance.CreateVFXAsync(
+            ObjectPool<VFXShape.Param>.Acquire()
+            .SetVFXRoot_Default()
+            .SetVFXName(AssetName.TILE_EFFECT_GREEN)
+            .SetPosition(pos.CellToPosition())
+            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
+        );
+
+        VFXList.Add(vfx_id);
+        list_draw.Value.Add(pos);
+      }
+
 
     }
 

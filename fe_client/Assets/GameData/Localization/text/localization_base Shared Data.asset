@@ -56,23 +56,51 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 110
-    m_Key: ui_empty
+    m_Key: ui_menu_item_exchange
     m_Metadata:
       m_Items: []
   - m_Id: 111
-    m_Key: ui_turn_number
+    m_Key: ui_empty
     m_Metadata:
       m_Items: []
   - m_Id: 112
-    m_Key: ui_yes
+    m_Key: ui_turn_number
     m_Metadata:
       m_Items: []
   - m_Id: 113
-    m_Key: ui_no
+    m_Key: ui_yes
     m_Metadata:
       m_Items: []
   - m_Id: 114
+    m_Key: ui_no
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115
     m_Key: ui_cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116
+    m_Key: terrain_ground
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117
+    m_Key: terrain_ground_forest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118
+    m_Key: terrain_ground_dirt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119
+    m_Key: terrain_ground_climb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 120
+    m_Key: terrain_water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 121
+    m_Key: terrain_water_shallow
     m_Metadata:
       m_Items: []
   m_Metadata:

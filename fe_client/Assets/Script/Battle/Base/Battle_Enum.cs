@@ -317,11 +317,12 @@ namespace Battle
     public enum EnumUnitCommandType
     {
         None,
-        Attack, // 공격
-        Wand,   // 지팡이
-        Skill,  // 스킬
-        Item,   // 아이템
-        Wait,   // 대기.
+        Attack,   // 공격
+        Wand,     // 지팡이
+        Skill,    // 스킬
+        Exchange, // 교환
+        Item,     // 아이템
+        Wait,     // 대기.
     }
 
 

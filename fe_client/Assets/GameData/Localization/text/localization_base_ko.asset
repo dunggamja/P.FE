@@ -59,22 +59,26 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 110
-    m_Localized: "\uC5C6\uC74C"
+    m_Localized: "\uAD50\uD658"
     m_Metadata:
       m_Items: []
   - m_Id: 111
-    m_Localized: "\uD134 {0}"
+    m_Localized: "\uC5C6\uC74C"
     m_Metadata:
       m_Items: []
   - m_Id: 112
-    m_Localized: "\uC608"
+    m_Localized: "\uD134 {0}"
     m_Metadata:
       m_Items: []
   - m_Id: 113
-    m_Localized: "\uC544\uB2C8\uC624"
+    m_Localized: "\uC608"
     m_Metadata:
       m_Items: []
   - m_Id: 114
+    m_Localized: "\uC544\uB2C8\uC624"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115
     m_Localized: "\uCDE8\uC18C"
     m_Metadata:
       m_Items: []

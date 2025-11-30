@@ -200,6 +200,22 @@ namespace Battle
             return is_ally == false;
         }
 
+        public static bool IsExchangeable(Int64 _attacker_id, Int64 _target_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0)
+                return false;
+
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            // 동일한 진영인지 체크합니다.
+            return attacker.GetFaction() == target.GetFaction();
+        }
+        
+
         public static bool IsTargetable(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
         {
             if (_attacker_id <= 0 || _target_id <= 0 || _weapon_id <= 0)
@@ -228,6 +244,99 @@ namespace Battle
             }          
 
             return false;
+        }
+
+
+        public static bool FindExchangeTargetList(Int64 _entity_id, List<Int64> _target_list)
+        {
+            if (_entity_id <= 0 || _target_list == null)
+                return false;
+
+
+            _target_list.Clear();
+
+            var entity = EntityManager.Instance.GetEntity(_entity_id);
+            if (entity == null)
+                return false;
+
+            // 공격 범위 탐색.
+            using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
+            attack_range_visit.Value.SetData(
+                _draw_flag:         (int)Battle.MoveRange.EnumDrawFlag.ExchangeRange,
+                _terrain:           TerrainMapManager.Instance.TerrainMap,
+                _entity_object:     entity,
+                _use_base_position: false,
+                _use_weapon_id:     0
+            );
+
+            PathAlgorithm.FloodFill(attack_range_visit.Value);
+
+
+            // 타겟 목록 순회.
+            foreach(var pos in attack_range_visit.Value.Visit_Exchange)
+            {
+                var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
+                if (target_id > 0)
+                {   
+                    // 공격 가능한 타겟 찾기.
+                    if (CombatHelper.IsExchangeable(_entity_id, target_id) == false)
+                        continue;             
+
+                    _target_list.Add(target_id);
+                }
+            }
+
+            return _target_list.Count > 0;
+        }
+
+
+        public static bool FindWeaponTargetableList(bool _is_wand,Int64 _entity_id, Int64 _weapon_id, List<Int64> _target_list)
+        {
+            if (_entity_id <= 0 || _weapon_id <= 0 || _target_list == null)
+                return false;
+
+            _target_list.Clear();
+
+            var entity = EntityManager.Instance.GetEntity(_entity_id);
+            if (entity == null)
+                return false;
+
+            var draw_flag   = (_is_wand) 
+                            ? (int)Battle.MoveRange.EnumDrawFlag.WandRange 
+                            : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+
+            // 공격 범위 탐색.
+            using var attack_range_visit = ObjectPool<Battle.MoveRange.AttackRangeVisitor>.AcquireWrapper();
+            attack_range_visit.Value.SetData(
+                _draw_flag:         draw_flag,
+                _terrain:           TerrainMapManager.Instance.TerrainMap,
+                _entity_object:     entity,
+                _use_base_position: false,
+                _use_weapon_id:     _weapon_id
+            );
+
+            PathAlgorithm.FloodFill(attack_range_visit.Value);
+
+
+            // 타겟 목록 순회.
+            var target_list = (_is_wand) 
+                            ? attack_range_visit.Value.Visit_Wand
+                            : attack_range_visit.Value.Visit_Weapon;
+
+            foreach(var pos in target_list)
+            {
+                var target_id = TerrainMapManager.Instance.TerrainMap.EntityManager.GetCellData(pos.x, pos.y);
+                if (target_id > 0)
+                {   
+                    // 공격 가능한 타겟 찾기.
+                    if (CombatHelper.IsTargetable(_entity_id, target_id, _weapon_id) == false)
+                        continue;             
+
+                    _target_list.Add(target_id);
+                }
+            }
+
+            return _target_list.Count > 0;
         }
     }
 }
