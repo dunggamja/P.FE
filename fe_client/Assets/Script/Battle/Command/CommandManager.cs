@@ -8,11 +8,12 @@ namespace Battle
     public enum EnumCommandType
     {
         None,
-        Attack,
-        Move,
-        Wand,
-        Done,
-        Abort,
+        Attack,   // 공격
+        Move,     // 이동
+        Wand,     // 지팡이
+        Exchange, // 아이템 교환
+        Done,     // 대기
+        Abort,    // 취소 (시스템적인 명령어임...)
     }
 
 
@@ -137,7 +138,8 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Command_Event>.Acquire().Set(
                     m_owner_id,
-                    command.CommandType
+                    command.CommandType,
+                    command.State
                 ));
         }
 

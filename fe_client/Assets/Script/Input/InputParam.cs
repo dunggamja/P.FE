@@ -1,24 +1,24 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 
 public enum EnumInputParamType
 {
     None,
 
-    Grid_Move,      // ±×¸®µå ÀÌµ¿
-    Grid_Pointer,   // ±×¸®µå Æ÷ÀÎÅÍ
-    Grid_Select,    // ±×¸®µå ¼±ÅÃ
-    Grid_Cancel,    // ±×¸®µå Ãë¼Ò
-    Grid_Forward,   // ±×¸®µå Æ÷¿öµå <- ¸ÕÁö ¸ð¸§. (°ø°Ý¹üÀ§ Ç¥½Ã ½Ã »ç¿ë)
-    // Grid_Delta,     // ±×¸®µå µ¨Å¸
-    // Grid_AnyButton, // ±×¸®µå ¹öÆ°
+    Grid_Move,      // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
+    Grid_Pointer,   // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    Grid_Select,    // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    Grid_Cancel,    // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    Grid_Forward,   // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ <- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½. (ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½)
+    // Grid_Delta,     // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸
+    // Grid_AnyButton, // ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
 
-    UI_Move,      // UI ÀÌµ¿
-    UI_Pointer,   // UI Æ÷ÀÎÅÍ
-    UI_Delta,     // UI µ¨Å¸
-    UI_Select,    // UI ¼±ÅÃ
-    UI_Cancel,    // UI Ãë¼Ò
-    UI_Forward,   // UI Æ÷¿öµå <- ¸ÕÁö ¸ð¸§. (¹«±â º¯°æ ½Ã »ç¿ë)
+    UI_Move,      // UI ï¿½Ìµï¿½
+    UI_Pointer,   // UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    UI_Delta,     // UI ï¿½ï¿½Å¸
+    UI_Select,    // UI ï¿½ï¿½ï¿½ï¿½
+    UI_Cancel,    // UI ï¿½ï¿½ï¿½
+    UI_Forward,   // UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ <- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½. (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½)
 }
 
 

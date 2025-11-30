@@ -10,7 +10,8 @@ using Battle;
     typeof(GUI_Menu_MoveEvent), 
     typeof(GUI_Menu_SelectEvent),
     typeof(GUI_Menu_CancelEvent),
-    typeof(Battle_Scene_ChangeEvent)
+    typeof(Battle_Scene_ChangeEvent),
+    typeof(Battle_Command_Event)
     )]
 public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 {
@@ -151,6 +152,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             case GUI_Menu_CancelEvent menu_cancel_event:
                 OnReceiveEvent_GUI_Menu_CancelEvent(menu_cancel_event);
                 break;
+
+            case Battle_Command_Event battle_command_event:
+                OnReceiveEvent_Battle_CommandEvent(battle_command_event);
+                break;
         }
         // throw new NotImplementedException();
     }
@@ -181,12 +186,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 메뉴 타입에 따라 범위 초기화.
         BattleSystemManager.Instance.DrawRange.Clear();
 
-         Debug.Log("GUIPage_Unit_Command: OnClose");
+        //  Debug.Log("GUIPage_Unit_Command: OnClose");
     }
 
     protected override void OnPostProcess_Close()
     {
-        Debug.Log("GUIPage_Unit_Command: OnPostProcess_Close");
+        // Debug.Log("GUIPage_Unit_Command: OnPostProcess_Close");
         
     }
 
@@ -203,35 +208,55 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // TODO: 스킬 목록 추출,
         // 소지한 아이템 목록 추출.
 
-        using var list_weapon = ListPool<Item>.AcquireWrapper();
-        using var list_wand   = ListPool<Item>.AcquireWrapper();
-        using var list_item   = ListPool<Item>.AcquireWrapper();
+        using var list_weapon   = ListPool<Item>.AcquireWrapper();
+        using var list_wand     = ListPool<Item>.AcquireWrapper();
+        using var list_item     = ListPool<Item>.AcquireWrapper();
+        // using var list_exchange = ListPool<Item>.AcquireWrapper();
 
         // 소지한 아이템 목록 추출
         entity.Inventory.CollectItem(list_item.Value);
 
-        // 장착 가능한 무기 목록
-        entity.Inventory.CollectItem_Weapon_Available(list_weapon.Value, entity);
 
-        // 사용가능한 지팡이 목록
-        entity.Inventory.CollectItem_Wand_Available(list_wand.Value, entity);
+        var enable_exchange = false;
 
+        if (entity.HasCommandEnable(EnumCommandFlag.Action))
+        {
+            // 장착 가능한 무기 목록
+            entity.Inventory.CollectItem_Weapon_Available(list_weapon.Value, entity);
+
+            // 사용가능한 지팡이 목록
+            entity.Inventory.CollectItem_Wand_Available(list_wand.Value, entity);
+
+            // 교환 가능한지 체크.
+            enable_exchange = entity.HasCommandEnable(EnumCommandFlag.Exchange);
+        }
+
+        // 메뉴 아이템 목록 초기화.
         m_menu_item_datas.Clear();
 
         int menu_index = 0;
 
         // 공격
-        if (0 < list_weapon.Value.Count) m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Attack));
+        if (0 < list_weapon.Value.Count)    
+            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Attack));
+
         // 지팡이
-        if (0 < list_wand.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wand));
+        if (0 < list_wand.Value.Count)      
+            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wand));
+
         // 교환
-        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Exchange));
+        if (enable_exchange)  
+            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Exchange));
+
         // 아이템
-        if (0 < list_item.Value.Count)   m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Item));
+        if (0 < list_item.Value.Count)      
+            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Item));
+
         // 대기
         m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wait));
 
         // 메뉴 아이템 그리기.
+        m_grid_menu_root.transform.DestroyAllChildren();
         for (int i = 0; i < m_menu_item_datas.Count; i++)
         {
             var localizeKey  = m_menu_item_datas[i].GetLocalizeKey();
@@ -241,8 +266,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             clonedItem.Initialize(i, m_selected_index_subject, text_subject);
         }
 
-        // 선택 인덱스 설정 (0 인덱스 설정)
-        m_selected_index_subject.OnNext(0);
+        ClampSelectIndex();
+    }
+
+    private void ClampSelectIndex()
+    {
+        var cur_index = m_selected_index_subject.Value;
+        var new_index = Math.Clamp(cur_index, 0, Math.Max(0, m_menu_item_datas.Count - 1));
+
+        if (new_index != cur_index)
+            m_selected_index_subject.OnNext(new_index);
     }
 
     private void UpdateLayout()
@@ -297,6 +330,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         
         // 선택 인덱스 설정.
         m_selected_index_subject.OnNext(new_index);
+
+        ClampSelectIndex();
 
         // 공격 범위 탐색.
         UpdateDrawRange();
@@ -359,6 +394,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity != null && entity.HasCommandEnable(EnumCommandFlag.Move) == false)
+        {
+            // 이동이 불가능할 경우 취소로 UI를 닫을수 없음.            
+            return;
+        }
+
         GUIManager.Instance.CloseUI(ID);
     }
 
@@ -370,6 +412,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             // 포커스 켜기.
             Show();
+
+            // 메뉴 아이템 그리기.
+            UpdateMenuItems();  
+
+            // 그리드 메뉴 레이아웃 업데이트.
+            UpdateLayout();
         }
         else
         {
@@ -404,6 +452,15 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             _entityID: m_entity_id,
             _use_base_position: false);
 
+    }
+
+    void OnReceiveEvent_Battle_CommandEvent(Battle_Command_Event _event)
+    {
+        if (_event == null || _event.EntityID != m_entity_id)
+            return;
+
+        UpdateMenuItems();
+        UpdateLayout();
     }
 
 }

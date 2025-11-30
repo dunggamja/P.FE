@@ -173,8 +173,9 @@ namespace Battle
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
 
-        public Int64           EntityID    { get; private set; } = 0;
-        public EnumCommandType CommandType { get; private set; } = EnumCommandType.None;
+        public Int64           EntityID     { get; private set; } = 0;
+        public EnumCommandType CommandType  { get; private set; } = EnumCommandType.None;
+        public EnumState       CommandState { get; private set; } = EnumState.None;
 
         public void Release()
         {
@@ -184,14 +185,19 @@ namespace Battle
 
         public void Reset()
         {
-            EntityID    = 0;
-            CommandType = EnumCommandType.None;
+            EntityID     = 0;
+            CommandType  = EnumCommandType.None;
+            CommandState = EnumState.None;
         }
 
-        public Battle_Command_Event Set(Int64 _entity_id, EnumCommandType _command_type)
+        public Battle_Command_Event Set(
+            Int64           _entity_id, 
+            EnumCommandType _command_type, 
+            EnumState       _command_state)
         {
-            EntityID    = _entity_id;
-            CommandType = _command_type;
+            EntityID     = _entity_id;
+            CommandType  = _command_type;
+            CommandState = _command_state;
             return this;
         }
     }

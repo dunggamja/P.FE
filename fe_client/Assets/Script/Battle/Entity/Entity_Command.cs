@@ -111,6 +111,12 @@ namespace Battle
             // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
+        public bool IsAnyCommandDone()
+        {
+            // 커맨드를 한개라도 진행했는지 체크.
+            return BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag) != -1;
+        }
+
 
         public EnumCommandProgressState GetCommandProgressState()
         {

@@ -194,7 +194,7 @@ public class InputHandler_UI_Menu : InputHandler
             return;
 
 
-        Close_FocusGUI();
+        // Close_FocusGUI();
 
         EventDispatchManager.Instance.UpdateEvent(
             ObjectPool<GUI_Menu_CancelEvent>.Acquire().Set(gui_id));

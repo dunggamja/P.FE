@@ -10,6 +10,7 @@ using UnityEngine.UI;
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
     typeof(GUI_Menu_SelectEvent),
+    typeof(GUI_Menu_CancelEvent),
     typeof(Battle_Scene_ChangeEvent)
     )]
 public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver

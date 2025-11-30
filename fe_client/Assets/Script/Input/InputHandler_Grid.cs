@@ -483,25 +483,32 @@ public class InputHandler_Grid_Select : InputHandler
             var base_position  = entity.PathBasePosition;
             if (base_position == SelectCursor)
             {
-                // 선택 셀 이동.
-                entity.UpdateCellPosition(
-                    base_position,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false);
+                // 진행한 명령이 하나도 없을 경우에만 취소 처리.
+                if (entity.IsAnyCommandDone() == false)
+                {
+                    // 선택 셀 이동.
+                    entity.UpdateCellPosition(
+                        base_position,
+                        (_apply: true, _immediatly: true),
+                        _is_plan: false);
 
-                CommandEntityID = 0;
+                    CommandEntityID = 0;
+                }
             }
             else
             {
-                // 선택 셀 이동.
-                MoveSelcectCursor(base_position.x, base_position.y);
+                // 이동이 가능한 상태일 경우, 기존 위치로 이동 처리.
+                if (entity.HasCommandEnable(EnumCommandFlag.Move))
+                {
+                    // 선택 셀 이동.
+                    MoveSelcectCursor(base_position.x, base_position.y);
 
-                // 선택 엔티티 이동.    
-                MoveSelectedEntity(
-                    CommandEntityID, 
-                    base_position, 
-                    _is_immediate: true);
-                    // _is_plan: true);
+                    // 선택 엔티티 이동.    
+                    MoveSelectedEntity(
+                        CommandEntityID, 
+                        base_position, 
+                        _is_immediate: true);
+                }
             }
         }
         else

@@ -10,6 +10,7 @@ using UnityEngine.UI;
 [EventReceiver(
     typeof(GUI_Menu_MoveEvent), 
     typeof(GUI_Menu_SelectEvent),
+    typeof(GUI_Menu_CancelEvent),
     typeof(GUI_Menu_ForwardEvent)
     )]
 public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
@@ -119,8 +120,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
    private (int target, int index) m_select_index          = (-1, -1); // 0: actor, 1: target
 
 
-   private List<MENU_ITEM_DATA>    m_menu_item_datas_actor       = new();
-   private BehaviorSubject<int>    m_cursor_index_subject_actor  = new(0);
+   private List<Int64>             m_previous_item_list_actor   = new();
+   private List<Int64>             m_previous_item_list_target  = new();
+
+
+   private List<MENU_ITEM_DATA>    m_menu_item_datas_actor      = new();
+   private BehaviorSubject<int>    m_cursor_index_subject_actor = new(0);
    private BehaviorSubject<int>    m_select_index_subject_actor  = new(0);
    
    
@@ -354,8 +359,8 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
     protected override void OnClose()
     {
-         VFXManager.Instance.ReserveReleaseVFX(m_vfx_exchange_target);
-         m_vfx_exchange_target = 0;
+        // 교환 타겟 VFX 해제.
+        ReleaseExchangeTargetVFX();
     }
 
     protected override void OnPostProcess_Close()
@@ -406,6 +411,10 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
             m_menu_item_datas_actor[i].SetItemObject(item_object);
          }
+
+         m_previous_item_list_actor.Clear();
+         foreach(var e in list_items.Value)
+            m_previous_item_list_actor.Add(e.ID);
       }
 
       {
@@ -420,6 +429,10 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
             m_menu_item_datas_target[i].SetItemObject(item_object);
          }
+
+         m_previous_item_list_target.Clear();
+         foreach(var e in list_items.Value)
+            m_previous_item_list_target.Add(e.ID);
       }
     }
 
@@ -522,6 +535,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       m_vfx_exchange_target = VFXManager.Instance.CreateVFXAsync(vfx_param);
    }
 
+   void ReleaseExchangeTargetVFX()
+   {
+      VFXManager.Instance.ReserveReleaseVFX(m_vfx_exchange_target);
+      m_vfx_exchange_target = 0;
+   }
+
    void UpdateExchangeTargetVFX()
    {
       var entity = EntityManager.Instance.GetEntity(ExchangeTargetID);
@@ -589,9 +608,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          }
       }
       else
-      {
-
-         
+      {         
          if (m_select_index == m_cursor_index)
          {
             // 동일한 아이템을 선택했다면 선택 취소 처리.
@@ -742,20 +759,132 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
            {
                if (0 <= SelectIndex_Actor || 0 <= SelectIndex_Target)
                {
-                  // 선택한 인덱스 초기화.
+                  // 선택한 인덱스가 있을 경우 초기화.
                   m_select_index = (-1, -1);                  
                }
                else
                {
-                  // 타겟 선택 상태로 이동.
-                  m_ui_state = EnumUIState.SelectTarget;
-               }
+                  // 교환 명령 플래그를 셋팅할 것인지 체크.
+                  var is_flag_command_done = IsFlagCommandDone();
+                  // 교환 명령 처리.
+                  ProcessExchangeCommand(is_flag_command_done);
 
-               UpdateUI_CursorAndSelect();
-            
+                  // 교환 명령 플래그에 따라 UI 처리.
+                  if (is_flag_command_done)
+                  {
+                     // 교환 명령을 실행한 경우 UI 종료.                     
+                     GUIManager.Instance.CloseUI(ID);
+                  }
+                  else
+                  {
+                     // 명령을 실행한 것이 아니면 타겟 선택 상태로 이동.
+                     m_ui_state = EnumUIState.SelectTarget;
+                     UpdateUI_CursorAndSelect();
+                  }
+               }            
            }
            break;
         }        
     }
+
+
+    bool IsFlagCommandDone()
+    {
+        var entity_actor  = EntityManager.Instance.GetEntity(m_entity_id);
+        var entity_target = EntityManager.Instance.GetEntity(ExchangeTargetID);
+        if (entity_actor == null || entity_target == null)
+           return false;
+
+
+      using var list_actor_items_prev  = ListPool<Int64>.AcquireWrapper();
+      using var list_target_items_prev = ListPool<Int64>.AcquireWrapper();
+
+      // 기존 아이템 목록 추출.
+      entity_actor.Inventory.ForEachItem(e => list_actor_items_prev.Value.Add(e.ID));
+      entity_target.Inventory.ForEachItem(e => list_target_items_prev.Value.Add(e.ID));
+
+
+      using var list_actor_items_after = ListPool<Int64>.AcquireWrapper();
+      using var list_target_items_after = ListPool<Int64>.AcquireWrapper();
+
+      // 변경된 아이템 목록 추출.
+      m_menu_item_datas_actor.ForEach(e =>
+      {
+         if (e.ItemObject != null)
+            list_actor_items_after.Value.Add(e.ItemObject.ID);
+      });
+      m_menu_item_datas_target.ForEach(e =>
+      {
+         if (e.ItemObject != null)
+            list_target_items_after.Value.Add(e.ItemObject.ID);
+      });
+
+      // 비교를 위해서 정렬.
+      list_actor_items_prev.Value.Sort();
+      list_target_items_prev.Value.Sort();
+      list_actor_items_after.Value.Sort();
+      list_target_items_after.Value.Sort();
+
+      // 변경 사항이 있는지 체크.
+      var is_changed_actor  = list_actor_items_prev.Value.SequenceEqual(list_actor_items_after.Value) == false;
+      var is_changed_target = list_target_items_prev.Value.SequenceEqual(list_target_items_after.Value) == false;
+
+      return is_changed_actor || is_changed_target;
+
+    }
+
+    void ProcessExchangeCommand(bool _execute_command)
+    {
+       
+      var entity = EntityManager.Instance.GetEntity(m_entity_id);
+      if (entity == null)
+         return;
+
+
+      {
+         using var list_actor_items  = ListPool<Item>.AcquireWrapper();
+         using var list_target_items = ListPool<Item>.AcquireWrapper();
+
+         foreach(var e in m_menu_item_datas_actor)
+         {
+            if (e.ItemObject != null)
+               list_actor_items.Value.Add(e.ItemObject);
+         }
+
+         foreach(var e in m_menu_item_datas_target)
+         {
+            if (e.ItemObject != null)
+               list_target_items.Value.Add(e.ItemObject);
+         }
+
+         // 위치가 변경되었다면 이동에 Command도 추가.
+         if (entity.Cell != entity.PathBasePosition)
+         {
+            BattleSystemManager.Instance.PushCommand(
+               new Command_Move(
+                  m_entity_id,
+                  entity.Cell,
+                  _execute_command: _execute_command,
+                  _visual_immediate: true,
+                  _is_plan: _execute_command == false));
+         }
+
+         
+
+         // 교환 Command 실행.
+         BattleSystemManager.Instance.PushCommand(
+               new Command_Exchange(
+                  m_entity_id,
+                  ExchangeTargetID,
+                  list_actor_items.Value,
+                  list_target_items.Value,
+                  _execute_command
+                  )
+         );
+      }      
+    }
+
+
+    
 
 }

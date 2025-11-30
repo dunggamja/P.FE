@@ -19,9 +19,9 @@ namespace Battle
 
    public class Command_Wand : Command
    {
-       public ITarget        Target   { get; private set; }
-       public Int64          WeaponID { get; private set; } 
-       public (int x, int y) Position { get; private set; } 
+       public ITarget        Target   { get; private set; } = null;
+       public Int64          WeaponID { get; private set; } = 0;
+       public (int x, int y) Position { get; private set; } = (0, 0);
 
        public override EnumCommandType CommandType => EnumCommandType.Wand;
 

@@ -13,7 +13,7 @@ public class Inventory
     List<Item>              m_repository_list = new (10);
 
     public int  Count    => m_repository_list.Count;
-    public int  MaxCount => 8; // 일단 하드코딩.
+    public int  MaxCount => Data_Const.UNIT_INVENTORY_MAX;
 
     public bool Initialize(IOwner _owner)
     {
@@ -56,6 +56,12 @@ public class Inventory
         }
 
         return false;
+    }
+
+    public void RemoveItemAll()
+    {
+        m_repository.Clear();
+        m_repository_list.Clear();
     }
 
     public void CollectItem(List<Item> _list_result, Func<Item, bool> _func_condition = null)
