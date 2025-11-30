@@ -21,7 +21,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       
    }
 
-   readonly (int MIN, int MAX) TARGET_INDEX_RANGE = (0, 1);
+   readonly (int ACTOR, int TARGET) TARGET_INDEX_RANGE = (0, 1); // 0 : actor, 1 : target
 
 
    public class PARAM : GUIOpenParam
@@ -76,7 +76,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
             ItemObject  = _item_object;
         }
         
-        static public MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0);
+      //   static public MENU_ITEM_DATA Empty => new MENU_ITEM_DATA(0);
 
 
         public void UpdateText()
@@ -185,8 +185,88 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
    }
 
 
-   private int ActorItemCount  => m_menu_item_datas_actor.Count(e => e.ItemObject != null);
-   private int TargetItemCount => m_menu_item_datas_target.Count(e => e.ItemObject != null);
+   private int MaxCursorIndex_Actor  
+   {
+      get
+      {
+         var   max_index = m_menu_item_datas_actor.Count(e => e.ItemObject != null) - 1;
+
+
+         // 아이템 선택중일때 예외처리.
+         if (SelectIndex_Target >= 0)
+             max_index += 1;
+
+
+         return Math.Clamp(max_index, 0, Data_Const.UNIT_INVENTORY_MAX - 1);
+      }
+       
+   }
+   private int MaxCursorIndex_Target
+   {
+      get
+      {
+         var max_index = m_menu_item_datas_target.Count(e => e.ItemObject != null) - 1;
+
+         // 아이템 선택중일때 예외처리.
+         if (SelectIndex_Actor >= 0)
+             max_index += 1;
+
+
+         return Math.Clamp(max_index, 0, Data_Const.UNIT_INVENTORY_MAX - 1);
+      }
+   }
+
+   private MENU_ITEM_DATA CursorItemData
+   {
+      get
+      {
+         if (CursorIndex_Actor >= 0)
+            return m_menu_item_datas_actor[CursorIndex_Actor];
+
+         if (CursorIndex_Target >= 0)
+            return m_menu_item_datas_target[CursorIndex_Target];
+
+         return null;
+      }
+
+      // set
+      // {
+      //    if (CursorIndex_Actor >= 0)
+      //    {
+      //       m_menu_item_datas_actor[CursorIndex_Actor] = value;
+      //    }
+      //    else if (CursorIndex_Target >= 0)
+      //    {
+      //       m_menu_item_datas_target[CursorIndex_Target] = value;
+      //    }
+      // }
+   }
+
+   private MENU_ITEM_DATA SelectItemData
+   {
+      get
+      {
+         if (SelectIndex_Actor >= 0)
+            return m_menu_item_datas_actor[SelectIndex_Actor];
+
+         if (SelectIndex_Target >= 0)
+            return m_menu_item_datas_target[SelectIndex_Target];
+
+         return null;
+      }
+
+      // set
+      // {
+      //    if (SelectIndex_Actor >= 0)
+      //    {
+      //       m_menu_item_datas_actor[SelectIndex_Actor] = value;
+      //    }
+      //    else if (SelectIndex_Target >= 0)
+      //    {
+      //       m_menu_item_datas_target[SelectIndex_Target] = value;
+      //    }
+      // }
+   }
 
 
 
@@ -246,20 +326,17 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       // 교환 타겟 업데이트.
       CombatHelper.FindExchangeTargetList(m_entity_id, m_exchange_target_list);
 
-      // 
-      var actor  = EntityManager.Instance.GetEntity(m_entity_id);
-      var target = EntityManager.Instance.GetEntity(ExchangeTargetID);
       
 
       // 교환 아이템 UI 오브젝트 생성.
       CreateItemUIObject(m_menu_item_datas_actor, m_menu_item_datas_target);
 
-      // 교환 아이템 데이터 업데이트
-      UpdateUI_ItemData(actor, m_menu_item_datas_actor);
-      UpdateUI_ItemData(target, m_menu_item_datas_target);
+      // 교환 아이템 데이터 셋팅.
+      SetItemData();
 
       // 커서, 선택 UI 업데이트.
       UpdateUI_CursorAndSelect();
+      UpdateUI_ItemData();
 
       // 교환 타겟 VFX 생성.
       CreateExchangeTargetVFX();
@@ -311,22 +388,63 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
             _use_base_position: false);
     }
 
-    void UpdateUI_ItemData(Entity _entity, List<MENU_ITEM_DATA> _menu_item_datas)
+    void SetItemData()
     {
-      if (_entity == null || _menu_item_datas == null)
-         return;
+      var actor  = EntityManager.Instance.GetEntity(m_entity_id);
+      var target = EntityManager.Instance.GetEntity(ExchangeTargetID);
       
-      using var list_items = ListPool<Item>.AcquireWrapper();
-      _entity.Inventory.CollectItem(list_items.Value);
-
-      for(int i = 0; i < _menu_item_datas.Count; ++i)
+      
       {
-         var item_object = i < list_items.Value.Count ? list_items.Value[i] : null;
+         using var list_items = ListPool<Item>.AcquireWrapper();
 
-         _menu_item_datas[i].SetItemObject(item_object);
-         _menu_item_datas[i].UpdateText();
+         if (actor != null)
+             actor.Inventory.CollectItem(list_items.Value);
+
+         for (int i = 0; i < m_menu_item_datas_actor.Count; ++i)
+         {
+            var item_object = i < list_items.Value.Count ? list_items.Value[i] : null;
+
+            m_menu_item_datas_actor[i].SetItemObject(item_object);
+         }
+      }
+
+      {
+         using var list_items = ListPool<Item>.AcquireWrapper();
+
+         if (target != null)
+             target.Inventory.CollectItem(list_items.Value);
+
+         for(int i = 0; i < m_menu_item_datas_target.Count; ++i)
+         {
+            var item_object = i < list_items.Value.Count ? list_items.Value[i] : null;
+
+            m_menu_item_datas_target[i].SetItemObject(item_object);
+         }
       }
     }
+
+    void CompactItemDataList(List<MENU_ITEM_DATA> _menu_item_datas)
+    {
+      for (int i = 0; i < _menu_item_datas.Count; i++)
+      {
+         if (_menu_item_datas[i].ItemObject == null)
+         {
+               var next_index = _menu_item_datas.FindIndex(i + 1, e => e.ItemObject != null);
+               if (next_index >= 0)
+               {
+                  _menu_item_datas[i].SetItemObject(_menu_item_datas[next_index].ItemObject);
+                  _menu_item_datas[next_index].SetItemObject(null);
+               }
+               else
+               {
+               break;
+               }
+         }
+      }
+    }
+
+
+
 
     void CreateItemUIObject(List<MENU_ITEM_DATA> _menu_item_datas_actor, List<MENU_ITEM_DATA> _menu_item_datas_target)
     {
@@ -376,6 +494,18 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       m_select_index_subject_target.OnNext(SelectIndex_Target);
    }
 
+   void UpdateUI_ItemData()
+   {
+      for(int i = 0; i < m_menu_item_datas_actor.Count; i++)
+      {
+         m_menu_item_datas_actor[i].UpdateText();
+      }
+      for(int i = 0; i < m_menu_item_datas_target.Count; i++)
+      {
+         m_menu_item_datas_target[i].UpdateText();
+      }
+   }
+
    void CreateExchangeTargetVFX()
    {
       var entity = EntityManager.Instance.GetEntity(m_entity_id);
@@ -412,7 +542,86 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
    private void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)
    {
-      // throw new NotImplementedException();
+      if (_event == null || _event.GUI_ID != ID)
+         return;
+
+      switch (m_ui_state)
+      {
+         case EnumUIState.SelectTarget:
+            OnReceiveEvent_GUI_Menu_SelectEvent_SelectTarget(_event);
+            break;
+
+         case EnumUIState.ExchangeItem:
+            OnReceiveEvent_GUI_Menu_SelectEvent_ExchangeItem(_event);
+            break;
+      }
+   }
+
+   private void OnReceiveEvent_GUI_Menu_SelectEvent_SelectTarget(GUI_Menu_SelectEvent _event)
+   {
+      if (_event == null)
+         return;
+
+      m_ui_state     = EnumUIState.ExchangeItem;
+      m_cursor_index = (TARGET_INDEX_RANGE.ACTOR, 0);
+      m_select_index = (-1, -1);
+      UpdateUI_CursorAndSelect();
+   }
+
+   private void OnReceiveEvent_GUI_Menu_SelectEvent_ExchangeItem(GUI_Menu_SelectEvent _event)
+   {
+      if (_event == null)
+         return;
+
+
+      var cursor_item_data = CursorItemData;
+      var select_item_data = SelectItemData;
+
+
+      var no_select = (select_item_data == null);
+      if (no_select)
+      {
+         // 선택한 인덱스에 아이템이 있다면 선택 처리.
+         if (cursor_item_data != null && cursor_item_data.ItemObject != null)
+         {
+            m_select_index = m_cursor_index;
+            UpdateUI_CursorAndSelect();
+         }
+      }
+      else
+      {
+
+         
+         if (m_select_index == m_cursor_index)
+         {
+            // 동일한 아이템을 선택했다면 선택 취소 처리.
+            m_select_index = (-1, -1);
+            UpdateUI_CursorAndSelect();
+         }
+         else
+         {
+            // 선택한 위치의 아이템과 교환.    
+            var select_item_object = select_item_data.ItemObject;        
+            var cursor_item_object = cursor_item_data.ItemObject;
+            SelectItemData.SetItemObject(cursor_item_object);
+            CursorItemData.SetItemObject(select_item_object);
+
+            // 데이터 리스트 정렬.
+            CompactItemDataList(m_menu_item_datas_actor);
+            CompactItemDataList(m_menu_item_datas_target);
+
+            // UI 업데이트.
+            UpdateUI_ItemData();
+
+            // 선택 종료 처리.
+            m_select_index = (-1, -1);
+            UpdateUI_CursorAndSelect();
+         }
+
+      }
+
+      
+      //UpdateUI_CursorAndSelect();
    }
 
    private void OnReceiveEvent_GUI_Menu_MoveEvent(GUI_Menu_MoveEvent _event)
@@ -472,8 +681,9 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       // 타겟 변경시 처리.
       if (prev_target_id != new_target_id)
       {
-         var target = EntityManager.Instance.GetEntity(new_target_id);
-         UpdateUI_ItemData(target, m_menu_item_datas_target);
+         
+         SetItemData();
+         UpdateUI_ItemData();
          UpdateExchangeTargetVFX();
       }
 
@@ -499,12 +709,16 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       if (move_x != 0) 
       {
            new_cursor_target += move_x;    
-           new_cursor_target = Math.Clamp(new_cursor_target, TARGET_INDEX_RANGE.MIN, TARGET_INDEX_RANGE.MAX);
+           new_cursor_target = Math.Clamp(new_cursor_target, TARGET_INDEX_RANGE.ACTOR, TARGET_INDEX_RANGE.TARGET);
       }
 
-      if (move_y != 0)
-         new_cursor_index = Math.Clamp(new_cursor_index + move_y, 0, Data_Const.UNIT_INVENTORY_MAX - 1);
+      // 아이템 선택.
+      new_cursor_index += (-move_y);
 
+
+      // 커서 인덱스 클랩프.
+      var max_cursor_index = (new_cursor_target == TARGET_INDEX_RANGE.ACTOR) ? MaxCursorIndex_Actor: MaxCursorIndex_Target;
+      new_cursor_index     = Math.Clamp(new_cursor_index, 0, max_cursor_index);
 
       m_cursor_index = (new_cursor_target, new_cursor_index);
             
