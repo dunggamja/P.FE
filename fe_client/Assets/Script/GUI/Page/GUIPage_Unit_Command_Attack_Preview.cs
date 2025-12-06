@@ -157,19 +157,6 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         // throw new NotImplementedException();
     }
 
-    protected override void OnInputFocusChanged(bool _focused)
-    {
-        base.OnInputFocusChanged(_focused);
-
-        if (_focused)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
-    }
 
 
 

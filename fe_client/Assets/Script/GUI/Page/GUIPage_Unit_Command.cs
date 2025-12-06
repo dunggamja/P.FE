@@ -406,25 +406,17 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         GUIManager.Instance.CloseUI(ID);
     }
 
-    protected override void OnInputFocusChanged(bool _focused)
+    protected override void OnVisibleChanged(bool _visible)
     {
-        base.OnInputFocusChanged(_focused);
+        base.OnVisibleChanged(_visible);
 
-        if (_focused)
+        if (_visible)
         {
-            // 포커스 켜기.
-            Show();
-
             // 메뉴 아이템 그리기.
             UpdateMenuItems();  
 
             // 그리드 메뉴 레이아웃 업데이트.
             UpdateLayout();
-        }
-        else
-        {
-            // 포커스 끄기.
-            Hide();
         }
     }
 

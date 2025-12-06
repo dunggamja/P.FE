@@ -39,6 +39,8 @@ public abstract class GUIPage : GUIBase
     public bool         IsInputFocused { get; private set; } = false;
     public bool         IsMultipleOpen { get; private set; } = false;
 
+    public bool         IsVisible      { get; private set; } = false;
+
 
     public bool         IsInputFocusing
     {
@@ -74,6 +76,8 @@ public abstract class GUIPage : GUIBase
 
     private bool  IsShowing => m_do_show != null && m_do_show.IsPlaying();
     private bool  IsHiding  => m_do_hide != null && m_do_hide.IsPlaying();
+
+
     
     
 
@@ -127,11 +131,11 @@ public abstract class GUIPage : GUIBase
         OnOpen(_param);
 
 
-        // 포커스 켜기.
-        if (IsInputFocusing)
-        {
-             SetInputFocus(true);
-        }
+        // // 포커스 켜기.
+        // if (IsInputFocusing)
+        // {
+        //     SetInputFocus(true, GUIType);
+        // }
     }
 
     public void Close()
@@ -149,10 +153,12 @@ public abstract class GUIPage : GUIBase
     public void Show()
     {
         // 포커스 켜기.
-        if (IsShowing)
+        if (IsVisible)
         {
             return;
         }
+
+        SetVisible(true);
 
         // 포커스 끄기.
         if (IsHiding)
@@ -161,8 +167,6 @@ public abstract class GUIPage : GUIBase
             m_do_hide = null;
         }
 
-        // // 포커스 켜기.
-        // IsVisible = true;
 
         if (RootCanvasGroup != null)
         {
@@ -174,15 +178,18 @@ public abstract class GUIPage : GUIBase
                 .SetLink(gameObject)
                 .SetUpdate(true);
         }
+
     }
 
     public void Hide()
     {
         // 이미 숨기는 처리중.
-        if (IsHiding)
+        if (IsVisible == false)
         {
             return;
         }
+
+        SetVisible(false);
 
         // 현재 보이는 처리중이면 종료 처리.
         if (IsShowing)
@@ -191,8 +198,6 @@ public abstract class GUIPage : GUIBase
             m_do_show = null;
         }
 
-        // 포커스 끄기.
-        // IsVisible = false;        
 
         if (RootCanvasGroup != null)
         {
@@ -203,8 +208,6 @@ public abstract class GUIPage : GUIBase
                 .SetLink(gameObject)
                 .SetUpdate(true);
         }
-
-        // 포커스 끄기.
     }
 
     protected abstract void OnOpen(GUIOpenParam _param);
@@ -213,25 +216,15 @@ public abstract class GUIPage : GUIBase
 
     protected abstract void OnPostProcess_Close();
 
-    // protected override void OnLoop()
-    // {
-    //     base.OnLoop();
 
-    //     // 포커스 켜기.
-    //     // SetInputFocus(IsInputFocusing);
-    // }
 
-    // protected virtual void OnFocus(Int64 _focus_gui)
-    // {
-    // }
-    
 
     async UniTask OnCloseAsync(CancellationToken _token)
     {
         try
         {
             // 포커스 끄기.
-            SetInputFocus(false);
+            // SetInputFocus(false, GUIType);
 
             // 종료 처리.
             OnClose();
@@ -265,18 +258,43 @@ public abstract class GUIPage : GUIBase
         }
     }
 
-    public void SetInputFocus(bool _focused)
+    public void SetInputFocus(bool _focused, EnumGUIType _focus_gui_type)
     {
         // 포커스 상태가 동일할경우.
-        if (IsInputFocused == _focused)
-            return;
+        var is_changed_focus = (IsInputFocused != _focused);
         
-        IsInputFocused = _focused;
+        // 포커싱 상태.
+        IsInputFocused       = _focused;
 
-        OnInputFocusChanged(_focused);
+        if (_focused)
+        {
+            // 포커싱을 받았을 경우 UI 보이기.
+            Show();
+        }
+        else
+        {
+            // 전체 화면 UI가 포커싱을 받았을 경우 UI 숨기기.
+            if (_focus_gui_type == EnumGUIType.Screen)
+                Hide();
+        }
+
+        if (is_changed_focus)
+            OnInputFocusChanged(_focused);
     }
 
     protected virtual void OnInputFocusChanged(bool _focused) { }
+
+
+    private void SetVisible(bool _visible)
+    {
+        if (IsVisible == _visible)
+            return;
+
+        IsVisible = _visible;
+        OnVisibleChanged(_visible);
+    }
+
+    protected virtual void OnVisibleChanged(bool _visible) { }
 
     
     protected void CloseSelf() => GUIManager.Instance.CloseUI(ID);

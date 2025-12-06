@@ -368,19 +368,6 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
     }
 
 
-    protected override void OnInputFocusChanged(bool _focused)
-    {
-        base.OnInputFocusChanged(_focused);
-
-        if (_focused)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
-    }
 
     void UpdateDrawRange()
     {

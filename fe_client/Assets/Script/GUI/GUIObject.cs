@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,18 +11,18 @@ public enum EnumGUIType
     None,
 
     //
-    Screen,  // ÀüÃ¼ È­¸é¿¡ Ç¥½ÃµÇ´Â UI
-    // Popup,   // ÆË¾÷ ÇüÅÂÀÇ UI
-    HUD,     // ¿ùµå ½ºÆäÀÌ½º¿¡ Ç¥½ÃµÇ´Â UI
+    Screen,  // ï¿½ï¿½Ã¼ È­ï¿½é¿¡ Ç¥ï¿½ÃµÇ´ï¿½ UI
+    Popup,   // ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI
+    HUD,     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ Ç¥ï¿½ÃµÇ´ï¿½ UI
 }
 
 public enum EnumGUIState
 {
     None,
-    Opening, // ¿­¸®´Â Áß   
-    Opened,  // ¿­¸²
-    Closing, // ´İ´Â Áß
-    Closed,  // ´İÈû
+    Opening, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½   
+    Opened,  // ï¿½ï¿½ï¿½ï¿½
+    Closing, // ï¿½İ´ï¿½ ï¿½ï¿½
+    Closed,  // ï¿½ï¿½ï¿½ï¿½
 }
 
 
@@ -67,20 +67,20 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         {
             while (true)
             {
-                // UI °»½Å 30ÇÁ·¹ÀÓ - CancellationToken Ãß°¡
+                // UI 30í”„ë ˆì„ - CancellationToken ì¶”ê°€
                 await UniTask.WaitForSeconds(1f/30f);
 
-                // ´İ±â Ã³¸®Áß.
+                // ë‹«íˆê³  ìˆìœ¼ë©´ ì¤‘ë‹¨ ì²˜ë¦¬.
                 if (IsClosing)
                     break;
 
-                // ¿©±â¼­ cancel Ã¼Å©?
+                // Loop ì²˜ë¦¬.
                 OnLoop();
             } 
         }
         catch (OperationCanceledException)
         {
-            // GameObject°¡ ÆÄ±«µÇ¸é ¿©±â¼­ Task Á¾·á
+            // Task ì¤‘ë‹¨ ì‹œ ì—ëŸ¬ë¡œê·¸.
             Debug.LogWarning($"[{gameObject.name}] Task was cancelled");
         }
     }
@@ -90,12 +90,24 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
 public abstract class GUIElement : GUIBase
 {
     // button, scrollview, etc.
-    // ¾ÆÁ÷ Àß ¸ğ¸£Áö¸¸, GUI ³»ºÎ °´Ã¼µéÀ» Element ·Î ºĞ·ùÇØº¼ ¿¹Á¤.
+    // í™”ë©´ ìš”ì†Œ, GUI ìš”ì†Œì— ëŒ€í•œ ê¸°ë³¸ í´ë˜ìŠ¤.
+
+    public Int64 OwnerGUIID
+    {
+        get
+        {
+            var owner_gui = transform.GetComponentInParent<GUIPage>();
+            if (owner_gui != null)
+                return owner_gui.ID;
+
+            return 0;
+        }
+    }
 
     virtual protected void OnDestroy()
     {
-        // TODO: ÀÌ°ÍÀº ÀÓ½Ã ÄÚµåÀÓ....
-        // Clear¸¦ ¾îµğ¼­ Ã³¸®ÇØ¾ß ÇÒÁö ¾ÆÁ÷ Á¤ÇÏÁö ¾Ê¾ÒÀ½.
+        // TODO: í´ë˜ìŠ¤ ì†Œë©¸ ì‹œ ì²˜ë¦¬ í•„ìš”í•œë°.. OnDestroy ë§ê³  ë‹¤ë¥¸ ê³³ì— ìˆëŠ”ê²Œ ì¢‹ì„ê±° ê°™ì€...
+        // Clear ì²˜ë¦¬ í•„ìš”.
         Clear();
     }
 

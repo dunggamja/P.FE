@@ -100,10 +100,14 @@ public class GUIManager : SingletonMono<GUIManager>
             if (_param.IsInputEnabled)
             {
                 m_focus_gui_stack.Add(_param.ID);
-            }
 
-            // UI 이전 포커스 GUI 처리.
-            Process_ChangeFocusGUI(prev_focus_gui);
+                // UI 이전 포커스 GUI 처리.
+                foreach (var e in m_focus_gui_stack)
+                {
+                    Process_ChangeFocusGUI(e);
+                }
+            }
+            
         }
 
         // UI 오픈.
@@ -218,9 +222,7 @@ public class GUIManager : SingletonMono<GUIManager>
                 if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var list_gui_id))
                     list_gui_id.Remove(_id);
 
-                // 포커싱 UI 스택에서 제거.
-                if (m_focus_gui_stack.Contains(_id))
-                    m_focus_gui_stack.Remove(_id);
+               
 
                 // UI 종료.
                 gui_object.Close();
@@ -231,8 +233,16 @@ public class GUIManager : SingletonMono<GUIManager>
         // 비동기 처리가 진행중인게 있을 경우 취소 처리.
         m_async_operation_tracker.TryCancelOperation(_id);
 
-        // 포커스 GUI 처리.
-        Process_ChangeFocusGUI(GetInputFocusGUI());
+        // 포커싱 UI 스택에서 제거.
+        if (m_focus_gui_stack.Contains(_id))
+        {
+            m_focus_gui_stack.Remove(_id);
+
+            foreach (var e in m_focus_gui_stack)
+            {
+                Process_ChangeFocusGUI(e);
+            }
+        }
     }
 
     // 포커싱 UI 변경 처리.
@@ -241,19 +251,22 @@ public class GUIManager : SingletonMono<GUIManager>
         if (_gui_id == 0)
             return;
 
-        var focus_gui = GetGUI(_gui_id);
-        if (focus_gui != null)
+        var focus_gui_object = GetGUI(GetInputFocusGUI());
+        var focus_gui_type   = (focus_gui_object != null) ? focus_gui_object.GUIType : EnumGUIType.None;
+
+        var gui_object = GetGUI(_gui_id);
+        if (gui_object != null)
         {
             var is_focus = (GetInputFocusGUI() == _gui_id);
             if (is_focus)
             {
                 // 포커싱 UI
-                focus_gui.SetInputFocus(true);
+                gui_object.SetInputFocus(true, focus_gui_type);
             }
             else
             {
                 // 포커싱 되지 않은 UI
-                focus_gui.SetInputFocus(false);
+                gui_object.SetInputFocus(false, focus_gui_type);
             }
         }
     }
