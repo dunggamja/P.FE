@@ -27,29 +27,6 @@ namespace Battle
          }
       }
 
-      public bool Verify_Weapon_Use(int _item_kind)
-      {
-         if (_item_kind == 0)
-            return false;
-
-         // 아이템 데이터 체크.
-         var item_data =DataManager.Instance.ItemSheet.GetStatus(_item_kind);
-         if (item_data == null)
-            return false;
-
-         // 숙련도 체크.
-         var proficiency = StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Proficiency);
-         if (proficiency < item_data.PROFICIENCY)
-            return false;
-
-         // 클래스 속성 체크.
-         if (StatusManager.Status.HasClassAttribute_Weapon((EnumWeaponCategory)item_data.CATEGORY) == false)
-            return false;
-
-         
-         return true;
-      }
-
 
 
       public bool IsEnableAction(Item _item, EnumItemActionType _action)
@@ -127,9 +104,8 @@ namespace Battle
          // // 지팡이는 장착하는 무기가 아니다...;; <- TODO: 이것때문에 코드가 지저분... 지팡이를 무기에서 빼는게 맞긴 할거 같다.
          // if (_item.WeaponCategory == EnumWeaponCategory.Wand)
          //    return false;
-         
-         
-         return Verify_Weapon_Use(_item.Kind);
+
+         return ItemHelper.Verify_Item_Use(_item.Kind, this);
       }
 
       bool IsEnableAction_Weapon_Unequip(Item _item)
@@ -170,6 +146,9 @@ namespace Battle
 
          // 소모 가능한 아이템인지 체크.
          if (item.ItemType != EnumItemType.Consumable)
+            return false;
+
+         if (ItemHelper.Verify_Item_Use(_item.Kind, this) == false)
             return false;
 
          var    consume_category = (EnumItemConsumeCategory) item.ItemCategory;

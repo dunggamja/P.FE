@@ -12,6 +12,7 @@ namespace Battle
         Move,     // 이동
         Wand,     // 지팡이
         Exchange, // 아이템 교환
+        Item,     // 아이템 사용
         Done,     // 대기
         Abort,    // 취소 (시스템적인 명령어임...)
     }

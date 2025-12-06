@@ -231,7 +231,7 @@ namespace Battle
             if (item == null)
                 return false;
 
-            var target_type = DataManager.Instance.GetItemTargetType(item.Kind);
+            var target_type =  ItemHelper.GetItemTargetType(item.Kind);
             if (target_type == EnumTargetType.None)
                 return false;
 

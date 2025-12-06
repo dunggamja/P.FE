@@ -67,7 +67,7 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         {
             while (true)
             {
-                // UI 30프레임 - CancellationToken 추가
+                // UI OnLoop 30프레임 
                 await UniTask.WaitForSeconds(1f/30f);
 
                 // 닫히고 있으면 중단 처리.
@@ -80,7 +80,7 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         }
         catch (OperationCanceledException)
         {
-            // Task 중단 시 에러로그.
+            // Task 중단 시 에러로그. (- CancellationToken 추가)
             Debug.LogWarning($"[{gameObject.name}] Task was cancelled");
         }
     }

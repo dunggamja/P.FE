@@ -377,6 +377,12 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             case EnumUnitCommandType.Skill:
                 break;
             case EnumUnitCommandType.Item:
+            {
+                // 아이템 GUI 오픈.
+                GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Command_Item.PARAM.Create(m_entity_id)
+                    );
+            }
                 break;  
             case EnumUnitCommandType.Exchange:
             {

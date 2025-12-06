@@ -159,22 +159,23 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
       // 소유 중인 무기 목록 추출.
       {     
-        using var list_weapons = ListPool<Item>.AcquireWrapper();
+        using var list_items = ListPool<Item>.AcquireWrapper();
 
-        if (m_menu_type == EnumUnitCommandType.Wand)
+        switch (m_menu_type)
         {
-            owner.Inventory.CollectItem_Wand_Available(list_weapons.Value, owner);
+            case EnumUnitCommandType.Wand:
+                owner.Inventory.CollectItem_Wand_Available(list_items.Value, owner);
+                break;
+            case EnumUnitCommandType.Attack:
+                owner.Inventory.CollectItem_Weapon_Available(list_items.Value, owner);
+                break;
         }
-        else
-        {
-            owner.Inventory.CollectItem_Weapon_Available(list_weapons.Value, owner);
-        }
-
+        
         //
         m_menu_item_datas.Clear();
-        for(int i = 0; i < list_weapons.Value.Count; i++)
+        for(int i = 0; i < list_items.Value.Count; i++)
         {
-          var item    = list_weapons.Value[i];
+          var item    = list_items.Value[i];
           var item_id = item.ID;
 
           var menu_item_data = new MENU_ITEM_DATA(i, item_id);
@@ -256,12 +257,8 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
 
         var is_wand = (m_menu_type == EnumUnitCommandType.Wand);
 
-
         using var list_target = ListPool<Int64>.AcquireWrapper();
         CombatHelper.FindWeaponTargetableList(is_wand, m_entity_id, weapon_id, list_target.Value);
-        
-
-        
 
         // 공격 가능한 타겟이 있으면 UI 출력.
         var target_entity_id = (list_target.Value.Count > 0) ? list_target.Value[0] : 0;

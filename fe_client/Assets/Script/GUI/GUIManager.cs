@@ -123,7 +123,7 @@ public class GUIManager : SingletonMono<GUIManager>
              switch(_param.GUIType)
             {
                 case EnumGUIType.Screen:
-                // case EnumGUIType.Popup:
+                case EnumGUIType.Popup:
                 _ui_root = m_canvas_root_screen.transform;
                 break;
 
