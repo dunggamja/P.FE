@@ -434,7 +434,6 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             case EnumUnitCommandType.Wand:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.WandRange;
                 break;
-
             case EnumUnitCommandType.Exchange:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.ExchangeRange;
                 break;

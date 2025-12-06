@@ -101,11 +101,7 @@ public class GUIManager : SingletonMono<GUIManager>
             {
                 m_focus_gui_stack.Add(_param.ID);
 
-                // UI 이전 포커스 GUI 처리.
-                foreach (var e in m_focus_gui_stack)
-                {
-                    Process_ChangeFocusGUI(e);
-                }
+                Process_ChangeFocusGUI(_param.ID, _param.GUIType);
             }
             
         }
@@ -238,37 +234,40 @@ public class GUIManager : SingletonMono<GUIManager>
         {
             m_focus_gui_stack.Remove(_id);
 
-            foreach (var e in m_focus_gui_stack)
+
+            var focus_gui_id = GetInputFocusGUI();
+            if (focus_gui_id > 0)
             {
-                Process_ChangeFocusGUI(e);
+                var focus_gui_object = GetGUI(focus_gui_id);
+                var focus_gui_type   = (focus_gui_object != null) ? focus_gui_object.GUIType : EnumGUIType.None;
+
+                Process_ChangeFocusGUI(focus_gui_id, focus_gui_type);
             }
         }
     }
 
     // 포커싱 UI 변경 처리.
-    void Process_ChangeFocusGUI(Int64 _gui_id)
+    void Process_ChangeFocusGUI(Int64 _focus_gui_id, EnumGUIType _focus_gui_type)
     {
-        if (_gui_id == 0)
-            return;
-
-        var focus_gui_object = GetGUI(GetInputFocusGUI());
-        var focus_gui_type   = (focus_gui_object != null) ? focus_gui_object.GUIType : EnumGUIType.None;
-
-        var gui_object = GetGUI(_gui_id);
-        if (gui_object != null)
+        foreach (var e in m_focus_gui_stack)
         {
-            var is_focus = (GetInputFocusGUI() == _gui_id);
+            var gui_object = GetGUI(e);
+            if (gui_object == null)
+                continue;
+            
+            var is_focus = (_focus_gui_id == e);
             if (is_focus)
             {
                 // 포커싱 UI
-                gui_object.SetInputFocus(true, focus_gui_type);
+                gui_object.SetInputFocus(true, _focus_gui_type);
             }
             else
             {
                 // 포커싱 되지 않은 UI
-                gui_object.SetInputFocus(false, focus_gui_type);
+                gui_object.SetInputFocus(false, _focus_gui_type);
             }
         }
+        
     }
 
     public GUIPage GetGUI(Int64 _id)
