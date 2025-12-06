@@ -213,8 +213,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         using var list_item     = ListPool<Item>.AcquireWrapper();
         // using var list_exchange = ListPool<Item>.AcquireWrapper();
 
-        // 소지한 아이템 목록 추출
-        entity.Inventory.CollectItem(list_item.Value);
+
 
 
         var enable_exchange = false;
@@ -229,6 +228,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
             // 교환 가능한지 체크.
             enable_exchange = entity.HasCommandEnable(EnumCommandFlag.Exchange);
+
+            // 소지한 아이템 목록 추출
+            entity.Inventory.CollectItem(list_item.Value);
         }
 
         // 메뉴 아이템 목록 초기화.

@@ -207,7 +207,7 @@ Transform:
   m_GameObject: {fileID: 5624533}
   serializedVersion: 2
   m_LocalRotation: {x: 0.54463905, y: 0, z: 0, w: 0.8386706}
-  m_LocalPosition: {x: 5.1100006, y: 15, z: -0.28757572}
+  m_LocalPosition: {x: 5.11, y: 16.876093, z: -0.28757542}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -414,7 +414,7 @@ Transform:
   m_GameObject: {fileID: 68020675}
   serializedVersion: 2
   m_LocalRotation: {x: 0.54463905, y: 0, z: 0, w: 0.8386706}
-  m_LocalPosition: {x: 5.1100006, y: 15, z: -0.28757572}
+  m_LocalPosition: {x: 5.11, y: 16.876093, z: -0.28757542}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8210,7 +8210,7 @@ Transform:
   m_GameObject: {fileID: 1429468932}
   serializedVersion: 2
   m_LocalRotation: {x: 0.54463905, y: 0, z: 0, w: 0.8386706}
-  m_LocalPosition: {x: 5.1100006, y: 15, z: -0.28757572}
+  m_LocalPosition: {x: 5.11, y: 16.876093, z: -0.28757542}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9362,6 +9362,30 @@ PrefabInstance:
     - target: {fileID: 1995937063725915005, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3405428359766566278, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: m_Size.y
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140694121307419071, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140694121307419071, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 16.876093
+      objectReference: {fileID: 0}
+    - target: {fileID: 6140694121307419071, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.28757542
+      objectReference: {fileID: 0}
+    - target: {fileID: 6242004774489864438, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: CameraDistance
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6242004774489864438, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
+      propertyPath: Composition.HardLimits.Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9191694348125551647, guid: fc5126da4a07748509af8a426df8a80f, type: 3}
       propertyPath: m_LocalPosition.x

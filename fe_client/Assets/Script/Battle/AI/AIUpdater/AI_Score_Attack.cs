@@ -12,11 +12,13 @@ namespace Battle
         {
             public enum EnumScoreType
             {                
+                Dead,             // 죽일 수 있는지 체크.
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
-                DamageRate_Taken, // 내가 받는 데미지 양
                 HitRate,          // 명중률
-                DodgeRate,        // 회피율                
                 MoveCost,         // 이동 거리 (가까울수록 높은 점수)
+
+                // DamageRate_Taken, // 내가 받는 데미지 양
+                // DodgeRate,        // 회피율                
 
                 // TOOD: 적에게 위험을 받는 위치인지 체크.
                 // ThreatenRate,
@@ -31,11 +33,12 @@ namespace Battle
             {   
                 switch(_type)         
                 {
+                    case EnumScoreType.Dead:             return 2f;
                     case EnumScoreType.DamageRate_Dealt: return 1f;
-                    case EnumScoreType.DamageRate_Taken: return -0.7f;
-                    case EnumScoreType.HitRate:          return 0.7f;
-                    case EnumScoreType.DodgeRate:        return 0.4f;
+                    case EnumScoreType.HitRate:          return 0.5f;
                     case EnumScoreType.MoveCost:         return 0.1f;
+                    // case EnumScoreType.DamageRate_Taken: return -0.7f;
+                    // case EnumScoreType.DodgeRate:        return 0.4f;
                 }
 
                 return 0f;
@@ -299,15 +302,17 @@ namespace Battle
                 return;
 
             var damage_dealt_count = result.Actions.Count(e => e.isAttacker);   
-            var damage_taken_count = result.Actions.Count(e => !e.isAttacker);   
+            var damage_taken_count = result.Actions.Count(e => e.isAttacker == false);   
 
             var damage_taken       = result.Attacker.HP_Before - result.Attacker.HP_After;
             var damage_dealt       = result.Defender.HP_Before - result.Defender.HP_After;
 
-            
-
             var hit_rate           = Util.PERCENT(result.Attacker.HitRate, true);
             var dodge_rate         = Util.PERCENT(100 - result.Defender.HitRate, true);
+
+            var target_is_dead     = result.Defender.HP_After <= 0 && 0f < hit_rate;
+
+            
 
 
             // 공격자/타겟 HP
@@ -317,16 +322,19 @@ namespace Battle
             
             // 데미지 점수 셋팅. 
             _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
-            _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
+            // _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
 
             // 이동거리 점수 셋팅.
             var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
             var distance_max     = Math.Max(1, _owner.PathMoveRange);
             _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
-            // 명중 / 회피 점수 셋팅. <- 개선 필요?
-            _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate   / Math.Max(1, damage_dealt_count));
-            _score.SetScore(Result.EnumScoreType.DodgeRate, dodge_rate / Math.Max(1, damage_taken_count));
+            // 명중률 셋팅.
+            _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate);
+
+            // 죽일 수 있는지 셋팅.
+            _score.SetScore(Result.EnumScoreType.Dead, target_is_dead ? 1f : 0f);
+            
 
             // 공격 위치 셋팅.
             _score.SetAttackPosition(_attack_position.x, _attack_position.y);
