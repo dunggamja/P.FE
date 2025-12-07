@@ -260,7 +260,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
      void UpdateDrawRange()
     {
-        if (IsInputFocused == false)
+        if (IsVisible == false)
             return;
 
         var entity = EntityManager.Instance.GetEntity(m_entity_id);

@@ -280,7 +280,7 @@ public class GUIPage_Unit_Command_Attack : GUIPage, IEventReceiver
     }
     void UpdateDrawRange()
     {
-        if (IsInputFocused == false)
+        if (IsVisible == false)
             return;
 
         var select_item_id = SelectedItemData.ItemID;

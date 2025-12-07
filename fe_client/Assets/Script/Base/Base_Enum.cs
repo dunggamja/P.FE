@@ -11,6 +11,7 @@ public enum EnumSystem
     CombatSystem_Damage,              // (전투씬), 데미지 관리
     CombatSystem_Wand,                // (전투씬), 지팡이 로직은 여기서.
     CombatSystem_PostProcess,         // (전투씬), 전투 결과 후처리. (HUD 갱신, 유닛 제거 등)
+    // CombatSystem_Item,                // (전투씬), 아이템 사용 로직.
     // CombatSystem_Effect,              // (전투씬), 데미지 처리
      
     BattleSystem_Turn,                // (전투필드),  턴   진행    

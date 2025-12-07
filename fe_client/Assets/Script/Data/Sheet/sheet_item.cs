@@ -134,6 +134,15 @@ public class sheet_item : ScriptableObject
 		return null;
 	}
 
+	public bool HasAttribute(Int32 kind, EnumItemAttribute _attribute)
+	{
+		var attributes = GetAttribute(kind);
+		if (attributes == null)
+			return false;
+
+		return attributes.FindIndex(x => x.TYPE == (int)_attribute) != -1;
+	}
+
 	public List<sheet_item_skill> GetSkill(Int32 kind)
 	{
 		if (m_cache_skill.TryGetValue(kind, out var result))

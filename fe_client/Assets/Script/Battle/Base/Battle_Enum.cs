@@ -87,8 +87,8 @@ namespace Battle
 
     public enum EnumItemConsumeCategory
     {
-      None    = 0,
-      Potion  = 1, // 물약
+      None      = 0,
+      HPPotion  = 1, // 물약
     }
 
     public enum EnumResourceCategory

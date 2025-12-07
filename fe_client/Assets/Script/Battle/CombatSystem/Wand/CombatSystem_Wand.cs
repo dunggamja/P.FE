@@ -129,22 +129,11 @@ namespace Battle
                 return 0;
 
             var wand = dealer.StatusManager.Wand;
-            if (wand == null)
+            if (wand == null || wand.ItemObject == null)
                 return 0;
 
-            // 기본 회복량.
-            var heal_value = wand.ItemObject.GetAttribute(EnumItemAttribute.Heal);
-            
-            // 회복 보너스 추가. (유닛 스탯 기반)
-            using var list_heal_bonus = ListPool<(int target, int value)>.AcquireWrapper();
-            Item.CollectAttribute(wand.ItemObject.Kind, EnumItemAttribute.HealBonus_UnitStatus, list_heal_bonus.Value);
-            foreach (var (target, value) in list_heal_bonus.Value)
-            {
-               var status  = dealer.StatusManager.GetBuffedUnitStatus((EnumUnitStatus)target);
-               heal_value += (int)(status * Util.PERCENT(value));
-            }
 
-            return heal_value;
+            return ItemHelper.Calculate_Item_Heal(wand.ItemObject.Kind, dealer);
         }
 
         void PostProcess_Wand_Action(ICombatSystemParam _param)

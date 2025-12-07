@@ -83,6 +83,7 @@ public static class ItemHelper
     }
 
 
+
 	 // 아이템 사용 대상 체크.
 	 public static EnumTargetType GetItemTargetType(int _item_kind)
 	 {
@@ -106,11 +107,11 @@ public static class ItemHelper
 		// 무기의 경우, 지팡이는 아군대상, 그 외는 적군대상이 기본.
 		if ((EnumItemType)status.TYPE == EnumItemType.Weapon)
 		{
-			var weapon_category  = (EnumWeaponCategory)status.CATEGORY;
-			var is_wand          = weapon_category == EnumWeaponCategory.Wand;
+        var weapon_category  = (EnumWeaponCategory)status.CATEGORY;
+        var is_wand          = weapon_category == EnumWeaponCategory.Wand;
 
-			// 지팡이는  아군 대상, 그 외는 적군 대상이 기본.	
-			return (is_wand) ? EnumTargetType.Ally : EnumTargetType.Enemy;			
+        // 지팡이는  아군 대상, 그 외는 적군 대상이 기본.	
+        return (is_wand) ? EnumTargetType.Ally : EnumTargetType.Enemy;			
 		}
 
 		// 그 외는 소유자 대상이 기본.
@@ -221,6 +222,67 @@ public static class ItemHelper
         }
         return LocalizeKey.Create(table, key);
     }
+
+
+    public static bool VerifyItem_Consume(EnumItemConsumeCategory _consume_category, Entity _entity)
+    {
+       if (_entity == null)
+          return false;
+
+       switch (_consume_category)
+       {
+         case EnumItemConsumeCategory.HPPotion:
+            {
+              // 체력 최대치 검사.
+              var max_hp = _entity.StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max);
+              var cur_hp = _entity.StatusManager.Status.GetPoint(EnumUnitPoint.HP);    
+              if (max_hp <= cur_hp)
+                  return false;
+            }
+            break;
+       }
+
+       return true;
+    }
+
+
+    public static int Calculate_Item_Heal(int _item_kind, Entity _entity)
+    {
+        var attributes = DataManager.Instance.ItemSheet.GetAttribute(_item_kind);
+        if (attributes == null)
+          return 0;
+
+        using var list_heal       = ListPool<(int target, int value)>.AcquireWrapper();
+        using var list_heal_bonus = ListPool<(int target, int value)>.AcquireWrapper();
+
+        Item.CollectAttribute(_item_kind, EnumItemAttribute.Heal, list_heal.Value);
+        Item.CollectAttribute(_item_kind, EnumItemAttribute.HealBonus_UnitStatus, list_heal_bonus.Value);
+
+        int heal_value = 0;
+
+        // 기본 회복량 추가.
+        foreach (var (_, value) in list_heal.Value)
+        {
+            heal_value += value;
+        }
+
+        // 회복 보너스 추가. (유닛 스탯 기반)
+        foreach (var (target, value) in list_heal_bonus.Value)
+        {
+            var status = _entity.StatusManager.GetBuffedUnitStatus((EnumUnitStatus)target);
+            heal_value += (int)(status * Util.PERCENT(value));
+        }
+
+
+        return heal_value;
+    }
+
+
+    
+
+
+
+
 
 
 

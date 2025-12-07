@@ -177,30 +177,39 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             if (entity == null)
                return;
 
-            // var item_object = entity.Inventory.GetItem(item_id);
-            // if (item_object == null)
-            //    return;
+            var item_object = entity.Inventory.GetItem(item_id);
+            if (item_object == null)
+                return;
 
-            // 위치가 변경되었다면 이동에 Command도 추가.
-            if (entity.Cell != entity.PathBasePosition)
+            // 일단 자신을 대상으로 사용하는 아이템에 대해서만 
+            var target_type = ItemHelper.GetItemTargetType(item_object.Kind);
+
+            // TODO: 소모품 아이템은 일단 자신에게 쓴느 아이템만 구현된 상태.
+            if (item_object.ItemType == EnumItemType.Consumable && target_type != EnumTargetType.Owner)
+                return;
+
+
+           
+            //if (entity.Cell != entity.PathBasePosition)
             {
-               BattleSystemManager.Instance.PushCommand(
-               new Command_Move(
-                  m_entity_id,
-                  entity.Cell,
-                  _execute_command: true,
-                  _visual_immediate: true,
-                  _is_plan: false));
+                BattleSystemManager.Instance.PushCommand(
+                new Command_Move(
+                    m_entity_id,
+                    entity.Cell,
+                    _execute_command: true,
+                    _visual_immediate: true,
+                    _is_plan: false));
             }
-
 
             // 아이템 사용 Command 
             BattleSystemManager.Instance.PushCommand(
-               new Command_Item(
-                  m_entity_id,
-                  item_id,
-                  action_type)
+            new Command_Item(
+                _owner_id:         m_entity_id,
+                _target_id:        m_entity_id,
+                _item_id:          item_id,
+                _item_action_type: action_type)
             );
+
 
          }));
         

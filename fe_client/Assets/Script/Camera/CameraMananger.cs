@@ -91,6 +91,7 @@ public class CameraMananger : Singleton<CameraMananger>, IEventReceiver
             case EnumCommandType.Attack:
             case EnumCommandType.Move:
             case EnumCommandType.Wand:
+            case EnumCommandType.Item:
                m_last_tracking_entity_id = _event.EntityID;
                break;
         }

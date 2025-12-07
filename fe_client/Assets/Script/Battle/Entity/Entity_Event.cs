@@ -129,6 +129,14 @@ namespace Battle
             }
         }
 
+        void ApplyConsume_Item(Int32 _item_kind)
+        {
+            
+            var heal_value = ItemHelper.Calculate_Item_Heal(_item_kind, this);
+            if (heal_value > 0)
+                ApplyHeal(heal_value);
+        }
+
 
         // void OnReceiveEvent_Battle_AI_Command_DecisionEvent(Battle_AI_Command_DecisionEvent _event)
         // {

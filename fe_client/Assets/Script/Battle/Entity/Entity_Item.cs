@@ -35,11 +35,11 @@ namespace Battle
 
          switch(_action)
          {
-               case EnumItemActionType.Equip:   return IsEnableAction_Weapon_Equip(_item);
-               case EnumItemActionType.Unequip: return IsEnableAction_Weapon_Unequip(_item);      
-               case EnumItemActionType.Consume: return IsEnableAction_Weapon_Consume(_item);
-               case EnumItemActionType.Acquire: return IsEnableAction_Weapon_Acquire(_item);
-               case EnumItemActionType.Dispose: return IsEnableAction_Weapon_Dispose(_item);
+               case EnumItemActionType.Equip:   return IsEnableAction_Item_Equip(_item);
+               case EnumItemActionType.Unequip: return IsEnableAction_Item_Unequip(_item);      
+               case EnumItemActionType.Consume: return IsEnableAction_Item_Consume(_item);
+               case EnumItemActionType.Acquire: return IsEnableAction_Item_Acquire(_item);
+               case EnumItemActionType.Dispose: return IsEnableAction_Item_Dispose(_item);
          }
 
          return false;
@@ -56,32 +56,32 @@ namespace Battle
          switch (_action)
          {
                case EnumItemActionType.Equip:   
-               if (ProcessAction_Weapon_Equip(_item))
+               if (ProcessAction_Item_Equip(_item))
                {
                   return true;
                }
                break;
                case EnumItemActionType.Unequip: 
-               if (ProcessAction_Weapon_Unequip(_item))
+               if (ProcessAction_Item_Unequip(_item))
                {
                   return true;
                }
                break;
                case EnumItemActionType.Consume:
-               if (ProcessAction_Weapon_Consume(_item))
+               if (ProcessAction_Item_Consume(_item))
                {
                   return true;
                }
                break;
                case EnumItemActionType.Acquire:
-               if (ProcessAction_Weapon_Acquire(_item))
+               if (ProcessAction_Item_Acquire(_item))
                {
                   return true;
                }
                break;
 
                case EnumItemActionType.Dispose:
-               if (ProcessAction_Weapon_Dispose(_item))
+               if (ProcessAction_Item_Dispose(_item))
                {
                   return true;
                }
@@ -92,7 +92,7 @@ namespace Battle
       }
 
 
-      bool IsEnableAction_Weapon_Equip(Item _item)
+      bool IsEnableAction_Item_Equip(Item _item)
       {
          if (_item == null)
              return false;
@@ -101,14 +101,11 @@ namespace Battle
          if (_item.ItemType != EnumItemType.Weapon)                
              return false;         
 
-         // // 지팡이는 장착하는 무기가 아니다...;; <- TODO: 이것때문에 코드가 지저분... 지팡이를 무기에서 빼는게 맞긴 할거 같다.
-         // if (_item.WeaponCategory == EnumWeaponCategory.Wand)
-         //    return false;
-
+         // 아이템 사용 체크.
          return ItemHelper.Verify_Item_Use(_item.Kind, this);
       }
 
-      bool IsEnableAction_Weapon_Unequip(Item _item)
+      bool IsEnableAction_Item_Unequip(Item _item)
       {
          if (_item == null)
             return false;
@@ -134,7 +131,7 @@ namespace Battle
          return true;
       }
 
-      bool IsEnableAction_Weapon_Consume(Item _item)
+      bool IsEnableAction_Item_Consume(Item _item)
       {
          if (_item == null)
             return false;
@@ -148,30 +145,18 @@ namespace Battle
          if (item.ItemType != EnumItemType.Consumable)
             return false;
 
+   
          if (ItemHelper.Verify_Item_Use(_item.Kind, this) == false)
             return false;
 
-         var    consume_category = (EnumItemConsumeCategory) item.ItemCategory;
-         switch(consume_category)
-         {
-            // 회복 아이템 : 체력 최대치 체크.
-            case EnumItemConsumeCategory.Potion:
-            {
-               var hp_cur = StatusManager.Status.GetPoint(EnumUnitPoint.HP);
-               var hp_max = StatusManager.Status.GetPoint(EnumUnitPoint.HP_Max);
-               if (hp_max <= hp_cur)
-                  return false;
-            }
-            break;
-
-         }
-
-
+         var consume_category = (EnumItemConsumeCategory) item.ItemCategory;
+         if (ItemHelper.VerifyItem_Consume(consume_category, this) == false)
+            return false;
 
          return true;
       }
 
-      bool IsEnableAction_Weapon_Acquire(Item _item)
+      bool IsEnableAction_Item_Acquire(Item _item)
       {
          if (_item == null)
             return false;
@@ -184,7 +169,7 @@ namespace Battle
          return (Inventory.Count < Inventory.MaxCount);
       }
 
-      bool IsEnableAction_Weapon_Dispose(Item _item)
+      bool IsEnableAction_Item_Dispose(Item _item)
       {
          if (_item == null)
             return false;
@@ -196,7 +181,7 @@ namespace Battle
          return true;
       }
 
-      bool ProcessAction_Weapon_Equip(Item _item)
+      bool ProcessAction_Item_Equip(Item _item)
       {
          if (_item == null)
                return false;
@@ -213,7 +198,7 @@ namespace Battle
          return true;
       }
 
-      bool ProcessAction_Weapon_Unequip(Item _item)
+      bool ProcessAction_Item_Unequip(Item _item)
       {
          if (_item == null)
             return false;
@@ -225,7 +210,7 @@ namespace Battle
          return true;
       }
 
-      bool ProcessAction_Weapon_Consume(Item _item)
+      bool ProcessAction_Item_Consume(Item _item)
       {
          if (_item == null)
             return false;
@@ -237,12 +222,16 @@ namespace Battle
          if (item.DecreaseCount() == false)
             return false;
 
+         // 버프 적용
          ApplyBuff_Item(_item.Kind, EnumItemActionType.Consume);
+
+         // 회복 적용
+         ApplyConsume_Item(_item.Kind);
 
          return true;
       }
 
-      bool ProcessAction_Weapon_Acquire(Item _item)
+      bool ProcessAction_Item_Acquire(Item _item)
       {
          if (_item == null)
             return false;
@@ -255,7 +244,7 @@ namespace Battle
          return true;
       }
 
-      bool ProcessAction_Weapon_Dispose(Item _item)
+      bool ProcessAction_Item_Dispose(Item _item)
       {
          if (_item == null)
             return false;

@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCE58\uC720 \uC9C0\uD321\uC774 (22/22)"
+  m_text: "\uC57D\uCD08 (3/3)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2a457ee91c2dd40e4aa52509eb596a6f, type: 2}
   m_sharedMaterial: {fileID: -5381920052588107441, guid: 2a457ee91c2dd40e4aa52509eb596a6f, type: 2}
@@ -207,7 +207,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8986413050169318624
 RectTransform:
   m_ObjectHideFlags: 0
@@ -282,7 +282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &488732640831869995
 RectTransform:
   m_ObjectHideFlags: 0

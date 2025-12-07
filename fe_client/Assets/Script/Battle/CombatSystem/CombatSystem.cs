@@ -22,8 +22,8 @@ namespace Battle
     public class CombatParam_Plan : ICombatSystemParam
     {
         // public BHManager BHManager { get; private set; } = new();
-        public Entity                Attacker       { get; private set; } = null;
-        public Entity                Defender       { get; private set; } = null;
+        public Entity                Attacker      { get; private set; } = null;
+        public Entity                Defender      { get; private set; } = null;
         public EnumUnitCommandType   CommandType   { get; private set; } = EnumUnitCommandType.None;
         public bool                  IsPlan => true;
 

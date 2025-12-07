@@ -371,7 +371,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
 
     void UpdateDrawRange()
     {
-        if (IsInputFocused == false)
+        if (IsVisible == false)
             return;
 
         BattleSystemManager.Instance.DrawRange.DrawRange(
@@ -844,8 +844,8 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
                list_target_items.Value.Add(e.ItemObject);
          }
 
-         // 위치가 변경되었다면 이동에 Command도 추가.
-         if (entity.Cell != entity.PathBasePosition)
+         // 이동 Command도 추가.
+         //if (entity.Cell != entity.PathBasePosition)
          {
             BattleSystemManager.Instance.PushCommand(
                new Command_Move(
