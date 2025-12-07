@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Battle
 {
     [EventReceiver(
-        typeof(Battle_Situation_UpdateEvent),
-        typeof(Battle_Item_UpdateEvent)
+        typeof(Battle_Situation_UpdateEvent)//,
+        // typeof(Battle_Item_UpdateEvent)
         )]
     public partial class Entity
     {
@@ -21,26 +21,26 @@ namespace Battle
                     OnReceiveEvent_Battle_Situation_UpdateEvent(situation_updated);
                     break;
 
-                case Battle_Item_UpdateEvent item_updated:
-                    // 아이템 갱신.
-                    OnReceiveEvent_Battle_Item_UpdateEvent(item_updated);
-                    break;
+                // case Battle_Item_UpdateEvent item_updated:
+                //     // 아이템 갱신.
+                //     OnReceiveEvent_Battle_Item_UpdateEvent(item_updated);
+                //     break;
             }
         }
 
-        private void OnReceiveEvent_Battle_Item_UpdateEvent(Battle_Item_UpdateEvent _event)
-        {
-            if (_event == null)
-                return;
+        // private void OnReceiveEvent_Battle_Item_UpdateEvent(Battle_Item_UpdateEvent _event)
+        // {
+        //     if (_event == null)
+        //         return;
 
-            if (_event.EntityID != ID)
-                return;
+        //     if (_event.EntityID != ID)
+        //         return;
 
-            // 버프 적용.
-            ApplyBuff_Item(_event.ItemKind, _event.ActionType);
+        //     // 버프 적용.
+        //     ApplyBuff_Item(_event.ItemKind, _event.ActionType);
 
-            // 그외 처리.
-        }
+        //     // 그외 처리.
+        // }
 
         void OnReceiveEvent_Battle_Situation_UpdateEvent(Battle_Situation_UpdateEvent _event)
         {

@@ -11,7 +11,8 @@ using UnityEngine.UI;
     typeof(GUI_Menu_MoveEvent),
     typeof(GUI_Menu_SelectEvent),
     typeof(GUI_Menu_CancelEvent),
-    typeof(Battle_Scene_ChangeEvent)
+    typeof(Battle_Scene_ChangeEvent),
+    typeof(Battle_Entity_InventoryEvent)
     )]
 public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
 {
@@ -135,8 +136,20 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             case GUI_Menu_CancelEvent menu_cancel_event:
                 OnReceiveEvent_GUI_Menu_CancelEvent(menu_cancel_event);
                 break;
+
+            case Battle_Entity_InventoryEvent battle_entity_inventory_event:
+                OnReceiveEvent_Battle_Entity_InventoryEvent(battle_entity_inventory_event);
+                break;
         }
       
+    }
+
+    private void OnReceiveEvent_Battle_Entity_InventoryEvent(Battle_Entity_InventoryEvent battle_entity_inventory_event)
+    {
+        if (battle_entity_inventory_event == null || battle_entity_inventory_event.EntityID != m_entity_id)
+            return;
+
+        UpdateItems();
     }
 
     private void OnReceiveEvent_GUI_Menu_CancelEvent(GUI_Menu_CancelEvent _event)
@@ -189,6 +202,10 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
                 return;
 
 
+
+            var is_command_action = ItemHelper.IsCommandAction(action_type);
+
+
            
             //if (entity.Cell != entity.PathBasePosition)
             {
@@ -196,9 +213,9 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
                 new Command_Move(
                     m_entity_id,
                     entity.Cell,
-                    _execute_command: true,
+                    _execute_command: is_command_action,
                     _visual_immediate: true,
-                    _is_plan: false));
+                    _is_plan: is_command_action == false));
             }
 
             // 아이템 사용 Command 

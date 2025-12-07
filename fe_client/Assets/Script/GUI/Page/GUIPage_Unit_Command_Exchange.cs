@@ -845,7 +845,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          }
 
          // 이동 Command도 추가.
-         //if (entity.Cell != entity.PathBasePosition)
+         
          {
             BattleSystemManager.Instance.PushCommand(
                new Command_Move(

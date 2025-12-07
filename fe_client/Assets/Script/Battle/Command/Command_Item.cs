@@ -77,8 +77,7 @@ namespace Battle
 
         protected override void OnExit(bool _is_abort)
         {
-           if (_is_abort)
-            return;            
+
         }
 
 
@@ -110,11 +109,13 @@ namespace Battle
                 EventDispatchManager.Instance.UpdateEvent(
                     ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(false)
                     );    
-
-                
-
-                
             }
+
+
+            // 아이템 인벤토리 갱신.
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Entity_InventoryEvent>.Acquire().Set(Owner.ID)
+                );
 
 
             // 

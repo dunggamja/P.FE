@@ -49,6 +49,28 @@ namespace Battle
         }
     }
 
+    public class Battle_Entity_InventoryEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public Int64 EntityID { get; private set; } = 0;
+
+        public void Release()
+        {
+            ObjectPool<Battle_Entity_InventoryEvent>.Return(this);
+        }
+
+        public void Reset()
+        {
+            EntityID = 0;
+        }
+        
+        public Battle_Entity_InventoryEvent Set(Int64 _entity_id)
+        {
+            EntityID = _entity_id;
+            return this;
+        }
+    }
+
 
     // public class Battle_Entity_MoveEvent : IEventParam
     // {

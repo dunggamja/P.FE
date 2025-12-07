@@ -7,6 +7,14 @@ namespace Battle
 {
     public partial class Entity 
     {
+      public void RemoveItemAll()
+      {
+         Inventory.RemoveItemAll();
+         StatusManager.Weapon.Unequip();
+         StatusManager.Wand.Unequip();
+      }
+
+
       public void Equip_Weapon_Auto()
       {
          // 이미 무기 장착중이면 종료.

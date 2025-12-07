@@ -77,12 +77,14 @@ namespace Battle
          if (target_entity != null)
          {
             // 소유중인 아이템 갱신
-            target_entity.Inventory.RemoveItemAll();
+            target_entity.RemoveItemAll();
 
             if (TargetItemList != null)
             {
                foreach(var e in TargetItemList)
                   target_entity.Inventory.AddItem(e);
+
+               target_entity.Equip_Weapon_Auto();
             }
          }
 
@@ -91,12 +93,14 @@ namespace Battle
          if (owner_entity != null)
          {
             // 소유중인 아이템 갱신
-            owner_entity.Inventory.RemoveItemAll();
+            owner_entity.RemoveItemAll();
 
             if (ActorItemList != null)
             {
                foreach(var e in ActorItemList)
                   owner_entity.Inventory.AddItem(e);
+
+               owner_entity.Equip_Weapon_Auto();
             }
 
             if (ExecuteCommand)
