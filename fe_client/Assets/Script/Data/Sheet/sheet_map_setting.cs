@@ -107,6 +107,18 @@ public class sheet_map_setting_localize
 	public string      DESC;
 }
 
+[Serializable]
+public class sheet_map_setting_label
+{
+	public Int64  ID;
+	public string MEMO;
+	public string LABEL;
+	public int    ATTRIBUTE;
+	public int    OWNER_TYPE;
+	public Int64  OWNER_VALUE;
+	public int    TARGET_TYPE;
+	public Int64  TARGET_VALUE;
+}
 
 
 

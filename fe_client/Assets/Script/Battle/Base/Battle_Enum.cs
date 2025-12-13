@@ -326,7 +326,34 @@ namespace Battle
     }
 
 
+    public enum EnumLabelOwnerType
+    {
+       None   = 0,
+       Entity   = 1, // 객체가 라벨 붙임
+       Position = 2, // 위치에 라벨 붙임 (셀 단위)
+    }
 
 
+    public enum EnumLabelTargetType
+    {
+       None        = 0, // 없음.
+       All         = 1, // 모두를 대상으로 적용
+       Entity      = 2, // 객체를 대상으로 적용 
+       Faction     = 3, // 진영을 대상으로 적용
+      //  FixedObject = 4, // 고정 객체를 대상으로 적용?
+    }
+
+
+    public enum EnumLabelAttribute
+    {
+       None = 0,
+
+       FocusTarget  = 1, // 해당 타겟을 중심으로 타겟팅.
+       IgnoreTarget = 2, // 해당 타겟을 제외하고 타겟팅.
+
+       Exit  = 10, // 이탈
+       Visit = 11, // 방문
+       Talk  = 12, // 대화
+    }
 
 }

@@ -382,11 +382,11 @@ namespace Battle
                       continue;
 
                     // 공격 가능한 타겟인지 체크.
-                    if (CombatHelper.IsEnemy(_entity.ID, entity_target.ID) == false)
+                    if (AIHelper.IsEnemy_Targetable(_entity.ID, entity_target.ID) == false)
                       continue;
 
                   
-                    // 대상의 위치까지 길찾기 
+                    // 대상의 위치까지 길찾기 실행.
                     var path_find = PathAlgorithm.PathFind(
                         _entity.PathNodeManager.TerrainMap,
                         _entity,

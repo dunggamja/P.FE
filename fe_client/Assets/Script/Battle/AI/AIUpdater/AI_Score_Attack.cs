@@ -14,7 +14,7 @@ namespace Battle
             {                
                 Dead,             // 죽일 수 있는지 체크.
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
-                HitRate,          // 명중률
+                // HitRate,          // 명중률
                 MoveCost,         // 이동 거리 (가까울수록 높은 점수)
 
                 // DamageRate_Taken, // 내가 받는 데미지 양
@@ -35,8 +35,8 @@ namespace Battle
                 {
                     case EnumScoreType.Dead:             return 2f;
                     case EnumScoreType.DamageRate_Dealt: return 1f;
-                    case EnumScoreType.HitRate:          return 0.5f;
-                    case EnumScoreType.MoveCost:         return 0.1f;
+                    case EnumScoreType.MoveCost:         return 0.2f;
+                    // case EnumScoreType.HitRate:          return 0.5f;
                     // case EnumScoreType.DamageRate_Taken: return -0.7f;
                     // case EnumScoreType.DodgeRate:        return 0.4f;
                 }
@@ -163,7 +163,7 @@ namespace Battle
             foreach(var e in list_target.Value)
             {
                 // 공격 가능한지 체크.
-                if (CombatHelper.IsEnemy(owner_entity.ID, e) == false)
+                if (AIHelper.IsEnemy_Targetable(owner_entity.ID, e) == false)
                     continue;
 
 
@@ -244,7 +244,7 @@ namespace Battle
                             continue;     
 
                         // 공격 가능한지 체크.
-                        if (CombatHelper.IsEnemy(owner_entity.ID, target_id) == false)
+                        if (AIHelper.IsEnemy_Targetable(owner_entity.ID, target_id) == false)
                             continue;
 
                         // 점수 계산 결과값 초기화.
@@ -330,7 +330,7 @@ namespace Battle
             _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중률 셋팅.
-            _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate);
+            // _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate);
 
             // 죽일 수 있는지 셋팅.
             _score.SetScore(Result.EnumScoreType.Dead, target_is_dead ? 1f : 0f);

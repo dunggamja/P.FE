@@ -191,11 +191,7 @@ namespace Battle
             // 공격자와 타겟이 같은 진영인지 체크.
             var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
 
-            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
-            {
-                // is_ally = rand() %2 ?;;;
-                // is_ally = !is_ally;;;;
-            }
+
 
             return is_ally == false;
         }
