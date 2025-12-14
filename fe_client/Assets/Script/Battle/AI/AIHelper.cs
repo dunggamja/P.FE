@@ -24,9 +24,9 @@ namespace Battle
 
                       
             // 공격자와 타겟이 같은 진영인지 체크.
-            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
-            return is_ally == false;
+            return BattleSystemManager.Instance.IsEnemy(attacker.GetFaction(), target.GetFaction());
         }
+
 
         public static bool IsAlly(Int64 _attacker_id, Int64 _target_id)
         {
@@ -45,7 +45,7 @@ namespace Battle
             
 
             // 공격자와 타겟이 같은 진영인지 체크.
-            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+            var    is_ally  = BattleSystemManager.Instance.IsAlly(attacker.GetFaction(), target.GetFaction());
             return is_ally == true;
         }
 
@@ -78,7 +78,7 @@ namespace Battle
                 foreach(var tag in list_tag.Value)
                 {
                     // 공격자에게 적용이 되는 태그인지 체크.
-                    if (tag.Verify_Target(attacker) == false)
+                    if (tag.Verify_Target_Entity(attacker) == false)
                         continue;
 
                     is_focus_target  = tag.Attributes == EnumTagAttribute.FocusTarget;

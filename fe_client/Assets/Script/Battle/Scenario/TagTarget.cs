@@ -63,6 +63,46 @@ namespace Battle
       {
          return new TAG_TARGET_INFO { TagType = EnumTagTargetType.Position, TagValue = PositionToValue(_x, _y) };
       }
+
+
+      public bool Verify_Entity(Entity _entity)
+      {
+         if (_entity == null)
+            return false;
+
+         if (TagType == EnumTagTargetType.Entity && TagValue == _entity.ID)
+            return true;
+
+         if (TagType == EnumTagTargetType.Faction && _entity.GetFaction() == TagValue)
+            return true;
+
+         if (TagType == EnumTagTargetType.All)
+            return true;
+
+         return false;
+      }
+
+      public bool Verify_Faction(int _faction_id)
+      {
+         if (TagType == EnumTagTargetType.Faction && TagValue == _faction_id)
+            return true;
+
+         if (TagType == EnumTagTargetType.All)
+            return true;
+
+         return false;
+      }
+
+      public bool Verify_Position(int _x, int _y)
+      {
+         if (TagType == EnumTagTargetType.Position && TagValue == PositionToValue(_x, _y))
+            return true;
+         
+         if (TagType == EnumTagTargetType.All)
+            return true;
+
+         return false;
+      }
    }
 
 
@@ -76,6 +116,59 @@ namespace Battle
    //       return new TARGET_INFO { TargetType = _target_type, TargetID = _target_id };
    //    }
    // }
+
+
+
+   public static class TagHelper
+   {
+      public static Int64 Find_EntityID(TAG_TARGET_INFO _tag_info)
+      {
+         if (_tag_info.TagType == EnumTagTargetType.Entity)
+            return _tag_info.TagValue;
+
+         return 0;
+      }
+
+
+      public static int Find_FactionID(TAG_TARGET_INFO _tag_info)
+      {
+         // Faction 타겟일 경우.
+         if (_tag_info.TagType == EnumTagTargetType.Faction)
+            return (int)_tag_info.TagValue;
+
+         // Entity 타겟일 경우.
+         var entity_id = Find_EntityID(_tag_info);
+         if (entity_id > 0)
+         {
+            var entity  = EntityManager.Instance.GetEntity(entity_id);
+            if (entity != null)
+               return entity.GetFaction();            
+         }
+
+         return 0;
+      }
+
+      public static (bool result, int x, int y) Find_Position(TAG_TARGET_INFO _tag_info)
+      {
+         // Position 타겟일 경우.
+         if (_tag_info.TagType == EnumTagTargetType.Position)
+            return (true, _tag_info.Position.x, _tag_info.Position.y);
+
+         // Entity 타겟일 경우.
+         var entity_id = Find_EntityID(_tag_info);
+         if (entity_id > 0)
+         {
+            var entity  = EntityManager.Instance.GetEntity(entity_id);
+            if (entity != null)
+               return (true, entity.Cell.x, entity.Cell.y);
+         }
+
+         return (false, 0, 0);
+      }
+
+
+
+   }
 
 
 

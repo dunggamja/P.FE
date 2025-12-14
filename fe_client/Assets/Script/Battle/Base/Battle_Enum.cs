@@ -358,6 +358,14 @@ namespace Battle
        Talk  = 12, // 대화
     }
 
+    public enum EnumTagProductType
+    {
+       None     = 0, // (데이터 적재 시 바로 셋팅)
+       Scenario = 1, // 시나리오로부터 동적 생성.       
+    }
+
+    
+
 
     public enum EnumScenarioType
     {
@@ -393,7 +401,8 @@ namespace Battle
        DefeatSpecificFaction = 3, // 특정 진영을 사망시키면 조건 충족
 
 
-       SurviveTurns          = 11, // 특정 턴수 동안 생존하면 조건 충족
+       TurnCount             = 11, // 특정 턴수가 되면 조건 충족
+      //  SurviveTurns          = 12, // 특정 턴수 동안 생존하면 조건 충족 (시나리오 시작 후 부터 체크)
 
 
        PositionArrive        = 21, // 위치 도착 시 조건 충족

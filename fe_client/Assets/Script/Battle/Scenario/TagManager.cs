@@ -10,29 +10,30 @@ namespace Battle
 {
    public class TagData
    {
-      public Int64            ID         { get; private set; } = 0;
-      public EnumTagAttribute Attributes { get; private set; } = EnumTagAttribute.None;
-      public string           Name       { get; private set; } = string.Empty;
-      public TAG_TARGET_INFO  Owner      { get; private set; } = TAG_TARGET_INFO.Create_None();    
-      public TAG_TARGET_INFO  Target     { get; private set; } = TAG_TARGET_INFO.Create_None();
+      public Int64              ID           { get; private set; } = 0;
+      public EnumTagAttribute   Attributes   { get; private set; } = EnumTagAttribute.None;
+      public string             Name         { get; private set; } = string.Empty;
+      public TAG_TARGET_INFO    Owner        { get; private set; } = TAG_TARGET_INFO.Create_None();    
+      public TAG_TARGET_INFO    Target       { get; private set; } = TAG_TARGET_INFO.Create_None();
+
+      public EnumTagProductType ProductType  { get; private set; } = EnumTagProductType.None;
+      public Int64              ProductValue { get; private set; } = 0;
 
 
 
-      public bool Verify_Target(Entity _entity)
+      public bool Verify_Target_Entity(Entity _entity)
       {
-         if (_entity == null)
-            return false;
+         return Target.Verify_Entity(_entity);
+      }
 
-         if (Target.TagType == EnumTagTargetType.Entity && Target.TagValue == _entity.ID)
-            return true;
+      public bool Verify_Target_Faction(int _faction_id)
+      {
+         return Target.Verify_Faction(_faction_id);
+      }
 
-         if (Target.TagType == EnumTagTargetType.Faction && _entity.GetFaction() == Target.TagValue)
-            return true;
-
-         if (Target.TagType == EnumTagTargetType.All)
-            return true;
-
-         return false;
+      public bool Verify_Target_Position(int _x, int _y)
+      {
+         return Target.Verify_Position(_x, _y);
       }
    }
 
@@ -138,110 +139,6 @@ namespace Battle
          }
       }
 
-      // public class Repo_Lookup_Target
-      // {
-      //    class Repo_Attribute : Dictionary<int, HashSet<Int64>> {}
-
-      //    class Repo_TargetID : Dictionary<Int64, Repo_Attribute> {}
-
-      //    class Repository : Dictionary<EnumLabelTargetType, Repo_TargetID> {}
-
-
-      //    Repository m_repository = new();
-
-
-      //    public void SetLabel(Label _label)
-      //    {            
-      //       if (_label == null)
-      //          return;
-
-      //       if (m_repository.TryGetValue(_label.Target.TargetType, out var repo_target_id) == false)
-      //       {
-      //          repo_target_id = new();
-      //          m_repository.Add(_label.Target.TargetType, repo_target_id);
-      //       }
-
-      //       if (repo_target_id.TryGetValue(_label.Target.TargetID, out var repo_attribute) == false)
-      //       {
-      //          repo_attribute = new(); 
-      //          repo_target_id.Add(_label.Target.TargetID, repo_attribute);
-      //       }
-
-      //       if (_label.Attributes != null)
-      //       {
-      //          foreach(var attribute in _label.Attributes)
-      //          {
-      //             if (repo_attribute.TryGetValue((int)attribute, out var list_id) == false)
-      //             {
-      //                list_id = new();
-      //                repo_attribute.Add((int)attribute, list_id);
-      //             }
-      //             list_id.Add(_label.ID);
-      //          }
-      //       }
-      //    }
-
-      //    public void RemoveLabel(Label _label)
-      //    {
-      //       if (_label == null)
-      //           return;
-
-      //       if (m_repository.TryGetValue(_label.Target.TargetType, out var repo_target_id) == false)
-      //          return;
-
-      //       if (repo_target_id.TryGetValue(_label.Target.TargetID, out var repo_attribute) == false)
-      //          return;
-
-      //       if (_label.Attributes != null)
-      //       {
-      //          foreach(var attribute in _label.Attributes)
-      //          {
-      //             if (repo_attribute.TryGetValue((int)attribute, out var list_id) == false)
-      //             {
-      //                list_id.Remove(_label.ID);
-      //             }
-      //          }
-      //       }                
-      //    }
-      
-      //    public void CollectLabel(Label.TARGET_INFO _target_info, EnumLabelAttribute _attribute, List<Int64> _list_label_id)
-      //    {
-      //       if (m_repository.TryGetValue(_target_info.TargetType, out var repo_target_id) == false)
-      //          return;
-
-      //       if (repo_target_id.TryGetValue(_target_info.TargetID, out var repo_attribute) == false)
-      //          return;
-
-            
-
-      //       if (_attribute == 0)
-      //       {
-      //          // 0이면 모든 속성을 가져와봅시다. 
-      //          foreach(var list_id in repo_attribute.Values)
-      //          {
-      //             if (list_id != null)
-      //             {
-      //                if (_list_label_id != null)
-      //                    _list_label_id.AddRange(list_id);
-      //             }
-      //          }
-      //       }
-      //       else
-      //       {
-      //          if (repo_attribute.TryGetValue((int)_attribute, out var list_id) == false)
-      //             return;
-
-      //          if (list_id != null)
-      //          {
-      //             if (_list_label_id != null)
-      //                 _list_label_id.AddRange(list_id);
-      //          }
-      //       }
-      //    }
-
-      // }
-
-
 
       Dictionary<Int64, TagData> m_repository               = new();
       Repo_Lookup_Owner          m_repository_lookup_owner  = new();
@@ -254,8 +151,8 @@ namespace Battle
          if (_tag == null)
             return;
 
-         if (m_repository.ContainsKey(_tag.ID))
-            RemoveTag(_tag);
+         if (GetTag(_tag.ID) != null)
+             RemoveTag(_tag.ID);
 
          m_repository_lookup_owner.SetTag(_tag);
          m_repository_lookup_name.SetTag(_tag);
@@ -263,15 +160,16 @@ namespace Battle
          m_repository.Add(_tag.ID, _tag);
       }
 
-      public void RemoveTag(TagData _tag)  
+      public void RemoveTag(Int64 _tag_id)  
       {
-         if (_tag == null)
+         var tag = GetTag(_tag_id);
+         if (tag == null)
             return;
 
-         m_repository_lookup_owner.RemoveTag(_tag);
-         m_repository_lookup_name.RemoveTag(_tag);
+         m_repository_lookup_owner.RemoveTag(tag);
+         m_repository_lookup_name.RemoveTag(tag);
          // m_repository_lookup_target.RemoveLabel(_label);
-         m_repository.Remove(_tag.ID);
+         m_repository.Remove(_tag_id);
       }
 
 

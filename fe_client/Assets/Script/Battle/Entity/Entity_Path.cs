@@ -117,7 +117,7 @@ namespace Battle
             // 아군인 경우 제외.
             return BattleSystemManager
                 .Instance
-                .IsFactionAlliance(GetFaction(), _faction);
+                .IsAlly(GetFaction(), _faction);
         }
 
     }

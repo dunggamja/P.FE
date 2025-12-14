@@ -191,7 +191,7 @@ namespace Battle
             m_faction_alliance.Remove((_faction_2, _faction_1));
         }
 
-        public bool IsFactionAlliance(int _faction_1, int _faction_2)
+        public bool IsAlly(int _faction_1, int _faction_2)
         {
             // 같은 진영이면 그냥 아군.
             if (_faction_1 == _faction_2)
@@ -199,6 +199,11 @@ namespace Battle
 
             
             return m_faction_alliance.Contains((_faction_1, _faction_2));
+        }
+
+        public bool IsEnemy(int _faction_1, int _faction_2)
+        {
+            return IsAlly(_faction_1, _faction_2) == false;
         }
 
         public void PushCommand(Command _command)
