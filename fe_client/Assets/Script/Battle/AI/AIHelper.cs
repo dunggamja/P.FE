@@ -7,17 +7,59 @@ namespace Battle
 {
     public static class AIHelper
     {
-        public static bool IsEnemy_Targetable(Int64 _attacker_id, Int64 _target_id)
+        public static bool IsEnemy(Int64 _attacker_id, Int64 _target_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0)
+                return false;
+
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            // TODO: 일단 FixedObject 제외.
+            if (target.IsFixedObject)
+                return false;
+
+                      
+            // 공격자와 타겟이 같은 진영인지 체크.
+            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+            return is_ally == false;
+        }
+
+        public static bool IsAlly(Int64 _attacker_id, Int64 _target_id)
+        {
+            if (_attacker_id <= 0 || _target_id <= 0)
+                return false;
+
+            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
+            var target   = EntityManager.Instance.GetEntity(_target_id);
+
+            if (attacker == null || target == null)
+                return false;
+
+            // TODO: 일단 FixedObject 제외.
+            if (target.IsFixedObject)
+                return false;
+            
+
+            // 공격자와 타겟이 같은 진영인지 체크.
+            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
+            return is_ally == true;
+        }
+
+
+        public static bool Verify_AI_Enemy(Int64 _attacker_id, Int64 _target_id)
         {
             // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
             {
                 // is_ally = rand() %2 ?;;;
                 // is_ally = !is_ally;;;;
             }
-
-
-            // 적 진영인지 체크.
-            if (CombatHelper.IsEnemy(_attacker_id, _target_id) == false)
+            
+            // 적이 맞는지 체크.
+            if (AIHelper.IsEnemy(_attacker_id, _target_id) == false)
                 return false;
 
             // 공격자 엔티티 체크.
@@ -27,20 +69,20 @@ namespace Battle
 
             // TODO: 시나리오 태그 체크.
             {                
-                using var list_label = ListPool<Label>.AcquireWrapper();
-                LabelManager.Instance.Collect_Owner(_target_id, list_label.Value);
+                using var list_tag = ListPool<TagData>.AcquireWrapper();
+                TagManager.Instance.CollectTag(_target_id, list_tag.Value);
 
                 bool is_focus_target  = false;
                 bool is_ignore_target = false;
 
-                foreach(var label in list_label.Value)
+                foreach(var tag in list_tag.Value)
                 {
                     // 공격자에게 적용이 되는 태그인지 체크.
-                    if (label.Verify_Target(attacker) == false)
+                    if (tag.Verify_Target(attacker) == false)
                         continue;
 
-                    is_focus_target  = label.HasAttribute(EnumLabelAttribute.FocusTarget);
-                    is_ignore_target = label.HasAttribute(EnumLabelAttribute.IgnoreTarget);
+                    is_focus_target  = tag.Attributes == EnumTagAttribute.FocusTarget;
+                    is_ignore_target = tag.Attributes == EnumTagAttribute.IgnoreTarget;
                 }
 
                 // 무시 태그만 셋팅되어있다면 타겟팅에서 제외.

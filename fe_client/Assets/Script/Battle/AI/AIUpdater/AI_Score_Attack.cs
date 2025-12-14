@@ -163,7 +163,7 @@ namespace Battle
             foreach(var e in list_target.Value)
             {
                 // 공격 가능한지 체크.
-                if (AIHelper.IsEnemy_Targetable(owner_entity.ID, e) == false)
+                if (AIHelper.Verify_AI_Enemy(owner_entity.ID, e) == false)
                     continue;
 
 
@@ -244,7 +244,7 @@ namespace Battle
                             continue;     
 
                         // 공격 가능한지 체크.
-                        if (AIHelper.IsEnemy_Targetable(owner_entity.ID, target_id) == false)
+                        if (AIHelper.Verify_AI_Enemy(owner_entity.ID, target_id) == false)
                             continue;
 
                         // 점수 계산 결과값 초기화.

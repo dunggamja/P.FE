@@ -326,7 +326,7 @@ namespace Battle
     }
 
 
-    public enum EnumLabelOwnerType
+    public enum EnumTagOwnerType
     {
        None   = 0,
        Entity   = 1, // 객체가 라벨 붙임
@@ -334,17 +334,19 @@ namespace Battle
     }
 
 
-    public enum EnumLabelTargetType
+    public enum EnumTagTargetType
     {
        None        = 0, // 없음.
        All         = 1, // 모두를 대상으로 적용
        Entity      = 2, // 객체를 대상으로 적용 
        Faction     = 3, // 진영을 대상으로 적용
+
+       Position    = 11, // 위치를 대상으로 적용
       //  FixedObject = 4, // 고정 객체를 대상으로 적용?
     }
 
 
-    public enum EnumLabelAttribute
+    public enum EnumTagAttribute
     {
        None = 0,
 
@@ -355,5 +357,72 @@ namespace Battle
        Visit = 11, // 방문
        Talk  = 12, // 대화
     }
+
+
+    public enum EnumScenarioType
+    {
+       None = 0,
+
+       Victory = 1, // 시나리오 승리
+       Defeat  = 2, // 시나리오 패배
+       Event   = 3, // 시나리오 중간 이벤트
+    }
+
+
+    public enum EnumScenarioTrigger
+    {
+       None = 0,
+
+       OnTurnStart      = 1, // 턴 시작 시 트리거
+       OnTurnEnd        = 2, // 턴 종료 시 트리거
+
+       OnEntityDefeat   = 11, // 엔티티 사망 시 트리거
+
+       OnPositionArrive = 21, // 위치 도착 시 트리거
+       OnPositionVisit  = 22, // 위치 방문 시 트리거
+       
+       OnEveryUpdate     = 999, // 매 프레임 트리거
+    }
+
+    public enum EnumScenarioCondition
+    {
+       None = 0,
+
+       DefeatAllEnemies      = 1, // 모든 적을 사망시키면 조건 충족
+       DefeatSpecificEntity  = 2, // 특정 엔티티를 사망시키면 조건 충족
+       DefeatSpecificFaction = 3, // 특정 진영을 사망시키면 조건 충족
+
+
+       SurviveTurns          = 11, // 특정 턴수 동안 생존하면 조건 충족
+
+
+       PositionArrive        = 21, // 위치 도착 시 조건 충족
+       PositionVisit         = 22, // 위치 방문 시 조건 충족
+
+
+       EntityHP_Below        = 31, // 유닛 체력이 특정 이하일 경우 
+
+       HasTagID              = 41, // 특정 태그 ID가 있을 경우 조건 충족
+       HasTagName            = 42, // 특정 태그 이름이 있을 경우 조건 충족
+       HasItem               = 43, // 특정 아이템을 보유할 경우 조건 충족
+    }
+
+    public enum EnumScenarioAction
+    {
+       None = 0,
+
+       Victory    = 1, // 시나리오 승리
+       Defeat     = 2, // 시나리오 패배
+       Event      = 3, // 시나리오 중간 이벤트
+
+       ShowDialog = 11, // 대화
+
+       AddTag     = 21, // 태그 추가
+       RemoveTag  = 22, // 태그 제거
+
+       AddItem    = 31, // 아이템 추가
+       RemoveItem = 32, // 아이템 제거
+    }
+
 
 }

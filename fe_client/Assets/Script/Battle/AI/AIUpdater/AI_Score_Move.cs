@@ -382,7 +382,7 @@ namespace Battle
                       continue;
 
                     // 공격 가능한 타겟인지 체크.
-                    if (AIHelper.IsEnemy_Targetable(_entity.ID, entity_target.ID) == false)
+                    if (AIHelper.Verify_AI_Enemy(_entity.ID, entity_target.ID) == false)
                       continue;
 
                   

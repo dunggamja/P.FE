@@ -141,61 +141,6 @@ namespace Battle
         }
     
 
-        public static bool IsAlly(Int64 _attacker_id, Int64 _target_id)
-        {
-            if (_attacker_id <= 0 || _target_id <= 0)
-                return false;
-
-            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
-            var target   = EntityManager.Instance.GetEntity(_target_id);
-
-            if (attacker == null || target == null)
-                return false;
-
-            // TODO: 일단 FixedObject 제외.
-            if (target.IsFixedObject)
-                return false;
-
-            
-
-            // 공격자와 타겟이 같은 진영인지 체크.
-            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
-
-
-            // TODO: 혼란등 걸려있을때는 따로 체크해야 할듯하군.
-            {
-                // is_ally = rand() %2 ?;;;
-                // is_ally = !is_ally;;;;
-            }
-
-            return is_ally == true;
-        }
-    
-    
-        public static bool IsEnemy(Int64 _attacker_id, Int64 _target_id)
-        {
-            if (_attacker_id <= 0 || _target_id <= 0)
-                return false;
-
-            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
-            var target   = EntityManager.Instance.GetEntity(_target_id);
-
-            if (attacker == null || target == null)
-                return false;
-
-            // TODO: 일단 FixedObject 제외.
-            if (target.IsFixedObject)
-                return false;
-
-                      
-            // 공격자와 타겟이 같은 진영인지 체크.
-            var    is_ally  = BattleSystemManager.Instance.IsFactionAlliance(attacker.GetFaction(), target.GetFaction());
-
-
-
-            return is_ally == false;
-        }
-
         public static bool IsExchangeable(Int64 _attacker_id, Int64 _target_id)
         {
             if (_attacker_id <= 0 || _target_id <= 0)
@@ -212,31 +157,13 @@ namespace Battle
         }
         
 
-        public static bool IsTargetable(Int64 _attacker_id, Int64 _target_id, Int64 _weapon_id)
+        public static bool IsTargetable(EnumTargetType _target_type, Int64 _attacker_id, Int64 _target_id)
         {
-            if (_attacker_id <= 0 || _target_id <= 0 || _weapon_id <= 0)
-                return false;
-
-            var attacker = EntityManager.Instance.GetEntity(_attacker_id);
-            var target   = EntityManager.Instance.GetEntity(_target_id);
-
-            if (attacker == null || target == null)
-                return false;
-
-            var item = attacker.Inventory.GetItem(_weapon_id);
-            if (item == null)
-                return false;
-
-            var target_type =  ItemHelper.GetItemTargetType(item.Kind);
-            if (target_type == EnumTargetType.None)
-                return false;
-
-
-            switch(target_type)
+            switch(_target_type)
             {
                 case EnumTargetType.Owner: return _attacker_id == _target_id;
-                case EnumTargetType.Ally : return _attacker_id != _target_id && IsAlly(_attacker_id, _target_id);
-                case EnumTargetType.Enemy: return _attacker_id != _target_id && IsEnemy(_attacker_id, _target_id);
+                case EnumTargetType.Ally : return _attacker_id != _target_id && AIHelper.IsAlly(_attacker_id, _target_id);
+                case EnumTargetType.Enemy: return _attacker_id != _target_id && AIHelper.IsEnemy(_attacker_id, _target_id);
             }          
 
             return false;
@@ -297,6 +224,17 @@ namespace Battle
             if (entity == null)
                 return false;
 
+
+            var weapon = entity.Inventory.GetItem(_weapon_id);
+            if (weapon == null)
+                return false;
+
+            var weapon_target =  ItemHelper.GetItemTargetType(weapon.Kind);
+            if (weapon_target == EnumTargetType.None)
+                return false;
+
+            
+
             var draw_flag   = (_is_wand) 
                             ? (int)Battle.MoveRange.EnumDrawFlag.WandRange 
                             : (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
@@ -325,7 +263,7 @@ namespace Battle
                 if (target_id > 0)
                 {   
                     // 공격 가능한 타겟 찾기.
-                    if (CombatHelper.IsTargetable(_entity_id, target_id, _weapon_id) == false)
+                    if (CombatHelper.IsTargetable(weapon_target, _entity_id, target_id) == false)
                         continue;             
 
                     _target_list.Add(target_id);
