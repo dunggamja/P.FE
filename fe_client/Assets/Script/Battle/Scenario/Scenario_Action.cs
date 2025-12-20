@@ -8,8 +8,8 @@ namespace Battle
 {
    public abstract class Scenario_Action
    {
-      public TAG_TARGET_INFO                Owner  { get; private set; } = TAG_TARGET_INFO.Create_None();
-      public TAG_TARGET_INFO                Target { get; private set; } = TAG_TARGET_INFO.Create_None();
+      // public TAG_TARGET_INFO                Owner  { get; private set; } = TAG_TARGET_INFO.Create_None();
+      // public TAG_TARGET_INFO                Target { get; private set; } = TAG_TARGET_INFO.Create_None();
       public abstract EnumScenarioAction    Action { get; }
       public abstract void Execute();
 

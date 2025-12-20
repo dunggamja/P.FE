@@ -289,19 +289,6 @@ namespace Battle
         Invalid,
     }
 
-    // 명령 우선순위.
-    // public enum EnumCommandPriority
-    // {
-    //     None,
-                
-    //     // 
-    //     Low,
-    //     Normal,
-    //     High,
-
-    //     // 
-    //     Critical, 
-    // }
 
     public enum EnumCellPositionEvent
     {
@@ -325,38 +312,41 @@ namespace Battle
         Wait,     // 대기.
     }
 
-
-    public enum EnumTagOwnerType
+    public enum EnumTagType
     {
-       None   = 0,
-       Entity   = 1, // 객체가 라벨 붙임
-       Position = 2, // 위치에 라벨 붙임 (셀 단위)
+       None = 0, 
+
+       Entity       = 1,
+       Faction      = 2,
+       All          = 3, 
+       Position     = 100,
+
+
+
+
     }
 
-
-    public enum EnumTagTargetType
-    {
-       None        = 0, // 없음.
-       All         = 1, // 모두를 대상으로 적용
-       Entity      = 2, // 객체를 대상으로 적용 
-       Faction     = 3, // 진영을 대상으로 적용
-
-       Position    = 11, // 위치를 대상으로 적용
-      //  FixedObject = 4, // 고정 객체를 대상으로 적용?
-    }
-
-
-    public enum EnumTagAttribute
+    public enum EnumTagAttributeType
     {
        None = 0,
 
-       FocusTarget  = 1, // 해당 타겟을 중심으로 타겟팅.
-       IgnoreTarget = 2, // 해당 타겟을 제외하고 타겟팅.
+       TARGET_FOCUS  = 1, // 타겟팅
+       TARGET_IGNORE = 2, // 타겟팅 제외.
 
-       Exit  = 10, // 이탈
-       Visit = 11, // 방문
-       Talk  = 12, // 대화
+
+       POSITION_VISIT = 11, // 위치 - 방문 가능       
+       POSITION_EXIT  = 12, // 위치 - 이탈 
+
+       TALK_COMMAND = 21,   // 대화 명령 가능
+
+       TAG_PARENT = 100, // 태그 - 부모. 
+      //  TAG_CHILD  = 101, // 태그 - 자식. (자식이 셋팅되면, 부모도 셋팅해야 함)
+
+       FromScenario = 999,
     }
+
+
+
 
     public enum EnumTagProductType
     {

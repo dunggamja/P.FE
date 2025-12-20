@@ -2,172 +2,76 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MagicaCloth2;
+using Sirenix.Utilities;
 using UnityEngine;
 
 namespace Battle
 {
-   public struct TAG_TARGET_INFO
+   public struct TAG_INFO
    {
-      public  EnumTagTargetType TagType;
-      public  Int64             TagValue;
+      public  EnumTagType  TagType;
+      public  Int64        TagValue;
 
-    
-      public (int x, int y) Position 
+      public static TAG_INFO Create(EnumTagType _tag_type, Int64 _tag_value)
       {
-         get
-         {
-            switch(TagType)
-            {
-               case EnumTagTargetType.Position:
-                  return ValueToPosition(TagValue);
-            }
-
-            return (0, 0);
-         }
+         return new TAG_INFO { TagType = _tag_type, TagValue = _tag_value };
       }
 
-
-      private static (int x, int y) ValueToPosition(Int64 _id)
+      public static bool operator <(TAG_INFO _left, TAG_INFO _right)
       {
-         return ((int)(_id / Constants.MAX_MAP_SIZE), (int)(_id % Constants.MAX_MAP_SIZE));
+         if (_left.TagType != _right.TagType)
+            return _left.TagType < _right.TagType;
+
+         return _left.TagValue < _right.TagValue;
       }
 
-      private static Int64 PositionToValue(int _x, int _y)
+      public static bool operator >(TAG_INFO _left, TAG_INFO _right)
       {
-         return _x * Constants.MAX_MAP_SIZE + _y;
+         if (_left.TagType != _right.TagType)
+            return _left.TagType > _right.TagType;
+
+         return _left.TagValue > _right.TagValue;
       }
 
-
-      public static TAG_TARGET_INFO Create_None()
+      public static bool operator ==(TAG_INFO _left, TAG_INFO _right)
       {
-         return new TAG_TARGET_INFO { TagType = EnumTagTargetType.None, TagValue = 0 };
+         return (_left.TagType, _left.TagValue) == (_right.TagType, _right.TagValue);
       }
 
-
-      public static TAG_TARGET_INFO Create_Entity(Int64 _owner_id)
+      public static bool operator !=(TAG_INFO _left, TAG_INFO _right)
       {
-         return new TAG_TARGET_INFO { TagType = EnumTagTargetType.Entity, TagValue = _owner_id };
+         return (_left.TagType, _left.TagValue) != (_right.TagType, _right.TagValue);
       }
 
-      public static TAG_TARGET_INFO Create_All()
+      public override bool Equals(object obj)
       {
-         return new TAG_TARGET_INFO { TagType = EnumTagTargetType.All, TagValue = 0 };
-      }
-
-      public static TAG_TARGET_INFO Create_Faction(Int64 _faction_id)
-      {
-         return new TAG_TARGET_INFO { TagType = EnumTagTargetType.Faction, TagValue = _faction_id };
-      }
-
-      public static TAG_TARGET_INFO Create_Position(int _x, int _y)
-      {
-         return new TAG_TARGET_INFO { TagType = EnumTagTargetType.Position, TagValue = PositionToValue(_x, _y) };
-      }
-
-
-      public bool Verify_Entity(Entity _entity)
-      {
-         if (_entity == null)
-            return false;
-
-         if (TagType == EnumTagTargetType.Entity && TagValue == _entity.ID)
-            return true;
-
-         if (TagType == EnumTagTargetType.Faction && _entity.GetFaction() == TagValue)
-            return true;
-
-         if (TagType == EnumTagTargetType.All)
-            return true;
+         if (obj is TAG_INFO tag_info)
+            return this == tag_info;
 
          return false;
       }
 
-      public bool Verify_Faction(int _faction_id)
+      public override int GetHashCode()
       {
-         if (TagType == EnumTagTargetType.Faction && TagValue == _faction_id)
-            return true;
-
-         if (TagType == EnumTagTargetType.All)
-            return true;
-
-         return false;
+         return HashCode.Combine((int)TagType, TagValue);
       }
-
-      public bool Verify_Position(int _x, int _y)
-      {
-         if (TagType == EnumTagTargetType.Position && TagValue == PositionToValue(_x, _y))
-            return true;
-         
-         if (TagType == EnumTagTargetType.All)
-            return true;
-
-         return false;
-      }
-   }
-
-
-   // public struct TARGET_INFO
-   // {
-   //    public EnumTagTargetType TargetType;
-   //    public Int64             TargetID ;
-
-   //    public static TARGET_INFO Create(EnumTagTargetType _target_type, Int64 _target_id)
-   //    {
-   //       return new TARGET_INFO { TargetType = _target_type, TargetID = _target_id };
-   //    }
-   // }
-
+    }
 
 
    public static class TagHelper
    {
-      public static Int64 Find_EntityID(TAG_TARGET_INFO _tag_info)
+      public static (int x, int y) ToPosition(this TAG_INFO _tag_info)
       {
-         if (_tag_info.TagType == EnumTagTargetType.Entity)
-            return _tag_info.TagValue;
+         if (_tag_info.TagType == EnumTagType.Position)
+            return ((int)(_tag_info.TagValue / Constants.MAX_MAP_SIZE), (int)(_tag_info.TagValue % Constants.MAX_MAP_SIZE));
 
-         return 0;
+         return (0, 0);
       }
 
-
-      public static int Find_FactionID(TAG_TARGET_INFO _tag_info)
+      public static Int64 PositionToValue(int _x, int _y)
       {
-         // Faction 타겟일 경우.
-         if (_tag_info.TagType == EnumTagTargetType.Faction)
-            return (int)_tag_info.TagValue;
-
-         // Entity 타겟일 경우.
-         var entity_id = Find_EntityID(_tag_info);
-         if (entity_id > 0)
-         {
-            var entity  = EntityManager.Instance.GetEntity(entity_id);
-            if (entity != null)
-               return entity.GetFaction();            
-         }
-
-         return 0;
+         return _x * Constants.MAX_MAP_SIZE + _y;
       }
-
-      public static (bool result, int x, int y) Find_Position(TAG_TARGET_INFO _tag_info)
-      {
-         // Position 타겟일 경우.
-         if (_tag_info.TagType == EnumTagTargetType.Position)
-            return (true, _tag_info.Position.x, _tag_info.Position.y);
-
-         // Entity 타겟일 경우.
-         var entity_id = Find_EntityID(_tag_info);
-         if (entity_id > 0)
-         {
-            var entity  = EntityManager.Instance.GetEntity(entity_id);
-            if (entity != null)
-               return (true, entity.Cell.x, entity.Cell.y);
-         }
-
-         return (false, 0, 0);
-      }
-
-
-
    }
 
 

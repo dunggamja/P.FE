@@ -68,24 +68,14 @@ namespace Battle
                 return false;
 
             // TODO: 시나리오 태그 체크.
-            {                
-                using var list_tag = ListPool<TagData>.AcquireWrapper();
-                TagManager.Instance.CollectTag(_target_id, list_tag.Value);
+            {
+                var tag_owner_info   = TAG_INFO.Create(EnumTagType.Entity, _attacker_id);
+                var tag_target_info  = TAG_INFO.Create(EnumTagType.Entity, _target_id);
 
-                bool is_focus_target  = false;
-                bool is_ignore_target = false;
+                var is_focus_target  = TagManager.Instance.IsExistTagRelation(tag_owner_info, tag_target_info, EnumTagAttributeType.TARGET_FOCUS);
+                var is_ignore_target = TagManager.Instance.IsExistTagRelation(tag_owner_info, tag_target_info, EnumTagAttributeType.TARGET_IGNORE);
 
-                foreach(var tag in list_tag.Value)
-                {
-                    // 공격자에게 적용이 되는 태그인지 체크.
-                    if (tag.Verify_Target_Entity(attacker) == false)
-                        continue;
-
-                    is_focus_target  = tag.Attributes == EnumTagAttribute.FocusTarget;
-                    is_ignore_target = tag.Attributes == EnumTagAttribute.IgnoreTarget;
-                }
-
-                // 무시 태그만 셋팅되어있다면 타겟팅에서 제외.
+                // 무시 태그만 셋팅 되어있다면 타겟팅에서 제외.
                 if (is_ignore_target && !is_focus_target)
                     return false;
             }

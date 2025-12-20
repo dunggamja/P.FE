@@ -8,234 +8,209 @@ using UnityEngine;
 
 namespace Battle
 {
-   public class TagData
+   public struct TAG_DATA
    {
-      public Int64              ID           { get; private set; } = 0;
-      public EnumTagAttribute   Attributes   { get; private set; } = EnumTagAttribute.None;
-      public string             Name         { get; private set; } = string.Empty;
-      public TAG_TARGET_INFO    Owner        { get; private set; } = TAG_TARGET_INFO.Create_None();    
-      public TAG_TARGET_INFO    Target       { get; private set; } = TAG_TARGET_INFO.Create_None();
+      public TAG_INFO              TagInfo      { get; private set; }
+      public EnumTagAttributeType  Attribute   { get; private set; }
+      public TAG_INFO              TargetInfo   { get; private set; }
 
-      public EnumTagProductType ProductType  { get; private set; } = EnumTagProductType.None;
-      public Int64              ProductValue { get; private set; } = 0;
-
-
-
-      public bool Verify_Target_Entity(Entity _entity)
+      public static TAG_DATA Create(TAG_INFO _tag_info, EnumTagAttributeType _attribute, TAG_INFO _target_info)
       {
-         return Target.Verify_Entity(_entity);
-      }
-
-      public bool Verify_Target_Faction(int _faction_id)
-      {
-         return Target.Verify_Faction(_faction_id);
-      }
-
-      public bool Verify_Target_Position(int _x, int _y)
-      {
-         return Target.Verify_Position(_x, _y);
+         return new TAG_DATA { TagInfo = _tag_info, Attribute = _attribute, TargetInfo = _target_info };
       }
    }
 
 
    public class TagManager : Singleton<TagManager>
    {
-      public class Repo_Lookup_Owner
-      {
-         // class Repo_Attribute : Dictionary<int, HashSet<Int64>> {}
-         class Repo_OwnerID : Dictionary<Int64, HashSet<Int64>> {}
-
-         class Repository : Dictionary<EnumTagTargetType, Repo_OwnerID> {}
-
-         Repository m_repository = new();
-
-         public void SetTag(TagData _tag)
-         {
-            if (_tag == null)
-               return;
-
-            if (m_repository.TryGetValue(_tag.Owner.TagType, out var repo_owner_id) == false)
-            {
-               repo_owner_id = new();
-               m_repository.Add(_tag.Owner.TagType, repo_owner_id);
-            }
-
-            if (repo_owner_id.TryGetValue(_tag.Owner.TagValue, out var repo_label_id) == false)
-            {
-               repo_label_id = new();
-               repo_owner_id.Add(_tag.Owner.TagValue, repo_label_id);
-            }
-
-            repo_label_id.Add(_tag.ID);
-         }
-
-         public void RemoveTag(TagData _tag)
-         {
-            if (_tag == null)
-               return;
-
-            if (m_repository.TryGetValue(_tag.Owner.TagType, out var repo_owner_id) == false)
-               return;
-
-            if (repo_owner_id.TryGetValue(_tag.Owner.TagValue, out var repo_label_id) == false)
-               return;
-
-            repo_label_id.Remove(_tag.ID);
-         }
-
-
-         public void CollectTag(TAG_TARGET_INFO _owner_info, List<Int64> _list_label_id)
-         {
-            if (m_repository.TryGetValue(_owner_info.TagType, out var repo_owner_id) == false)
-               return;
-
-            if (repo_owner_id.TryGetValue(_owner_info.TagValue, out var repo_label_id) == false)
-               return;
-
-            if (_list_label_id == null || repo_label_id == null)
-               return;
-
-            _list_label_id.AddRange(repo_label_id);
-         }
-      }
-
-      public class Repo_Lookup_Name
-      {
-         class Repository : Dictionary<string, HashSet<Int64>> {}
-
-         Repository m_repository = new();
-
-         public void SetTag(TagData _tag)
-         {
-            if (_tag == null)
-               return;
-
-            if (m_repository.TryGetValue(_tag.Name, out var repo_tag_id) == false)
-            {
-               repo_tag_id = new();
-               m_repository.Add(_tag.Name, repo_tag_id);
-            }
-
-            repo_tag_id.Add(_tag.ID);
-         }
-
-         public void RemoveTag(TagData _tag)
-         {
-            if (_tag == null)
-               return;
-
-            if (m_repository.TryGetValue(_tag.Name, out var repo_tag_id) == false)
-               return;
-
-            repo_tag_id.Remove(_tag.ID);
-         }
-
-         public void CollectTag(string _name, List<Int64> _list_tag_id)
-         {
-            if (m_repository.TryGetValue(_name, out var repo_tag_id) == false)
-               return;
-
-            _list_tag_id.AddRange(repo_tag_id);
-         }
-      }
-
-
-      Dictionary<Int64, TagData> m_repository               = new();
-      Repo_Lookup_Owner          m_repository_lookup_owner  = new();
-      Repo_Lookup_Name           m_repository_lookup_name   = new();
-      // Repo_Lookup_Target       m_repository_lookup_target = new();
       
+      Dictionary<TAG_INFO, Dictionary<EnumTagAttributeType, HashSet<TAG_DATA>>> m_repository          = new();
 
-      public void SetTag(TagData _tag)
+      Dictionary<TAG_INFO, Dictionary<EnumTagAttributeType, HashSet<TAG_DATA>>> m_repository_target   = new();
+
+      Dictionary<(TAG_INFO, TAG_INFO), HashSet<EnumTagAttributeType>>           m_repository_relation = new();
+
+
+      public bool IsExistTag(TAG_DATA _tag_data)
       {
-         if (_tag == null)
-            return;
-
-         if (GetTag(_tag.ID) != null)
-             RemoveTag(_tag.ID);
-
-         m_repository_lookup_owner.SetTag(_tag);
-         m_repository_lookup_name.SetTag(_tag);
-         // m_repository_lookup_target.SetLabel(_label);
-         m_repository.Add(_tag.ID, _tag);
-      }
-
-      public void RemoveTag(Int64 _tag_id)  
-      {
-         var tag = GetTag(_tag_id);
-         if (tag == null)
-            return;
-
-         m_repository_lookup_owner.RemoveTag(tag);
-         m_repository_lookup_name.RemoveTag(tag);
-         // m_repository_lookup_target.RemoveLabel(_label);
-         m_repository.Remove(_tag_id);
-      }
-
-
-      public TagData GetTag(Int64 _tag_id)
-      {
-         if (m_repository.TryGetValue(_tag_id, out var label))
-            return label;
-
-         return null;
-      }
-
-      public void CollectTag(Int64 _owner_entity_id, List<TagData> _result)
-      {
-         using var list_label_id = ListPool<Int64>.AcquireWrapper();        
-
-         m_repository_lookup_owner.CollectTag(TAG_TARGET_INFO.Create_Entity(_owner_entity_id), list_label_id.Value);
-
-         foreach(var label_id in list_label_id.Value)
+         if (m_repository.TryGetValue(_tag_data.TagInfo, out var repo_attribute))
          {
-            var label = GetTag(label_id);
-            if (label != null)
-               _result.Add(label);
+            if (repo_attribute.TryGetValue(_tag_data.Attribute, out var repo_tag_data))            
+               return repo_tag_data.Contains(_tag_data);
+         }
+
+         return false;
+      }
+
+      public void SetTag(TAG_DATA _tag_data)
+      {
+         // 이미 있는 Tag일 경우.
+         if (IsExistTag(_tag_data))
+            return; 
+
+         // 소유자 레포에 추가.
+         {
+            if (m_repository.TryGetValue(_tag_data.TagInfo, out var repo_attribute) == false)
+            {
+               repo_attribute = new ();
+               m_repository.Add(_tag_data.TagInfo, repo_attribute);
+            }
+
+            if (repo_attribute.TryGetValue(_tag_data.Attribute, out var repo_tag_data) == false)
+            {
+                repo_tag_data = new ();
+                repo_attribute.Add(_tag_data.Attribute, repo_tag_data);
+            }
+
+            repo_tag_data.Add(_tag_data);
+         }
+
+         // 타겟 레포에 추가.
+         {
+            if (m_repository_target.TryGetValue(_tag_data.TargetInfo, out var repo_attribute) == false)
+            {
+               repo_attribute = new ();
+               m_repository_target.Add(_tag_data.TargetInfo, repo_attribute);
+            }
+
+            if (repo_attribute.TryGetValue(_tag_data.Attribute, out var repo_tag_data) == false)
+            {
+                repo_tag_data = new ();
+                repo_attribute.Add(_tag_data.Attribute, repo_tag_data);
+            }
+
+            repo_tag_data.Add(_tag_data);
+         }
+
+         // 관계 레포에 추가.
+         {
+            if (m_repository_relation.TryGetValue((_tag_data.TagInfo, _tag_data.TargetInfo), out var repo_attribute) == false)            
+            {
+               repo_attribute = new ();
+               m_repository_relation.Add((_tag_data.TagInfo, _tag_data.TargetInfo), repo_attribute);
+            }
+
+            repo_attribute.Add(_tag_data.Attribute);
          }
       }
 
-      public void CollectTag_ByName(string _name, List<TagData> _result)
+      public void RemoveTag(TAG_DATA _tag_data)
       {
-         using var list_tag_id = ListPool<Int64>.AcquireWrapper();
+         // Tag가 없으면.
+         if (IsExistTag(_tag_data) == false)
+            return;
 
-         m_repository_lookup_name.CollectTag(_name, list_tag_id.Value);
+         // 소유자 레포에서 제거.
+         {            
+            if (m_repository.TryGetValue(_tag_data.TagInfo, out var repo_attribute))
+            {
+               if (repo_attribute.TryGetValue(_tag_data.Attribute, out var repo_tag_data))
+                   repo_tag_data.Remove(_tag_data);
+            }            
+         }
 
-         foreach(var tag_id in list_tag_id.Value)
+         // 타겟 레포에서 제거.
          {
-            var tag = GetTag(tag_id);
-            if (tag != null)
-               _result.Add(tag);
+            if (m_repository_target.TryGetValue(_tag_data.TargetInfo, out var repo_attribute))
+            {
+               if (repo_attribute.TryGetValue(_tag_data.Attribute, out var repo_tag_data))
+                  repo_tag_data.Remove(_tag_data);
+            }
+         }
+
+         // 관계 레포에서 제거.
+         {           
+            if (m_repository_relation.TryGetValue((_tag_data.TagInfo, _tag_data.TargetInfo), out var repo_attribute))
+            {
+               repo_attribute.Remove(_tag_data.Attribute);
+            }
          }
       }
 
 
-      // public void Collect_Target(Int64 _entity_id, EnumLabelAttribute _attribute, List<Label> _result)
-      // {
-      //    var entity = EntityManager.Instance.GetEntity(_entity_id);
-      //    if (entity == null)
-      //       return;
+      public bool IsExistTagOwner(TAG_INFO _tag_info, EnumTagAttributeType _attribute, Func<HashSet<TAG_DATA>, bool> _func_condition = null)
+      {
+         if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+            {
+               // 카운트 체크.
+               if (repo_tag_data.Count == 0)
+                  return false;
 
-      //    CollectLabel_Target(Label.TARGET_INFO.Create(EnumLabelTargetType.All, 0), _attribute, _result);
+               if (_func_condition == null || _func_condition(repo_tag_data))
+                  return true;
+            }
+         }
 
-      //    CollectLabel_Target(Label.TARGET_INFO.Create(EnumLabelTargetType.Faction, entity.GetFaction()), _attribute, _result);
+         return false;
+      }
 
-      //    CollectLabel_Target(Label.TARGET_INFO.Create(EnumLabelTargetType.Entity, entity.ID), _attribute, _result);  
-      // }
+      public bool IsExistTagTarget(TAG_INFO _tag_info, EnumTagAttributeType _attribute, Func<HashSet<TAG_DATA>, bool> _func_condition = null)
+      {
+         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+            {
+               // 카운트 체크.
+               if (repo_tag_data.Count == 0)
+                  return false;
 
-      // void CollectLabel_Target(Label.TARGET_INFO _target_info, EnumLabelAttribute _attribute, List<Label> _result)
-      // {
-      //    using var list_label_id = ListPool<Int64>.AcquireWrapper();
 
-      //    m_repository_lookup_target.CollectLabel(_target_info, _attribute, list_label_id.Value);
+               if (_func_condition == null || _func_condition(repo_tag_data))
+                  return true;
 
-      //    foreach(var label_id in list_label_id.Value)
-      //    {
-      //       var label = GetLabel(label_id);
-      //       if (label != null)
-      //          _result.Add(label);
-      //    }
-      // }
+            }
+         }
+
+         return false;
+      }
+
+      public bool IsExistTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, Func<HashSet<EnumTagAttributeType>, bool> _func_condition = null)
+      {
+         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
+         {
+            if (repo_attribute.Count == 0)
+               return false;
+
+            if (_func_condition == null || _func_condition(repo_attribute))
+               return true;
+         }
+         
+         return false;
+      }
+
+
+
+
+
+
+
+      public void CollectTagOwner(TAG_INFO _tag_info, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      {
+         if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+               _result.AddRange(repo_tag_data);
+         }
+      }
+
+      public void CollectTagTarget(TAG_INFO _tag_info, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      {
+         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+               _result.AddRange(repo_tag_data);
+         }
+      }      
+
+
+      public void CollectTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, List<EnumTagAttributeType> _result)
+      {        
+         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
+            _result.AddRange(repo_attribute);
+      }
+
    }
 
 }
