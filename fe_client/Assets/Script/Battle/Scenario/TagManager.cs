@@ -176,12 +176,17 @@ namespace Battle
             if (_func_condition == null || _func_condition(repo_attribute))
                return true;
          }
-         
+
          return false;
       }
 
-
-
+      public bool IsExistTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, EnumTagAttributeType _arg0)
+      {
+         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
+            return repo_attribute.Contains(_arg0);
+         
+         return false;
+      }
 
 
 

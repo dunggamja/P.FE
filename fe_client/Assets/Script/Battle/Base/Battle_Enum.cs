@@ -340,7 +340,6 @@ namespace Battle
        TALK_COMMAND = 21,   // 대화 명령 가능
 
        TAG_PARENT = 100, // 태그 - 부모. 
-      //  TAG_CHILD  = 101, // 태그 - 자식. (자식이 셋팅되면, 부모도 셋팅해야 함)
 
        FromScenario = 999,
     }
