@@ -3,7 +3,7 @@
         "m_width": 64,
         "m_height": 64,
         "m_attribute_mask_static": [
-            1,
+            2,
             6,
             6,
             2,
@@ -4333,7 +4333,7 @@
             }
         ],
         "m_attribute_mask_result": [
-            1,
+            2,
             6,
             6,
             2,
@@ -8526,6 +8526,18 @@
             {
                 "m_entity_id": 4001,
                 "m_cell_x": 16,
+                "m_cell_y": 1,
+                "m_is_fixed_object": false
+            },
+            {
+                "m_entity_id": 4002,
+                "m_cell_x": 17,
+                "m_cell_y": 0,
+                "m_is_fixed_object": false
+            },
+            {
+                "m_entity_id": 4003,
+                "m_cell_x": 18,
                 "m_cell_y": 1,
                 "m_is_fixed_object": false
             },
