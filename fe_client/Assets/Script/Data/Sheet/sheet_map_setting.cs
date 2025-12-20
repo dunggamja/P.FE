@@ -108,14 +108,12 @@ public class sheet_map_setting_localize
 }
 
 [Serializable]
-public class sheet_map_setting_label
-{
-	public Int64  ID;
-	public string MEMO;
-	public string LABEL;
-	public int    ATTRIBUTE;
+public class sheet_map_setting_tag
+{	
+	public string MEMO;		
 	public int    OWNER_TYPE;
 	public Int64  OWNER_VALUE;
+	public int    ATTRIBUTE;
 	public int    TARGET_TYPE;
 	public Int64  TARGET_VALUE;
 }
@@ -126,10 +124,11 @@ public class sheet_map_setting_label
 [ExcelAsset]
 public class sheet_map_setting : ScriptableObject
 {
-	public List<sheet_map_setting_entity>    entity;
-	public List<sheet_map_setting_status>    status;
-	public List<sheet_map_setting_item>      item;
-	public List<sheet_map_setting_localize>  localization	;
+	public List<sheet_map_setting_entity>    entity       = new();
+	public List<sheet_map_setting_status>    status       = new();
+	public List<sheet_map_setting_item>      item         = new();
+	public List<sheet_map_setting_localize>  localization = new();
+	public List<sheet_map_setting_tag>       tag          = new();
 
 
 	private Dictionary<Int32, (string table, string key)>   m_cache_localize_name  = new ();

@@ -76,7 +76,11 @@ namespace Battle
             // 유닛 셋팅.
             Test_BattleSystem_Setup_Unit(map_file, map_setting);
 
-            Test_BattleSystem_Setup_Others(faction_setting);
+            // 진영 셋팅.
+            Test_BattleSystem_Setup_Faction(faction_setting);
+
+            // 태그 셋팅.
+            Test_BattleSystem_Setup_Tag(map_setting);
 
 
             IsInitialized = true;
@@ -246,7 +250,7 @@ namespace Battle
 
         }
 
-        void Test_BattleSystem_Setup_Others(sheet_map_faction_setting _faction_setting)
+        void Test_BattleSystem_Setup_Faction(sheet_map_faction_setting _faction_setting)
         {
             if (_faction_setting == null)
                 return;
@@ -265,6 +269,22 @@ namespace Battle
             foreach(var e in _faction_setting.AllianceSettings)
             {
                 BattleSystemManager.Instance.SetFactionAlliance(e.Faction_1, e.Faction_2);
+            }
+        }
+
+        void Test_BattleSystem_Setup_Tag(sheet_map_setting _map_setting)
+        {
+            if (_map_setting == null)
+                return;
+
+            foreach(var e in _map_setting.tag)
+            {         
+                var tag_data        = TAG_DATA.Create(
+                    TAG_INFO.Create((EnumTagType)e.OWNER_TYPE, e.OWNER_VALUE), 
+                    (EnumTagAttributeType)e.ATTRIBUTE, 
+                    TAG_INFO.Create((EnumTagType)e.TARGET_TYPE, e.TARGET_VALUE));
+
+                TagManager.Instance.SetTag(tag_data);
             }
         }
     }

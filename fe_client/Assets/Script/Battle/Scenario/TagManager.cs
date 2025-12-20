@@ -188,6 +188,34 @@ namespace Battle
          return false;
       }
 
+      public bool IsExistTagRelation(Entity _owner_entity, Entity _target_entity, EnumTagAttributeType _arg0)
+      {
+         Span<TAG_INFO> owner_infos  = stackalloc TAG_INFO[3];
+         Span<TAG_INFO> target_infos = stackalloc TAG_INFO[3];
+
+         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
+         owner_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);
+         target_infos[0] = TAG_INFO.Create(EnumTagType.Entity, _target_entity.ID);
+
+         owner_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
+         target_infos[1] = TAG_INFO.Create(EnumTagType.Entity_Faction, _target_entity.GetFaction());
+
+         owner_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+         target_infos[2] = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+
+
+         foreach(var owner in owner_infos)
+         {
+            foreach(var target in target_infos)
+            {
+               if (IsExistTagRelation(owner, target, _arg0))
+                  return true;
+            }
+         }
+
+         return false;
+      }
+
 
 
 
@@ -215,6 +243,12 @@ namespace Battle
          if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
             _result.AddRange(repo_attribute);
       }
+
+
+      
+
+
+      
 
    }
 

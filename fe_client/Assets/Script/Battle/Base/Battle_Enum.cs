@@ -316,12 +316,16 @@ namespace Battle
     {
        None = 0, 
 
-       Entity       = 1,
-       Faction      = 2,
-       All          = 3, 
-       Position     = 100,
+       Entity         = 1,    // 엔티티.
+       Entity_Faction = 2,    // 진영.
+       Entity_All     = 3,    // 구분 없이 모든 엔티티.   // All > Faction > Entity, 이것은 일일이 문서화하기 힘드므로 시스템으로 처리한다.
+
+       Position       = 100, // 위치 - 점.
+       Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
 
+
+       Trigger        = 10000, // 트리거.
 
 
     }
@@ -330,30 +334,19 @@ namespace Battle
     {
        None = 0,
 
-       TARGET_FOCUS  = 1, // 타겟팅
-       TARGET_IGNORE = 2, // 타겟팅 제외.
+       TARGET_FOCUS   = 1, // 타겟팅
+       TARGET_IGNORE  = 2, // 타겟팅 제외.
 
 
        POSITION_VISIT = 11, // 위치 - 방문 가능       
        POSITION_EXIT  = 12, // 위치 - 이탈 
 
-       TALK_COMMAND = 21,   // 대화 명령 가능
+       TALK_COMMAND   = 21,  // 대화 명령 가능
 
-       TAG_PARENT = 100, // 태그 - 부모. 
+       TAG_PARENT     = 100, // 태그 - 부모. 
 
-       FromScenario = 999,
+       FromScenario   = 999,
     }
-
-
-
-
-    public enum EnumTagProductType
-    {
-       None     = 0, // (데이터 적재 시 바로 셋팅)
-       Scenario = 1, // 시나리오로부터 동적 생성.       
-    }
-
-    
 
 
     public enum EnumScenarioType
@@ -391,7 +384,6 @@ namespace Battle
 
 
        TurnCount             = 11, // 특정 턴수가 되면 조건 충족
-      //  SurviveTurns          = 12, // 특정 턴수 동안 생존하면 조건 충족 (시나리오 시작 후 부터 체크)
 
 
        PositionArrive        = 21, // 위치 도착 시 조건 충족

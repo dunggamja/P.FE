@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MagicaCloth2;
+using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using UnityEngine;
 
@@ -55,23 +56,59 @@ namespace Battle
       {
          return HashCode.Combine((int)TagType, TagValue);
       }
-    }
+   }
+
 
 
    public static class TagHelper
    {
-      public static (int x, int y) ToPosition(this TAG_INFO _tag_info)
-      {
-         if (_tag_info.TagType == EnumTagType.Position)
-            return ((int)(_tag_info.TagValue / Constants.MAX_MAP_SIZE), (int)(_tag_info.TagValue % Constants.MAX_MAP_SIZE));
+      const Int64 POSITION_VALUE_MAX = Constants.MAX_MAP_SIZE * Constants.MAX_MAP_SIZE;
 
-         return (0, 0);
+      static (int x, int y) ToPosition(Int64 _value)
+      {
+         _value %= POSITION_VALUE_MAX;
+         return ((int)(_value / Constants.MAX_MAP_SIZE), (int)(_value % Constants.MAX_MAP_SIZE));
       }
 
       public static Int64 PositionToValue(int _x, int _y)
       {
-         return _x * Constants.MAX_MAP_SIZE + _y;
+         _x %= Constants.MAX_MAP_SIZE;
+         _y %= Constants.MAX_MAP_SIZE;
+
+         return _x * Constants.MAX_MAP_SIZE + _y;      
       }
+
+      public static (int x, int y) ToPosition(this TAG_INFO _tag_info)
+      {
+         if (_tag_info.TagType == EnumTagType.Position)
+            return ToPosition(_tag_info.TagValue);
+
+         return (0, 0);
+      }
+
+      public static (int min_x, int min_y, int max_x, int max_y) ToPositionRect(this TAG_INFO _tag_info)
+      {
+         if (_tag_info.TagType != EnumTagType.Position_Rect)
+            return (0, 0, 0, 0);
+
+
+         var value     = _tag_info.TagValue;         
+         var max_value = ToPosition(value);
+         var min_value = ToPosition(value / POSITION_VALUE_MAX);
+
+         return (min_value.x, min_value.y, max_value.x, max_value.y);
+      }
+
+
+      public static Int64 PositionRectToValue(int _min_x, int _min_y, int _max_x, int _max_y)
+      {
+         var value = PositionToValue(_min_x, _min_y);
+         value    *= POSITION_VALUE_MAX;
+         value    += PositionToValue(_max_x, _max_y);
+
+         return value;
+      }
+
    }
 
 

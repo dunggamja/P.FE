@@ -67,13 +67,14 @@ namespace Battle
             if (attacker == null)
                 return false;
 
-            // TODO: 시나리오 태그 체크.
-            {
-                var tag_owner_info   = TAG_INFO.Create(EnumTagType.Entity, _attacker_id);
-                var tag_target_info  = TAG_INFO.Create(EnumTagType.Entity, _target_id);
+            var target = EntityManager.Instance.GetEntity(_target_id);
+            if (target == null)
+                return false;
 
-                var is_focus_target  = TagManager.Instance.IsExistTagRelation(tag_owner_info, tag_target_info, EnumTagAttributeType.TARGET_FOCUS);
-                var is_ignore_target = TagManager.Instance.IsExistTagRelation(tag_owner_info, tag_target_info, EnumTagAttributeType.TARGET_IGNORE);
+            // 시나리오 태그 체크. (포커싱 또는 포커싱 무시)
+            {
+                var is_focus_target  = TagManager.Instance.IsExistTagRelation(attacker, target, EnumTagAttributeType.TARGET_FOCUS);
+                var is_ignore_target = TagManager.Instance.IsExistTagRelation(attacker, target, EnumTagAttributeType.TARGET_IGNORE);
 
                 // 무시 태그만 셋팅 되어있다면 타겟팅에서 제외.
                 if (is_ignore_target && !is_focus_target)
