@@ -15,8 +15,9 @@ namespace Battle
             Attack_Normal,
 
             // 타겟을 공격가능한지 체크, 
-            // 타겟을 막는 장애물을 파괴/해결 우선
             Attack_Target,
+            // 타겟을 막는 장애물을 파괴/해결 우선
+            Attack_Target_Guard,
         }
 
         public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Attack_Normal;
@@ -150,48 +151,52 @@ namespace Battle
 
             // 행동들이 가능한 상태인지 체크.            
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
-
-
-            // 공격 행동이 불가능한 상태면 종료
             if (is_attackable == false)
-                return;            
+                return; 
 
-            // 사정거리 내에 적이 없으면 종료.
-            var weapon_range = owner_entity.GetWeaponRange(0).max;
-            var move_range   = owner_entity.PathMoveRange;
-            if (Update_QueryEnemyInRange(
-                    _param.ID, 
-                    owner_entity.Cell, 
-                    weapon_range + move_range) == false)
+            // 사정거리 내에 적이 없으면 종료.            
+            if (Verify_EnemyInRange(owner_entity) == false)
                 return;
 
 
-            // 공격 점수 갱신.
-            Update_AttackScore(_param.ID);
+            switch(BehaviorType)
+            {
+                case EnumBehavior.Attack_Normal:
+                    Process_Attack_Normal(_param.ID);
+                    break;
+                case EnumBehavior.Attack_Target:
+                    // Update_AttackTarget(_param.ID);
+                    break;
+                case EnumBehavior.Attack_Target_Guard:
+                    // Update_AttackTargetGuard(_param.ID);
+                    break;
+            }
         }
 
-        private bool Update_QueryEnemyInRange(Int64 _entity_id, (int x, int y) _position, int _range)
+        private bool Verify_EnemyInRange(Entity _entity)
         {
-            var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
-            if (owner_entity == null)
+            if (_entity == null)
                 return false;
+
+
+            var entity_id       = _entity.ID;
+            var entity_position = _entity.Cell;
+            var weapon_range    = _entity.GetWeaponRange(0).max;
+            var move_range      = _entity.PathMoveRange;
 
 
             using var list_target = ListPool<Int64>.AcquireWrapper();
 
             SpacePartitionManager.Instance.Query_Position_Range(
                 list_target.Value,
-                _position, 
-                _range);
+                entity_position, 
+                weapon_range + move_range);
 
+            // 공격 가능한 적이 범위내에 있는지 체크.(이동거리 + 무기 사정거리)
             foreach(var e in list_target.Value)
             {
-                // 공격 가능한지 체크.
-                if (AIHelper.Verify_AI_Enemy(owner_entity.ID, e) == false)
-                    continue;
-
-
-                return true;                
+                if (AIHelper.Verify_AI_Enemy(entity_id, e))
+                    return true;            
             }
 
 
@@ -199,7 +204,7 @@ namespace Battle
 
         }
 
-        private void Update_AttackScore(Int64 _entity_id)
+        private void Process_Attack_Normal(Int64 _entity_id)
         {
             var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
             if (owner_entity == null)
@@ -466,10 +471,9 @@ namespace Battle
             visitor.Value.WeaponRangeMax = _weapon_range_max;
             visitor.Value.WeaponRangeMin = _weapon_range_min;
 
-            // FloodFill을 통해서 공격 가능한 타겟을 찾아봅시다. 
+            // FloodFill을 통해서 공격 가능한 타겟을 수집합니다.
             PathAlgorithm.FloodFill(visitor.Value);
 
-            // 타겟 이관.
             _collect_targets.AddRange(visitor.Value.GetCollectTargets());
 
             // ObjectPool<CollectTargetVisitor>.Return(visitor.Value);

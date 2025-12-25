@@ -101,24 +101,29 @@ namespace Battle
             // 대기 : 다른 행동들 모두 할거 없을때 처리.
             AddAIUpdater(999, new AI_Score_Done());
 
+            // TODO: 도발 등 상태이상에 걸린 경우에 대한 행동로직 추가해야할듯 
+            // AddAIUpdater(-30, // 수면 )
+            // AddAIUpdate(-20,  // 도발 )
+            // AddAIUpdaer(-10,  // 혼란 )
+
 
             switch(_ai_type)
             {
                 // 공격:
                 case EnumAIType.Attack:
-                    // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
-                    // 2. 가까운 적을 향해 이동.
-                    AddAIUpdater(2, new AI_Score_Move());
+                    // 타겟이 있을 경우 그 것을 먼저 노린다. (타겟이 있을 경우만 동작)
+                    AddAIUpdater(0, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Target));
+                    // 타겟으로 가는 길이 막혀있을 경우. (타겟이 있을 경우만 동작)
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Target_Guard));
+                    // 공격 가능한 적이 있으면 공격. (타겟만 노릴 경우 동작 X)
+                    AddAIUpdater(2, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
+
+                    // 타겟이 있으면 타겟과의 가까워지는 것을 최우선.  (타겟이 있을 경우만 동작)
+                    AddAIUpdater(10, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
+                    // 가까운 적을 향해 이동. (타겟만 노릴 경우 동작 X)
+                    AddAIUpdater(11, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
                     break;
 
-                // case EnumAIType.Attack_Target:
-                    // 1. 타겟이 공격 가능하면 공격.
-                    //AddAIUpdater(EnumAIPriority.Primary, new AI_Score_Attack());
-                    // 2. 타겟을 향해 이동
-                    //AddAIUpdater(EnumAIPriority.Primary, new AI_Score_Move());
-                    // 3. 길찾기 실패시 타겟 근처의 적 공격이 가능하면 공격.                    
-                    // break;
 
                 // 요격:
                 case EnumAIType.Intercept:

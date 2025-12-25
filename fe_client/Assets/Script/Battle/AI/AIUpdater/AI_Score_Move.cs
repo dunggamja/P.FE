@@ -11,7 +11,18 @@ namespace Battle
   {
     public enum EnumBehavior
     {
-       Move_Close
+       // 가장 가까운 적에게 이동.
+       Closest_Enemy,
+
+       // 타겟과의 가까워지는 것을 최우선.
+       Closest_Target,
+    }
+
+    public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Closest_Enemy;
+
+    public AI_Score_Move(EnumBehavior _behavior_type)
+    {
+      BehaviorType = _behavior_type;
     }
 
 
@@ -204,9 +215,12 @@ namespace Battle
         return;
 
 
-
-      Process_CloseTarget(_owner);
-        
+      switch(BehaviorType)
+      {
+        case EnumBehavior.Closest_Enemy:
+          Process_Closest_Enemy(_owner);
+          break;
+      }
     }
 
 
@@ -245,7 +259,7 @@ namespace Battle
         return;
     }
 
-    void Process_CloseTarget(IAIDataManager _owner)
+    void Process_Closest_Enemy(IAIDataManager _owner)
     {
         using var list_path_nodes = ListPool<PathNode>.AcquireWrapper();
         using var visitor         = ObjectPool<PositionVisitor>.AcquireWrapper();
@@ -273,7 +287,6 @@ namespace Battle
           visitor.Value.BestPath.AddRange(list_path_nodes.Value);
           
           PathAlgorithm.FloodFill(visitor.Value);
-
 
           // 점수 셋팅.
           entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
