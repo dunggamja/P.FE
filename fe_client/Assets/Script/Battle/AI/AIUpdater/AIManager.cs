@@ -6,12 +6,52 @@ using UnityEngine;
 
 namespace Battle
 {
+    public class AIBlackBoard : BlackBoard<EnumAIBlackBoard>
+    {
+        public AI_Score_Attack.Result Score_Attack { get; private set; } = new();
+        public AI_Score_Move.Result   Score_Move   { get; private set; } = new();
+        public AI_Score_Wand.Result   Score_Wand   { get; private set; } = new();
+
+
+        public override void Reset()
+        {
+            base.Reset();
+            Score_Attack.Reset();
+            Score_Move.Reset();
+            Score_Wand.Reset();
+        }
+
+        public EnumAIBlackBoard GetBestScoreType()
+        {
+            var top_score_type = EnumAIBlackBoard.None;
+            var top_score      = 0f;
+
+
+
+            for(int i = (int)EnumAIBlackBoard.Begin; i < (int)EnumAIBlackBoard.Max; ++i)
+            {
+                var score = GetBPValueAsFloat((EnumAIBlackBoard)i);
+                if (score > top_score)
+                {
+                    top_score_type = (EnumAIBlackBoard)i;
+                    top_score      = score;
+                }
+            }
+
+            return top_score_type;
+        }
+    }
+
+
 
     public class AIManager
     {
-        private EnumAIType       m_ai_type    = EnumAIType.None;
+        private EnumAIType                             m_ai_type       = EnumAIType.None;        
+        private Dictionary<int, List<IAIUpdater>>      m_repository    = new();
+        private List<int>                              m_priority_list = new();
+        public  AIBlackBoard  AIBlackBoard { get; private set; } = new();
+
         
-        private Dictionary<EnumAIPriority, List<IAIUpdater>> m_repository = new();
 
         public bool Initialize(IAIDataManager _owner)
         {
@@ -20,7 +60,7 @@ namespace Battle
         }
 
 
-        public void Update(EnumAIPriority _priority, IAIDataManager _param)
+        public void Update(IAIDataManager _param)
         {
             if (_param == null)
                 return;
@@ -28,14 +68,24 @@ namespace Battle
             // AIType 셋팅. 
             if (m_ai_type != _param.AIType)
                 SetAIType(_param.AIType);
- 
 
-            if (m_repository.TryGetValue(_priority, out var list_updater))
+
+            // 우선순위에 따라서 AI 업데이트.
+            foreach(var priority in m_priority_list)
             {
-                foreach(var ai in list_updater)
-                {
-                    ai.Update(_param);
-                }
+                var list_updater = GetAIUpdaterList(priority);
+                if (list_updater == null)
+                    continue;
+
+                // AI 블랙보드 초기화.
+                AIBlackBoard.Reset();
+
+                // AI 업데이트.
+                list_updater.ForEach(e => e.Update(_param));
+
+                // 최고 점수 셋팅 성공.
+                if (AIBlackBoard.GetBestScoreType() != EnumAIBlackBoard.None)
+                    break;                
             }
         }
 
@@ -43,10 +93,13 @@ namespace Battle
         private void SetAIType(EnumAIType _ai_type)
         {
             m_ai_type = _ai_type;
+
+            // 기존 AIUpdater 정리.
             m_repository.Clear();
+            m_priority_list.Clear();
 
             // 대기 : 다른 행동들 모두 할거 없을때 처리.
-            AddAIUpdater(EnumAIPriority.Others, new AI_Score_Done());
+            AddAIUpdater(999, new AI_Score_Done());
 
 
             switch(_ai_type)
@@ -54,28 +107,41 @@ namespace Battle
                 // 공격:
                 case EnumAIType.Attack:
                     // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
                     // 2. 가까운 적을 향해 이동.
-                    AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
+                    AddAIUpdater(2, new AI_Score_Move());
                     break;
+
+                // case EnumAIType.Attack_Target:
+                    // 1. 타겟이 공격 가능하면 공격.
+                    //AddAIUpdater(EnumAIPriority.Primary, new AI_Score_Attack());
+                    // 2. 타겟을 향해 이동
+                    //AddAIUpdater(EnumAIPriority.Primary, new AI_Score_Move());
+                    // 3. 길찾기 실패시 타겟 근처의 적 공격이 가능하면 공격.                    
+                    // break;
 
                 // 요격:
                 case EnumAIType.Intercept:
-                    // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    // 1. 공격 가능한 적이 사거리 내에 있으면 공격.
+                    AddAIUpdater(1,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
                     break;
 
                 // 경계
                 case EnumAIType.Alert:
                     // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(EnumAIPriority.Primary,   new AI_Score_Attack());
+                    AddAIUpdater(2,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
                     // 2. 적 사정거리 내에 있을경우 도망친다.
                     //AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
                     break;
+
+                case EnumAIType.Fixed:
+                    // 1. 이동하지 않은 상태에서 공격 가능하면 공격.
+                    break;
+
             }
         }
 
-        private void AddAIUpdater(EnumAIPriority _priority, IAIUpdater _ai_updater)
+        private void AddAIUpdater(int _priority, IAIUpdater _ai_updater)
         {
             if (m_repository.TryGetValue(_priority, out var list_updater) == false)
             {
@@ -84,6 +150,25 @@ namespace Battle
             }
             
             list_updater.Add(_ai_updater);
+
+            if (m_priority_list.Contains(_priority) == false)
+            { 
+                m_priority_list.Add(_priority);
+                m_priority_list.Sort();
+            }
         }
+
+        private List<IAIUpdater> GetAIUpdaterList(int _priority)
+        {
+            if (m_repository.TryGetValue(_priority, out var list_updater))
+            {
+                return list_updater;
+            }
+
+            return null;
+        }
+
+
+        
     }
 }

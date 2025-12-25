@@ -168,16 +168,26 @@ namespace Battle
         CommandFlag,       // [명령] 명령 (0 : 이동, 1 : 공격)
         Faction,           // [명령] 진영
 
-        AIScore_Begin  = 1000,
         
-        AIScore_Attack = AIScore_Begin, // [AI] 공격
-        AIScore_Done,          // [AI] 완료
-        AIScore_Move,          // [AI] 이동
-
-
-        AIScore_Max,
 
     }
+
+    public enum EnumAIBlackBoard
+    {
+        None   = 0,
+        Begin  = 1,
+        
+        Attack = Begin, // [AI] 공격
+        Done,           // [AI] 완료
+        Move,           // [AI] 이동
+
+
+        Max,
+
+    }
+
+
+
 
     public enum EnumCombatBlackBoard
     {
@@ -334,8 +344,9 @@ namespace Battle
     {
        None = 0,
 
-       TARGET_FOCUS   = 1, // 타겟팅
+       TARGET_FOCUS   = 1, // 타겟팅 집중.
        TARGET_IGNORE  = 2, // 타겟팅 제외.
+       TARGET_CONTAIN = 3, // 타겟팅 포함.
 
 
        POSITION_VISIT = 11, // 위치 - 방문 가능       

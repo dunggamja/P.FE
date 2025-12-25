@@ -21,7 +21,7 @@ namespace Battle
             if (owner_entity == null)
                 return;
             //             
-            owner_entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Done, DONE_SCORE);            
+            owner_entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Done, DONE_SCORE);            
         }
     }
 }

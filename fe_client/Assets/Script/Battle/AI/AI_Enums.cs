@@ -6,33 +6,35 @@ using UnityEngine;
 
 namespace Battle
 {
-    public enum EnumAIPriority
-    {
-        Begin   = 0,
-        Primary = Begin,    // 우선해서 처리할 행동.
-        Secondary,  // 우선순위가 낮은 행동.
-        Others,     // 나머지.
+    // public enum EnumAIPriority
+    // {
+    //     Begin   = 0,
+    //     Primary = Begin,    // 우선해서 처리할 행동.
+    //     Secondary,  // 우선순위가 낮은 행동.
+    //     Others,     // 나머지.
 
-        Max,
+    //     Max,
 
-    }
+    // }
 
 
     public enum EnumAIType
     {
         None,
 
-        // 근처에 있는 적을 향해 이동해, 사정거리에 잡으면 공격해 온다. (완료)
+        // # 일반 : 근처에 있는 적을 향해 이동해, 사정거리에 잡으면 공격해 온다. (완료)
+
+        // # 타겟이 있을 경우 어떻게 처리할 것인가?
+        // 타겟 공격이 가능할 경우 -> 공격
+        // 타겟 공격이 불가능할 경우 
+        //  * 다른 적은 최대한 무시하는 경우.
+        //    - 타겟과의 장애물이 없을 경우. : 타겟과의 가까워지는 것을 최우선
+        //    - 타겟과의 장애물이 있을 경우. : 장애물 파괴/해결 우선. 
+        //  * 다른 적도 공격하는 경우.
+        //    - 공격 가능한 적이 있을 경우 : 공격 실행
+        //    - 공격 가능한 적이 없을 경우 : 타겟과의 가까워지는 것을 최우선
+        
         Attack,
-
-        // 특정 목표를 향해 이동해, 사정거리에 잡으면 공격해 온다.목표 이외에는 공격하지 않는다.
-        // 목표로의 이동 루트를 완전히 봉쇄해도 다른 적에게는 공격하지 않는다.? 
-        // 목표가 맵상에서 사라지면 통상적인 진격 타입이 된다.
-        Attack_Target,
-
-
-        // 사정거리 내에 공격 가능한 적이 있으면 공격, 없으면 특정 목표를 향해 이동.
-        Attack_Move,
 
 
         // 사정거리 내에 공격 가능한 적이 있으면 공격, 없으면 그 자리에서 대기. (완료)
@@ -56,6 +58,8 @@ namespace Battle
         Wandering,
         // 사정거리 내에 공격 가능한 적이 있으면 공격, 없으면 랜덤으로 이동.
         Wandering_Aggressive,
+        // // 
+        // Wandering_Evasive,
 
         // 사정거리 내에 공격 가능한 적이 있으면 공격, 없으면 일정한 루트를 이동.
         Patrol,
@@ -76,6 +80,7 @@ namespace Battle
 
     public enum EnumAIMoveType
     {
+
       Advance,    // 진군 - 타겟을 향해 이동.
       Intercept,  // 요격 - 거점에서 대기.
 
@@ -95,11 +100,12 @@ namespace Battle
       // Aiming,     // 대상을 노림. - 대상 외 공격 X. 최대한 접근.
       // Guard,      // 대상을 지킴. - 공격 O. 대상과 거리를 유지하는 선에서 적 공격.
     }
-
-    public enum EnumAITargetType
-    {
-        None,
-        Target,
-        Position,
-    }
+    
+    
+    // public enum EnumAITargetType
+    // {
+    //     None,
+    //     Target,
+    //     Position,
+    // }
 }

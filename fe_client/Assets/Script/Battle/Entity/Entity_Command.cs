@@ -9,41 +9,36 @@ namespace Battle
 {
     public partial class Entity 
     {
+        // public void ResetAIScore()
+        // {
+        //     BlackBoard.Score_Attack.Reset();
 
-        const int AISCORE_INDEX_BEGIN = (int)EnumEntityBlackBoard.AIScore_Begin;
-        const int AISCORE_INDEX_END   = (int)EnumEntityBlackBoard.AIScore_Max;
-
-        public void ResetAIScore()
-        {
-            BlackBoard.Score_Attack.Reset();
-
-
-            for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
-            {
-                var ai_type = (EnumEntityBlackBoard)i;
-                BlackBoard.SetBPValue(ai_type, 0f);
-            }
-        }
+        //     for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
+        //     {
+        //         var ai_type = (EnumEntityBlackBoard)i;
+        //         BlackBoard.SetBPValue(ai_type, 0f);
+        //     }
+        // }
        
 
-        public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
-        {
-            var top_score_type = EnumEntityBlackBoard.None;
-            var top_score      = 0f;
+        // public (EnumEntityBlackBoard _type, float score) GetAIScoreMax()
+        // {
+        //     var top_score_type = EnumEntityBlackBoard.None;
+        //     var top_score      = 0f;
 
-            for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
-            {
-                var ai_type = (EnumEntityBlackBoard)i;
-                var score = BlackBoard.GetBPValueAsFloat(ai_type);
-                if (score > top_score)
-                {
-                    top_score      = score;
-                    top_score_type = ai_type;
-                }
-            }
+        //     for(int i = AISCORE_INDEX_BEGIN ; i < AISCORE_INDEX_END ; ++i)
+        //     {
+        //         var ai_type = (EnumEntityBlackBoard)i;
+        //         var score = BlackBoard.GetBPValueAsFloat(ai_type);
+        //         if (score > top_score)
+        //         {
+        //             top_score      = score;
+        //             top_score_type = ai_type;
+        //         }
+        //     }
 
-            return (top_score_type, top_score);
-        }
+        //     return (top_score_type, top_score);
+        // }
 
         public bool HasCommandEnable()
         {

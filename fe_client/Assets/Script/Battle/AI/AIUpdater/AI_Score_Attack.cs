@@ -8,21 +8,44 @@ namespace Battle
     // 사정거리 내의 공격 타겟을 찾는 로직.
     public class AI_Score_Attack : IAIUpdater
     {
+
+        public enum EnumBehavior
+        {
+            // 아무나 공격가능한 타겟 체크.
+            Attack_Normal,
+
+            // 타겟을 공격가능한지 체크, 
+            // 타겟을 막는 장애물을 파괴/해결 우선
+            Attack_Target,
+        }
+
+        public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Attack_Normal;
+
+
+        public AI_Score_Attack(EnumBehavior _behavior_type)
+        {
+            BehaviorType = _behavior_type;
+        }
+
+
+
+
+
         public class Result : IPoolObject
         {
             public enum EnumScoreType
             {                
                 Dead,             // 죽일 수 있는지 체크.
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
-                // HitRate,          // 명중률
-                MoveCost,         // 이동 거리 (가까울수록 높은 점수)
+                DamageRate_Taken, // 내가 받는 데미지 양
 
-                // DamageRate_Taken, // 내가 받는 데미지 양
+                // HitRate,          // 명중률
                 // DodgeRate,        // 회피율                
 
                 // TOOD: 적에게 위험을 받는 위치인지 체크.
                 // ThreatenRate,
 
+                // MoveCost,         // 이동 거리 (가까울수록 높은 점수)
                 // TODO: 타겟의 우선순위 체크. (힐러 등 고 가치유닛?)
                 // TargetPriority,
                 MAX
@@ -35,9 +58,10 @@ namespace Battle
                 {
                     case EnumScoreType.Dead:             return 2f;
                     case EnumScoreType.DamageRate_Dealt: return 1f;
-                    case EnumScoreType.MoveCost:         return 0.2f;
+                    case EnumScoreType.DamageRate_Taken: return -0.5f;
+                    
+                    // case EnumScoreType.MoveCost:         return 0.2f;
                     // case EnumScoreType.HitRate:          return 0.5f;
-                    // case EnumScoreType.DamageRate_Taken: return -0.7f;
                     // case EnumScoreType.DodgeRate:        return 0.4f;
                 }
 
@@ -260,11 +284,11 @@ namespace Battle
                         var calculate_score = current_score.Value.CalculateScore();
 
                         // 점수 비교.
-                        if (owner_blackboard.GetBPValueAsFloat(EnumEntityBlackBoard.AIScore_Attack) <= calculate_score)
+                        if (owner_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Attack) <= calculate_score)
                         {
                             // 높은 점수 셋팅.
-                            owner_blackboard.Score_Attack.CopyFrom(current_score.Value);                            
-                            owner_blackboard.SetBPValue(EnumEntityBlackBoard.AIScore_Attack, calculate_score); 
+                            owner_entity.AIManager.AIBlackBoard.Score_Attack.CopyFrom(current_score.Value);                            
+                            owner_entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Attack, calculate_score); 
                         }
                     }
                 }
@@ -287,8 +311,7 @@ namespace Battle
 
             // 전투 결과 스코어
             _score.Reset();
-            _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);
-           
+            _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);           
             
 
             var result = CombatHelper.Run_Plan(
@@ -315,19 +338,19 @@ namespace Battle
             
 
 
-            // 공격자/타겟 HP
+            // 공격자/타겟 현재 HP
             var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
             var target_hp = Math.Max(1, _target.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
 
             
             // 데미지 점수 셋팅. 
             _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
-            // _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
+            _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
 
-            // 이동거리 점수 셋팅.
-            var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
-            var distance_max     = Math.Max(1, _owner.PathMoveRange);
-            _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
+            // // 이동거리 점수 셋팅.
+            // var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
+            // var distance_max     = Math.Max(1, _owner.PathMoveRange);
+            // _score.SetScore(Result.EnumScoreType.MoveCost, 1f - (float)distance_current / distance_max);
 
             // 명중률 셋팅.
             // _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate);

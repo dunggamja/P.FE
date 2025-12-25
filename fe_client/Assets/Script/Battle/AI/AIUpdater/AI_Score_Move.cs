@@ -9,6 +9,12 @@ namespace Battle
 {
   public class AI_Score_Move : IAIUpdater
   {
+    public enum EnumBehavior
+    {
+       Move_Close
+    }
+
+
     public class Result : IPoolObject
     {
       public enum EnumScoreType
@@ -134,9 +140,6 @@ namespace Battle
       
     }
 
-    public EnumAIAggressiveType AggressiveType { get; private set; } = EnumAIAggressiveType.Aggressive;
-
-    public EnumAITargetType     TargetType     { get; private set; } = EnumAITargetType.None;
 
 
 
@@ -200,52 +203,41 @@ namespace Battle
       if (is_moveable == false)
         return;
 
-      
-      // 타겟을 향해가 봅시다.
-      switch((TargetType, AggressiveType))
-      {
-        // 타겟을 향해서 이동.
-        case (EnumAITargetType.Target, EnumAIAggressiveType.Aggressive):   
-            Process_Target(_owner);
-            break;
 
 
-        // 특정 위치를 향해서 이동.
-        case (EnumAITargetType.Position, EnumAIAggressiveType.Aggressive):
-            Process_TargetPosition(_owner); 
-            break;
-
-
-        // 근처 가장 가까운 타겟을 향해서 이동.
-        case (EnumAITargetType.None, EnumAIAggressiveType.Aggressive):     
-            Process_CloseTarget(_owner);     
-            break;
-
-
-        // 안전한 위치를 찾는다. 
-        // Alert: 적 사정거리 내에 있을 경우 벗어남.
-        // Evassive: 최대한 안전한 위치로 벗어남.
-        case (EnumAITargetType.None, EnumAIAggressiveType.Alert):     
-            Process_SafePosition(_owner);     
-            break;
-
-        // case (EnumAITargetType.None, EnumAIAggressiveType.Evassive):
-      }
+      Process_CloseTarget(_owner);
         
     }
 
 
-    void Process_Target(IAIDataManager _owner)
+    bool Process_Advance(IAIDataManager _owner)
     {
       if (_owner == null)
-        return;
+        return false;
 
-        var target_list = _owner.AIData?.Targets?.AllTargetIDList;
-        if (target_list == null)
-          return;
+      // 타겟을 찾는다.
+      var target_id = Process_Target_FindTarget(_owner);
 
-        
+
+      return false;
     }
+
+    Int64 Process_Target_FindTarget(IAIDataManager _owner)
+    {
+      if (_owner == null)
+        return 0;
+
+      // TODO: 도발 등 상태이상에 걸린 경우.
+
+      // TODO: 시나리오 상 정해진 타겟을 찾아봅시다.
+
+
+      return 0;
+    }
+
+
+
+
 
     void Process_TargetPosition(IAIDataManager _owner)
     {
@@ -282,9 +274,13 @@ namespace Battle
           
           PathAlgorithm.FloodFill(visitor.Value);
 
+
           // 점수 셋팅.
-          entity.BlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
-          entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.Value.BestResult.CalculateScore());
+          entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
+          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Move, visitor.Value.BestResult.CalculateScore());
+
+          // entity.BlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
+          // entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.Value.BestResult.CalculateScore());
         }
     }
 

@@ -73,15 +73,17 @@ namespace Battle
 
             // 시나리오 태그 체크. (포커싱 또는 포커싱 무시)
             {
-                var is_focus_target  = TagManager.Instance.IsExistTagRelation(attacker, target, EnumTagAttributeType.TARGET_FOCUS);
-                var is_ignore_target = TagManager.Instance.IsExistTagRelation(attacker, target, EnumTagAttributeType.TARGET_IGNORE);
+                var target_contain = TagManager.Instance.IsExistTagRelation(attacker, target,  EnumTagAttributeType.TARGET_FOCUS) 
+                                  || TagManager.Instance.IsExistTagRelation(attacker, target,  EnumTagAttributeType.TARGET_CONTAIN);
+                var target_ignore  = TagManager.Instance.IsExistTagRelation(attacker, target,  EnumTagAttributeType.TARGET_IGNORE);
 
                 // 무시 태그만 셋팅 되어있다면 타겟팅에서 제외.
-                if (is_ignore_target && !is_focus_target)
-                    return false;
+                if (target_contain == false)
+                {
+                    if (target_ignore)
+                        return false;
+                }
             }
-
-
             
 
             return true;
