@@ -145,7 +145,6 @@ namespace Battle
       {
         for (var y = block_index_min.y; y <= block_index_max.y; y++)
         { 
-
           if (m_nodes[x, y].ListId == null)
             continue;
 

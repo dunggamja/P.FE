@@ -18,12 +18,7 @@ namespace Battle
        Closest_Target,
     }
 
-    public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Closest_Enemy;
 
-    public AI_Score_Move(EnumBehavior _behavior_type)
-    {
-      BehaviorType = _behavior_type;
-    }
 
 
     public class Result : IPoolObject
@@ -199,6 +194,13 @@ namespace Battle
       }
     }
 
+
+    public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Closest_Enemy;
+
+    public AI_Score_Move(EnumBehavior _behavior_type)
+    {
+      BehaviorType = _behavior_type;
+    }
 
     public void Update(IAIDataManager _owner)
     {
@@ -391,7 +393,7 @@ namespace Battle
                       continue;
 
                     // 공격 가능한 타겟인지 체크.
-                    if (AIHelper.Verify_AI_Enemy(_entity.ID, entity_target.ID) == false)
+                    if (Verify_Enemy(_entity, entity_target) == false)
                       continue;
 
                   
@@ -443,10 +445,30 @@ namespace Battle
     {
       if (_owner == null)
         return;
+    }
 
+    private bool Verify_Enemy(Entity _entity, Entity _target) 
+    {
+        if (_entity == null || _target == null)
+            return false;
 
+        // 적인지 체크.
+        if (AIHelper.Verify_IsEnemy(_entity.ID, _target.ID) == false)
+            return false;
+
+        // 무시 대상인지 체크
+        if (AIHelper.Verify_Target_Ignore(_entity, _target))
+            return false;
 
         
+        if (BehaviorType == EnumBehavior.Closest_Target)
+        {
+            // 포커싱 대상인지 체크.
+            if (AIHelper.Verify_Target_Focus(_entity, _target) == false)
+                return false;
+        }
+
+        return true;
     }
   }
 }

@@ -333,8 +333,6 @@ namespace Battle
        Position       = 100, // 위치 - 점.
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
-
-
        Trigger        = 10000, // 트리거.
 
 
@@ -354,7 +352,7 @@ namespace Battle
 
        TALK_COMMAND   = 21,  // 대화 명령 가능
 
-       TAG_PARENT     = 100, // 태그 - 부모. 
+       TAG_PARENT     = 100, // 태그 - 부모. (그룹핑을 위한 값...)
 
        FromScenario   = 999,
     }

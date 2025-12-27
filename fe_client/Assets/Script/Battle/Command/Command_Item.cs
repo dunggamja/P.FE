@@ -55,6 +55,13 @@ namespace Battle
                 {
                     // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
                     owner_entity.SetAllCommandDone();
+
+                    // 좌표 처리.
+                    Owner.UpdateCellPosition(
+                        Owner.Cell,
+                        (_apply: true, _immediatly: true),
+                        _is_plan: false
+                    );
                 }
 
                 // 아이템 KIND 체크.

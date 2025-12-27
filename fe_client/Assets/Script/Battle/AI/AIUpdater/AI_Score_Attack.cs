@@ -12,21 +12,62 @@ namespace Battle
         public enum EnumBehavior
         {
             // 아무나 공격가능한 타겟 체크.
-            Attack_Normal,
-
+            Normal,
             // 타겟을 공격가능한지 체크, 
-            Attack_Target,
-            // 타겟을 막는 장애물을 파괴/해결 우선
-            Attack_Target_Guard,
+            Target,
+            // // 타겟을 막는 장애물을 파괴/해결 우선
+            // Target_Guard,
+
+            // 고정된 위치에서 공격.
+            Fixed,
         }
 
-        public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Attack_Normal;
+        public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Normal;
 
 
         public AI_Score_Attack(EnumBehavior _behavior_type)
         {
             BehaviorType = _behavior_type;
         }
+
+        private int GetMoveRange(Entity _entity)
+        {
+            // 행동 타입 체크.
+            if (BehaviorType == EnumBehavior.Fixed)
+                return 0;
+
+            // 이동 가능한 상태인지 체크.
+            if (_entity.HasCommandEnable(EnumCommandFlag.Move) == false)
+                return 0;
+
+            return _entity.PathMoveRange;
+        } 
+
+
+        private bool Verify_Enemy(Entity _entity, Entity _target) 
+        {
+            if (_entity == null || _target == null)
+                return false;
+
+            // 적인지 체크.
+            if (AIHelper.Verify_IsEnemy(_entity.ID, _target.ID) == false)
+                return false;
+
+            // 무시 대상인지 체크
+            if (AIHelper.Verify_Target_Ignore(_entity, _target))
+                return false;
+
+            
+            if (BehaviorType == EnumBehavior.Target)
+            {
+                // 포커싱 대상인지 체크.
+                if (AIHelper.Verify_Target_Focus(_entity, _target) == false)
+                    return false;
+            }
+
+            return true;
+        }
+       
 
 
 
@@ -36,18 +77,12 @@ namespace Battle
         {
             public enum EnumScoreType
             {                
-                Dead,             // 죽일 수 있는지 체크.
+                TargetPriority,   // 타겟 우선순위.
+                Kill,             // 죽일 수 있는지 체크.
                 DamageRate_Dealt, // 입힐 수 있는 데미지 양
                 DamageRate_Taken, // 내가 받는 데미지 양
 
-                // HitRate,          // 명중률
-                // DodgeRate,        // 회피율                
-
-                // TOOD: 적에게 위험을 받는 위치인지 체크.
-                // ThreatenRate,
-
-                // MoveCost,         // 이동 거리 (가까울수록 높은 점수)
-                // TODO: 타겟의 우선순위 체크. (힐러 등 고 가치유닛?)
+                // Position,      // 공격 위치 선호도. (지형 등 고려)
                 // TargetPriority,
                 MAX
             }
@@ -57,13 +92,14 @@ namespace Battle
             {   
                 switch(_type)         
                 {
-                    case EnumScoreType.Dead:             return 2f;
+                    // 타겟 우선순위.
+                    case EnumScoreType.TargetPriority:   return 2f;
+                    // 죽일 수 있는지 체크.
+                    case EnumScoreType.Kill:             return 1f;
+                    // 입힐 수 있는 데미지 양
                     case EnumScoreType.DamageRate_Dealt: return 1f;
-                    case EnumScoreType.DamageRate_Taken: return -0.5f;
-                    
-                    // case EnumScoreType.MoveCost:         return 0.2f;
-                    // case EnumScoreType.HitRate:          return 0.5f;
-                    // case EnumScoreType.DodgeRate:        return 0.4f;
+                    // 내가 받는 데미지 양
+                    case EnumScoreType.DamageRate_Taken: return -0.5f;                    
                 }
 
                 return 0f;
@@ -119,7 +155,6 @@ namespace Battle
                 if (_func_score_multiplier == null)
                     _func_score_multiplier = Default_Score_Multiplier;
 
-
                 var score_total = 0f;
                 var score_max = 0f;
 
@@ -149,7 +184,7 @@ namespace Battle
             if (owner_entity == null)
                 return;
 
-            // 행동들이 가능한 상태인지 체크.            
+            // 공격이 가능한 상태인지 체크.            
             var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
             if (is_attackable == false)
                 return; 
@@ -158,19 +193,9 @@ namespace Battle
             if (Verify_EnemyInRange(owner_entity) == false)
                 return;
 
-
-            switch(BehaviorType)
-            {
-                case EnumBehavior.Attack_Normal:
-                    Process_Attack_Normal(_param.ID);
-                    break;
-                case EnumBehavior.Attack_Target:
-                    // Update_AttackTarget(_param.ID);
-                    break;
-                case EnumBehavior.Attack_Target_Guard:
-                    // Update_AttackTargetGuard(_param.ID);
-                    break;
-            }
+            // 공격 점수 계산.
+            Calculate_AttackScore(owner_entity);
+          
         }
 
         private bool Verify_EnemyInRange(Entity _entity)
@@ -181,21 +206,26 @@ namespace Battle
 
             var entity_id       = _entity.ID;
             var entity_position = _entity.Cell;
-            var weapon_range    = _entity.GetWeaponRange(0).max;
-            var move_range      = _entity.PathMoveRange;
 
+            // 소유 중인 무기중 최대 사정거리.
+            var weapon_range    = _entity.GetWeaponRange(0).max;
+
+            // 이동가능한 거리.
+            var move_range      = GetMoveRange(_entity);
 
             using var list_target = ListPool<Int64>.AcquireWrapper();
 
+            // 정해진 범위내에 위치한 entity 목록을 조회합니다.
             SpacePartitionManager.Instance.Query_Position_Range(
                 list_target.Value,
                 entity_position, 
                 weapon_range + move_range);
 
-            // 공격 가능한 적이 범위내에 있는지 체크.(이동거리 + 무기 사정거리)
+            // 
             foreach(var e in list_target.Value)
             {
-                if (AIHelper.Verify_AI_Enemy(entity_id, e))
+                // 공격 가능한 적인지 체크합니다.
+                if (Verify_Enemy(_entity, EntityManager.Instance.GetEntity(e)))
                     return true;            
             }
 
@@ -204,17 +234,22 @@ namespace Battle
 
         }
 
-        private void Process_Attack_Normal(Int64 _entity_id)
+        private void Process_Attack_Fixed(Int64 _entity_id)
         {
             var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
             if (owner_entity == null)
                 return;
+        }
+
+        private void Calculate_AttackScore(Entity _entity)
+        {
+            if (_entity == null)
+                return;
 
             // 코드가 너무 길어져서 변수들 캐싱.
-            var owner_status     = owner_entity.StatusManager;
-            var owner_blackboard = owner_entity.BlackBoard;
-            var owner_inventory  = owner_entity.Inventory;
-            var is_moveable      = owner_entity.HasCommandEnable(EnumCommandFlag.Move);
+            var owner_status     = _entity.StatusManager;
+            var owner_blackboard = _entity.BlackBoard;
+            var owner_inventory  = _entity.Inventory;
 
             // 착용중인 무기 / 아이템 ID
             var owner_weapon      = owner_status.Weapon;
@@ -224,9 +259,9 @@ namespace Battle
             // 점수 계산 결과값.
             using var current_score = ObjectPool<Result>.AcquireWrapper();
 
-            // 소유 중인 무기들로 테스트 전투를 돌립니다.
+            // 소유 중인 무기들로 테스트 전투를 돌려봅시다.
             using var list_weapon = ListPool<Item>.AcquireWrapper();
-            owner_inventory.CollectItem_Weapon_Available(list_weapon.Value, owner_entity);
+            owner_inventory.CollectItem_Weapon_Available(list_weapon.Value, _entity);
 
             // 공격 가능한 타겟 목록.
             using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
@@ -236,15 +271,15 @@ namespace Battle
                 foreach(var e in list_weapon.Value)
                 {
                     // 무기 장착.
-                    if (owner_entity.ProcessAction(e, EnumItemActionType.Equip) == false)
+                    if (_entity.ProcessAction(e, EnumItemActionType.Equip) == false)
                         continue;
                     
                     // 최대 이동 거리. 
-                    var move_distance = (is_moveable) ? owner_entity.PathMoveRange : 0;
+                    var move_distance = GetMoveRange(_entity);
 
                     // 무기 사정거리. (최소/최대)
-                    var range_min = owner_status.GetBuffedWeaponStatus(owner_weapon.ItemObject, EnumWeaponStatus.Range_Min);
-                    var range_max = owner_status.GetBuffedWeaponStatus(owner_weapon.ItemObject, EnumWeaponStatus.Range);
+                    var range_min = owner_status.GetBuffedWeaponStatus(e, EnumWeaponStatus.Range_Min);
+                    var range_max = owner_status.GetBuffedWeaponStatus(e, EnumWeaponStatus.Range);
 
 
                     // 공격 가능한 타겟 목록 초기화.
@@ -254,9 +289,9 @@ namespace Battle
                     CollectTarget(
                         list_collect_target.Value,
                         TerrainMapManager.Instance.TerrainMap,
-                        owner_entity,
-                        owner_entity.Cell.x,
-                        owner_entity.Cell.y,
+                        _entity,
+                        _entity.Cell.x,
+                        _entity.Cell.y,
                         move_distance,
                         range_min,
                         range_max);
@@ -273,7 +308,7 @@ namespace Battle
                             continue;     
 
                         // 공격 가능한지 체크.
-                        if (AIHelper.Verify_AI_Enemy(owner_entity.ID, target_id) == false)
+                        if (Verify_Enemy(_entity, target_entity) == false)
                             continue;
 
                         // 점수 계산 결과값 초기화.
@@ -281,7 +316,7 @@ namespace Battle
             
                         Score_Calculate(
                             current_score.Value,
-                            owner_entity,
+                            _entity,
                             target_entity,
                             (attack_pos_x, attack_pos_y));
 
@@ -289,11 +324,11 @@ namespace Battle
                         var calculate_score = current_score.Value.CalculateScore();
 
                         // 점수 비교.
-                        if (owner_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Attack) <= calculate_score)
+                        if (_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Attack) <= calculate_score)
                         {
                             // 높은 점수 셋팅.
-                            owner_entity.AIManager.AIBlackBoard.Score_Attack.CopyFrom(current_score.Value);                            
-                            owner_entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Attack, calculate_score); 
+                            _entity.AIManager.AIBlackBoard.Score_Attack.CopyFrom(current_score.Value);                            
+                            _entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Attack, calculate_score); 
                         }
                     }
                 }
@@ -301,14 +336,12 @@ namespace Battle
             finally
             {
                 // 무기 원상 복구.
-                owner_entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Equip);
+                _entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Equip);
             }    
         }
 
 
-
-
-        static void Score_Calculate(Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
+        private void Score_Calculate(Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
         {
             if (_owner == null || _target == null)
                 return;
@@ -332,25 +365,71 @@ namespace Battle
             var damage_dealt_count = result.Actions.Count(e => e.isAttacker);   
             var damage_taken_count = result.Actions.Count(e => e.isAttacker == false);   
 
-            var damage_taken       = result.Attacker.HP_Before - result.Attacker.HP_After;
-            var damage_dealt       = result.Defender.HP_Before - result.Defender.HP_After;
 
             var hit_rate           = Util.PERCENT(result.Attacker.HitRate, true);
             var dodge_rate         = Util.PERCENT(100 - result.Defender.HitRate, true);
 
-            var target_is_dead     = result.Defender.HP_After <= 0 && 0f < hit_rate;
+            // 데미지 계산 (명중률이 0인 경우는 아예 0으로 처리.)
+            var damage_taken       = (0 < hit_rate)   ? result.Attacker.HP_Before - result.Attacker.HP_After : 0;
+            var damage_dealt       = (0 < dodge_rate) ? result.Defender.HP_Before - result.Defender.HP_After : 0;
 
-            
+            // 타겟을 죽일수 있는지 체크.
+            var target_kill        = result.Defender.HP_After <= 0 && 0 < damage_dealt;
 
 
-            // 공격자/타겟 현재 HP
-            var owner_hp  = Math.Max(1, _owner.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
-            var target_hp = Math.Max(1, _target.StatusManager.Status.GetPoint(EnumUnitPoint.HP));
+            // 포커싱 대상이 있다면 점수 셋팅.
+            var focus_score        = 0f;
+            if (TagManager.Instance.IsExistTagOwner(_owner, EnumTagAttributeType.TARGET_FOCUS))
+            {
+                if (AIHelper.Verify_Target_Focus(_owner, _target))
+                {
+                    // 포커싱 대상일 경우.
+                    focus_score = 1f;                    
+                }
+                else
+                {
+                    // 포커싱 대상이 아니라면 특정 거리내에 있는 포커싱 타겟과의 거리를 기반으로 점수 체크.
+                    const int QUERY_RANGE = 10;
+                    using var list_target = ListPool<Int64>.AcquireWrapper();
+                    SpacePartitionManager.Instance.Query_Position_Range(list_target.Value, _target.Cell, QUERY_RANGE);
 
-            
-            // 데미지 점수 셋팅. 
-            _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / target_hp);
-            _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / owner_hp);
+                    // 그 중 가장 짧은 거리에 있는 포커싱 타겟을 찾습니다.
+                    int min_distance = int.MaxValue;
+                    foreach(var e in list_target.Value)
+                    {
+                        var check_target = EntityManager.Instance.GetEntity(e);                        
+                        if (check_target == null)
+                            continue;
+
+                        // 포커싱 대상과의 거리를 기반으로 점수 체크.
+                        var distance = PathAlgorithm.Distance(_target.Cell, check_target.Cell);
+                        if (distance < min_distance)
+                            min_distance = distance;
+                    }
+
+                    // 거리를 기반으로 점수 셋팅. 진짜 포커싱을 한 경우와 차이를 두기위해 0.5 곱 처리.
+                    focus_score  = Mathf.Clamp01((float)(QUERY_RANGE - min_distance) / QUERY_RANGE);
+                    focus_score *= 0.5f;                    
+                }
+            }
+
+
+
+            // 포커싱 점수.
+            _score.SetScore(Result.EnumScoreType.TargetPriority, focus_score);
+
+                      
+            // 데미지 점수 셋팅. (30점 만점) 
+            // TODO: 만점점수는 레벨 밸런스에 따라서 변동이 되어야 할듯.
+            _score.SetScore(Result.EnumScoreType.DamageRate_Dealt, (float)damage_dealt / 30f);
+            _score.SetScore(Result.EnumScoreType.DamageRate_Taken, (float)damage_taken / 30f);
+
+            // 죽일 수 있는지 셋팅.
+            _score.SetScore(Result.EnumScoreType.Kill, target_kill ? 1f : 0f);
+
+            // 공격 위치 셋팅.
+            _score.SetAttackPosition(_attack_position.x, _attack_position.y);
+
 
             // // 이동거리 점수 셋팅.
             // var distance_current = PathAlgorithm.Distance(_owner.Cell.x, _owner.Cell.y, _target.Cell.x, _target.Cell.y);
@@ -359,14 +438,12 @@ namespace Battle
 
             // 명중률 셋팅.
             // _score.SetScore(Result.EnumScoreType.HitRate,   hit_rate);
-
-            // 죽일 수 있는지 셋팅.
-            _score.SetScore(Result.EnumScoreType.Dead, target_is_dead ? 1f : 0f);
-            
-
-            // 공격 위치 셋팅.
-            _score.SetAttackPosition(_attack_position.x, _attack_position.y);
         }
+
+
+
+
+
 
 
         class CollectTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
@@ -422,7 +499,7 @@ namespace Battle
                             continue;
                         }
 
-                        // TODO: 똑같은 위치를 매번 Collecting 할 것인지 말지는 추후 고려.
+                        // 똑같은 위치를 매번 방문하지 않도록 예외처리.
                         if (VisitList.Contains((x, y)))
                         {
                             continue;
@@ -436,7 +513,6 @@ namespace Battle
                         if (entity_id > 0)
                         {
                             CollectTargets.Add((entity_id, _visit_x, _visit_y));
-
                             // result = true;
                         }
                     }
@@ -479,5 +555,9 @@ namespace Battle
             // ObjectPool<CollectTargetVisitor>.Return(visitor.Value);
         }
 
+   
+   
+   
+   
     }    
 }

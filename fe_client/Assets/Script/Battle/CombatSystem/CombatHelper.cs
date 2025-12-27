@@ -162,8 +162,8 @@ namespace Battle
             switch(_target_type)
             {
                 case EnumTargetType.Owner: return _attacker_id == _target_id;
-                case EnumTargetType.Ally : return _attacker_id != _target_id && AIHelper.IsAlly(_attacker_id, _target_id);
-                case EnumTargetType.Enemy: return _attacker_id != _target_id && AIHelper.IsEnemy(_attacker_id, _target_id);
+                case EnumTargetType.Ally : return _attacker_id != _target_id && AIHelper.Verify_IsAlly(_attacker_id, _target_id);
+                case EnumTargetType.Enemy: return _attacker_id != _target_id && AIHelper.Verify_IsEnemy(_attacker_id, _target_id);
             }          
 
             return false;

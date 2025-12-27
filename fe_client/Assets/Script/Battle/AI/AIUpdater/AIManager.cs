@@ -111,40 +111,54 @@ namespace Battle
             {
                 // 공격:
                 case EnumAIType.Attack:
-                    // 타겟이 있을 경우 그 것을 먼저 노린다. (타겟이 있을 경우만 동작)
-                    AddAIUpdater(0, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Target));
-                    // 타겟으로 가는 길이 막혀있을 경우. (타겟이 있을 경우만 동작)
-                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Target_Guard));
-                    // 공격 가능한 적이 있으면 공격. (타겟만 노릴 경우 동작 X)
-                    AddAIUpdater(2, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
+                    // 공격 가능한 적이 있으면 공격.
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
+                    // 가까운 적을 향해 이동. 
+                    AddAIUpdater(2, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
 
-                    // 타겟이 있으면 타겟과의 가까워지는 것을 최우선.  (타겟이 있을 경우만 동작)
-                    AddAIUpdater(10, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
-                    // 가까운 적을 향해 이동. (타겟만 노릴 경우 동작 X)
-                    AddAIUpdater(11, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
+                    break;
+                case EnumAIType.Attack_Target:
+                    // 타겟 공격. (타겟이 있을 경우만 동작)
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target));
+                    // // 타겟으로 가는 길이 막혀있을경우. 타겟으로 가는 길을 막고 있는 것이 적이면 공격.
+                    // AddAIUpdater(2, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target_Guard));
+                    // 타겟과의 가까워지는 것을 최우선. (타겟이 있을 경우만 동작)
+                    AddAIUpdater(3, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
+
+                    // 공격 가능한 적이 있으면 공격. (타겟이 없을 경우 동작)
+                    AddAIUpdater(4, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
+                    // 가까운 적을 향해 이동. (타겟이 없을 경우 동작)
+                    AddAIUpdater(5, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
                     break;
 
 
                 // 요격:
                 case EnumAIType.Intercept:
                     // 1. 공격 가능한 적이 사거리 내에 있으면 공격.
-                    AddAIUpdater(1,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
+                    AddAIUpdater(1,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
                     break;
 
                 // 경계
                 case EnumAIType.Alert:
                     // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(2,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Attack_Normal));
+                    AddAIUpdater(2,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
                     // 2. 적 사정거리 내에 있을경우 도망친다.
                     //AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
                     break;
 
                 case EnumAIType.Fixed:
                     // 1. 이동하지 않은 상태에서 공격 가능하면 공격.
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Fixed));
                     break;
 
             }
         }
+
+
+
+
+
+
 
         private void AddAIUpdater(int _priority, IAIUpdater _ai_updater)
         {

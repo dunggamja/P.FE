@@ -176,7 +176,7 @@ public static partial class PathAlgorithm
         var check_goal_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.Occupy;
 
         // 통과지점 체크 로직.
-        var check_pass_zoc = _option.MoveApproximately ? EnumCheckZOC.None    : EnumCheckZOC.PassThrough;
+        var check_pass_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.PassThrough;
 
         // 목표지점 범위 체크.
         var goal_range     = _option.GoalRange.check ? _option.GoalRange.range: 0;

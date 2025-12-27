@@ -14,6 +14,11 @@ public static partial class PathAlgorithm
         return Math.Abs(_from_x - _to_x) + Math.Abs(_from_y - _to_y);
     }
 
+    static public int Distance((int x, int y) _from, (int x, int y) _to)
+    {
+        return Distance(_from.x, _from.y, _to.x, _to.y);
+    }
+
 
 
     struct Node 
