@@ -190,6 +190,7 @@ namespace Battle
                 var setting_entity = _map_setting.GetEntity(e.m_entity_id);
                 var setting_status = _map_setting.GetStatus_EntityID(e.m_entity_id);
                 var setting_items  = _map_setting.GetItem_EntityID(e.m_entity_id);
+                var ai_type        = _map_setting.GetAIType_EntityID(e.m_entity_id);
                 
                 if (setting_entity == null || setting_status == null || setting_items == null)
                 {
@@ -208,8 +209,8 @@ namespace Battle
                 // 진영셋팅
                 entity.SetFaction(setting_entity.FACTION);
 
-                // TODO: AI 타입 셋팅.
-                entity.SetAIType(EnumAIType.Attack);
+                // AI 타입 셋팅.
+                entity.SetAIType(ai_type);
 
                 // 능력치 셋팅.
                 entity.StatusManager.Status.SetPoint(EnumUnitPoint.HP,            setting_status.HP);

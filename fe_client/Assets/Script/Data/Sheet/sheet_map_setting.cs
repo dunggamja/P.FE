@@ -14,6 +14,7 @@ public class sheet_map_setting_entity
 	public Int32       STATUS_KIND;
 	public Int32       ITEM_KIND;
 	public Int32       LOCALIZATION_KIND;
+	public Int32       AI_TYPE;
 }
 
 
@@ -224,6 +225,14 @@ public class sheet_map_setting : ScriptableObject
 		return GetItem(sheet.ITEM_KIND);
 	}
 
+	public EnumAIType GetAIType_EntityID(Int64 _entity_id)
+	{
+		var sheet = GetEntity(_entity_id);
+		if (sheet == null)
+			return EnumAIType.None;
+
+		return (EnumAIType)sheet.AI_TYPE;
+	}
 	// public sheet_map_setting_asset GetAsset_EntityID(Int64 _entity_id)
 	// {
 	// 	var sheet = GetEntity(_entity_id);
