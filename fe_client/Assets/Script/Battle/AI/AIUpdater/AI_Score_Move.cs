@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Battle
 {
-  public class AI_Score_Move : IAIUpdater
+  public class AI_Score_Move : AI_Score_Base
   {
     public enum EnumBehavior
     {
@@ -195,34 +195,36 @@ namespace Battle
     }
 
 
-    public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Closest_Enemy;
+    public EnumBehavior     BehaviorType     { get; private set; } = EnumBehavior.Closest_Enemy;
 
     public AI_Score_Move(EnumBehavior _behavior_type)
     {
       BehaviorType = _behavior_type;
     }
 
-    public void Update(IAIDataManager _owner)
+    
+    protected override bool OnUpdate(IAIDataManager _param)
     {
-      if (_owner == null)
-        return;
+      if (_param == null)
+        return false;
 
-      var entity = EntityManager.Instance.GetEntity(_owner.ID);
+      var entity = EntityManager.Instance.GetEntity(_param.ID);
       if (entity == null)
-        return;
+        return false;
 
       // 이동 행동이 불가능하면 종료.
       var is_moveable   = entity.HasCommandEnable(EnumCommandFlag.Move);
       if (is_moveable == false)
-        return;
+        return false;
 
 
       switch(BehaviorType)
       {
         case EnumBehavior.Closest_Enemy:
-          Process_Closest_Enemy(_owner);
-          break;
+          return Process_Closest_Enemy(_param);
       }
+
+      return false;
     }
 
 
@@ -261,7 +263,7 @@ namespace Battle
         return;
     }
 
-    void Process_Closest_Enemy(IAIDataManager _owner)
+    bool Process_Closest_Enemy(IAIDataManager _owner)
     {
         using var list_path_nodes = ListPool<PathNode>.AcquireWrapper();
         using var visitor         = ObjectPool<PositionVisitor>.AcquireWrapper();
@@ -269,17 +271,17 @@ namespace Battle
         {          
           // 가장 가까운 적에게 최대한 가까운 위치로 이동한다. 
           if (_owner == null)
-            return;
+            return false;
 
           var entity = EntityManager.Instance.GetEntity(_owner.ID);
           if (entity == null)
-            return;
+            return false;
 
 
           // 가장 가까운 적과 경로를 찾아봅시다.
           var target_id = Find_Closest_Enemy(entity, list_path_nodes.Value);
           if (target_id == 0)
-            return;
+            return false;
 
           // 해당 경로와 가장 가까운 위치를 찾아봅시다.
           visitor.Value.TerrainMap     = entity.PathNodeManager.TerrainMap;
@@ -292,11 +294,13 @@ namespace Battle
 
           // 점수 셋팅.
           entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
-          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Move, visitor.Value.BestResult.CalculateScore());
+          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visitor.Value.BestResult.CalculateScore());
 
           // entity.BlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
           // entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.Value.BestResult.CalculateScore());
         }
+
+        return true;
     }
 
     
@@ -408,6 +412,8 @@ namespace Battle
 
                         // 도착 범위 체크.
                         PathAlgorithm.PathFindOption.Create()
+
+                        // 장애물 무시.
                         .SetAllowApproximate()
                         // .SetGoalRange(5)
                         ,

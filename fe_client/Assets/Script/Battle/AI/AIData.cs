@@ -6,72 +6,67 @@ using UnityEngine;
 
 namespace Battle
 {
-    // public abstract class AITarget : ITarget
-    // {
-    //     public Int64 OwnerEntityID { get; private set; } = 0;  
-
-
-    //     public Int64       MainTargetID    { get; }        
-    //     public List<Int64> AllTargetIDList { get; }
-        
-    // }
-
-    // public abstract class AITargetPosition : ITargetPosition
-    // {
-    //     public Int64 OwnerEntityID { get; private set; } = 0;       
-
-
-    //     public List<(int x, int y)> Positions {get;} 
-    // }
-
-    // public class AIData : IAIData
-    // {
-    //     public ITarget         Targets        { get; private set; } = new AITarget();
-
-    //     public ITargetPosition TargetPosition { get; private set; } = new AITargetPosition();
-
-    //     public (int x, int y)  BasePosition   { get; private set; } = (0, 0);
-    // }
-
-
+    
     public class AIDataManager : IAIDataManager
     {
-        public Int64             ID     { get; private set; } = 0;
-        public EnumAIType        AIType { get; private set; } = EnumAIType.None;
-        // public IAIData           AIData { get; private set; } = new AIData();
+        public  Int64      ID     { get; private set; } = 0;
+
+        public  EnumAIType AIType
+        {
+            get 
+            {
+                // TAG에 셋팅된 AIType 조회. 그 중 첫번째 것을 반환
+                {
+                    using var list_tag = ListPool<TAG_DATA>.AcquireWrapper();
+                    TagManager.Instance.CollectTagOwner(EntityManager.Instance.GetEntity(ID), EnumTagAttributeType.AI_TYPE, list_tag.Value);
+                    foreach(var tag in list_tag.Value)
+                    {
+                        if (tag.TargetInfo.TagType == EnumTagType.AIType)                 
+                            return (EnumAIType)tag.TargetInfo.TagValue;
+                    }
+                }
+
+                // 없으면 기본 AIType 반환.
+                return m_ai_type_base;
+            }
+        }
+
+        private EnumAIType m_ai_type_base    = EnumAIType.None;
+        // private EnumAIType m_ai_type_current = EnumAIType.None;
 
         public void Initialize(Entity _owner)
         {
-            ID     = _owner.ID;
-            AIType = EnumAIType.None;            
+            ID                = _owner.ID;
+            m_ai_type_base    = EnumAIType.None;
+            // m_ai_type_current = EnumAIType.None;            
         }
 
 
-        public void SetAIType(EnumAIType _ai_type)
+        public void SetAITypeBase(EnumAIType _ai_type)
         {
-            AIType = _ai_type;
+            m_ai_type_base = _ai_type;
         }
 
         public AIDataManager_IO Save()
         {
             return new AIDataManager_IO()
             {
-                ID     = ID,
-                AIType = AIType,
+                ID         = ID,
+                AITypeBase = m_ai_type_base,
             };
         }
         
         public void Load(AIDataManager_IO _snapshot)
         {
-            ID     = _snapshot.ID;
-            AIType = _snapshot.AIType;
+            ID             = _snapshot.ID;
+            m_ai_type_base = _snapshot.AITypeBase;
         }
     }
 
     public class AIDataManager_IO
     {
-        public Int64             ID     { get; set; } = 0;
-        public EnumAIType        AIType { get; set; } = EnumAIType.None;
+        public Int64             ID         { get; set; } = 0;
+        public EnumAIType        AITypeBase { get; set; } = EnumAIType.None;
 
 
     }

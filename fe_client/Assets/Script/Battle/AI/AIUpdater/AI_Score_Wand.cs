@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Battle
 {
 
-   public class AI_Score_Wand : IAIUpdater
+   public class AI_Score_Wand : AI_Score_Base
    {
       public class Result : IPoolObject
       {
@@ -41,15 +41,21 @@ namespace Battle
          }
       }
 
-       public void Update(IAIDataManager _param)
-       {
-           if (_param == null)
-               return;
 
-           var owner = EntityManager.Instance.GetEntity(_param.ID);
-           if (owner == null)
-               return;
-       }
+
+
+
+      protected override bool OnUpdate(IAIDataManager _param)
+      {
+         if (_param == null)
+               return false;
+
+         var owner_entity = EntityManager.Instance.GetEntity(_param.ID);
+         if (owner_entity == null)
+               return false;
+
+         return true;
+      }
    }
 }
 

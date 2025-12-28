@@ -59,55 +59,112 @@ public interface ITargetPosition
 
 
 /// <summary>
-/// 버프/스킬/아이템 발동 조건
+/// Entity Condition
 /// </summary>
 public interface ICondition
 {
-    bool IsValid(IOwner _owner);
+    bool Verify_Condition(IOwner _owner);
 }
 
 /// <summary>
-/// 버프/스킬/아이템 효과
+/// Entity Effect
 /// </summary>
-public interface IEffect
+public interface IApplier
 {
-    void Apply(IOwner _owner);
+    void Apply_Effect(IOwner _owner);
 }
 
-/// <summary>
-/// 버프 연산
-/// </summary>
-// public interface IBuff
+
+public class ConditionHandler : IPoolObject
+{
+    private List<ICondition> m_conditions = new();
+
+    public ConditionHandler AddCondition(ICondition _condition)
+    {
+        m_conditions.Add(_condition);
+        return this;
+    }
+
+    public void Reset()
+    {
+        m_conditions.Clear();
+    }
+
+    public bool Verify_Condition(IOwner _owner)
+    {
+        foreach (var condition in m_conditions)
+        {
+            if (!condition.Verify_Condition(_owner))
+                return false;
+        }
+        return true;
+    }
+}
+
+public class ApplierHandler : IPoolObject
+{
+    private List<IApplier> m_on_success = new();
+    private List<IApplier> m_on_failure = new();
+
+    public ApplierHandler Add_OnSuccess(IApplier _applier)
+    {
+        m_on_success.Add(_applier);
+        return this;
+    }
+
+    public ApplierHandler Add_OnFailure(IApplier _applier)
+    {
+        m_on_failure.Add(_applier);
+        return this;
+    }
+
+    public void Reset()
+    {
+        m_on_success.Clear();
+        m_on_failure.Clear();
+    }
+
+    public void Apply_Effect(IOwner _owner, bool _is_success)
+    {
+        if (_is_success)
+        {
+            foreach (var applier in m_on_success)
+            {
+                applier.Apply_Effect(_owner);
+            }
+        }
+        else
+        {   
+            foreach (var applier in m_on_failure)
+            {
+                applier.Apply_Effect(_owner);
+            }
+        }
+    }
+}
+
+
+
+
+// public interface IAIUpdater 
 // {
-//     BuffValue Collect(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
-//     BuffValue CollectTarget(EnumSituationType _situation, IOwner _owner, EnumBuffStatus _status);
+//     bool Verify_Condition(IAIDataManager _owner);
+
+//     void Apply_Effect(IAIDataManager _owner, bool _is_success);
+
+//     bool OnUpdate(IAIDataManager _owner);
 // }
 
-
-/// <summary>
-/// 스킬
-/// </summary>
-// public interface ISkill
+// public interface IAIData
 // {
-//     bool UseSkill(EnumSituationType _situation, IOwner _owner);
+//     // TODO: 각 행동마다 필요로 하는 데이터가 다를수 있을 거 같군...
+//     //       일단 그 부분은 나중에 생각해보자. 
+
+//     // // 목표 타겟 / 위치가 지정되어 있을 경우
+//     // public ITarget         Targets        { get; } // 목표 타겟
+//     // public ITargetPosition TargetPosition { get; } // 목표 위치
+//     public (int x, int y)  BasePosition { get; }   // 거점
 // }
-
-
-public interface IAIUpdater 
-{
-    void Update(IAIDataManager _owner);
-}
-
-public interface IAIData
-{
-    // TODO: 각 행동마다 필요로 하는 데이터가 다를수 있을 거 같군...
-    //       일단 그 부분은 나중에 생각해보자. 
-
-    // // 목표 타겟 / 위치가 지정되어 있을 경우
-    // public ITarget         Targets        { get; } // 목표 타겟
-    // public ITargetPosition TargetPosition { get; } // 목표 위치
-    public (int x, int y)  BasePosition { get; }   // 거점
-}
 
 public interface IAIDataManager
 {

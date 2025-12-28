@@ -170,14 +170,14 @@ namespace Battle
 
             switch(entity_object.AIManager.AIBlackBoard.GetBestScoreType())
             {
-                case EnumAIBlackBoard.Attack:
+                case EnumAIBlackBoard.Score_Attack:
                 {
                     // 공격 명령
                     PushCommand_Attack(entity_object.ID, entity_object.AIManager.AIBlackBoard.Score_Attack);
                 }
                 break;
 
-                case EnumAIBlackBoard.Move:
+                case EnumAIBlackBoard.Score_Move:
                 {
                     // 이동 명령
                     PushCommand_Move(entity_object.ID, entity_object.AIManager.AIBlackBoard.Score_Move);

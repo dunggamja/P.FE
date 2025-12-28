@@ -6,73 +6,8 @@ using UnityEngine;
 namespace Battle
 {
     // 사정거리 내의 공격 타겟을 찾는 로직.
-    public class AI_Score_Attack : IAIUpdater
+    public class AI_Score_Attack : AI_Score_Base
     {
-
-        public enum EnumBehavior
-        {
-            // 아무나 공격가능한 타겟 체크.
-            Normal,
-            // 타겟을 공격가능한지 체크, 
-            Target,
-            // // 타겟을 막는 장애물을 파괴/해결 우선
-            // Target_Guard,
-
-            // 고정된 위치에서 공격.
-            Fixed,
-        }
-
-        public EnumBehavior BehaviorType { get; private set; } = EnumBehavior.Normal;
-
-
-        public AI_Score_Attack(EnumBehavior _behavior_type)
-        {
-            BehaviorType = _behavior_type;
-        }
-
-        private int GetMoveRange(Entity _entity)
-        {
-            // 행동 타입 체크.
-            if (BehaviorType == EnumBehavior.Fixed)
-                return 0;
-
-            // 이동 가능한 상태인지 체크.
-            if (_entity.HasCommandEnable(EnumCommandFlag.Move) == false)
-                return 0;
-
-            return _entity.PathMoveRange;
-        } 
-
-
-        private bool Verify_Enemy(Entity _entity, Entity _target) 
-        {
-            if (_entity == null || _target == null)
-                return false;
-
-            // 적인지 체크.
-            if (AIHelper.Verify_IsEnemy(_entity.ID, _target.ID) == false)
-                return false;
-
-            // 무시 대상인지 체크
-            if (AIHelper.Verify_Target_Ignore(_entity, _target))
-                return false;
-
-            
-            if (BehaviorType == EnumBehavior.Target)
-            {
-                // 포커싱 대상인지 체크.
-                if (AIHelper.Verify_Target_Focus(_entity, _target) == false)
-                    return false;
-            }
-
-            return true;
-        }
-       
-
-
-
-
-
         public class Result : IPoolObject
         {
             public enum EnumScoreType
@@ -175,28 +110,60 @@ namespace Battle
         }
 
 
-        public void Update(IAIDataManager _param)
+        public enum EnumBehavior
         {
-            if (_param == null)
-                return;
-
-            var owner_entity = EntityManager.Instance.GetEntity(_param.ID);
-            if (owner_entity == null)
-                return;
-
-            // 공격이 가능한 상태인지 체크.            
-            var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
-            if (is_attackable == false)
-                return; 
-
-            // 사정거리 내에 적이 없으면 종료.            
-            if (Verify_EnemyInRange(owner_entity) == false)
-                return;
-
-            // 공격 점수 계산.
-            Calculate_AttackScore(owner_entity);
-          
+            Normal, // 아무나 공격가능한 타겟 체크.            
+            Target, // 타겟을 공격가능한지 체크, 
+            Fixed,  // 고정된 위치에서 공격.
         }
+
+        public EnumBehavior     BehaviorType     { get; private set; } = EnumBehavior.Normal;
+
+        
+        public AI_Score_Attack(EnumBehavior _behavior_type)
+        {
+            BehaviorType = _behavior_type;
+        }
+
+
+        private int GetMoveRange(Entity _entity)
+        {
+            // 행동 타입 체크.
+            if (BehaviorType == EnumBehavior.Fixed)
+                return 0;
+
+            // 이동 가능한 상태인지 체크.
+            if (_entity.HasCommandEnable(EnumCommandFlag.Move) == false)
+                return 0;
+
+            return _entity.PathMoveRange;
+        } 
+
+
+        private bool Verify_Enemy(Entity _entity, Entity _target) 
+        {
+            if (_entity == null || _target == null)
+                return false;
+
+            // 적인지 체크.
+            if (AIHelper.Verify_IsEnemy(_entity.ID, _target.ID) == false)
+                return false;
+
+            // 무시 대상인지 체크
+            if (AIHelper.Verify_Target_Ignore(_entity, _target))
+                return false;
+
+            
+            if (BehaviorType == EnumBehavior.Target)
+            {
+                // 포커싱 대상인지 체크.
+                if (AIHelper.Verify_Target_Focus(_entity, _target) == false)
+                    return false;
+            }
+
+            return true;
+        }
+       
 
         private bool Verify_EnemyInRange(Entity _entity)
         {
@@ -234,6 +201,32 @@ namespace Battle
 
         }
 
+
+        
+
+
+        protected override bool OnUpdate(IAIDataManager _param)
+        {
+            if (_param == null)
+                return false;
+
+            var owner_entity = EntityManager.Instance.GetEntity(_param.ID);
+            if (owner_entity == null)
+                return false;
+
+            // 공격이 가능한 상태인지 체크.            
+            var is_attackable = owner_entity.HasCommandEnable(EnumCommandFlag.Action);
+            if (is_attackable == false)
+                return false; 
+
+            // 사정거리 내에 적이 없으면 종료.            
+            if (Verify_EnemyInRange(owner_entity) == false)
+                return false;
+
+            // 사정거리 내 공격 가능한 적들의 점수 계산.
+            return Calculate_AttackScore(owner_entity);
+        }
+
         private void Process_Attack_Fixed(Int64 _entity_id)
         {
             var owner_entity = EntityManager.Instance.GetEntity(_entity_id);
@@ -241,10 +234,10 @@ namespace Battle
                 return;
         }
 
-        private void Calculate_AttackScore(Entity _entity)
+        private bool Calculate_AttackScore(Entity _entity)
         {
             if (_entity == null)
-                return;
+                return false;
 
             // 코드가 너무 길어져서 변수들 캐싱.
             var owner_status     = _entity.StatusManager;
@@ -265,6 +258,9 @@ namespace Battle
 
             // 공격 가능한 타겟 목록.
             using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
+
+            // 공격 대상이 될 수 있는 타겟 갯수.
+            int target_count = 0;
 
             try
             {                            
@@ -324,12 +320,15 @@ namespace Battle
                         var calculate_score = current_score.Value.CalculateScore();
 
                         // 점수 비교.
-                        if (_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Attack) <= calculate_score)
+                        if (_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Score_Attack) <= calculate_score)
                         {
                             // 높은 점수 셋팅.
                             _entity.AIManager.AIBlackBoard.Score_Attack.CopyFrom(current_score.Value);                            
-                            _entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Attack, calculate_score); 
+                            _entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Attack, calculate_score); 
                         }
+
+                        // 타겟 갯수 증가.
+                        ++target_count;
                     }
                 }
             }  
@@ -338,6 +337,10 @@ namespace Battle
                 // 무기 원상 복구.
                 _entity.ProcessAction(owner_inventory.GetItem(equiped_weapon_id), EnumItemActionType.Equip);
             }    
+
+
+            // 공격 가능한 타겟이 있었는지 체크.
+            return target_count > 0;
         }
 
 

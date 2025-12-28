@@ -26,9 +26,7 @@ namespace Battle
             var top_score_type = EnumAIBlackBoard.None;
             var top_score      = 0f;
 
-
-
-            for(int i = (int)EnumAIBlackBoard.Begin; i < (int)EnumAIBlackBoard.Max; ++i)
+            for(int i = (int)EnumAIBlackBoard.Score_Begin; i < (int)EnumAIBlackBoard.Score_End; ++i)
             {
                 var score = GetBPValueAsFloat((EnumAIBlackBoard)i);
                 if (score > top_score)
@@ -47,15 +45,14 @@ namespace Battle
     public class AIManager
     {
         private EnumAIType                             m_ai_type       = EnumAIType.None;        
-        private Dictionary<int, List<IAIUpdater>>      m_repository    = new();
+        private Dictionary<int, List<AI_Score_Base>>   m_repository    = new();
         private List<int>                              m_priority_list = new();
         public  AIBlackBoard  AIBlackBoard { get; private set; } = new();
 
         
 
         public bool Initialize(IAIDataManager _owner)
-        {
-            SetAIType(_owner.AIType);
+        {            
             return true;
         }
 
@@ -66,8 +63,9 @@ namespace Battle
                 return;
 
             // AIType 셋팅. 
-            if (m_ai_type != _param.AIType)
-                SetAIType(_param.AIType);
+            var ai_type_cur  = _param.AIType;
+            if (ai_type_cur != m_ai_type)
+                SetAIType(ai_type_cur);
 
 
             // 우선순위에 따라서 AI 업데이트.
@@ -77,8 +75,11 @@ namespace Battle
                 if (list_updater == null)
                     continue;
 
-                // AI 블랙보드 초기화.
-                AIBlackBoard.Reset();
+                // AI 블랙보드 점수 초기화.
+                for (int i = (int)EnumAIBlackBoard.Score_Begin; i < (int)EnumAIBlackBoard.Score_End; ++i)
+                {
+                    AIBlackBoard.SetValue((EnumAIBlackBoard)i, 0);
+                }
 
                 // AI 업데이트.
                 list_updater.ForEach(e => e.Update(_param));
@@ -97,6 +98,8 @@ namespace Battle
             // 기존 AIUpdater 정리.
             m_repository.Clear();
             m_priority_list.Clear();
+
+            AIBlackBoard.Reset();
 
             // 대기 : 다른 행동들 모두 할거 없을때 처리.
             AddAIUpdater(999, new AI_Score_Done());
@@ -119,9 +122,7 @@ namespace Battle
                     break;
                 case EnumAIType.Attack_Target:
                     // 타겟 공격. (타겟이 있을 경우만 동작)
-                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target));
-                    // // 타겟으로 가는 길이 막혀있을경우. 타겟으로 가는 길을 막고 있는 것이 적이면 공격.
-                    // AddAIUpdater(2, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target_Guard));
+                    AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target));                    
                     // 타겟과의 가까워지는 것을 최우선. (타겟이 있을 경우만 동작)
                     AddAIUpdater(3, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
 
@@ -134,8 +135,19 @@ namespace Battle
 
                 // 요격:
                 case EnumAIType.Intercept:
-                    // 1. 공격 가능한 적이 사거리 내에 있으면 공격.
-                    AddAIUpdater(1,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
+                    // 공격 가능한 적이 사거리 내에 있으면 공격.
+                    AddAIUpdater(1, 
+                        new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal)
+                            // 요격 공격 성공시 플래그 셋팅.
+                            .Add_OnSuccess(new AI_Applier_AIBlackBoard(EnumAIBlackBoard.Intercept_Flag_Attack, 1))
+                    );
+
+                    // 가까운 적을 향해 이동. (위의 공격이 1번이라도 성공할 경우 실행된다.)
+                    AddAIUpdater(2, 
+                        new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy)
+                            // 요격 공격 성공이 한번이라도 했을 경우 동작한다.
+                            .AddCondition(new AI_Condition_AIBlackBoard(AI_Condition_AIBlackBoard.EnumOperator.True, EnumAIBlackBoard.Intercept_Flag_Attack))
+                        );
                     break;
 
                 // 경계
@@ -160,11 +172,11 @@ namespace Battle
 
 
 
-        private void AddAIUpdater(int _priority, IAIUpdater _ai_updater)
+        private void AddAIUpdater(int _priority, AI_Score_Base _ai_updater)
         {
             if (m_repository.TryGetValue(_priority, out var list_updater) == false)
             {
-                list_updater = new List<IAIUpdater>();
+                list_updater = new List<AI_Score_Base>();
                 m_repository.Add(_priority, list_updater);
             }
             
@@ -177,7 +189,7 @@ namespace Battle
             }
         }
 
-        private List<IAIUpdater> GetAIUpdaterList(int _priority)
+        private List<AI_Score_Base> GetAIUpdaterList(int _priority)
         {
             if (m_repository.TryGetValue(_priority, out var list_updater))
             {
@@ -186,8 +198,8 @@ namespace Battle
 
             return null;
         }
-
-
-        
     }
+
+
+
 }

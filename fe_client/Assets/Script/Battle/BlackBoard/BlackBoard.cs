@@ -85,25 +85,11 @@ namespace Battle
     }
 
     public class EntityBlackBoard : BlackBoard<EnumEntityBlackBoard>
-    {
-        // // public AI_Score_Attack.Result Score_Attack { get; private set; } = new();
-        // // public AI_Score_Move.Result   Score_Move   { get; private set; } = new();
-        // // public AI_Score_Wand.Result   Score_Wand   { get; private set; } = new();
-        // public override void Reset()
-        // {
-        //     base.Reset();
-        //     // Score_Attack.Reset();
-        // }
+    {  
     }
 
     public class BattleBlackBoard : BlackBoard<EnumBattleBlackBoard>
     {
-        // // private HashSet<Int64>   CommandProgress_Entities { get; set; } = new ();
-        // public override void Reset()
-        // {
-        //     base.Reset();
-        //     // CommandProgress_Entities.Clear();
-        // }
     }
 
 

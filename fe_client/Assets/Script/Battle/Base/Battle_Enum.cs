@@ -168,21 +168,23 @@ namespace Battle
         CommandFlag,       // [명령] 명령 (0 : 이동, 1 : 공격)
         Faction,           // [명령] 진영
 
-        
 
     }
 
     public enum EnumAIBlackBoard
     {
         None   = 0,
-        Begin  = 1,
-        
-        Attack = Begin, // [AI] 공격
-        Done,           // [AI] 완료
-        Move,           // [AI] 이동
+        Score_Begin  = 1,        
+        Score_Attack = Score_Begin, // [AI] 공격
+        Score_Done,           // [AI] 완료
+        Score_Move,           // [AI] 이동
+        Score_End,
 
 
-        Max,
+
+
+
+        Intercept_Flag_Attack = 100, // [AI] 요격 공격 플래그
 
     }
 
@@ -333,6 +335,10 @@ namespace Battle
        Position       = 100, // 위치 - 점.
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
+
+       // 속성 정의.?
+       AIType         = 200, // AI 타입.
+
        Trigger        = 10000, // 트리거.
 
 
@@ -351,6 +357,9 @@ namespace Battle
        POSITION_EXIT  = 12, // 위치 - 이탈 
 
        TALK_COMMAND   = 21,  // 대화 명령 가능
+
+
+       AI_TYPE        = 31, // AI 타입 설정
 
        TAG_PARENT     = 100, // 태그 - 부모. (그룹핑을 위한 값...)
 
@@ -421,6 +430,8 @@ namespace Battle
 
        AddItem    = 31, // 아이템 추가
        RemoveItem = 32, // 아이템 제거
+
+       SetAIType  = 41, // AI 타입 설정.
     }
 
 

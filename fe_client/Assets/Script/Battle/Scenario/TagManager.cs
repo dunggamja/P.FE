@@ -237,21 +237,41 @@ namespace Battle
 
 
 
-      public void CollectTagOwner(TAG_INFO _tag_info, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      public void CollectTagOwner(Entity _owner_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
       {
-         if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
+         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
+         
+         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
+         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);         
+         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
+         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+
+         foreach(var tag in tag_infos)
          {
-            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-               _result.AddRange(repo_tag_data);
+            if (m_repository.TryGetValue(tag, out var repo_attribute))
+            {
+               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+                  _result.AddRange(repo_tag_data);
+            }
          }
       }
 
-      public void CollectTagTarget(TAG_INFO _tag_info, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      public void CollectTagTarget(Entity _target_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
       {
-         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
+         
+         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
+         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _target_entity.ID);         
+         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _target_entity.GetFaction());
+         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+
+         foreach(var tag in tag_infos)
          {
-            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-               _result.AddRange(repo_tag_data);
+            if (m_repository_target.TryGetValue(tag, out var repo_attribute))
+            {
+               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+                  _result.AddRange(repo_tag_data);
+            }
          }
       }      
 

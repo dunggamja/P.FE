@@ -126,7 +126,7 @@ namespace Battle
 
         public void SetAIType(EnumAIType _ai_type)
         {
-            AIDataManager.SetAIType(_ai_type);
+            AIDataManager.SetAITypeBase(_ai_type);
         }
 
         public void SetAssetName(string _asset_name)
