@@ -10,7 +10,7 @@ namespace Battle
    public class Scenario
    {
       public Int64                    ID         { get; private set; } = 0;
-      public EnumScenarioType         Type       { get; private set; } = EnumScenarioType.None;
+      // public EnumScenarioType         Type       { get; private set; } = EnumScenarioType.None;
       public EnumScenarioTrigger      Trigger    { get; private set; } = EnumScenarioTrigger.None;
 
       public EnumState                State      { get; private set; } = EnumState.None;

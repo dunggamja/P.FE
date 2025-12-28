@@ -239,6 +239,9 @@ namespace Battle
 
       public void CollectTagOwner(Entity _owner_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
       {
+         if (_owner_entity == null)
+            return;
+
          Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
          
          // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
@@ -258,6 +261,9 @@ namespace Battle
 
       public void CollectTagTarget(Entity _target_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
       {
+         if (_target_entity == null)
+            return;
+
          Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
          
          // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         

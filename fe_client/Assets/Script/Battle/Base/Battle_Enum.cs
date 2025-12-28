@@ -367,14 +367,14 @@ namespace Battle
     }
 
 
-    public enum EnumScenarioType
-    {
-       None = 0,
+    // public enum EnumScenarioType
+    // {
+    //    None = 0,
 
-       Victory = 1, // 시나리오 승리
-       Defeat  = 2, // 시나리오 패배
-       Event   = 3, // 시나리오 중간 이벤트
-    }
+    //    Victory = 1, // 시나리오 승리
+    //    Defeat  = 2, // 시나리오 패배
+    //    Event   = 3, // 시나리오 중간 이벤트
+    // }
 
 
     public enum EnumScenarioTrigger
