@@ -332,11 +332,13 @@ namespace Battle
        Entity_Faction = 2,    // 진영.
        Entity_All     = 3,    // 구분 없이 모든 엔티티.   // All > Faction > Entity, 이것은 일일이 문서화하기 힘드므로 시스템으로 처리한다.
 
+       Entity_Group   = 10,    // 따로 그룹 ID가 존재할 경우. // TODO: 맵셋팅. 시나리오를 통해 관리할것 같은데...
+
        Position       = 100, // 위치 - 점.
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
 
-       // 속성 정의.?
+       // AI 타입.
        AIType         = 200, // AI 타입.
 
        Trigger        = 10000, // 트리거.
@@ -361,7 +363,7 @@ namespace Battle
 
        AI_TYPE        = 31, // AI 타입 설정
 
-       TAG_PARENT     = 100, // 태그 - 부모. (그룹핑을 위한 값...)
+       TAG_HIERARCHY = 100, // 엔티티들 그룹핑을 위한 값.
 
        FromScenario   = 999,
     }

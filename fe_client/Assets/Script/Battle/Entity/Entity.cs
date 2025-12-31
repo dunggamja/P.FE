@@ -134,6 +134,25 @@ namespace Battle
             AssetName = _asset_name;
         }
 
+
+        public void Process_OnCreate()
+        {
+            // 태그 셋팅 처리.
+            TagHelper.SetupTag_Entity_Hierarchy(this, true);
+
+            // HUD 생성 처리.
+            CreateHUD();
+        }
+
+        public void Process_OnDelete()
+        {
+            // 태그 삭제 처리.
+            TagHelper.SetupTag_Entity_Hierarchy(this, false);
+
+            // Reset()
+            Reset();
+        }
+
         public Entity_IO Save()
         {
             return new Entity_IO()

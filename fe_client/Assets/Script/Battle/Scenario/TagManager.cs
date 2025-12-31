@@ -23,6 +23,7 @@ namespace Battle
 
    public class TagManager : Singleton<TagManager>
    {
+      const int MAX_RECURSIVE_DEPTH = 10;
       
       Dictionary<TAG_INFO, Dictionary<EnumTagAttributeType, HashSet<TAG_DATA>>> m_repository          = new();
 
@@ -128,171 +129,205 @@ namespace Battle
       }
 
 
-      public bool IsExistTagOwner(Entity _owner_entity, EnumTagAttributeType _attribute, Func<HashSet<TAG_DATA>, bool> _func_condition = null)
+      public bool IsExistTagOwner(Entity _owner_entity, EnumTagAttributeType _attribute)
       {
-         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
-         
-         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
-         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);         
-         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
-         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+         if (_owner_entity == null)
+            return false;
 
-         foreach(var tag in tag_infos)
-         {
-            if (m_repository.TryGetValue(tag, out var repo_attribute))
-            {
-               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-               {
-                  // 카운트 체크.
-                  if (repo_tag_data.Count == 0)
-                     return false;
+         using var list_result = ListPool<TAG_DATA>.AcquireWrapper();
+         CollectTagOwner(TAG_INFO.Create(_owner_entity), _attribute, list_result.Value, true, 0);
 
-                  if (_func_condition == null || _func_condition(repo_tag_data))
-                     return true;
-               }
-            }
-         }
-
-         return false;
+         return list_result.Value.Count > 0;
       }
 
-      public bool IsExistTagTarget(Entity _owner_entity, EnumTagAttributeType _attribute, Func<HashSet<TAG_DATA>, bool> _func_condition = null)
+      public bool IsExistTagTarget(Entity _target_entity, EnumTagAttributeType _attribute)
       {
-         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
-         
-         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
-         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);         
-         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
-         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+         if (_target_entity == null)
+            return false;
 
-         foreach(var tag in tag_infos)
-         {
-            if (m_repository_target.TryGetValue(tag, out var repo_attribute))
-            {
-               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-               {
-                  // 카운트 체크.
-                  if (repo_tag_data.Count == 0)
-                     return false;
+         using var list_result = ListPool<TAG_DATA>.AcquireWrapper();
+         CollectTagTarget(TAG_INFO.Create(_target_entity), _attribute, list_result.Value, true, 0);
 
-                  if (_func_condition == null || _func_condition(repo_tag_data))
-                     return true;
-               }
-            }
-         }
-
-         return false;
+         return list_result.Value.Count > 0;
       }
 
-      public bool IsExistTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, Func<HashSet<EnumTagAttributeType>, bool> _func_condition = null)
+
+      public bool IsExistTagRelation(
+         TAG_INFO             _tag_info, 
+         TAG_INFO             _target_info, 
+         EnumTagAttributeType _arg0,         
+         bool                 _recursive_hierarchy = false)
       {
-         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
-         {
-            if (repo_attribute.Count == 0)
-               return false;
+         using var list_result = ListPool<EnumTagAttributeType>.AcquireWrapper();
+         CollectTagRelation(_tag_info, _target_info, list_result.Value, _recursive_hierarchy, 0);
 
-            if (_func_condition == null || _func_condition(repo_attribute))
-               return true;
-         }
-
-         return false;
-      }
-
-      public bool IsExistTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, EnumTagAttributeType _arg0)
-      {
-         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
-            return repo_attribute.Contains(_arg0);
-         
-         return false;
+         return list_result.Value.Contains(_arg0);
       }
 
       public bool IsExistTagRelation(Entity _owner_entity, Entity _target_entity, EnumTagAttributeType _arg0)
       {
-         Span<TAG_INFO> owner_infos  = stackalloc TAG_INFO[3];
-         Span<TAG_INFO> target_infos = stackalloc TAG_INFO[3];
+         if (_owner_entity == null || _target_entity == null)
+            return false;
 
-         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
-         owner_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);
-         target_infos[0] = TAG_INFO.Create(EnumTagType.Entity, _target_entity.ID);
-
-         owner_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
-         target_infos[1] = TAG_INFO.Create(EnumTagType.Entity_Faction, _target_entity.GetFaction());
-
-         owner_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
-         target_infos[2] = TAG_INFO.Create(EnumTagType.Entity_All, 0);
-
-
-         foreach(var owner in owner_infos)
-         {
-            foreach(var target in target_infos)
-            {
-               if (IsExistTagRelation(owner, target, _arg0))
-                  return true;
-            }
-         }
-
-         return false;
+         return IsExistTagRelation(TAG_INFO.Create(_owner_entity), TAG_INFO.Create(_target_entity), _arg0, true);
       }
 
 
-
-
-      public void CollectTagOwner(Entity _owner_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      public void CollectTagOwner(
+         TAG_INFO             _tag_info, 
+         EnumTagAttributeType _attribute, 
+         List<TAG_DATA>       _result, 
+         bool                 _recursive_hierarchy = false,
+         int                  _recursive_depth     = 0)
       {
-         if (_owner_entity == null)
-            return;
-
-         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
-         
-         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
-         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _owner_entity.ID);         
-         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _owner_entity.GetFaction());
-         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
-
-         foreach(var tag in tag_infos)
+         // 최대 재귀 횟수 체크.
+         if (MAX_RECURSIVE_DEPTH <= _recursive_depth)
          {
-            if (m_repository.TryGetValue(tag, out var repo_attribute))
-            {
-               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+            Debug.LogError($"CollectTagOwner: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
+            return;
+         }
+
+         // 소유자 데이터 
+         if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
                   _result.AddRange(repo_tag_data);
+         }
+
+
+         // 상위 계층까지 조회할 경우.
+         if (_recursive_hierarchy)
+         {
+            // 상위 계층 태그 데이터 컬렉트.
+            using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
+            CollectTagHierarchy(_tag_info, list_hierarchy.Value, false);
+
+            // 상위 계층도 재귀적으로 순회.
+            foreach(var tag_parent in list_hierarchy.Value)
+            {
+               CollectTagOwner(tag_parent, _attribute, _result, true, _recursive_depth + 1);
             }
          }
       }
 
-      public void CollectTagTarget(Entity _target_entity, EnumTagAttributeType _attribute, List<TAG_DATA> _result)
+      public void CollectTagTarget(
+         TAG_INFO             _tag_info, 
+         EnumTagAttributeType _attribute, 
+         List<TAG_DATA>       _result, 
+         bool                 _recursive_hierarchy = false,
+         int                  _recursive_depth     = 0)
       {
-         if (_target_entity == null)
-            return;
-
-         Span<TAG_INFO> tag_infos  = stackalloc TAG_INFO[3];
-         
-         // Entity < Faction < All 은 문서화하기 번거로우므로 시스템적으로 처리한다.         
-         tag_infos[0]  = TAG_INFO.Create(EnumTagType.Entity, _target_entity.ID);         
-         tag_infos[1]  = TAG_INFO.Create(EnumTagType.Entity_Faction, _target_entity.GetFaction());
-         tag_infos[2]  = TAG_INFO.Create(EnumTagType.Entity_All, 0);
-
-         foreach(var tag in tag_infos)
+         // 최대 재귀 횟수 체크.
+         if (MAX_RECURSIVE_DEPTH <= _recursive_depth)
          {
-            if (m_repository_target.TryGetValue(tag, out var repo_attribute))
-            {
-               if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+            Debug.LogError($"CollectTagTarget: MAX_RECURSIVE_DEPTH < _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
+            return;
+         }
+
+
+         // 타겟 조회 후 없으면 종료 처리.
+         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            // 타겟의 태그 데이터 컬렉트.
+            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
                   _result.AddRange(repo_tag_data);
+         }
+
+
+         // 상위 계층까지 조회할 경우.
+         if (_recursive_hierarchy)
+         {
+            // 상위 계층 태그 데이터 컬렉트.
+            using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
+            CollectTagHierarchy(_tag_info, list_hierarchy.Value, false);
+
+            // 상위 계층도 재귀적으로 순회.
+            foreach(var tag_parent in list_hierarchy.Value)
+            {
+               CollectTagTarget(tag_parent, _attribute, _result, true, _recursive_depth + 1);
             }
          }
       }      
 
 
-      public void CollectTagRelation(TAG_INFO _tag_info, TAG_INFO _target_info, List<EnumTagAttributeType> _result)
-      {        
-         if (m_repository_relation.TryGetValue((_tag_info, _target_info), out var repo_attribute))
-            _result.AddRange(repo_attribute);
+      public void CollectTagRelation(
+         TAG_INFO                   _tag_info, 
+         TAG_INFO                   _target_info, 
+         List<EnumTagAttributeType> _result,
+         bool                       _recursive_hierarchy = false,
+         int                        _recursive_depth     = 0)
+      {
+         if (MAX_RECURSIVE_DEPTH <= _recursive_depth)
+         {
+            Debug.LogError($"CollectTagRelation: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, TargetInfo: {_target_info.TagType}.{_target_info.TagValue}, RecursiveDepth: {_recursive_depth}");
+            return;
+         }
+
+
+         using var list_owner  = ListPool<TAG_INFO>.AcquireWrapper();
+         using var list_target = ListPool<TAG_INFO>.AcquireWrapper();
+
+         list_owner.Value.Add(_tag_info);
+         list_target.Value.Add(_target_info);
+
+         //  Owner/Target 의 상위 계층 수집. 
+         if (_recursive_hierarchy)
+         {
+            CollectTagHierarchy(_tag_info,    list_owner.Value,  true, _recursive_depth + 1);
+            CollectTagHierarchy(_target_info, list_target.Value, true, _recursive_depth + 1);
+         }
+
+         // 관계 목록 수집
+         foreach(var owner in list_owner.Value)
+         {
+            foreach(var target in list_target.Value)
+            {
+               if (m_repository_relation.TryGetValue((owner, target), out var repo_attribute))
+               {
+                  _result.AddRange(repo_attribute);
+               }
+            }
+         }
       }
 
+      private void CollectTagHierarchy(
+         TAG_INFO             _tag_info, 
+         List<TAG_INFO>       _result, 
+         bool                 _recursive_hierarchy = false,
+         int                  _recursive_depth     = 0)
+      {
+         if (MAX_RECURSIVE_DEPTH <= _recursive_depth)
+         {
+            Debug.LogError($"CollectTagHierarchy: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, RecursiveDepth: {_recursive_depth}");
+            return;
+         }
 
-      
+
+         // 해당 태그를 소유한 태그 목록을 조회합니다.
+         using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
+         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+         {
+            if (repo_attribute.TryGetValue(EnumTagAttributeType.TAG_HIERARCHY, out var repo_tag_data))
+            {
+                foreach(var tag_data in repo_tag_data)
+                {
+                    list_hierarchy.Value.Add(tag_data.TagInfo);
+                }
+            }
+         }
+
+         _result.AddRange(list_hierarchy.Value);
 
 
-      
+         // 상위 계층까지 조회할 경우.
+         if (_recursive_hierarchy)
+         {
+            foreach(var tag_parent in list_hierarchy.Value)
+            {
+               CollectTagHierarchy(tag_parent, _result, true, _recursive_depth + 1);
+            }
+         }
+      }
 
    }
 

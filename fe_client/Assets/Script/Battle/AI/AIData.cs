@@ -17,12 +17,15 @@ namespace Battle
             {
                 // TAG에 셋팅된 AIType 조회. 그 중 첫번째 것을 반환
                 {
+
+                    var tag_info       = TAG_INFO.Create(EntityManager.Instance.GetEntity(ID));
                     using var list_tag = ListPool<TAG_DATA>.AcquireWrapper();
-                    TagManager.Instance.CollectTagOwner(EntityManager.Instance.GetEntity(ID), EnumTagAttributeType.AI_TYPE, list_tag.Value);
+
+                    //
+                    TagManager.Instance.CollectTagOwner(tag_info, EnumTagAttributeType.AI_TYPE, list_tag.Value);
                     foreach(var tag in list_tag.Value)
-                    {
-                        if (tag.TargetInfo.TagType == EnumTagType.AIType)                 
-                            return (EnumAIType)tag.TargetInfo.TagValue;
+                    {         
+                        return (EnumAIType)tag.TargetInfo.TagValue;
                     }
                 }
 
@@ -32,7 +35,6 @@ namespace Battle
         }
 
         private EnumAIType m_ai_type_base    = EnumAIType.None;
-        // private EnumAIType m_ai_type_current = EnumAIType.None;
 
         public void Initialize(Entity _owner)
         {

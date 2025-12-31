@@ -13,7 +13,9 @@ namespace Battle
             if (_entity == null)
                 return;
 
-            _entity.CreateHUD();
+            _entity.Process_OnCreate();
+
+            
             
             WorldObjectManager.Instance.CreateObject(_entity.ID).Forget();   
         }
@@ -24,10 +26,11 @@ namespace Battle
             if (_entity == null)
                 return;
 
-            // 
-            _entity.Reset();
+            _entity.Process_OnDelete();
 
-            // ������Ʈ ����.
+           
+
+            // 엔티티 삭제.
             WorldObjectManager.Instance.DeleteObject(_entity.ID);
             EntityManager.Instance.Remove(_entity.ID);
         }

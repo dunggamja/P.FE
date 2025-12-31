@@ -124,7 +124,7 @@ namespace Battle
                     // 타겟 공격. (타겟이 있을 경우만 동작)
                     AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Target));                    
                     // 타겟과의 가까워지는 것을 최우선. (타겟이 있을 경우만 동작)
-                    AddAIUpdater(3, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
+                    AddAIUpdater(2, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Target));
 
                     // 공격 가능한 적이 있으면 공격. (타겟이 없을 경우 동작)
                     AddAIUpdater(4, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));

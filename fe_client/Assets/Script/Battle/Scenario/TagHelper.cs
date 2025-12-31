@@ -56,6 +56,19 @@ namespace Battle
       {
          return HashCode.Combine((int)TagType, TagValue);
       }
+
+
+
+      public static TAG_INFO Create(Entity _entity)
+      {
+         if (_entity == null)
+            return TAG_INFO.Create(EnumTagType.None, 0);
+
+         return TAG_INFO.Create(EnumTagType.Entity, _entity.ID);
+      }
+
+
+
    }
 
 
@@ -110,7 +123,43 @@ namespace Battle
       }
 
 
-      
+
+      public static void SetupTag_Entity_Hierarchy(Entity _entity, bool _is_alive)
+      {
+         if (_entity == null)
+            return;
+
+         //  ENTITY_FACTION, ENTITY_ALL 태그 관련 처리를 진행합니다.
+         var tag_entity_all = TAG_INFO.Create(EnumTagType.Entity_All, 0);
+         var tag_faction    = TAG_INFO.Create(EnumTagType.Entity_Faction, _entity.GetFaction());
+         var tag_entity     = TAG_INFO.Create(_entity);
+
+
+
+         //  ENTITY_FACTION, ENTITY_ALL 태그 일단 삭제 후 살아있으면 다시 셋팅합니다.
+         {
+            using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
+            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.TAG_HIERARCHY, list_remove.Value);
+            foreach(var tag in list_remove.Value)
+            {
+               switch(tag.TagInfo.TagType)
+               {
+                  case EnumTagType.Entity_Faction:
+                  case EnumTagType.Entity_All:
+                     TagManager.Instance.RemoveTag(tag);
+                     break;
+               }
+            }
+         }
+
+         
+         // 유닛이 살아있다면. 태그 셋팅.
+         if (_is_alive)
+         {
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.TAG_HIERARCHY, tag_entity));
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.TAG_HIERARCHY, tag_entity));
+         }
+      }
 
    }
 
