@@ -15,6 +15,13 @@ MonoBehaviour:
   m_GroupName: gui
   m_GUID: 172150e33854c4dc0a7c133d7e87cdc1
   m_SerializeEntries:
+  - m_GUID: 2c959a0a81c4d451dabdaf06357c3a9e
+    m_Address: gui/page/dialogue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aab75ba42822940eb9dcb5ae58504d24
     m_Address: gui/element/grid_item_menu_text
     m_ReadOnly: 0
