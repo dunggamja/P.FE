@@ -307,7 +307,7 @@ namespace Battle
          using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
          if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
          {
-            if (repo_attribute.TryGetValue(EnumTagAttributeType.TAG_HIERARCHY, out var repo_tag_data))
+            if (repo_attribute.TryGetValue(EnumTagAttributeType.ENTITY_HIERARCHY, out var repo_tag_data))
             {
                 foreach(var tag_data in repo_tag_data)
                 {

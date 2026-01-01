@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,7 +21,7 @@ public class GUIElement_Terrain_Attribute : GUIElement
 
     public void Initialize((int x, int y) _terrain_position)
     {
-        Clear();
+        OnClear();
 
         m_terrain_position              = _terrain_position;
         // m_terrain_position_subscription = _subject_terrain_position.Subscribe(position => 
@@ -33,8 +33,9 @@ public class GUIElement_Terrain_Attribute : GUIElement
         UpdateText();
     }
 
-    protected override void Clear()
+    protected override void OnClear()
     {
+        base.OnClear();
         // m_terrain_position_subscription?.Dispose();
         // m_terrain_position_subscription = null;
 

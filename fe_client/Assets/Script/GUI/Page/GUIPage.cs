@@ -217,14 +217,15 @@ public abstract class GUIPage : GUIBase
     protected abstract void OnPostProcess_Close();
 
 
-
-
     async UniTask OnCloseAsync(CancellationToken _token)
     {
         try
         {
             // 포커스 끄기.
             // SetInputFocus(false, GUIType);
+
+            // TODO: 이건 아직 고민중...
+            OnClear();
 
             // 종료 처리.
             OnClose();

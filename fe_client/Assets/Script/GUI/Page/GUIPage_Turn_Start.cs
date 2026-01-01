@@ -1,4 +1,4 @@
-
+ï»¿
 using System;
 using System.Collections.Generic;
 using Battle;
@@ -45,7 +45,7 @@ public class GUIPage_Turn_Start : GUIPage, IEventReceiver
     private TextMeshProUGUI m_text_turn_number;
 
 
-    private IDisposable     m_text_turn_number_subscription;
+    // private IDisposable     m_text_turn_number_subscription;
 
 
     public void OnReceiveEvent(IEventParam _event)
@@ -71,27 +71,27 @@ public class GUIPage_Turn_Start : GUIPage, IEventReceiver
                 localize_key.Key);
 
 
-        // ÅÏ number
+        // ï¿½ï¿½ number
         var turn = param.Turn;
 
-        // ÅÏ Ç¥½Ã
-        m_text_turn_number_subscription = localize_subject
+        // ï¿½ï¿½ Ç¥ï¿½ï¿½
+        localize_subject
           .Subscribe(text => 
           {
             if (m_text_turn_number)
                 m_text_turn_number.text = string.Format(text, turn);
-          });
+          }).AddTo(m_disposables);
 
 
-          // 2ÃÊ µÚ ÀÚµ¿ ´Ý±â.
+          // 2ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ ï¿½Ý±ï¿½.
           Invoke(nameof(CloseSelf), 1.0f);
     }
 
     protected override void OnClose()
     {
-        // throw new NotImplementedException();
-        m_text_turn_number_subscription?.Dispose();
-        m_text_turn_number_subscription = null;
+        // // throw new NotImplementedException();
+        // m_text_turn_number_subscription?.Dispose();
+        // m_text_turn_number_subscription = null;
     }
 
     protected override void OnPostProcess_Close()

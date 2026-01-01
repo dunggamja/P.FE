@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 
 
@@ -27,26 +28,10 @@ public enum EnumGUIState
 
 
 public abstract class GUIBase : MonoBehaviour//, IUIProperty
-{
-   
-    // private Vector3    m_init_local_position = Vector3.zero;
-    // private Quaternion m_init_local_rotation = Quaternion.identity;
-    // private Vector3    m_init_local_scale = Vector3.one;
+{  
+  
 
-    // virtual protected void Awake()
-    // {
-    //     m_init_local_position = transform.localPosition;
-    //     m_init_local_rotation = transform.localRotation;
-    //     m_init_local_scale    = transform.localScale;
-    // }
-
-    // protected void Init_Transform(Transform _parent)
-    // {
-    //     transform.SetParent(_parent);
-    //     transform.localPosition = m_init_local_position;
-    //     transform.localRotation = m_init_local_rotation;
-    //     transform.localScale    = m_init_local_scale;
-    // }
+    protected CompositeDisposable m_disposables = new();
 
     protected bool IsClosing { get; set; } = false;
 
@@ -85,6 +70,12 @@ public abstract class GUIBase : MonoBehaviour//, IUIProperty
         }
     }
 
+
+    protected virtual void OnClear()
+    {
+        m_disposables.Clear();
+    }
+
 }
 
 public abstract class GUIElement : GUIBase
@@ -108,8 +99,8 @@ public abstract class GUIElement : GUIBase
     {
         // TODO: 클래스 소멸 시 처리 필요한데.. OnDestroy 말고 다른 곳에 있는게 좋을거 같은...
         // Clear 처리 필요.
-        Clear();
+        OnClear();
     }
 
-    protected abstract void Clear();
+
 }

@@ -21,9 +21,9 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
     private RectTransform   m_select_rect;
   
     private int             m_index = 0;
-    private IDisposable     m_cursor_index_subscription;
-    private IDisposable     m_text_subscription;
-    private IDisposable     m_select_index_subscription;
+    // private IDisposable     m_cursor_index_subscription;
+    // private IDisposable     m_text_subscription;
+    // private IDisposable     m_select_index_subscription;
 
     public void Initialize(
         int                    _index,
@@ -31,7 +31,7 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         Observable<string>     _subject_text         = null,
         Observable<int>        _subject_select_index = null)
     {
-        Clear();
+        OnClear();
         
         m_index = _index;
 
@@ -39,45 +39,56 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         {
             m_cursor.gameObject.SetActive(false);        
             
-            m_cursor_index_subscription = _subject_cursor_index?.Subscribe(i => 
+            if (_subject_cursor_index != null)
+            {
+                _subject_cursor_index.Subscribe(i => 
                 {
                     m_cursor.gameObject.SetActive(i == m_index);
-                }) ?? Disposable.Empty;
+                    }).AddTo(m_disposables);
+            }
         }
 
         if (m_text)
         {
             m_text.gameObject.SetActive(false);
 
-            m_text_subscription = _subject_text?.Subscribe(text =>
+            if (_subject_text != null)
+            {
+                _subject_text.Subscribe(text =>
                 {
-                    m_text.gameObject.SetActive(true);
-                    m_text.text = text;
-                }) ?? Disposable.Empty;
+                        m_text.gameObject.SetActive(true);
+                        m_text.text = text;
+                    }).AddTo(m_disposables);
+            }
         }        
 
         if (m_select_rect)
         {
             m_select_rect.gameObject.SetActive(false);
 
-            m_select_index_subscription = _subject_select_index?.Subscribe(i => 
-                {
-                    m_select_rect.gameObject.SetActive(i == m_index);
-                }) ?? Disposable.Empty;
+            if (_subject_select_index != null)
+            {
+                _subject_select_index.Subscribe(i => 
+                        {
+                            m_select_rect.gameObject.SetActive(i == m_index);
+                        }).AddTo(m_disposables);
+            }
+
         }
 
         gameObject.SetActive(true);
     }
 
-    protected override void Clear()
+    protected override void OnClear()
     {
-        m_cursor_index_subscription?.Dispose();
-        m_text_subscription?.Dispose();
-        m_select_index_subscription?.Dispose();
+        base.OnClear();
+        // m_cursor_index_subscription?.Dispose();
+        // m_text_subscription?.Dispose();
+        // m_select_index_subscription?.Dispose();
 
-        m_cursor_index_subscription = null;
-        m_text_subscription         = null;
-        m_select_index_subscription = null;
+        // m_cursor_index_subscription = null;
+        // m_text_subscription         = null;
+        // m_select_index_subscription = null;
         m_index                     = 0;
     }
 

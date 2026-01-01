@@ -18,8 +18,9 @@ public class GUIElement_Attack_Preview_Sequence_Grid : GUIElement
   Image           m_image_damage_direction;
 
 
-    protected override void Clear()
+    protected override void OnClear()
     {
+        base.OnClear();
         m_text_damage_atatcker.text = string.Empty;
         m_text_damage_defender.text = string.Empty;
         m_image_damage_direction.rectTransform.localScale = Vector3.one;
@@ -27,7 +28,7 @@ public class GUIElement_Attack_Preview_Sequence_Grid : GUIElement
 
     public void Initialize(bool _is_attacker_turn, int _damage)
     {
-        Clear();
+        OnClear();
 
         if (_is_attacker_turn)
         {

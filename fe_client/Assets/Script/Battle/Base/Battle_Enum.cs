@@ -350,22 +350,22 @@ namespace Battle
     {
        None = 0,
 
-       TARGET_FOCUS   = 1, // 타겟팅 집중.
-       TARGET_IGNORE  = 2, // 타겟팅 제외.
-       TARGET_CONTAIN = 3, // 타겟팅 포함.
+       TARGET_FOCUS     = 1, // 타겟팅 집중.
+       TARGET_IGNORE    = 2, // 타겟팅 제외.
+       TARGET_CONTAIN   = 3, // 타겟팅 포함.
 
 
-       POSITION_VISIT = 11, // 위치 - 방문 가능       
-       POSITION_EXIT  = 12, // 위치 - 이탈 
+       POSITION_VISIT   = 11, // 위치 - 방문 가능       
+       POSITION_EXIT    = 12, // 위치 - 이탈 
 
-       TALK_COMMAND   = 21,  // 대화 명령 가능
+       TALK_COMMAND     = 21,  // 대화 명령 가능
 
 
-       AI_TYPE        = 31, // AI 타입 설정
+       AI_TYPE          = 31, // AI 타입 설정
 
-       TAG_HIERARCHY = 100, // 엔티티들 그룹핑을 위한 값.
+       ENTITY_HIERARCHY = 100, // 엔티티들 그룹핑을 위한 값.
 
-       FromScenario   = 999,
+       FromScenario     = 999,
     }
 
 

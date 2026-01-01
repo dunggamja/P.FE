@@ -40,8 +40,8 @@ public class GUIElement_Attack_Preview_Unit : GUIElement
   [SerializeField]
   TextMeshProUGUI              m_text_hp_after;
 
-  private IDisposable m_text_unit_name_subscription;
-  private IDisposable m_text_weapon_name_subscription;
+  // private IDisposable m_text_unit_name_subscription;
+  // private IDisposable m_text_weapon_name_subscription;
 
   public void Initialize(
     Int64 _entity_id,
@@ -52,7 +52,7 @@ public class GUIElement_Attack_Preview_Unit : GUIElement
     Int32 _hp_before,
     Int32 _hp_after)
   {
-    Clear();
+    OnClear();
 
 
     var entity = EntityManager.Instance.GetEntity(_entity_id);
@@ -72,12 +72,13 @@ public class GUIElement_Attack_Preview_Unit : GUIElement
             entity_name_key.Key);
 
     // 무기 이름 표시
-    m_text_weapon_name_subscription = weapon_name_subject
-      .Subscribe(text => m_text_weapon_name.text = text);
+    weapon_name_subject
+      .Subscribe(text => m_text_weapon_name.text = text).AddTo(m_disposables);
 
     // 유닛 이름 표시
-    m_text_unit_name_subscription = entity_name_subject
-      .Subscribe(text => m_text_unit_name.text = text);
+    entity_name_subject
+      .Subscribe(text => m_text_unit_name.text = text).AddTo(m_disposables);
+
 
     // 데미지 표시
     m_text_damage.text    = _damage.ToString();
@@ -97,12 +98,13 @@ public class GUIElement_Attack_Preview_Unit : GUIElement
 
   }
 
-  protected override void Clear()
+  protected override void OnClear()
   {
-    m_text_unit_name_subscription?.Dispose();
-    m_text_weapon_name_subscription?.Dispose();
+    base.OnClear();
+    // m_text_unit_name_subscription?.Dispose();
+    // m_text_weapon_name_subscription?.Dispose();
 
-    m_text_unit_name_subscription   = null;
-    m_text_weapon_name_subscription = null;
+    // m_text_unit_name_subscription   = null;
+    // m_text_weapon_name_subscription = null;
   }
 }

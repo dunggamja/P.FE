@@ -139,7 +139,7 @@ namespace Battle
          //  ENTITY_FACTION, ENTITY_ALL 태그 일단 삭제 후 살아있으면 다시 셋팅합니다.
          {
             using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
-            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.TAG_HIERARCHY, list_remove.Value);
+            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.ENTITY_HIERARCHY, list_remove.Value);
             foreach(var tag in list_remove.Value)
             {
                switch(tag.TagInfo.TagType)
@@ -156,8 +156,8 @@ namespace Battle
          // 유닛이 살아있다면. 태그 셋팅.
          if (_is_alive)
          {
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.TAG_HIERARCHY, tag_entity));
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.TAG_HIERARCHY, tag_entity));
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.ENTITY_HIERARCHY, tag_entity));
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.ENTITY_HIERARCHY, tag_entity));
          }
       }
 
