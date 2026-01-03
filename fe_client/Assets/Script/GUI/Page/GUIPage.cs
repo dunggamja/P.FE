@@ -224,8 +224,7 @@ public abstract class GUIPage : GUIBase
             // 포커스 끄기.
             // SetInputFocus(false, GUIType);
 
-            // TODO: 이건 아직 고민중...
-            OnClear();
+            
 
             // 종료 처리.
             OnClose();
@@ -241,13 +240,15 @@ public abstract class GUIPage : GUIBase
                 gameObject.SetActive(false);    
             }
 
-            // TODO: GUIELement 에 대한 처리가 애매해서 적어놓은듯.
-
+            // TODO: ??? 이건 아직 사용하는 곳이 없군.
             OnPostProcess_Close();
+
+            // TODO: GUIElement, GUIPage OnClear 처리 어떻게 할지 고민중.
+            OnClear();
 
             IsInitialized = false;
 
-            // TODO: GUI 풀링 처리가 없어서 적어놓은듯.
+            // TODO: GUI 풀링 처리.
             if (this != null && this.gameObject != null)
             {
                 Destroy(this.gameObject);

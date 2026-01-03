@@ -95,16 +95,15 @@ public class GUIElement_Attack_Preview_Unit : GUIElement
 
     // 지형 속성 표시
     m_terrain_attribute.Initialize(entity.Cell);
-
   }
 
-  protected override void OnClear()
-  {
-    base.OnClear();
-    // m_text_unit_name_subscription?.Dispose();
-    // m_text_weapon_name_subscription?.Dispose();
+  // protected override void OnClear()
+  // {
+  //   base.OnClear();
+  //   // m_text_unit_name_subscription?.Dispose();
+  //   // m_text_weapon_name_subscription?.Dispose();
 
-    // m_text_unit_name_subscription   = null;
-    // m_text_weapon_name_subscription = null;
-  }
+  //   // m_text_unit_name_subscription   = null;
+  //   // m_text_weapon_name_subscription = null;
+  // }
 }

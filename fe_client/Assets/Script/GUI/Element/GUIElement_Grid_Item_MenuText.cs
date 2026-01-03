@@ -82,6 +82,7 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
     protected override void OnClear()
     {
         base.OnClear();
+        m_index = 0;
         // m_cursor_index_subscription?.Dispose();
         // m_text_subscription?.Dispose();
         // m_select_index_subscription?.Dispose();
@@ -89,7 +90,6 @@ public class GUIElement_Grid_Item_MenuText : GUIElement
         // m_cursor_index_subscription = null;
         // m_text_subscription         = null;
         // m_select_index_subscription = null;
-        m_index                     = 0;
     }
 
 
