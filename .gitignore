@@ -49,3 +49,5 @@ fe_client/Gaia.UnityURPWater.Core.csproj
 fe_client/Gaia.UnityURPWater.Editor.csproj
 fe_client/GaiaCore.csproj
 fe_client/GaiaEditor.csproj
+fe_client/Assets/XLua.meta
+/fe_client/Assets/XLua
