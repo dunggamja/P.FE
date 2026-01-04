@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Lua;
+using Lua.Standard;
+using Lua.Unity;
+using UnityEditorInternal;
 using UnityEngine;
 
 
@@ -16,6 +20,8 @@ namespace Battle
 
         protected override float LoopInterval => Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
 
+        // private LuaState m_lua_state;
+
         protected override void OnInitialize()
         {
             base.OnInitialize();
@@ -28,7 +34,9 @@ namespace Battle
             // DOTween 초기화 - Init()에서 초기화 되었으면 비활성화
             DOTween.Init(false, false, LogBehaviour.ErrorsOnly);
 
-
+            // m_lua_state = LuaState.Create();
+            // m_lua_state.OpenStandardLibraries();
+            
             // 게임 데이터 초기화.
             Initialize_GameData().Forget();
         }
@@ -53,6 +61,19 @@ namespace Battle
 
         async UniTask Initialize_GameData()
         {
+            // var lua_script = await AssetManager.Instance.LoadAssetAsync<LuaAsset>("demo/script_test");            
+            // await m_lua_state.DoStringAsync(lua_script.Text);
+            // var test_func = m_lua_state.Environment["Test"].Read<LuaFunction>();
+            // if (test_func != null)
+            // {
+            //     var func_result = await m_lua_state.CallAsync(test_func, Array.Empty<LuaValue>());
+            //     if (func_result.Length > 0)
+            //     {
+            //         var result = func_result[0].Read<string>();
+            //         Debug.Log(result);
+            //     }
+            // }
+
             // 게임 데이터 로드.
             await DataManager.Instance.LoadSheetData();
 
