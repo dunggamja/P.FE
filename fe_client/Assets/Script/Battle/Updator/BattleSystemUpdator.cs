@@ -20,6 +20,7 @@ namespace Battle
 
         protected override float LoopInterval => Constants.BATTLE_SYSTEM_UPDATE_INTERVAL;
 
+        // 
         // private LuaState m_lua_state;
 
         protected override void OnInitialize()
@@ -34,6 +35,7 @@ namespace Battle
             // DOTween 초기화 - Init()에서 초기화 되었으면 비활성화
             DOTween.Init(false, false, LogBehaviour.ErrorsOnly);
 
+            // Lua 초기화.
             // m_lua_state = LuaState.Create();
             // m_lua_state.OpenStandardLibraries();
             
