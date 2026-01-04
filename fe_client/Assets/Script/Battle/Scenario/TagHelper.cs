@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Battle
 {
-   public struct TAG_INFO
+   public struct TAG_INFO : IEquatable<TAG_INFO>
    {
       public  EnumTagType  TagType;
       public  Int64        TagValue;
@@ -16,6 +16,14 @@ namespace Battle
       public static TAG_INFO Create(EnumTagType _tag_type, Int64 _tag_value)
       {
          return new TAG_INFO { TagType = _tag_type, TagValue = _tag_value };
+      }
+
+      public static TAG_INFO Create(Entity _entity)
+      {
+         if (_entity == null)
+            return TAG_INFO.Create(EnumTagType.None, 0);
+
+         return TAG_INFO.Create(EnumTagType.Entity, _entity.ID);
       }
 
       public static bool operator <(TAG_INFO _left, TAG_INFO _right)
@@ -44,32 +52,24 @@ namespace Battle
          return (_left.TagType, _left.TagValue) != (_right.TagType, _right.TagValue);
       }
 
-      public override bool Equals(object obj)
-      {
-         if (obj is TAG_INFO tag_info)
-            return this == tag_info;
-
-         return false;
-      }
-
       public override int GetHashCode()
       {
          return HashCode.Combine((int)TagType, TagValue);
       }
 
-
-
-      public static TAG_INFO Create(Entity _entity)
+      public bool Equals(TAG_INFO other)
       {
-         if (_entity == null)
-            return TAG_INFO.Create(EnumTagType.None, 0);
+         return this == other;
+      }
+      public override bool Equals(object obj)
+      {
+         if (obj is TAG_INFO tag_info)
+            return Equals(tag_info);
 
-         return TAG_INFO.Create(EnumTagType.Entity, _entity.ID);
+         return false;
       }
 
-
-
-   }
+    }
 
 
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Battle
 {
-   public struct TAG_DATA
+   public struct TAG_DATA : IEquatable<TAG_DATA>
    {
       public TAG_INFO              TagInfo      { get; private set; }
       public EnumTagAttributeType  Attribute   { get; private set; }
@@ -18,7 +18,35 @@ namespace Battle
       {
          return new TAG_DATA { TagInfo = _tag_info, Attribute = _attribute, TargetInfo = _target_info };
       }
-   }
+
+      public static bool operator ==(TAG_DATA _left, TAG_DATA _right)
+      {
+         return (_left.TagInfo, _left.Attribute, _left.TargetInfo) == (_right.TagInfo, _right.Attribute, _right.TargetInfo);
+      }
+
+      public static bool operator !=(TAG_DATA _left, TAG_DATA _right)
+      {
+         return (_left.TagInfo, _left.Attribute, _left.TargetInfo) != (_right.TagInfo, _right.Attribute, _right.TargetInfo);
+      }
+
+      public bool Equals(TAG_DATA other)
+      {
+         return this == other;
+      }
+
+      public override bool Equals(object obj)
+      {
+         if (obj is TAG_DATA tag_data)
+            return Equals(tag_data);
+
+         return false;
+      }
+
+      public override int GetHashCode()
+      {
+         return HashCode.Combine(TagInfo, Attribute, TargetInfo);
+      }
+    }
 
 
    public class TagManager : Singleton<TagManager>

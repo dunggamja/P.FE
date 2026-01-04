@@ -114,7 +114,10 @@ public abstract class GUIPage : GUIBase
 
         IsInitialized = true;
 
+#if UNITY_EDITOR
+        // 하이어라키에서 디버깅시에만 사용하는 값.
         gameObject.name = $"[{ID}] {GUIName}";
+#endif
         gameObject.SetActive(true);
 
         Show();

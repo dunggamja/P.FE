@@ -69,7 +69,9 @@ public partial class WorldObjectManager : SingletonMono<WorldObjectManager>, IEv
                     return;
                 }
 
+#if UNITY_EDITOR
                 new_object.name = $"{_id.ToString("D10")}_{asset_name}";
+#endif
                 var new_actor   = new_object.TryAddComponent<WorldObject>();
 
                 new_actor.Initialize(entity);

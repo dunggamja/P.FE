@@ -74,7 +74,7 @@ public enum EnumBuffOption
 }
 
 
-public struct BuffTarget : IEqualityComparer<BuffTarget>
+public struct BuffTarget : IEqualityComparer<BuffTarget>, IEquatable<BuffTarget>
 {
     //public int Type;
     //public int Situation;
@@ -91,10 +91,6 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>
         x.Status    == y.Status;
     }
 
-    public int GetHashCode(BuffTarget obj)
-    {
-        return obj.Situation ^ obj.Target ^ obj.Status;
-    }
 
     public readonly static BuffTarget  Empty = new BuffTarget
     {
@@ -107,6 +103,39 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>
     public static BuffTarget Create(EnumSituationType _situation, EnumBuffTarget _target, EnumBuffStatus _status)
     {
         return new BuffTarget { Situation = (int)_situation, Target = (int)_target, Status = (int)_status };
+    }
+
+    public bool Equals(BuffTarget other)
+    {
+        return this == other;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is BuffTarget buff_target)
+            return Equals(buff_target);
+
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Situation, Target, Status);
+    }
+
+    public int GetHashCode(BuffTarget obj)
+    {
+        return obj.GetHashCode();
+    }
+
+    public static bool operator ==(BuffTarget _left, BuffTarget _right)
+    {
+        return _left.Situation == _right.Situation && _left.Target == _right.Target && _left.Status == _right.Status;
+    }
+
+    public static bool operator !=(BuffTarget _left, BuffTarget _right)
+    {
+        return !(_left == _right);
     }
 }
 

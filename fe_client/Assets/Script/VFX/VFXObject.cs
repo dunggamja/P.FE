@@ -288,7 +288,10 @@ public class VFXObject : MonoBehaviour
 
         UpdateTransform(true);
 
-        gameObject.name = $"{VFXName}_{SerialNumber}";        
+#if UNITY_EDITOR
+        // 하이어라키에서 디버깅시에만 사용하는 값.
+        gameObject.name = $"[{SerialNumber}] {VFXName}";        
+#endif
 
         OnCreatePostProcess(_param);
     }
