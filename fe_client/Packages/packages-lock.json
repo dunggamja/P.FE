@@ -23,13 +23,6 @@
       "dependencies": {},
       "hash": "36d3260fdca03bf6feb105c67022d1fd7629dd2f"
     },
-    "com.nuskey8.lua.unity": {
-      "version": "https://github.com/nuskey8/Lua-CSharp.git?path=src/Lua.Unity/Assets/Lua.Unity",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "f86cc28333d4579c518715ed41264a88e9636c7a"
-    },
     "com.unity.2d.animation": {
       "version": "10.2.0",
       "depth": 0,
