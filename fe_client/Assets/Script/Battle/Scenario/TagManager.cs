@@ -77,6 +77,8 @@ namespace Battle
          if (IsExistTag(_tag_data))
             return; 
 
+         // Debug.Log($"SetTag: {_tag_data.TagInfo.TagType}.{_tag_data.TagInfo.TagValue}, {_tag_data.Attribute}, {_tag_data.TargetInfo.TagType}.{_tag_data.TargetInfo.TagValue}");
+
          // 소유자 레포에 추가.
          {
             if (m_repository.TryGetValue(_tag_data.TagInfo, out var repo_attribute) == false)

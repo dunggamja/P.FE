@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 5000d0c12cf804636b811786f29ffa87
   m_currentHash:
     serializedVersion: 2
-    Hash: ca5a866e406fb12733f646eea080f301
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_CatalogRequestsTimeout: 0
@@ -67,6 +67,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 683cc567c18ff4745aa2ab786353191c, type: 2}
   - {fileID: 11400000, guid: 23baf43413ebc47589a79db22acce134, type: 2}
   - {fileID: 11400000, guid: 8df5215042b2a452b963f91137f77150, type: 2}
+  - {fileID: 11400000, guid: 38d3228be6e124a2b8d86d988c9e1eda, type: 2}
   - {fileID: 11400000, guid: 4f97aa91cb52e41e083c5471bfd4f177, type: 2}
   - {fileID: 11400000, guid: 498862a3e05b94e8d85bde531841c9a5, type: 2}
   - {fileID: 11400000, guid: be37442fb1f70451e8815b2a52433232, type: 2}
@@ -121,7 +122,7 @@ MonoBehaviour:
     - Locale-ko
     - sheet
     - setting
-    - script
+    - runtimescript
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 5fbea59b8024e46fca2724d110ef1b2c, type: 2}

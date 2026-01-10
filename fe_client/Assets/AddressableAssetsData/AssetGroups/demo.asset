@@ -57,11 +57,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: def02c405544f40a783057f9eb916c28
-    m_Address: demo/script_test
+  - m_GUID: f1ba583a706614c37baa0f9ebf695436
+    m_Address: demo/demo_script_000
     m_ReadOnly: 0
     m_SerializedLabels:
-    - script
+    - runtimescript
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}
