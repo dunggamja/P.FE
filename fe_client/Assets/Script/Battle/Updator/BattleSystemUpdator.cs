@@ -106,16 +106,16 @@ namespace Battle
             // Test_BattleSystem_Setup_Tag(map_setting);
 
             // 런타임 스크립트 실행.
-            await RuntimeScriptManager.Instance.LoadAndRunScript("demo/demo_script_000");            
+            await RuntimeScriptManager.Instance.LoadAndRunScript("demo/demo_script_001");            
 
 
             IsInitialized = true;
         }
 
 
-        async UniTask<(MapBakeData, sheet_map_setting, sheet_map_faction_setting)> Load_Map_File(string _asset_name)
+        async UniTask<(MapBakeData, sheet_map_setting, sheet_map_faction_setting)> Load_Map_File(string _map_file_name)
         {
-            var map_file = await AssetManager.Instance.LoadAssetAsync<TextAsset>(_asset_name);
+            var map_file = await AssetManager.Instance.LoadAssetAsync<TextAsset>(_map_file_name);
             if (map_file == null)
                 return (null, null, null);
 

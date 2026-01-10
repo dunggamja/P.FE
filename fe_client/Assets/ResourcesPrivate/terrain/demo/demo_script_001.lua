@@ -1,4 +1,4 @@
-﻿SCRIPT_MODULE      = "demo_script_000"
+﻿SCRIPT_MODULE      = "demo_script_001"
 SCRIPT_MODULE_FUNC = "Run"
 
 demo_script_000 = {}

@@ -58,7 +58,7 @@ MonoBehaviour:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f1ba583a706614c37baa0f9ebf695436
-    m_Address: demo/demo_script_000
+    m_Address: demo/demo_script_001
     m_ReadOnly: 0
     m_SerializedLabels:
     - runtimescript

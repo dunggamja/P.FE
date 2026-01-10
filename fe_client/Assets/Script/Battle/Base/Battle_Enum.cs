@@ -437,4 +437,11 @@ namespace Battle
     }
 
 
+    public enum EnumChapterStageType
+    {
+       None = 0, Main = 1, Side = 2,
+    }
+    
+
+
 }
