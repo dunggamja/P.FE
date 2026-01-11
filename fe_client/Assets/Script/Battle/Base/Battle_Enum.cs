@@ -439,7 +439,43 @@ namespace Battle
 
     public enum EnumChapterStageType
     {
-       None = 0, Main = 1, Side = 2,
+       None = 0, 
+       Main = 1, // 메인 챕터
+       Side = 2, // 사이드 챕터 
+    }
+
+    public enum EnumRuntimeScriptTrigger
+    {
+       None = 0,
+
+       OnVerifyCondition  = 1, // 챕터 등장 조건 검사 시 실행할 스크립트.
+
+       OnChapterStart     = 11, // 챕터 시작 시 실행할 스크립트. (시나리오 연출 등)
+       OnChapterEnd       = 12, // 챕터 종료 시 실행할 스크립트. (시나리오 연출 등)
+
+       OnMapSetting       = 21, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅)
+
+       OnArrangementStart = 31, // 배치 시작 시 실행할 스크립트. 
+       OnArrangementEnd   = 32, // 배치 종료 시 실행할 스크립트. 
+
+       OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등)
+       OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등)
+
+       OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트.
+       OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트.
+
+       OnCombatStart      = 61, // 전투 시작 시 실행할 스크립트.
+       OnCombatEnd        = 62, // 전투 종료 시 실행할 스크립트.
+
+
+       OnSelect           = 71, // 타일 선택 시 실행할 스크립트.
+
+       OnCommandStart     = 81, // 명령 시작 시 실행할 스크립트.
+       OnCommandEnd       = 82, // 명령 종료 시 실행할 스크립트.
+       
+
+       OnEveryUpdate      = 999, // 매 프레임 트리거
+
     }
     
 
