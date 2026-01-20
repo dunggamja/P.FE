@@ -7,8 +7,6 @@ using Lua.Standard;
 using Lua.Unity;
 using Battle;
 using Cysharp.Threading.Tasks;
-using Shapes;
-using System.Threading.Tasks;
 #pragma warning disable CS1998 
 
 public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
