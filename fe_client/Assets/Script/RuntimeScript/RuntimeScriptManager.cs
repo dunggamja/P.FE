@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 {
-    private LuaState                     m_lua_state;
+    private LuaState                     m_lua_state  = null;
 
     // 변수는 Lua에 저장하지 않는다.
     // 상수 및 콜백만 Lua에 저장한다.
@@ -68,6 +68,8 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
             m_lua_state.Dispose();
             m_lua_state = null;
         }
+
+        m_lua_tables.Clear();
     }
 
 
@@ -132,8 +134,19 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
     async UniTask Load_Default_Script()
     {
+        // 기본 스크립트 로드 완료 여부 확인.
+        var is_loaded = GetLuaValue<int>("Load_Default_Script", "IsLoaded");
+        if (is_loaded == 1)
+        {
+          Debug.Log("기본 스크립트 이미 로드됨");
+          return;
+        }
+
         await Load_Script("runtimescript/common");
-        await Load_Script("runtimescript/tag");        
+        await Load_Script("runtimescript/tag");    
+
+        // 기본 스크립트 로드 완료.
+        SetLuaValue("Load_Default_Script", "IsLoaded", 1);    
     }
 
     async UniTask Load_Script(string _asset_name)
@@ -182,7 +195,6 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
           // 스크립트 실행.
           await RunScript(module_name, func_name);
-
       }
       else
       {

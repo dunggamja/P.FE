@@ -1,9 +1,11 @@
-﻿SCRIPT_MODULE      = "demo_script_001"
+﻿-- LOAD_AND_RUN이 필요할경우 아래 변수를 설정해야 한다.
+SCRIPT_MODULE      = "demo_script_01"
 SCRIPT_MODULE_FUNC = "Run"
 
-demo_script_000 = {}
+demo_script_01 = {}
 
-function demo_script_000.Run()     
+
+function demo_script_01.Setting_Tag()
    
    --  진영(아군)_위치(탈출)_위치(015,001)
    TagManager.SetTag(
@@ -40,4 +42,11 @@ function demo_script_000.Run()
          tag.TAG_INFO(EnumTagType.Entity_Faction, 3)
       )
    )
+end
+
+
+-- main 함수.
+function demo_script_01.Run()     
+   -- 태그 설정.
+   demo_script_01.Setting_Tag()
 end

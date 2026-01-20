@@ -102,11 +102,9 @@ namespace Battle
             // 진영 셋팅.
             Test_BattleSystem_Setup_Faction(faction_setting);
 
-            // 태그 셋팅.
-            // Test_BattleSystem_Setup_Tag(map_setting);
 
             // 런타임 스크립트 실행.
-            await RuntimeScriptManager.Instance.LoadAndRunScript("demo/demo_script_001");            
+            await Test_BattleSystem_Setup_Script(map_setting);            
 
 
             IsInitialized = true;
@@ -297,20 +295,19 @@ namespace Battle
             }
         }
 
-        // void Test_BattleSystem_Setup_Tag(sheet_map_setting _map_setting)
-        // {
-        //     if (_map_setting == null)
-        //         return;
+        async UniTask Test_BattleSystem_Setup_Script(sheet_map_setting _map_setting)
+        {
+            if (_map_setting == null)
+                return;
 
-        //     foreach(var e in _map_setting.tag)
-        //     {         
-        //         var tag_data        = TAG_DATA.Create(
-        //             TAG_INFO.Create((EnumTagType)e.OWNER_TYPE, e.OWNER_VALUE), 
-        //             (EnumTagAttributeType)e.ATTRIBUTE, 
-        //             TAG_INFO.Create((EnumTagType)e.TARGET_TYPE, e.TARGET_VALUE));
+            foreach(var e in _map_setting.script)
+            {
+                if (string.IsNullOrEmpty(e.SCRIPT))
+                    continue;
+                    
+                await RuntimeScriptManager.Instance.LoadAndRunScript(e.SCRIPT);
+            }
+        }
 
-        //         TagManager.Instance.SetTag(tag_data);
-        //     }
-        // }
     }
 }

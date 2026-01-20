@@ -468,7 +468,7 @@ namespace Battle
        OnCombatEnd        = 62, // 전투 종료 시 실행할 스크립트.
 
 
-       OnSelect           = 71, // 타일 선택 시 실행할 스크립트.
+       OnTileSelect       = 71, // 타일 선택 시 실행할 스크립트.
 
        OnCommandStart     = 81, // 명령 시작 시 실행할 스크립트.
        OnCommandEnd       = 82, // 명령 종료 시 실행할 스크립트.

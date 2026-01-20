@@ -108,15 +108,12 @@ public class sheet_map_setting_localize
 	public string      DESC;
 }
 
+
 [Serializable]
-public class sheet_map_setting_tag
-{	
-	public string MEMO;		
-	public int    OWNER_TYPE;
-	public Int64  OWNER_VALUE;
-	public int    ATTRIBUTE;
-	public int    TARGET_TYPE;
-	public Int64  TARGET_VALUE;
+public class sheet_map_setting_script
+{
+	public string SCRIPT;
+	public string MEMO;
 }
 
 
@@ -129,6 +126,7 @@ public class sheet_map_setting : ScriptableObject
 	public List<sheet_map_setting_status>    status       = new();
 	public List<sheet_map_setting_item>      item         = new();
 	public List<sheet_map_setting_localize>  localization = new();
+	public List<sheet_map_setting_script>    script       = new();
 	// public List<sheet_map_setting_tag>       tag          = new();
 
 

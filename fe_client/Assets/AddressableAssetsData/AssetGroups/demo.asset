@@ -57,8 +57,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: def02c405544f40a783057f9eb916c28
+    m_Address: demo/script_02.intro
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - runtimescript
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f1ba583a706614c37baa0f9ebf695436
-    m_Address: demo/demo_script_001
+    m_Address: demo/script_01.setting
     m_ReadOnly: 0
     m_SerializedLabels:
     - runtimescript
