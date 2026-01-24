@@ -11,6 +11,12 @@ using UnityEngine;
 public class GUIManager : SingletonMono<GUIManager>
 {
     // 
+    public enum EnumGUIOpenState
+    {
+        None,
+        Opening,
+        Opened,
+    }
 
     [SerializeField] private Canvas m_canvas_root_screen = null;
     [SerializeField] private Canvas m_canvas_root_hud    = null;
@@ -69,7 +75,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
 
-        if (_param.IsMultipleOpen == false && IsOpenUI(_param.GUIName))
+        if (_param.IsMultipleOpen == false && EnumGUIOpenState.None != IsOpenUI(_param.GUIName))
         {
             Debug.Log($"GUIManager: OpenUI failed. {_param.GUIName} is already open.");
             return 0;
@@ -223,7 +229,6 @@ public class GUIManager : SingletonMono<GUIManager>
                 // UI 종료.
                 gui_object.Close();
             }
-
         }
 
         // 비동기 처리가 진행중인게 있을 경우 취소 처리.
@@ -279,13 +284,33 @@ public class GUIManager : SingletonMono<GUIManager>
     }
 
 
-    bool IsOpenUI(string _name)
+    public EnumGUIOpenState IsOpenUI(string _name)
     {
-        if (m_active_gui_by_name.TryGetValue(_name, out var list_gui_id))
-            return list_gui_id.Count > 0;
+        var open_state = EnumGUIOpenState.None;
 
-        return false;
+        if (m_active_gui_by_name.TryGetValue(_name, out var list_gui_id))
+        {
+            foreach (var e in list_gui_id)
+            {
+                var state = IsOpenUI(e);
+                if (open_state < state)
+                    open_state = state;
+            }
+        }
+
+        return open_state;
     }
+
+    EnumGUIOpenState IsOpenUI(Int64 _id)
+    {
+        // UI 객체가 null이면 Opening 상태.
+        if (m_active_gui.TryGetValue(_id, out var gui_object))
+            return (gui_object != null) ? EnumGUIOpenState.Opened : EnumGUIOpenState.Opening;
+
+        // 레포지토리에 없으면 None 상태.
+        return EnumGUIOpenState.None;
+    }
+
 
     public Int64 GetInputFocusGUI()
     {

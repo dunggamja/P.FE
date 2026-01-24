@@ -12,6 +12,9 @@ using UnityEditor.Localization.Plugins.XLIFF.V20;
 public class GUIElement_Dialogue : GUIElement
 {
     [SerializeField]
+    private RectTransform   m_root;
+
+    [SerializeField]
     private TextMeshProUGUI m_name;
 
     [SerializeField]
@@ -28,12 +31,14 @@ public class GUIElement_Dialogue : GUIElement
     private int m_line_count      = 0;
     private int m_line_index      = 0;
 
-    public void Initialize(string _name, string _dialogue)
+    public void SetDialogue(string _name, string _dialogue)
     {
         OnClear();
 
         // m_text_name     = _name;
         // m_text_dialogue = _dialogue;
+
+        SetActive(true);
 
         m_name.text = _name;
         m_text.text = _dialogue;
@@ -43,6 +48,11 @@ public class GUIElement_Dialogue : GUIElement
 
         // 한번에 표시할 텍스트 줄 수 계산.
         (m_line_scroll_amount, m_line_count) = CalculateTextLineCount();
+    }
+
+    public void SetActive(bool _active)
+    {
+        m_root.gameObject.SetActive(_active);
     }
 
     private (int scroll_amount, int total) CalculateTextLineCount()
@@ -84,23 +94,21 @@ public class GUIElement_Dialogue : GUIElement
     }
 
 
-
-
-    [ContextMenu("TestReset")]
-    public void TestReset()
+    public bool HasNextDialogue()
     {
-        m_text_scroll.verticalNormalizedPosition = 1f;
-        m_line_index = 0;
-        (m_line_scroll_amount, m_line_count) = CalculateTextLineCount();
+        return m_line_index + m_line_scroll_amount < m_line_count;
     }
 
-    [ContextMenu("ScrollToNextDialogue")]
+
     public bool ScrollToNextDialogue()
     {
-        m_line_index += m_line_scroll_amount;
-        if (m_line_index >= m_line_count)
+        if (HasNextDialogue() == false)
             return false;
-       
+
+        // line index 증가.
+        m_line_index += m_line_scroll_amount;
+        
+        // 스크롤 이동.
         m_text_scroll.verticalNormalizedPosition = ScrollToLine(m_line_index);
         return true;
     }
