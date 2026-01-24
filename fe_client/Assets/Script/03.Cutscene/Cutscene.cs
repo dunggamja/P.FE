@@ -20,21 +20,31 @@ public enum EnumCutsceneType
 
 public abstract class Cutscene
 {
-   public abstract EnumCutsceneType Type { get; }
+   public abstract EnumCutsceneType Type     { get; }
+   protected       CutsceneSequence Sequence { get; private set; }
+
+   protected Cutscene(CutsceneSequence _sequence)
+   {
+      Sequence = _sequence;
+   }
+
+
+
+
    public async UniTask Execute(CancellationToken _skip_token)
    {
       try
       {
          OnEnter();
 
-         if (_skip_token.IsCancellationRequested)
-            return;            
+         if (_skip_token.IsCancellationRequested == false)
+            await OnUpdate(_skip_token);
 
-         await OnUpdate(_skip_token);
       }
-      catch (OperationCanceledException)
+      catch (OperationCanceledException ex)
       {
          // 취소 처리 발생하여도 계속 진행하기 위함.
+         Debug.LogWarning($"Cutscene Execute OperationCanceledException, {ex.Message}");
       }
       finally
       {
@@ -50,13 +60,35 @@ public abstract class Cutscene
 
 public class CutsceneTrack
 {
-   public string Name { get; private set; } = string.Empty;
+   private List<Cutscene> Cutscenes { get; set; } = new();
 
+   public async UniTask Play(CancellationToken _skip_token)
+   {
+      // 순차적으로 진행.
+      foreach (var e in Cutscenes)
+      {
+         await e.Execute(_skip_token);
+      }
+   }
 }
 
 public class CutsceneSequence
 {
+   private List<CutsceneTrack> Tracks     { get; set; }         = new();
 
+   public  BaseContainer       BlackBoard { get; private set; } = new();
+
+   public  bool IsPlaying { get; private set; } = false; // 연출이 진행중인지 체크.
+   public  bool HasPlayed { get; private set; } = false; // 연출이 한번 실행되었는지 체크.
+
+   public async UniTask Play(CancellationToken _skip_token)
+   {
+      IsPlaying = true;
+      // 병렬로 진행.
+      await UniTask.WhenAll(Tracks.Select(e => e.Play(_skip_token)));
+      IsPlaying = false;
+      HasPlayed = true;
+   }
 }
 
 
