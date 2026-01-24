@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46bf65b709a6d4f1d8b44c5ca321ca3a, type: 3}
+  m_Name: sheet_map_faction_setting
+  m_EditorClassIdentifier: 
+  m_faction_settings:
+  - Memo: "\uD50C\uB808\uC774\uC5B4 \uC9C4\uC601"
+    CommanderType: 1
+    Faction: 1
+  - Memo: "\uC801\uAD70 \uC9C4\uC601"
+    CommanderType: 2
+    Faction: 2
+  - Memo: "\uC544\uAD70 NPC \uC9C4\uC601"
+    CommanderType: 2
+    Faction: 3
+  m_alliance_settings:
+  - Memo: "\uD50C\uB808\uC774\uC5B4 & NPC \uC544\uAD70 \uC14B\uD305."
+    Faction_1: 1
+    Faction_2: 3
