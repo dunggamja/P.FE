@@ -40,6 +40,7 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
         RegisterEnum<EnumTagAttributeType>();
         RegisterEnum<EnumScenarioTrigger>();
         RegisterEnum<EnumScenarioCondition>();
+        RegisterEnum<EnumCutsceneType>();
 
         // constants
         SetLuaValue("Constants", "MAX_MAP_SIZE", Constants.MAX_MAP_SIZE);

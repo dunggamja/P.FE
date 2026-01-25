@@ -10,42 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: gui
+  m_Name: 70.runtimescript
   m_EditorClassIdentifier: 
-  m_GroupName: gui
-  m_GUID: 172150e33854c4dc0a7c133d7e87cdc1
+  m_GroupName: 70.runtimescript
+  m_GUID: bc5fdceb2faf84a629f64017e34e588d
   m_SerializeEntries:
-  - m_GUID: 2c959a0a81c4d451dabdaf06357c3a9e
-    m_Address: gui/page/dialogue
+  - m_GUID: 09ccf16d0722845178bebdb9d9610998
+    m_Address: runtimescript/common
     m_ReadOnly: 0
     m_SerializedLabels:
-    - gui
-    - prefab
+    - runtimescript
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: aab75ba42822940eb9dcb5ae58504d24
-    m_Address: gui/element/grid_item_menu_text
+  - m_GUID: 4ac038644343047a98e6c49b868f51ea
+    m_Address: runtimescript/tag
     m_ReadOnly: 0
     m_SerializedLabels:
-    - gui
-    - prefab
+    - runtimescript
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e51f84c91ddca40c59c1a1f6c7474956
-    m_Address: gui/page/turn_start
+  - m_GUID: c00c77f3d3ffe45a9a3d635b31dc76a4
+    m_Address: runtimescript/dialogue
     m_ReadOnly: 0
     m_SerializedLabels:
-    - gui
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f7bd7a34be46c4a209096f943c532375
-    m_Address: gui/page/common_selection
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - gui
-    - prefab
+    - runtimescript
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: c3969524c7e4640e09a54376da509e55, type: 2}
-    - {fileID: 11400000, guid: 1fd8ac3be307b415599dba07775d4bef, type: 2}
+    m_Schemas: []

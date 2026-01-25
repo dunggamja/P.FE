@@ -7,32 +7,46 @@ using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-
-public class CutsceneManager : Singleton<CutsceneManager>
+[EventReceiver(
+   typeof(Dialogue_CompleteEvent)
+   )]
+public class CutsceneManager : Singleton<CutsceneManager>, IEventReceiver
 {
+   
    private Dictionary<string, CutsceneSequence> m_repository       = new();
    private Queue<string>                        m_queue_cutscene   = new();
    private string                               m_playing_cutscene = string.Empty;
    private CancellationTokenSource              m_cancel_token_source = null;
 
 
-   public bool IsPlayingCutscene => string.IsNullOrEmpty(m_playing_cutscene) == false;
+   public bool IsPlayingCutscene 
+   {
+      get
+      {
+         if (m_queue_cutscene.Count > 0)
+            return true;
+
+         if (string.IsNullOrEmpty(m_playing_cutscene) == false)
+            return true;
+
+         return false;
+      }
+   }
+
+   
 
 
     protected override void OnLoop()
     {
       base.OnLoop();
 
-      // 현재 진행중인 컷씬이 있을 경우 예외처리.
-      if (IsPlayingCutscene)
-         return;
-
       // 대기중인 컷씬이 있을 경우, 재생.
-      if (m_queue_cutscene.Count > 0)
-      {
+      if (m_queue_cutscene.Count > 0 && string.IsNullOrEmpty(m_playing_cutscene))
+      {        
          var cutscene_name = m_queue_cutscene.Dequeue();
          PlayCutscene(cutscene_name).Forget();
       }
+
     }
 
     // 컷씬 재생 요청.
@@ -90,4 +104,8 @@ public class CutsceneManager : Singleton<CutsceneManager>
       }
     }
 
+    public void OnReceiveEvent(IEventParam _event)
+    {
+        throw new NotImplementedException();
+    }
 }

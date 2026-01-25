@@ -14,8 +14,8 @@ public class GUIManager : SingletonMono<GUIManager>
     public enum EnumGUIOpenState
     {
         None,
-        Opening,
-        Opened,
+        Instancing, // 생성중.
+        Open,
     }
 
     [SerializeField] private Canvas m_canvas_root_screen = null;
@@ -121,7 +121,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
     async UniTask OpenUIAsync(GUIOpenParam _param, CancellationToken _cancel_token = default)
     {
-        try
+        // try
         {
             
             Transform _ui_root = null;
@@ -150,17 +150,17 @@ public class GUIManager : SingletonMono<GUIManager>
                 if (gui_object == null)
                 {
                     Debug.LogError($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
-
-                    throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
+                    //throw new Exception($"UIManager: OpenUIAsync failed to instantiate {_param.GUIName}");
                 }
 
                 // GUIPage 컴포넌트 찾기.
-                if (gui_object.TryGetComponent<GUIPage>(out gui_page) == false)
+                if (gui_object != null && gui_object.TryGetComponent<GUIPage>(out gui_page) == false)
                 {
                     Debug.LogError($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
                     GameObject.Destroy(gui_object);
+                    gui_object = null;
 
-                    throw new Exception($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
+                    // throw new Exception($"UIManager: OpenUIAsync failed to get GUIPage component. {_param.GUIName}");
                 }            
             }
 
@@ -169,11 +169,18 @@ public class GUIManager : SingletonMono<GUIManager>
             if (_cancel_token.IsCancellationRequested)
             {
                 Debug.Log($"GUIManager: OpenUIAsync canceled. {_param.GUIName}");
-                GameObject.Destroy(gui_object);
+                
+                if (gui_object != null)
+                {
+                    GameObject.Destroy(gui_object);
+                    gui_object = null;
+                }
 
+                CloseUI(_param.ID);
+                return;
 
                 // 예외 발생 처리.
-                _cancel_token.ThrowIfCancellationRequested();
+                // _cancel_token.ThrowIfCancellationRequested();
             }
             
 
@@ -186,12 +193,12 @@ public class GUIManager : SingletonMono<GUIManager>
 
             
         }
-        catch (Exception e)
-        {
-            Debug.LogError($"GUIManager: OpenUIAsync canceled. {_param.GUIName}, e:{e.Message}");
+        // catch (Exception e)
+        // {
+        //     Debug.LogError($"GUIManager: OpenUIAsync canceled. {_param.GUIName}, e:{e.Message}");
 
-            CloseUI(_param.ID);
-        }
+        //     CloseUI(_param.ID);
+        // }
         
     }
 
@@ -283,6 +290,16 @@ public class GUIManager : SingletonMono<GUIManager>
         return null;
     }
 
+    public Int64 GetGUIID(string _name)
+    {
+        if (m_active_gui_by_name.TryGetValue(_name, out var list_gui_id))
+        {
+            foreach (var e in list_gui_id)
+                return e;
+        }
+        return 0;
+    }
+
 
     public EnumGUIOpenState IsOpenUI(string _name)
     {
@@ -305,7 +322,7 @@ public class GUIManager : SingletonMono<GUIManager>
     {
         // UI 객체가 null이면 Opening 상태.
         if (m_active_gui.TryGetValue(_id, out var gui_object))
-            return (gui_object != null) ? EnumGUIOpenState.Opened : EnumGUIOpenState.Opening;
+            return (gui_object != null) ? EnumGUIOpenState.Open : EnumGUIOpenState.Instancing;
 
         // 레포지토리에 없으면 None 상태.
         return EnumGUIOpenState.None;

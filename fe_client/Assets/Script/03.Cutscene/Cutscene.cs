@@ -70,6 +70,14 @@ public class CutsceneTrack
          await e.Execute(_skip_token);
       }
    }
+
+   public void AddCutscene(Cutscene _cutscene)
+   {
+      if (_cutscene == null)
+         return;
+
+      Cutscenes.Add(_cutscene);
+   }
 }
 
 public class CutsceneSequence
@@ -88,6 +96,15 @@ public class CutsceneSequence
       await UniTask.WhenAll(Tracks.Select(e => e.Play(_skip_token)));
       IsPlaying = false;
       HasPlayed = true;
+   }
+
+
+   public void AddTrack(CutsceneTrack _track)
+   {
+      if (_track == null)
+         return;
+
+      Tracks.Add(_track);
    }
 }
 

@@ -9,7 +9,7 @@ using System.Threading;
 
 public static class CutsceneBuilder
 {
-   private static CutsceneSequence root = null;
+   public static CutsceneSequence Root  { get; private set; } = null;
    // public static CutsceneSequence BuildCutscene(string _cutscene_name)
    // {
    //    return new CutsceneSequence();
@@ -17,9 +17,20 @@ public static class CutsceneBuilder
 
    public static void CreateRoot()
    {
-      if (root != null)
+      if (Root != null)
          Debug.LogError("CutsceneBuilder: Root already created.");
 
-      root = new CutsceneSequence();
+      Root = new CutsceneSequence();
    }
+
+
+   public static void RegisterCutscene(string _cutscene_name)
+   {
+      if (string.IsNullOrEmpty(_cutscene_name))
+         return;
+
+      CutsceneManager.Instance.RegisterCutscene(_cutscene_name, Root);
+      Root = null;
+   }
+
 }

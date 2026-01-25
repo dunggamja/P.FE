@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: sheet
+  m_Name: 80.sheet
   m_EditorClassIdentifier: 
-  m_GroupName: sheet
+  m_GroupName: 80.sheet
   m_GUID: f9c720819ea724776ab721c07f767729
   m_SerializeEntries:
   - m_GUID: 196fd3624b40e478098c71a48dc6bf06
