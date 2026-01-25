@@ -309,5 +309,65 @@ namespace Battle
             }
         }
 
+        [ContextMenu("TestCode_Dialogue")]
+        void TestCode_Dialogue()
+        {
+            var dialogue_sequence = new DIALOGUE_SEQUENCE();
+            dialogue_sequence.SetID(1);
+            dialogue_sequence.AddDialogueData(new List<DIALOGUE_DATA>
+            {
+                new DIALOGUE_DATA()
+                {
+                    IsActive = true,
+                    Position = DIALOGUE_DATA.EnumPosition.Center,
+                    Name     = "John Doe",
+                    Dialogue = "Hello, World!",
+                }
+            });
+
+
+
+
+            var dialogue_sequence2 = new DIALOGUE_SEQUENCE();
+            dialogue_sequence2.SetID(2);
+            dialogue_sequence2.AddDialogueData(new List<DIALOGUE_DATA>
+            {
+                new DIALOGUE_DATA()
+                {
+                    IsActive = true,
+                    Position = DIALOGUE_DATA.EnumPosition.Bottom,
+                    Name     = "Jane Doe",
+                    Dialogue = "Hello, World!2",
+                }
+            });
+
+            var dialogue_sequence3 = new DIALOGUE_SEQUENCE();
+            dialogue_sequence3.SetID(3);
+            dialogue_sequence3.AddDialogueData(new List<DIALOGUE_DATA>
+            {
+                new DIALOGUE_DATA()
+                {
+                    IsActive = true,
+                    Position = DIALOGUE_DATA.EnumPosition.Center,
+                    Name     = "Doey Doe",
+                    Dialogue = "Hello, World!3",
+                }
+            });
+
+                        CutsceneBuilder.CreateRoot();
+
+            CutsceneTrack track = new CutsceneTrack();
+            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
+            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
+            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
+
+
+            CutsceneBuilder.Root.AddTrack(track);
+
+            CutsceneBuilder.RegisterCutscene("Dialogue");
+
+            CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
+        }
+
     }
 }

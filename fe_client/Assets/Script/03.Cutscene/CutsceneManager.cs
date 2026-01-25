@@ -7,10 +7,10 @@ using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-[EventReceiver(
-   typeof(Dialogue_CompleteEvent)
-   )]
-public class CutsceneManager : Singleton<CutsceneManager>, IEventReceiver
+// [EventReceiver(
+//    typeof(Dialogue_CompleteEvent)
+//    )]
+public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 {
    
    private Dictionary<string, CutsceneSequence> m_repository       = new();
@@ -44,6 +44,8 @@ public class CutsceneManager : Singleton<CutsceneManager>, IEventReceiver
       if (m_queue_cutscene.Count > 0 && string.IsNullOrEmpty(m_playing_cutscene))
       {        
          var cutscene_name = m_queue_cutscene.Dequeue();
+
+         // 비동기 실행이므로 Forget 처리.
          PlayCutscene(cutscene_name).Forget();
       }
 
@@ -102,10 +104,5 @@ public class CutsceneManager : Singleton<CutsceneManager>, IEventReceiver
          m_cancel_token_source.Dispose();
          m_cancel_token_source = null;
       }
-    }
-
-    public void OnReceiveEvent(IEventParam _event)
-    {
-        throw new NotImplementedException();
     }
 }

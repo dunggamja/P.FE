@@ -8,8 +8,9 @@ using Battle;
 
 
 [EventReceiver(
-   typeof(GUI_Menu_SelectEvent),
-   typeof(Dialogue_RequestPlayEvent)
+   typeof(GUI_Menu_SelectEvent)
+   //,
+   // typeof(Dialogue_RequestPlayEvent)
 )]
 public class GUIPage_Dialogue : GUIPage, IEventReceiver
 {
@@ -70,9 +71,9 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
          case GUI_Menu_SelectEvent menu_select_event:
             OnReceiveEvent_GUI_Menu_SelectEvent(menu_select_event);
             break;
-         case Dialogue_RequestPlayEvent dialogue_requet_play_event:
-            OnReceiveEvent_Dialogue_RequetPlayEvent(dialogue_requet_play_event);
-            break;
+         // case Dialogue_RequestPlayEvent dialogue_requet_play_event:
+         //    OnReceiveEvent_Dialogue_RequetPlayEvent(dialogue_requet_play_event);
+         //    break;
        }
 
     }
@@ -84,6 +85,14 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       {
          e.SetActive(false);
       }
+
+      // 대화 시퀀스 구독.
+      DialoguePublisher.GetObserverDialogueSequence().Subscribe(_dialogue =>
+      {
+         m_dialogue_data.Reset();
+         m_dialogue_data.SetID(_dialogue.ID);
+         m_dialogue_data.AddDialogueData(_dialogue.DialogueData);
+      }).AddTo(m_disposables);
     }
 
     protected override void OnLoop()
@@ -93,9 +102,9 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
         // 대기중인 대화가 있을 경우 재생.
         if (DialogueState != EnumDialogueState.Playing)
         {
-            if (m_dialogue_data.DialogueData.Count > 0)
+            if (m_dialogue_data.HasDialogueData())
             {
-               PlayDialogue(m_dialogue_data.DialogueData.Dequeue());
+               PlayDialogue(m_dialogue_data.DequeueDialogueData());
             }
         }
     }
@@ -125,15 +134,15 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       ScrollPlayingDialogue();
     }
 
-    void OnReceiveEvent_Dialogue_RequetPlayEvent(Dialogue_RequestPlayEvent _event)
-    {
-      if (_event == null)
-         return;
+   //  void OnReceiveEvent_Dialogue_RequetPlayEvent(Dialogue_RequestPlayEvent _event)
+   //  {
+   //    if (_event == null)
+   //       return;
 
-      m_dialogue_data.Reset();
-      m_dialogue_data.SetID(_event.DialogueSequence.ID);
-      m_dialogue_data.AddDialogueData(_event.DialogueSequence.DialogueData);
-    }
+   //    m_dialogue_data.Reset();
+   //    m_dialogue_data.SetID(_event.Dialogue.ID);
+   //    m_dialogue_data.AddDialogueData(_event.Dialogue.DialogueData);
+   //  }
 
 
     void PlayDialogue(DIALOGUE_DATA _data)
@@ -165,8 +174,7 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       {
          DialogueState = EnumDialogueState.Complete;
 
-         EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<Dialogue_CompleteEvent>.Acquire().Set(m_dialogue_data.ID));
+         DialoguePublisher.PublishComplete(m_dialogue_data.ID);
       }
     }
 

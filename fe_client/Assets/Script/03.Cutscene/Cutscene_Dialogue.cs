@@ -6,6 +6,7 @@ using Lua;
 using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using R3;
 
 public struct DIALOGUE_PORTRAIT
 {
@@ -30,7 +31,7 @@ public struct DIALOGUE_DATA
 
 public struct DIALOGUE_SEQUENCE
 {
-   public Int64               ID;
+   public Int64 ID;
    public Queue<DIALOGUE_DATA> DialogueData;
 
    public void SetID(Int64 _id)
@@ -38,8 +39,12 @@ public struct DIALOGUE_SEQUENCE
       ID = _id;
    }
 
+
    public void AddDialogueData(List<DIALOGUE_DATA> _dialogue_data)
    {
+      if (DialogueData == null)
+          DialogueData = new();
+
       foreach (var e in _dialogue_data)
       {
          DialogueData.Enqueue(e);
@@ -48,22 +53,69 @@ public struct DIALOGUE_SEQUENCE
 
    public void AddDialogueData(Queue<DIALOGUE_DATA> _dialogue_data)
    {
+      if (DialogueData == null)
+          DialogueData = new();
+
       foreach (var e in _dialogue_data)
       {
          DialogueData.Enqueue(e);
       }
    }
 
+   public bool HasDialogueData()
+   {
+      return DialogueData != null && DialogueData.Count > 0;
+   }
+
+   public DIALOGUE_DATA DequeueDialogueData()
+   {
+      if (HasDialogueData() == false)
+         return default(DIALOGUE_DATA);
+
+      return DialogueData.Dequeue();
+   }
+  
+
+
    public void Reset()
    {
       ID = 0;
-      DialogueData.Clear();
+
+      if (DialogueData != null)
+          DialogueData.Clear();
+   }
+}
+
+public class DialoguePublisher
+{
+   private static Subject<DIALOGUE_SEQUENCE> s_dialogue_sequence    = new();
+   private static Subject<Int64>             s_complete_dialogue_id = new();
+
+   public static void PublishDialogueSequence(DIALOGUE_SEQUENCE _dialogue_sequence)
+   {
+      s_dialogue_sequence.OnNext(_dialogue_sequence);
+   }
+
+   public static Observable<DIALOGUE_SEQUENCE> GetObserverDialogueSequence()
+   {
+      return s_dialogue_sequence.AsObservable();
+   }
+
+
+   public static void PublishComplete(Int64 _id)
+   {
+      s_complete_dialogue_id.OnNext(_id);
+   }
+
+   public static Observable<Int64> GetObserverComplete(Int64 _id)
+   {
+      return s_complete_dialogue_id.Where(e => e == _id).Take(1);
    }
 }
 
 
-[EventReceiver(typeof(Dialogue_CompleteEvent))]
-public class Cutscene_Dialogue : Cutscene, IEventReceiver
+// [EventReceiver(typeof(Dialogue_CompleteEvent))]
+public class Cutscene_Dialogue : Cutscene//, IEventReceiver
 {
    public override EnumCutsceneType Type => EnumCutsceneType.Dialogue;
    private DIALOGUE_SEQUENCE m_dialogue_data = new ();
@@ -94,46 +146,21 @@ public class Cutscene_Dialogue : Cutscene, IEventReceiver
          cancellationToken: _skip_token)
          .Timeout(TimeSpan.FromSeconds(10));
 
-      try
-      {
-         EventDispatchManager.Instance.AttachReceiver(this);
+      
 
-         // 대화 이벤트 발생.
-         EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<Dialogue_RequestPlayEvent>.Acquire().Set(m_dialogue_data));
+      // 대화 시퀀스 발행.
+      DialoguePublisher.PublishDialogueSequence(m_dialogue_data);
 
-         // 대화 이벤트 종료까지 대기
-         await UniTask.WaitUntil(() => m_dialogue_done, cancellationToken: _skip_token);
-      }
-      finally
-      {
-         EventDispatchManager.Instance.DetachReceiver(this);
-      }
+      // 대화 완료 이벤트 구독
+      await DialoguePublisher.GetObserverComplete(m_dialogue_data.ID).WaitAsync(_skip_token);
+
+      Debug.Log($"Cutscene_Dialogue: Dialogue complete {m_dialogue_data.ID}");
+
    }
 
    protected override void OnExit()
    {
-      //throw new NotImplementedException();
+     
    }
 
-    public void OnReceiveEvent(IEventParam _event)
-    {
-        switch(_event)
-        {
-            case Dialogue_CompleteEvent dialogue_complete_event:
-                OnReceiveEvent_Dialogue_CompleteEvent(dialogue_complete_event);
-                break;
-        }
-    }
-
-    void OnReceiveEvent_Dialogue_CompleteEvent(Dialogue_CompleteEvent _event)
-    {
-        if (_event == null)
-            return;
-
-        if (_event.DialogueID != m_dialogue_data.ID)
-            return;
-
-        m_dialogue_done = true;
-    }
 }

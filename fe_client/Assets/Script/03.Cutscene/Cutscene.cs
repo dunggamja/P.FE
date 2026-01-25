@@ -92,10 +92,12 @@ public class CutsceneSequence
    public async UniTask Play(CancellationToken _skip_token)
    {
       IsPlaying = true;
+      Debug.Log($"CutsceneSequence: Play start");
       // 병렬로 진행.
       await UniTask.WhenAll(Tracks.Select(e => e.Play(_skip_token)));
       IsPlaying = false;
       HasPlayed = true;
+      Debug.Log($"CutsceneSequence: Play complete");
    }
 
 

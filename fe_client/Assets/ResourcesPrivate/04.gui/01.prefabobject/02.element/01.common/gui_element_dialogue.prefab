@@ -485,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b93a0a85f9004167a2b39618da04b74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_root: {fileID: 3135111630657909129}
   m_name: {fileID: 7352800609035429275}
   m_text: {fileID: 6433844359002137148}
   m_text_scroll: {fileID: 2077696670014950189}
