@@ -847,7 +847,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          // 이동 Command도 추가.
          
          {
-            BattleSystemManager.Instance.PushCommand(
+            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                new Command_Move(
                   m_entity_id,
                   entity.Cell,
@@ -859,7 +859,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          
 
          // 교환 Command 실행.
-         BattleSystemManager.Instance.PushCommand(
+         ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                new Command_Exchange(
                   m_entity_id,
                   ExchangeTargetID,

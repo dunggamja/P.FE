@@ -6,15 +6,18 @@ using UnityEngine;
 
 namespace Battle
 {
+
+
+
     public class BattleSystemManager : Singleton<BattleSystemManager>, ISystemManager
     {
-        // Dictionary<int, BattleSystem> m_repository = new Dictionary<int, BattleSystem>();
 
-        public IBattleSystemParam  Param          { get; private set; }
-        public EnumState           State          { get; private set; }                       
-        public BattleBlackBoard    BlackBoard     { get; private set; } = new ();
+        public IBattleSystemParam    Param       { get; private set; }
+        public EnumState             State       { get; private set; }                       
+        public BattleBlackBoard      BlackBoard  { get; private set; } = new ();
+        public bool                  IsPause     { get; private set; } = false;
 
-        
+       
 
 
         public bool IsProgress => State == EnumState.Progress;
@@ -25,11 +28,10 @@ namespace Battle
         
         private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
         private HashSet<(int, int)>                m_faction_alliance       = new ();
-
-        private Queue<Command>                     m_command_queue          = new (10);
-
-
-        public MoveRange.VFXHelper_DrawRange       DrawRange    { get; private set; } = new();
+        
+        
+        public CommandQueueHandler           CommandHandler { get; private set; } = new();
+        public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
 
         
 
@@ -45,9 +47,9 @@ namespace Battle
             // 턴 진행
             m_update_system.Add(new BattleSystem_Turn());       
             // 의사 결정
-            m_update_system.Add(new BattleSystem_Decision_Making());    
+            m_update_system.Add(new BattleSystem_Decision_Making(CommandHandler));    
             // 명령 처리
-            m_update_system.Add(new BattleSystem_Command_Progress());
+            m_update_system.Add(new BattleSystem_Command_Progress(CommandHandler));
 
 
 
@@ -65,7 +67,7 @@ namespace Battle
             m_system_index = 0;
 
             m_faction_commander.Clear();
-            m_command_queue.Clear();
+            CommandHandler.Clear();
             
             DrawRange.Clear();
         }
@@ -83,6 +85,10 @@ namespace Battle
 
         bool OnUpdate()
         {
+            // Update 정지 처리.
+            if (IsPause)
+                return false;            
+
             // 시스템을 순차적으로 실행해야 한다.
             for(; m_system_index < m_update_system.Count; ++m_system_index)
             {
@@ -206,25 +212,30 @@ namespace Battle
             return IsAlly(_faction_1, _faction_2) == false;
         }
 
-        public void PushCommand(Command _command)
+        // public void PushCommand(Command _command)
+        // {
+        //     CommandHandler.PushCommand(_command);
+        // }   
+
+        // public Command PopCommand()
+        // {
+        //     if (CommandHandler.Count == 0)
+        //         return null;
+
+        //     return CommandHandler.PopCommand();
+        // }
+
+        // public Command PeekCommand()
+        // {
+        //     if (CommandHandler.Count == 0)
+        //         return null;
+
+        //     return CommandHandler.PeekCommand();
+        // }
+
+        public void SetPause(bool _pause)
         {
-            m_command_queue.Enqueue(_command);
-        }   
-
-        public Command PopCommand()
-        {
-            if (m_command_queue.Count == 0)
-                return null;
-
-            return m_command_queue.Dequeue();
-        }
-
-        public Command PeekCommand()
-        {
-            if (m_command_queue.Count == 0)
-                return null;
-
-            return m_command_queue.Peek();
+            IsPause = _pause;
         }
 
         public BattleSystemManager_IO Save()
@@ -265,7 +276,7 @@ namespace Battle
                 m_faction_alliance.Add(e);
 
             // 나머지는 그냥 초기화 처리.
-            m_command_queue.Clear();
+            CommandHandler.Clear();
             
             if (_is_plan == false)
             {

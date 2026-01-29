@@ -209,7 +209,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
            
             //if (entity.Cell != entity.PathBasePosition)
             {
-                BattleSystemManager.Instance.PushCommand(
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                 new Command_Move(
                     m_entity_id,
                     entity.Cell,
@@ -219,7 +219,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             }
 
             // 아이템 사용 Command 
-            BattleSystemManager.Instance.PushCommand(
+            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
             new Command_Item(
                 _owner_id:         m_entity_id,
                 _target_id:        m_entity_id,

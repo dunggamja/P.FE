@@ -74,6 +74,7 @@ namespace Battle
 
         public ICombatSystemParam  Param      { get; private set; }
         public EnumState           State      { get; private set; }
+        public bool                IsPause    { get; private set; } = false;
 
 
         public bool IsProgress => State == EnumState.Progress;
@@ -156,6 +157,9 @@ namespace Battle
 
         bool OnUpdate()
         {
+            if (IsPause)
+                return false;
+
             switch(Param.CommandType)
             {
                 case EnumUnitCommandType.Attack:
@@ -212,6 +216,7 @@ namespace Battle
             Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
+
         private EnumState UpdateSystem(EnumSystem _system_type, ICombatSystemParam _param)
         {
             var system  = GetSystem(_system_type) as CombatSystem;
@@ -244,6 +249,11 @@ namespace Battle
         public List<Combat_DamageResult> GetCombatDamageResult()
         {
             return m_list_damage_result;
+        }
+
+        public void SetPause(bool _pause)
+        {
+            IsPause = _pause;
         }
 
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);

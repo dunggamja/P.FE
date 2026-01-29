@@ -27,8 +27,11 @@ public interface ISystemManager
 {
     bool IsProgress { get; }
     bool IsFinished { get; }
+    bool IsPause    { get; }
 
     ISystem GetSystem(EnumSystem _system_type);
+
+    void    SetPause(bool _pause);
 }
 
 

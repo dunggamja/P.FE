@@ -366,7 +366,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             case EnumUnitCommandType.Wait:   
             {
                 // 대기 명령 추가.
-                BattleSystemManager.Instance.PushCommand(
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                     new Command_Done(m_entity_id)
                     );
 

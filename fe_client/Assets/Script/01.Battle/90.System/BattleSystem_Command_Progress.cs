@@ -8,19 +8,60 @@ using UnityEngine.Localization.SmartFormat.PersistentVariables;
 
 namespace Battle
 {
+    public interface ICommandQueueHandler
+    {
+        void    PushCommand(Command _command);
+        Command PopCommand();
+        Command PeekCommand();
+    }
+
+    public class CommandQueueHandler : ICommandQueueHandler
+    {
+        private Queue<Command>  m_command_queue = new (10);
+
+        public int Count => m_command_queue.Count;
+
+        public void Clear()
+        {
+            m_command_queue.Clear();
+        }
+
+        public void PushCommand(Command _command)
+        {
+            m_command_queue.Enqueue(_command);
+        }
+
+        public Command PopCommand()
+        {
+            if (Count > 0)
+                return m_command_queue.Dequeue();
+
+            return null;
+        }
+
+        public Command PeekCommand()
+        {
+            if (Count > 0)
+                return m_command_queue.Peek();
+
+            return null;
+        }        
+    }
+
+
     public class BattleSystem_Command_Progress : BattleSystem//, IEventReceiver
     {
+        private CommandQueueHandler m_command_queue_handler = null;
 
-        // private HashSet<Int64>                     m_command_progress  = new (10);
-
-        private HashSet<Int64> m_entity_progress  = new (10);
-
-        private List<Int64>    m_entity_completed = new (10);
+        private HashSet<Int64>      m_entity_progress  = new (10);
+     
+        private List<Int64>         m_entity_completed = new (10);
 
         // Command m_command_progress = null;
 
-        public BattleSystem_Command_Progress() : base(EnumSystem.BattleSystem_Command_Progress)
+        public BattleSystem_Command_Progress(CommandQueueHandler _command_queue_handler) : base(EnumSystem.BattleSystem_Command_Progress)
         {
+            m_command_queue_handler = _command_queue_handler;
         }
 
         protected override void OnInit()
@@ -43,9 +84,9 @@ namespace Battle
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
             // // 대기 중인 명령어를 모든 엔티티에게 분배합니다.
-            while (BattleSystemManager.Instance.PeekCommand() != null)
+            while (m_command_queue_handler.PeekCommand() != null)
             {
-                var command = BattleSystemManager.Instance.PopCommand();
+                var command = m_command_queue_handler.PopCommand();
                 if (command == null)
                     continue;
 

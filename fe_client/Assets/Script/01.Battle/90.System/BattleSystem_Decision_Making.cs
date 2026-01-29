@@ -12,8 +12,6 @@ namespace Battle
     //     // public int      Faction      { get; private set; } = 0;
     //     // public int      Priority     { get; private set; } = 0;
 
-
-
     //     public float               BestScore    { get; private set; } = 0;
     //     public Int64               BestEntityID { get; private set; } = 0;
 
@@ -80,8 +78,11 @@ namespace Battle
         // 행동 우선순위 계산기.
         // Entity_Score_Calculator  m_entity_score_calculator = new Entity_Score_Calculator();
 
-        public BattleSystem_Decision_Making() : base(EnumSystem.BattleSystem_Decision_Making)
+        private CommandQueueHandler m_command_queue_handler = null;
+
+        public BattleSystem_Decision_Making(CommandQueueHandler _command_queue_handler) : base(EnumSystem.BattleSystem_Decision_Making)
         {
+            m_command_queue_handler = _command_queue_handler;
         }
 
         protected override void OnInit()
@@ -199,7 +200,7 @@ namespace Battle
         {
            
             // 이동 우선순위 계산 결과 처리.               
-            BattleSystemManager.Instance.PushCommand(
+            m_command_queue_handler.PushCommand(
                 
                     // 이동 우선순위 계산 결과 처리.
                     new Command_Move
@@ -211,7 +212,7 @@ namespace Battle
                         //, _is_immediate: true // 즉시 이동.    
                     ));
                     
-            BattleSystemManager.Instance.PushCommand(
+            m_command_queue_handler.PushCommand(
                     // 공격 명령
                     new Command_Attack
                     (
@@ -224,12 +225,12 @@ namespace Battle
 
         void PushCommand_Done(Int64 _entity_id)
         {
-            BattleSystemManager.Instance.PushCommand(new Command_Done(_entity_id));
+            m_command_queue_handler.PushCommand(new Command_Done(_entity_id));
         }
 
         void PushCommand_Move(Int64 _entity_id, AI_Score_Move.Result _move_score)
         {
-            BattleSystemManager.Instance.PushCommand(new Command_Move(
+            m_command_queue_handler.PushCommand(new Command_Move(
                 _entity_id, 
                 _move_score.Position,
                 _execute_command: true,

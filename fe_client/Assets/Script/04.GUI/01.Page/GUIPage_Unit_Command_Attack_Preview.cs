@@ -357,7 +357,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
 
         if (m_menu_type == EnumUnitCommandType.Wand)
         {
-            BattleSystemManager.Instance.PushCommand(
+            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                                 new Command_Wand
                                 (
                                     m_entity_id,
@@ -369,7 +369,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         }
         else
         {
-            BattleSystemManager.Instance.PushCommand(
+            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                                 new Command_Attack
                                 (
                                     m_entity_id,

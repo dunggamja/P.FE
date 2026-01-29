@@ -405,7 +405,7 @@ public class InputHandler_Grid_Select : InputHandler
 
 
         // 기존에 예약된 명령들 취소 (진행중인 것은 냅둔다.)
-        BattleSystemManager.Instance.PushCommand(
+        ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
             new Command_Abort
             (
                 _entity_id,
@@ -414,7 +414,7 @@ public class InputHandler_Grid_Select : InputHandler
         );
 
         // 이동 명령 예약.
-        BattleSystemManager.Instance.PushCommand(
+        ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
             new Command_Move
             (
                 _entity_id,

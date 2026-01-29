@@ -139,18 +139,19 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
          GUIManager.Instance.OpenUI(GUIPage_Dialogue.PARAM.Create());
 
 
-      // GUI가 열릴때까지 대기. (최대 10초 간 대기 후 에러 처리.)
+      // GUI가 열릴때까지 대기. (최대 30초 간 대기 후 에러 처리.)
       await UniTask.WaitUntil(() 
          => 
          GUIManager.Instance.IsOpenUI(gui_name) == GUIManager.EnumGUIOpenState.Open, 
          cancellationToken: _skip_token)
-         .Timeout(TimeSpan.FromSeconds(10));
+         .Timeout(TimeSpan.FromSeconds(30));
 
       
 
       // 대화 시퀀스 발행.
       DialoguePublisher.PublishDialogueSequence(m_dialogue_data);
 
+    
       // 대화 완료 이벤트 구독
       await DialoguePublisher.GetObserverComplete(m_dialogue_data.ID).WaitAsync(_skip_token);
 

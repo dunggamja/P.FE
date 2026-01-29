@@ -204,9 +204,6 @@ namespace Battle
         CurrentTurn,         // [Turn 우선순위] Turn Number    
         CurrentFaction,      // [Turn 우선순위] Faction Number  
 
-
-
-
         // SelectCursor_X = 100,
         // SelectCursor_Y,
         // CommandProgress_EntityID,
