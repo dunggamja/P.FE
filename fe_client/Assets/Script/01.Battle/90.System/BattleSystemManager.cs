@@ -6,7 +6,11 @@ using UnityEngine;
 
 namespace Battle
 {
-
+    
+    public static class BattleSystemPauseReason
+    {
+        public const int Cutscene = 1;
+    }
 
 
     public class BattleSystemManager : Singleton<BattleSystemManager>, ISystemManager
@@ -15,7 +19,7 @@ namespace Battle
         public IBattleSystemParam    Param       { get; private set; }
         public EnumState             State       { get; private set; }                       
         public BattleBlackBoard      BlackBoard  { get; private set; } = new ();
-        public bool                  IsPause     { get; private set; } = false;
+
 
        
 
@@ -28,13 +32,21 @@ namespace Battle
         
         private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
         private HashSet<(int, int)>                m_faction_alliance       = new ();
+
+        private HashSet<int>                       m_pause_reasons          = new();
         
         
         public CommandQueueHandler           CommandHandler { get; private set; } = new();
         public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
+        public bool                          IsPause => m_pause_reasons.Count > 0;
 
-        
-
+        public void SetPause(int _reason, bool _is_pause)
+        {
+            if (_is_pause)
+                m_pause_reasons.Add(_reason);
+            else
+                m_pause_reasons.Remove(_reason);
+        }
 
 
         protected override void Init()
@@ -233,10 +245,6 @@ namespace Battle
         //     return CommandHandler.PeekCommand();
         // }
 
-        public void SetPause(bool _pause)
-        {
-            IsPause = _pause;
-        }
 
         public BattleSystemManager_IO Save()
         {

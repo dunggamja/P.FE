@@ -91,6 +91,7 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       {
          m_dialogue_data.Reset();
          m_dialogue_data.SetID(_dialogue.ID);
+         m_dialogue_data.SetCloseDialogue(_dialogue.CloseDialogue);
          m_dialogue_data.AddDialogueData(_dialogue.DialogueData);
       }).AddTo(m_disposables);
     }
@@ -102,11 +103,24 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
         // 대기중인 대화가 있을 경우 재생.
         if (DialogueState != EnumDialogueState.Playing)
         {
+            // 대화 재생.
             if (m_dialogue_data.HasDialogueData())
             {
                PlayDialogue(m_dialogue_data.DequeueDialogueData());
             }
         }
+
+         // 대화 완료 시 종료.
+         if (m_dialogue_data.CloseDialogue)
+         {
+            // 종료 메시지.
+            CompleteDialogue();
+
+            // UI 종료.
+            CloseSelf();
+         }
+
+        
     }
 
     protected override void OnClose()
@@ -116,8 +130,7 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
 
 
     protected override void OnPostProcess_Close()
-    {
-      //   throw new NotImplementedException();
+    {      
     }
 
 
@@ -134,15 +147,6 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       ScrollPlayingDialogue();
     }
 
-   //  void OnReceiveEvent_Dialogue_RequetPlayEvent(Dialogue_RequestPlayEvent _event)
-   //  {
-   //    if (_event == null)
-   //       return;
-
-   //    m_dialogue_data.Reset();
-   //    m_dialogue_data.SetID(_event.Dialogue.ID);
-   //    m_dialogue_data.AddDialogueData(_event.Dialogue.DialogueData);
-   //  }
 
 
     void PlayDialogue(DIALOGUE_DATA _data)
@@ -152,8 +156,21 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
        if (index < 0 || index >= m_dialogue.Length)
           return;
 
-       m_dialogue[index].SetDialogue(_data.Name, _data.Dialogue);
-       DialogueState = EnumDialogueState.Playing;       
+
+
+       
+       DialogueState = EnumDialogueState.Playing;
+                  
+
+       if (_data.IsActive)
+       {
+         m_dialogue[index].SetDialogue(_data.Name, _data.Dialogue);
+         m_dialogue[index].SetActive(true);
+       }
+       else
+       {
+         m_dialogue[index].SetActive(false);
+       }
     }
 
     void ScrollPlayingDialogue()
@@ -172,10 +189,15 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
       // 재생중인 대화를 끝까지 확인했다.
       if (scroll_result == false)
       {
-         DialogueState = EnumDialogueState.Complete;
-
-         DialoguePublisher.PublishComplete(m_dialogue_data.ID);
+         CompleteDialogue();
       }
+    }
+
+    void CompleteDialogue()
+    {
+      DialogueState = EnumDialogueState.Complete;
+
+      DialoguePublisher.PublishComplete(m_dialogue_data.ID);
     }
 
 }

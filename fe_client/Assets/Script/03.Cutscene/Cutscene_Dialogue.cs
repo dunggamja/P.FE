@@ -32,11 +32,17 @@ public struct DIALOGUE_DATA
 public struct DIALOGUE_SEQUENCE
 {
    public Int64 ID;
+   public bool  CloseDialogue;
    public Queue<DIALOGUE_DATA> DialogueData;
 
    public void SetID(Int64 _id)
    {
       ID = _id;
+   }
+
+   public void SetCloseDialogue(bool _close_dialogue)
+   {
+      CloseDialogue = _close_dialogue;
    }
 
 
@@ -55,11 +61,15 @@ public struct DIALOGUE_SEQUENCE
    {
       if (DialogueData == null)
           DialogueData = new();
-
-      foreach (var e in _dialogue_data)
+   
+      if (_dialogue_data != null)
       {
-         DialogueData.Enqueue(e);
+         foreach (var e in _dialogue_data)
+         {
+            DialogueData.Enqueue(e);
+         }
       }
+
    }
 
    public bool HasDialogueData()
@@ -80,6 +90,7 @@ public struct DIALOGUE_SEQUENCE
    public void Reset()
    {
       ID = 0;
+      CloseDialogue = false;
 
       if (DialogueData != null)
           DialogueData.Clear();
@@ -144,16 +155,17 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
          => 
          GUIManager.Instance.IsOpenUI(gui_name) == GUIManager.EnumGUIOpenState.Open, 
          cancellationToken: _skip_token)
-         .Timeout(TimeSpan.FromSeconds(30));
+         .Timeout(TimeSpan.FromSeconds(30));      
 
-      
+
+      // 대화 완료 이벤트 구독.
+      var observer = DialoguePublisher.GetObserverComplete(m_dialogue_data.ID);
 
       // 대화 시퀀스 발행.
       DialoguePublisher.PublishDialogueSequence(m_dialogue_data);
-
     
-      // 대화 완료 이벤트 구독
-      await DialoguePublisher.GetObserverComplete(m_dialogue_data.ID).WaitAsync(_skip_token);
+      // 대화 완료 이벤트 대기.
+      await observer.WaitAsync(_skip_token);
 
       Debug.Log($"Cutscene_Dialogue: Dialogue complete {m_dialogue_data.ID}");
 

@@ -49,6 +49,9 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
          PlayCutscene(cutscene_name).Forget();
       }
 
+      // 컷씬 재생중에는 전투시스템을 정지합시다.
+      BattleSystemManager.Instance.SetPause(BattleSystemPauseReason.Cutscene, IsPlayingCutscene);
+
     }
 
     // 컷씬 재생 요청.

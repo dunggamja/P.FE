@@ -38,10 +38,7 @@ namespace Battle
             // Lua 초기화.
             // m_lua_state = LuaState.Create();
             // m_lua_state.OpenStandardLibraries();
-           
-            // ServiceLocator에 등록.
-            ServiceLocator<CommandQueueHandler>.Register(ServiceLocator.GLOBAL, BattleSystemManager.Instance.CommandHandler);
-            
+                    
             // 게임 데이터 초기화.
             Initialize_GameData().Forget();
         }
@@ -110,7 +107,7 @@ namespace Battle
             await Test_BattleSystem_Setup_Script(map_setting);   
 
             // TODO: 테스트용 코드...
-            //TestCode_Dialogue();         
+            TestCode_Dialogue();         
 
 
             IsInitialized = true;
@@ -360,11 +357,16 @@ namespace Battle
                 }
             });
 
+            var dialogue_sequence4 = new DIALOGUE_SEQUENCE();
+            dialogue_sequence4.SetID(4);
+            dialogue_sequence4.SetCloseDialogue(true);
+
             CutsceneBuilder.CreateRoot();
             CutsceneTrack track = new CutsceneTrack();
             track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
             track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
             track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
+            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
 
 
             CutsceneBuilder.Root.AddTrack(track);

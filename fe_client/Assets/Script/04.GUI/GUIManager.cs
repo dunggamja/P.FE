@@ -231,8 +231,6 @@ public class GUIManager : SingletonMono<GUIManager>
                 if (m_active_gui_by_name.TryGetValue(gui_object.GUIName, out var list_gui_id))
                     list_gui_id.Remove(_id);
 
-               
-
                 // UI 종료.
                 gui_object.Close();
             }

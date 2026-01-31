@@ -31,7 +31,6 @@ public interface ISystemManager
 
     ISystem GetSystem(EnumSystem _system_type);
 
-    void    SetPause(bool _pause);
 }
 
 

@@ -234,6 +234,8 @@ public abstract class GUIPage : GUIBase
 
             // UI 숨기기. (알파값 Dotween)
             Hide();
+
+
             
             // TODO: UI마다 닫히는 시간 제어 필요.
             await UniTask.Delay(100, cancellationToken: _token);
@@ -248,6 +250,7 @@ public abstract class GUIPage : GUIBase
 
             // TODO: GUIElement, GUIPage OnClear 처리 어떻게 할지 고민중.
             OnClear();
+            
 
             IsInitialized = false;
 

@@ -17,9 +17,6 @@ public static class ServiceLocator
 
 public static class ServiceLocator<T> where T : class, new()
 {
-
-
-
    private static Dictionary<int, T> m_repository = new ();
 
 

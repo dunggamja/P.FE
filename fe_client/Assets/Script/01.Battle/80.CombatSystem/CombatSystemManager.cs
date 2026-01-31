@@ -251,10 +251,7 @@ namespace Battle
             return m_list_damage_result;
         }
 
-        public void SetPause(bool _pause)
-        {
-            IsPause = _pause;
-        }
+
 
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
