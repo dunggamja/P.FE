@@ -13,7 +13,7 @@ namespace Battle
      IPathOwner
     {
         public Int64                ID              { get; private set; }
-        public bool                 IsFixedObject   { get; private set; } = false;
+        // public bool                 IsFixedObject   { get; private set; } = false;
 
         public (int x, int y)       Cell            { get; private set; }
         public (int x, int y)       Cell_Prev       { get; private set; }
@@ -27,13 +27,29 @@ namespace Battle
         public PathNodeManager      PathNodeManager { get; } 
         public PathVehicle          PathVehicle     { get; } 
         public (int x, int y)       PathBasePosition { get; private set; } 
-        public int                  PathAttribute   => StatusManager.Status.GetPathAttribute();
-        public int                  PathZOCFaction  => GetFaction();
-        public int                  PathMoveRange   => StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+        public int                  PathTerrainKind  
+        {
+            get
+            {
+                var class_kind = StatusManager.Status.ClassKIND;
+                var mounted    = BlackBoard.HasValue(EnumEntityBlackBoard.Mounted);
+                return DataManager.Instance.UnitSheet.GetTerrainKind(class_kind, mounted);
+            }
+        }
+        public bool                 PathMounted => BlackBoard.HasValue(EnumEntityBlackBoard.Mounted);
 
+        // public int                  PathAttribute   => StatusManager.Status.GetPathAttribute();
+        public int                  PathZOCFaction  => GetFaction();
+        public int                  PathMoveRange   => (PathMounted) 
+                ? StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement_Mounted)
+                : StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+                
         public AIManager            AIManager       { get; }
         public AIDataManager        AIDataManager   { get; }
         public CommandManager       CommandManager  { get; private set; }    
+
+
+        public int     ClassKind    => StatusManager.Status.ClassKIND;
 
 
         public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
@@ -45,10 +61,10 @@ namespace Battle
 
 
 
-        protected Entity(Int64 _id, bool _is_fixed_object)
+        protected Entity(Int64 _id)
         {
             ID                = _id;
-            IsFixedObject     = _is_fixed_object;
+            // IsFixedObject     = _is_fixed_object;
             Cell              = (0, 0);
             Cell_Prev         = Cell;
             Cell_Occupied     = false;
@@ -66,9 +82,9 @@ namespace Battle
 
         }
 
-        public static Entity Create(Int64 _id, bool _is_fixed_object)
+        public static Entity Create(Int64 _id)
         {
-            var new_entity = new Entity(_id, _is_fixed_object);
+            var new_entity = new Entity(_id);
             new_entity.Initialize();
 
             return new_entity;
@@ -158,7 +174,7 @@ namespace Battle
             return new Entity_IO()
             {
                 ID               = ID,
-                IsFixedObject    = IsFixedObject,
+                // IsFixedObject    = IsFixedObject,
 
                 Cell             = Cell,
                 Cell_Prev        = Cell_Prev,
@@ -185,7 +201,7 @@ namespace Battle
         public void Load(Entity_IO _snapshot)
         {
             ID            = _snapshot.ID;
-            IsFixedObject = _snapshot.IsFixedObject;
+            // IsFixedObject = _snapshot.IsFixedObject;
             Cell          = _snapshot.Cell;
             Cell_Prev     = _snapshot.Cell_Prev;
             Cell_Occupied = _snapshot.Cell_Occupied;
@@ -208,7 +224,7 @@ namespace Battle
     public class Entity_IO
     {
         public Int64               ID               { get; set; } = 0;
-        public bool                IsFixedObject    { get; set; } = false;
+        // public bool                IsFixedObject    { get; set; } = false;
         public (int x, int y)      Cell             { get; set; } = (0, 0);
         public (int x, int y)      Cell_Prev        { get; set; } = (0, 0);
         public bool                Cell_Occupied    { get; set; } = false;

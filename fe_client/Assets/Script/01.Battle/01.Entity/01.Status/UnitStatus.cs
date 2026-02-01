@@ -42,9 +42,23 @@ namespace Battle
             m_status_repository.SetValue((int)_status_type, _value);
         }
 
-        public int GetPathAttribute()
+        // public int GetPathAttribute()
+        // {
+        //     return DataManager.Instance.UnitSheet.GetClassAttribute_Path(ClassKIND);
+        // }
+
+        public int GetTerrainCost(EnumTerrainAttribute _terrain_attribute)
         {
-            return DataManager.Instance.UnitSheet.GetClassAttribute_Path(ClassKIND);
+            return 0;
+        }
+
+        public bool IsvalidStopTerrain(EnumTerrainAttribute _terrain_attribute)
+        {
+            // HasAttribute()
+
+
+            //*1 Cannot end movement in that terrain
+            return false;
         }
 
         public bool HasClassAttribute_Weapon(EnumWeaponCategory _weapon_category)

@@ -10,14 +10,15 @@ public static partial class BuffHelper
 
     static Dictionary<EnumUnitStatus, List<EnumBuffStatus>> s_buff_list_unit_status = new Dictionary<EnumUnitStatus, List<EnumBuffStatus>>
         {  
-            { EnumUnitStatus.Strength,   new List<EnumBuffStatus> { EnumBuffStatus.Unit_Strength   } },
-            { EnumUnitStatus.Magic,      new List<EnumBuffStatus> { EnumBuffStatus.Unit_Magic      } },
-            { EnumUnitStatus.Skill,      new List<EnumBuffStatus> { EnumBuffStatus.Unit_Skill      } },
-            { EnumUnitStatus.Speed,      new List<EnumBuffStatus> { EnumBuffStatus.Unit_Speed      } },
-            { EnumUnitStatus.Luck,       new List<EnumBuffStatus> { EnumBuffStatus.Unit_Luck       } },
-            { EnumUnitStatus.Defense,    new List<EnumBuffStatus> { EnumBuffStatus.Unit_Defense    } },
-            { EnumUnitStatus.Resistance, new List<EnumBuffStatus> { EnumBuffStatus.Unit_Resistance } },
-            { EnumUnitStatus.Movement,   new List<EnumBuffStatus> { EnumBuffStatus.Unit_Movement   } },
+            { EnumUnitStatus.Strength,         new List<EnumBuffStatus> { EnumBuffStatus.Unit_Strength   } },
+            { EnumUnitStatus.Magic,            new List<EnumBuffStatus> { EnumBuffStatus.Unit_Magic      } },
+            { EnumUnitStatus.Skill,            new List<EnumBuffStatus> { EnumBuffStatus.Unit_Skill      } },
+            { EnumUnitStatus.Speed,            new List<EnumBuffStatus> { EnumBuffStatus.Unit_Speed      } },
+            { EnumUnitStatus.Luck,             new List<EnumBuffStatus> { EnumBuffStatus.Unit_Luck       } },
+            { EnumUnitStatus.Defense,          new List<EnumBuffStatus> { EnumBuffStatus.Unit_Defense    } },
+            { EnumUnitStatus.Resistance,       new List<EnumBuffStatus> { EnumBuffStatus.Unit_Resistance } },
+            { EnumUnitStatus.Movement,         new List<EnumBuffStatus> { EnumBuffStatus.Unit_Movement   } },
+            { EnumUnitStatus.Movement_Mounted, new List<EnumBuffStatus> { EnumBuffStatus.Unit_Movement_Mounted } },
             // { EnumUnitStatus.Weight,     new List<EnumBuffStatus> { EnumBuffStatus.Unit_Weight     } },
         };
 

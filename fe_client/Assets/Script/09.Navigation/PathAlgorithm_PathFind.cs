@@ -487,17 +487,17 @@ public static partial class PathAlgorithm
         {
             // 통과가 목적일 경우, Entity의 통과 로직 체크.
             Func<int, bool> func_ignore_zoc = (_check_zoc == EnumCheckZOC.PassThrough) ?
-                                               _path_owner.IsIgnoreZOC : null;    
+                                               _path_owner.PathIgnoreZOC : null;    
 
             if (_terrain_map.ZOC.IsBlockedZOC(_cell.x, _cell.y, func_ignore_zoc))        
                 return (false, 0);
         }
-
         
         // 이동 Cost 계산
         var move_cost = Terrain_Attribute.Calculate_MoveCost(
-            _path_owner.PathAttribute, 
-            _terrain_map.Attribute.GetCellData(_cell.x, _cell.y));
+            _path_owner, 
+            _terrain_map.Attribute.GetCellData(_cell.x, _cell.y),
+            _check_zoc == EnumCheckZOC.Occupy);
 
         if (move_cost.cost <= 0)
             return (false, 0);

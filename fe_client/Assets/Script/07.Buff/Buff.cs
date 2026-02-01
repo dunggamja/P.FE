@@ -33,6 +33,7 @@ public enum EnumBuffStatus
     Unit_Defense          = 7,   // 유닛, 수비
     Unit_Resistance       = 8,   // 유닛, 마방
     Unit_Movement         = 9,   // 유닛, 이동력
+    Unit_Movement_Mounted = 10,  // 유닛, 탑승 이동력
     // Unit_Weight           = 10,  // 유닛, 중량(체격)
                           
     Weapon_Might          = 1001, // 무기, 위력

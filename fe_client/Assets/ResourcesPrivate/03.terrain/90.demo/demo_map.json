@@ -3,7 +3,7 @@
         "m_width": 64,
         "m_height": 64,
         "m_attribute_mask_static": [
-            2,
+            1,
             6,
             6,
             2,
@@ -4106,7 +4106,7 @@
                 "m_y": 2,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4116,7 +4116,7 @@
                 "m_y": 2,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4126,7 +4126,7 @@
                 "m_y": 2,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4136,7 +4136,7 @@
                 "m_y": 3,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4146,7 +4146,7 @@
                 "m_y": 3,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4156,7 +4156,7 @@
                 "m_y": 3,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4166,7 +4166,7 @@
                 "m_y": 20,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4176,7 +4176,7 @@
                 "m_y": 18,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4186,7 +4186,7 @@
                 "m_y": 17,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4196,7 +4196,7 @@
                 "m_y": 14,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4206,7 +4206,7 @@
                 "m_y": 14,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4216,7 +4216,7 @@
                 "m_y": 15,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4226,7 +4226,7 @@
                 "m_y": 13,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4236,7 +4236,7 @@
                 "m_y": 12,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 2
                     }
                 ]
@@ -4246,7 +4246,7 @@
                 "m_y": 9,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4256,7 +4256,7 @@
                 "m_y": 8,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4266,7 +4266,7 @@
                 "m_y": 7,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4276,7 +4276,7 @@
                 "m_y": 6,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4286,7 +4286,7 @@
                 "m_y": 5,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4296,7 +4296,7 @@
                 "m_y": 5,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4306,7 +4306,7 @@
                 "m_y": 3,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4316,7 +4316,7 @@
                 "m_y": 3,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
@@ -4326,14 +4326,14 @@
                 "m_y": 1,
                 "m_attribute_count": [
                     {
-                        "Attribute": 30,
+                        "Attribute": 5,
                         "Count": 1
                     }
                 ]
             }
         ],
         "m_attribute_mask_result": [
-            2,
+            1,
             6,
             6,
             2,
@@ -4407,7 +4407,7 @@
             6,
             6,
             2,
-            1073741830,
+            38,
             2,
             6,
             2097152,
@@ -4463,9 +4463,9 @@
             1,
             6,
             6,
-            1073741826,
-            1073741826,
-            1073741826,
+            34,
+            34,
+            34,
             2,
             2,
             2,
@@ -4527,18 +4527,18 @@
             1,
             6,
             6,
-            1073741826,
-            1073741826,
-            1073741826,
+            34,
+            34,
+            34,
             6,
             6,
-            1073741830,
+            38,
             6,
             2,
             2,
             2,
             2,
-            1073741830,
+            38,
             6,
             2,
             2,
@@ -4665,11 +4665,11 @@
             2,
             2,
             2,
-            1073741830,
+            38,
             2,
             2,
             6,
-            1073741830,
+            38,
             2,
             2,
             1048576,
@@ -4731,7 +4731,7 @@
             2,
             2,
             2,
-            1073741830,
+            38,
             2,
             2,
             2,
@@ -4792,7 +4792,7 @@
             6,
             2,
             2,
-            1073741830,
+            38,
             2,
             6,
             2,
@@ -4850,7 +4850,7 @@
             6,
             6,
             6,
-            1073741830,
+            38,
             2,
             2,
             2,
@@ -4921,7 +4921,7 @@
             6,
             2,
             2,
-            1073741830,
+            38,
             2,
             6,
             2,
@@ -5110,7 +5110,7 @@
             2,
             2,
             2,
-            1073741830,
+            38,
             2,
             2,
             2,
@@ -5180,7 +5180,7 @@
             2,
             6,
             2,
-            1073741830,
+            38,
             1048576,
             1048576,
             2,
@@ -5231,12 +5231,12 @@
             1,
             6,
             6,
-            1073741830,
+            38,
             2,
             2,
             6,
             2,
-            1073741830,
+            38,
             2,
             2,
             2,
@@ -5302,7 +5302,7 @@
             2,
             2,
             2,
-            1073741826,
+            34,
             2,
             2,
             2,
@@ -5310,70 +5310,6 @@
             1048576,
             2,
             2,
-            18,
-            1073741824,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            6,
-            6,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            1048576,
-            2,
-            2,
-            18,
             18,
             1073741824,
             1,
@@ -5426,7 +5362,71 @@
             2,
             2,
             2,
-            1073741826,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1048576,
+            2,
+            2,
+            18,
+            18,
+            1073741824,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            6,
+            6,
+            2,
+            2,
+            2,
+            34,
             2,
             2,
             2,
@@ -5492,7 +5492,7 @@
             2,
             2,
             2,
-            1073741826,
+            34,
             2,
             2,
             2,
@@ -5617,7 +5617,7 @@
             6,
             6,
             2,
-            1073741826,
+            34,
             2,
             2,
             2,
@@ -8436,224 +8436,191 @@
             {
                 "m_entity_id": 1,
                 "m_cell_x": 3,
-                "m_cell_y": 23,
-                "m_is_fixed_object": false
+                "m_cell_y": 23
             },
             {
                 "m_entity_id": 2,
                 "m_cell_x": 3,
-                "m_cell_y": 22,
-                "m_is_fixed_object": false
+                "m_cell_y": 22
             },
             {
                 "m_entity_id": 3,
                 "m_cell_x": 2,
-                "m_cell_y": 22,
-                "m_is_fixed_object": false
+                "m_cell_y": 22
             },
             {
                 "m_entity_id": 4,
                 "m_cell_x": 2,
-                "m_cell_y": 23,
-                "m_is_fixed_object": false
+                "m_cell_y": 23
             },
             {
                 "m_entity_id": 5,
                 "m_cell_x": 4,
-                "m_cell_y": 23,
-                "m_is_fixed_object": false
+                "m_cell_y": 23
             },
             {
                 "m_entity_id": 3001,
                 "m_cell_x": 2,
-                "m_cell_y": 16,
-                "m_is_fixed_object": false
+                "m_cell_y": 16
             },
             {
                 "m_entity_id": 3002,
                 "m_cell_x": 10,
-                "m_cell_y": 16,
-                "m_is_fixed_object": false
+                "m_cell_y": 16
             },
             {
                 "m_entity_id": 3003,
                 "m_cell_x": 7,
-                "m_cell_y": 9,
-                "m_is_fixed_object": false
+                "m_cell_y": 9
             },
             {
                 "m_entity_id": 3004,
                 "m_cell_x": 13,
-                "m_cell_y": 12,
-                "m_is_fixed_object": false
+                "m_cell_y": 12
             },
             {
                 "m_entity_id": 3011,
                 "m_cell_x": 3,
-                "m_cell_y": 9,
-                "m_is_fixed_object": false
+                "m_cell_y": 9
             },
             {
                 "m_entity_id": 3012,
                 "m_cell_x": 15,
-                "m_cell_y": 9,
-                "m_is_fixed_object": false
+                "m_cell_y": 9
             },
             {
                 "m_entity_id": 3021,
                 "m_cell_x": 6,
-                "m_cell_y": 6,
-                "m_is_fixed_object": false
+                "m_cell_y": 6
             },
             {
                 "m_entity_id": 3022,
                 "m_cell_x": 7,
-                "m_cell_y": 6,
-                "m_is_fixed_object": false
+                "m_cell_y": 6
             },
             {
                 "m_entity_id": 3031,
                 "m_cell_x": 17,
-                "m_cell_y": 5,
-                "m_is_fixed_object": false
+                "m_cell_y": 5
             },
             {
                 "m_entity_id": 3032,
                 "m_cell_x": 13,
-                "m_cell_y": 2,
-                "m_is_fixed_object": false
+                "m_cell_y": 2
             },
             {
                 "m_entity_id": 4001,
                 "m_cell_x": 16,
-                "m_cell_y": 1,
-                "m_is_fixed_object": false
+                "m_cell_y": 1
             },
             {
                 "m_entity_id": 4002,
                 "m_cell_x": 17,
-                "m_cell_y": 0,
-                "m_is_fixed_object": false
+                "m_cell_y": 0
             },
             {
                 "m_entity_id": 4003,
                 "m_cell_x": 18,
-                "m_cell_y": 1,
-                "m_is_fixed_object": false
-            },
+                "m_cell_y": 1
+            }
+        ]
+    },
+    "Interactions": {
+        "m_repository": [
             {
                 "m_entity_id": 1001,
                 "m_cell_x": 3,
-                "m_cell_y": 3,
-                "m_is_fixed_object": true
+                "m_cell_y": 3
             },
             {
                 "m_entity_id": 1002,
                 "m_cell_x": 4,
-                "m_cell_y": 20,
-                "m_is_fixed_object": true
+                "m_cell_y": 20
             },
             {
                 "m_entity_id": 1003,
                 "m_cell_x": 7,
-                "m_cell_y": 18,
-                "m_is_fixed_object": true
+                "m_cell_y": 18
             },
             {
                 "m_entity_id": 1004,
                 "m_cell_x": 5,
-                "m_cell_y": 17,
-                "m_is_fixed_object": true
+                "m_cell_y": 17
             },
             {
                 "m_entity_id": 1005,
                 "m_cell_x": 2,
-                "m_cell_y": 14,
-                "m_is_fixed_object": true
+                "m_cell_y": 14
             },
             {
                 "m_entity_id": 1006,
                 "m_cell_x": 7,
-                "m_cell_y": 14,
-                "m_is_fixed_object": true
+                "m_cell_y": 14
             },
             {
                 "m_entity_id": 1007,
                 "m_cell_x": 9,
-                "m_cell_y": 15,
-                "m_is_fixed_object": true
+                "m_cell_y": 15
             },
             {
                 "m_entity_id": 1008,
                 "m_cell_x": 15,
-                "m_cell_y": 13,
-                "m_is_fixed_object": true
+                "m_cell_y": 13
             },
             {
                 "m_entity_id": 1009,
                 "m_cell_x": 9,
-                "m_cell_y": 12,
-                "m_is_fixed_object": true
+                "m_cell_y": 12
             },
             {
                 "m_entity_id": 1010,
                 "m_cell_x": 9,
-                "m_cell_y": 12,
-                "m_is_fixed_object": true
+                "m_cell_y": 12
             },
             {
                 "m_entity_id": 1011,
                 "m_cell_x": 12,
-                "m_cell_y": 9,
-                "m_is_fixed_object": true
+                "m_cell_y": 9
             },
             {
                 "m_entity_id": 1012,
                 "m_cell_x": 5,
-                "m_cell_y": 8,
-                "m_is_fixed_object": true
+                "m_cell_y": 8
             },
             {
                 "m_entity_id": 1013,
                 "m_cell_x": 11,
-                "m_cell_y": 7,
-                "m_is_fixed_object": true
+                "m_cell_y": 7
             },
             {
                 "m_entity_id": 1014,
                 "m_cell_x": 14,
-                "m_cell_y": 6,
-                "m_is_fixed_object": true
+                "m_cell_y": 6
             },
             {
                 "m_entity_id": 1015,
                 "m_cell_x": 12,
-                "m_cell_y": 5,
-                "m_is_fixed_object": true
+                "m_cell_y": 5
             },
             {
                 "m_entity_id": 1016,
                 "m_cell_x": 16,
-                "m_cell_y": 5,
-                "m_is_fixed_object": true
+                "m_cell_y": 5
             },
             {
                 "m_entity_id": 1017,
                 "m_cell_x": 7,
-                "m_cell_y": 3,
-                "m_is_fixed_object": true
+                "m_cell_y": 3
             },
             {
                 "m_entity_id": 1018,
                 "m_cell_x": 13,
-                "m_cell_y": 3,
-                "m_is_fixed_object": true
+                "m_cell_y": 3
             },
             {
                 "m_entity_id": 1019,
                 "m_cell_x": 10,
-                "m_cell_y": 1,
-                "m_is_fixed_object": true
+                "m_cell_y": 1
             }
         ]
     }

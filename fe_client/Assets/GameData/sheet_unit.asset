@@ -24,7 +24,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 15
     RESISTANCE: 8
-    MOVEMENT: 7
   - KIND: 2
     MEMO: "\uD558\uC774\uB85C\uB4DC"
     HP: 50
@@ -36,7 +35,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 20
     RESISTANCE: 15
-    MOVEMENT: 10
   - KIND: 21
     MEMO: "\uD504\uB9B0\uC138\uC2A4"
     HP: 30
@@ -48,7 +46,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 5
     RESISTANCE: 19
-    MOVEMENT: 5
   - KIND: 31
     MEMO: "\uB098\uC774\uD2B8_\uB0A8"
     HP: 34
@@ -60,7 +57,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 13
     RESISTANCE: 6
-    MOVEMENT: 10
   - KIND: 32
     MEMO: "\uD314\uB77C\uB518_\uB0A8"
     HP: 46
@@ -72,7 +68,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 18
     RESISTANCE: 12
-    MOVEMENT: 10
   - KIND: 41
     MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
     HP: 34
@@ -84,7 +79,6 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 16
     RESISTANCE: 4
-    MOVEMENT: 8
   - KIND: 42
     MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
     HP: 50
@@ -96,68 +90,202 @@ MonoBehaviour:
     PROFICIENCY: 30
     DEFENSE: 24
     RESISTANCE: 6
-    MOVEMENT: 6
   class_attribute:
   - KIND: 1
     MEMO: "\uB85C\uB4DC"
-    UNIT: Infantry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: Cavalry
+    TERRAIN: 1
+    TERRAIN_MOUNTED: 7
     WEAPON: Sword
   - KIND: 2
     MEMO: "\uD558\uC774\uB85C\uB4DC"
-    UNIT: Cavalry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: Cavalry
+    TERRAIN: 1
+    TERRAIN_MOUNTED: 7
     WEAPON: Sword
   - KIND: 21
     MEMO: "\uD504\uB9B0\uC138\uC2A4"
-    UNIT: Infantry;Female
-    PATH: Ground
+    UNIT: Female
+    MOUNT: None
+    TERRAIN: 4
+    TERRAIN_MOUNTED: 0
     WEAPON: Wand
   - KIND: 31
     MEMO: "\uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Cavalry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: Cavalry
+    TERRAIN: 5
+    TERRAIN_MOUNTED: 7
     WEAPON: Sword;Spear
   - KIND: 32
     MEMO: "\uD314\uB77C\uB518_\uB0A8"
-    UNIT: Cavalry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: Cavalry
+    TERRAIN: 5
+    TERRAIN_MOUNTED: 7
     WEAPON: Sword;Spear
   - KIND: 41
     MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Infantry;HeavyArmor;Male
-    PATH: Ground
+    UNIT: Male;Armor
+    MOUNT: Cavalry
+    TERRAIN: 6
+    TERRAIN_MOUNTED: 7
     WEAPON: Spear
   - KIND: 42
     MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
-    UNIT: Infantry;HeavyArmor;Male
-    PATH: Ground
+    UNIT: Male;Armor
+    MOUNT: Cavalry
+    TERRAIN: 6
+    TERRAIN_MOUNTED: 7
     WEAPON: Spear
   - KIND: 1000
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
-    UNIT: Infantry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: None
+    TERRAIN: 2
+    TERRAIN_MOUNTED: 0
     WEAPON: Axe
   - KIND: 1010
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
-    UNIT: Infantry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: None
+    TERRAIN: 3
+    TERRAIN_MOUNTED: 0
     WEAPON: Dagger
   - KIND: 1020
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
-    UNIT: Infantry;Male
-    PATH: Ground
+    UNIT: Male
+    MOUNT: None
+    TERRAIN: 2
+    TERRAIN_MOUNTED: 0
     WEAPON: Axe
   - KIND: 1030
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
-    UNIT: Infantry
-    PATH: Ground;Water_Shallow
+    UNIT: Male
+    MOUNT: None
+    TERRAIN: 1
+    TERRAIN_MOUNTED: 0
     WEAPON: Axe
   - KIND: 10000
     MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
     UNIT: Structure
-    PATH: Water
+    MOUNT: None
+    TERRAIN: 10000
+    TERRAIN_MOUNTED: 0
     WEAPON: 
+  class_terrain:
+  - KIND: 1
+    MEMO: "\uBCF4\uBCD1"
+    MOVEMENT: 5
+    GROUND: 1
+    FOREST: 2
+    DIRT: 2
+    CLIMB: 3
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 2
+    FLYER_ONLY: 0
+  - KIND: 2
+    MEMO: "\uACBD\uBCF4\uBCD1"
+    MOVEMENT: 5
+    GROUND: 1
+    FOREST: 1
+    DIRT: 1
+    CLIMB: 2
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 1
+    FLYER_ONLY: 0
+  - KIND: 3
+    MEMO: "\uB3C4\uB451"
+    MOVEMENT: 5
+    GROUND: 1
+    FOREST: 1
+    DIRT: 1
+    CLIMB: 2
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 1
+    FLYER_ONLY: 0
+  - KIND: 4
+    MEMO: "\uC0AC\uC81C"
+    MOVEMENT: 4
+    GROUND: 1
+    FOREST: 2
+    DIRT: 2
+    CLIMB: 3
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 2
+    FLYER_ONLY: 0
+  - KIND: 5
+    MEMO: "\uAE30\uC0AC"
+    MOVEMENT: 5
+    GROUND: 1
+    FOREST: 2
+    DIRT: 2
+    CLIMB: 4
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 3
+    FLYER_ONLY: 0
+  - KIND: 6
+    MEMO: "\uC911\uAC11"
+    MOVEMENT: 4
+    GROUND: 1
+    FOREST: 2
+    DIRT: 2
+    CLIMB: 0
+    INDOOR: 2
+    WATER: 0
+    WATER_SHALLOW: 0
+    FLYER_ONLY: 0
+  - KIND: 7
+    MEMO: "\uAE30\uBCD1"
+    MOVEMENT: 8
+    GROUND: 1
+    FOREST: 4
+    DIRT: 3
+    CLIMB: 0
+    INDOOR: 0
+    WATER: 0
+    WATER_SHALLOW: 4
+    FLYER_ONLY: 0
+  - KIND: 8
+    MEMO: "\uACBD\uAE30\uBCD1"
+    MOVEMENT: 8
+    GROUND: 1
+    FOREST: 3
+    DIRT: 2
+    CLIMB: 0
+    INDOOR: 0
+    WATER: 0
+    WATER_SHALLOW: 3
+    FLYER_ONLY: 0
+  - KIND: 9
+    MEMO: "\uBE44\uBCD1"
+    MOVEMENT: 7
+    GROUND: 1
+    FOREST: 1
+    DIRT: 1
+    CLIMB: 1
+    INDOOR: 1
+    WATER: 1
+    WATER_SHALLOW: 1
+    FLYER_ONLY: 1
+  - KIND: 10000
+    MEMO: "\uBC30"
+    MOVEMENT: 8
+    GROUND: 0
+    FOREST: 0
+    DIRT: 0
+    CLIMB: 0
+    INDOOR: 0
+    WATER: 1
+    WATER_SHALLOW: 1
+    FLYER_ONLY: 0
   class_asset:
   - KIND: 1
     MEMO: "\uB85C\uB4DC"
@@ -266,7 +394,6 @@ MonoBehaviour:
     PROFICIENCY: 55
     DEFENSE: 30
     RESISTANCE: 5
-    MOVEMENT: 0
   - ID: 2
     MEMO: "\uC544\uAD70_\uC544\uD1A8"
     HP: 30
@@ -278,7 +405,6 @@ MonoBehaviour:
     PROFICIENCY: 45
     DEFENSE: 5
     RESISTANCE: 40
-    MOVEMENT: 0
   - ID: 3
     MEMO: "\uC544\uAD70_\uD2B8\uB85C\uC774"
     HP: 65
@@ -290,7 +416,6 @@ MonoBehaviour:
     PROFICIENCY: 60
     DEFENSE: 35
     RESISTANCE: 0
-    MOVEMENT: 0
   - ID: 4
     MEMO: "\uC544\uAD70_\uBCF4\uB098\uC140"
     HP: 70
@@ -302,7 +427,6 @@ MonoBehaviour:
     PROFICIENCY: 40
     DEFENSE: 40
     RESISTANCE: 0
-    MOVEMENT: 0
   - ID: 5
     MEMO: "\uC544\uAD70_\uD504\uB85C\uB514"
     HP: 80
@@ -314,4 +438,3 @@ MonoBehaviour:
     PROFICIENCY: 65
     DEFENSE: 50
     RESISTANCE: 0
-    MOVEMENT: 0

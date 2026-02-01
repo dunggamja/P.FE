@@ -342,7 +342,7 @@ public class InputHandler_Grid_Select : InputHandler
 
         // FixedObject는 이동범위를 그리지 않는다. 
         var entity = EntityManager.Instance.GetEntity(draw_entity_id);
-        if (entity == null || entity.IsFixedObject)
+        if (entity == null)
             draw_entity_id = 0;
 
 

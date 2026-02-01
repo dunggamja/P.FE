@@ -111,7 +111,7 @@ namespace Battle
                 var entity = GetEntity(e.ID);
                 if (entity == null)
                 {
-                    entity = Entity.Create(e.ID, e.IsFixedObject);
+                    entity = Entity.Create(e.ID);
                     AddEntity(entity);
                 }
 

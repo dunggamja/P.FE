@@ -23,6 +23,8 @@ MonoBehaviour:
     Tile: {fileID: 11400000, guid: d9b10be7324534cc7b4fbb551850a4b2, type: 2}
   - Attribute: 4
     Tile: {fileID: 11400000, guid: 0f2af222162dd47a387781425dcc8a3d, type: 2}
+  - Attribute: 5
+    Tile: {fileID: 11400000, guid: 291b0c0378ab641a5a19d5c635073e5a, type: 2}
   - Attribute: 20
     Tile: {fileID: 11400000, guid: e6d06a8eeda604fb4af3fdf173112ca2, type: 2}
   - Attribute: 21

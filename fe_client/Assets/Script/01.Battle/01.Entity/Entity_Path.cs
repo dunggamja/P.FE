@@ -8,11 +8,6 @@ namespace Battle
     public partial class Entity 
     {
 
-        // public void RefreshCellOccupied()
-        // {
-
-        // }
-
         public void UpdateCellOccupied(bool _is_occupy)
         {
             if (Cell_Occupied == _is_occupy)
@@ -101,18 +96,7 @@ namespace Battle
                 ));
         }
 
-
-        // public void SetPathAttribute(EnumPathOwnerAttribute _attribute)
-        // {
-        //     PathAttribute |= 1 << (int)_attribute;
-        // }
-
-        // public void RemovePathAttribute(EnumPathOwnerAttribute _attribute)
-        // {
-        //     PathAttribute &= ~(1 << (int)_attribute);
-        // }
-
-        public bool IsIgnoreZOC(int _faction)
+        public bool PathIgnoreZOC(int _faction)
         {
             // 아군인 경우 제외.
             return BattleSystemManager

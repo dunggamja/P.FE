@@ -18,9 +18,9 @@ namespace Battle
             if (attacker == null || target == null)
                 return false;
 
-            // TODO: 일단 FixedObject 제외.
-            if (target.IsFixedObject)
-                return false;
+            // // TODO: 일단 FixedObject 제외.
+            // if (target.IsFixedObject)
+            //     return false;
 
                       
             // 공격자와 타겟이 같은 진영인지 체크.
@@ -39,9 +39,9 @@ namespace Battle
             if (attacker == null || target == null)
                 return false;
 
-            // TODO: 일단 FixedObject 제외.
-            if (target.IsFixedObject)
-                return false;
+            // // TODO: 일단 FixedObject 제외.
+            // if (target.IsFixedObject)
+            //     return false;
             
 
             // 공격자와 타겟이 같은 진영인지 체크.

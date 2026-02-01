@@ -6,12 +6,19 @@ using UnityEngine;
 
 namespace Battle
 {
-    // public enum EnumUnitSex
-    // {
-    //     None   = 0,
-    //     Male   = 1,
-    //     Female = 2
-    // }
+   public enum EnumMapInteractionType   
+   {
+      None,
+      Villiage, // 마을 
+   }
+
+
+   public enum EnumUnitMountedType
+   {
+      None,
+      Cavalry,
+      Flyer,
+   }
 
 
     /// <summary>
@@ -20,18 +27,10 @@ namespace Battle
     public enum EnumUnitAttribute
     {
       None = 0,
+      
+      Armor     = 1, // 갑옷.
+      Structure = 2, // 건물.
   
-      Infantry      = 1, // 보병
-      Cavalry       = 2, // 기병
-      Flyer         = 3, // 비행
-      Undead        = 4, // 언데드
-      Beast         = 5, // 비스트
-      Large         = 6, // 대형
-      HeavyArmor    = 7, // 중형
-      LightArmor    = 8, // 경갑
-      Structure     = 9, // 건물
-
-
       Male   = 100, // 남성 
       Female = 101, // 여성 
     }
@@ -66,6 +65,7 @@ namespace Battle
       Movement    = 9,  // 이동력
       Weight      = 10,  // 중량. 
       Proficiency = 11, // 숙련도
+      Movement_Mounted = 12, // 탑승 이동력
     }
 
     /// <summary>
@@ -153,6 +153,19 @@ namespace Battle
     }
 
 
+    // TODO: 지역이동에 대해서는 테이블형태로 각 지형당 이동비용을 입력하는 형태로 수정
+    // 입력테이블은,  기승상태, 보병상태 따로 입력하도록 한다. 
+    // 정차불가능은 그냥 코드로 시스템상 막아두자. 
+    // 
+
+    // // 기마/비병유닛의 탑승 상태.
+    // public enum EnumUnitMountState
+    // {
+    //    None,
+    //    Mounted,      
+    // }
+
+
 
 
 
@@ -167,6 +180,8 @@ namespace Battle
         CommandOwner = 1,  // [명령] 소유자
         CommandFlag,       // [명령] 명령 (0 : 이동, 1 : 공격)
         Faction,           // [명령] 진영
+        
+        Mounted, // 탑승 상태.
 
 
     }
@@ -232,9 +247,8 @@ namespace Battle
         Ground    = 1, // 땅        
         Ground_Forest, // 숲        
         Ground_Dirt,   // 거친 지형 
-        Ground_Climb,  // 등반 (경보병 위주?)       
-
-        // Building  = 10, // 건물
+        Ground_Climb,  // 암벽 (기병은 불가능)
+        Ground_Indoor, // 실내 (동굴 포함), 보병만 진입가능.
                         // 
 
 
@@ -247,6 +261,8 @@ namespace Battle
         // bitflag.. 32 bit or 64 bit ?
     }
 
+    
+
     public enum EnumPathOwnerAttribute
     {
       Ground = 0,        // 땅 이동 가능
@@ -254,6 +270,11 @@ namespace Battle
       Water = 2,         // 물 이동 가능
       Water_Shallow = 3, // 얕은 물 이동 가능
       Climber = 4,       // 등산 가능.
+      Indoor  = 5,       // 실내 이동 가능.
+
+      //  TODO: 
+      //  Climber, Indoor는 보병일때는 가능, 탑승 상태일때는 불가능으로 해야한다. 
+      //  (기마는 둘다 불가능, 비병은 둘다 통과는 가능, 정차는 불가능.)
       
       MAX = 32,
       // bitflag.. 32 bit or 64 bit ?

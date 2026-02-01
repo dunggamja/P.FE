@@ -187,14 +187,15 @@ public interface IAIDataManager
 
 public interface IPathOwner 
 {
-    PathNodeManager  PathNodeManager   { get; }
-    PathVehicle      PathVehicle       { get; }
-    int              PathAttribute     { get; }
-    int              PathZOCFaction    { get; }
-    (int x, int y)   PathBasePosition  { get; }
-    int              PathMoveRange     { get; }
+    PathNodeManager  PathNodeManager    { get; }
+    PathVehicle      PathVehicle        { get; }
+    int              PathTerrainKind    { get; }
+    int              PathZOCFaction     { get; }
+    (int x, int y)   PathBasePosition   { get; }
+    int              PathMoveRange      { get; }
+    bool             PathMounted        { get; }
 
-    bool             IsIgnoreZOC(int _faction);
+    bool             PathIgnoreZOC(int _faction);
 }
 
 // public interface IItem

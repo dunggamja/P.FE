@@ -23,10 +23,11 @@ namespace Battle
             EnumTerrainAttribute.FlyerOnly, 
             EnumTerrainAttribute.Water, 
             EnumTerrainAttribute.Water_Shallow,
+            EnumTerrainAttribute.Ground_Indoor,
             EnumTerrainAttribute.Ground_Climb,
             EnumTerrainAttribute.Ground_Forest,
             EnumTerrainAttribute.Ground_Dirt,
-            EnumTerrainAttribute.Ground
+            EnumTerrainAttribute.Ground,
         };
 
         public static ReadOnlySpan<EnumTerrainAttribute> TerrainAttributeSortOrder => s_terrain_attribute_sort_order;
@@ -70,93 +71,52 @@ namespace Battle
             
         }
 
-        public static (int cost, EnumTerrainAttribute attribute) Calculate_MoveCost(int _path_owner_attribute, Int64 _terrain_attribute)
+        public static (int cost, EnumTerrainAttribute attribute) Calculate_MoveCost(
+            IPathOwner _path_owner,
+            Int64      _terrain_attribute,
+            bool       _is_occupy)
         {
-            // TODO: 나중에 데이터로 관리 가능하도록 빼는게 좋을듯? ScriptableObject...
-            // move_cost == 0, 이동 불가
-
-            if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Invalid)) != 0)
-            {
-                // 이동 불가 지역
+            if (_path_owner == null)
                 return (0, EnumTerrainAttribute.Invalid);
-            }
 
-            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.FlyerOnly)) != 0)
+            var terrain_kind       = _path_owner.PathTerrainKind;
+
+            // 탑승 상태일경우, 실내 지형을 점유할수 없습니다.
+            var cant_occupy_indoor = (_is_occupy && _path_owner.PathMounted);
+
+
+            // 위에서부터 순서대로 체크합니다.
+            Span<EnumTerrainAttribute> span_terrain_attribute = stackalloc EnumTerrainAttribute[] 
             {
-                // 비행 유닛만 가능.
-                if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
-                    return (0, EnumTerrainAttribute.FlyerOnly);
+                EnumTerrainAttribute.Invalid,
+                EnumTerrainAttribute.FlyerOnly,
+                EnumTerrainAttribute.Water,
+                EnumTerrainAttribute.Water_Shallow,
+                EnumTerrainAttribute.Ground_Indoor,
+                EnumTerrainAttribute.Ground_Climb,
+                EnumTerrainAttribute.Ground_Forest,
+                EnumTerrainAttribute.Ground_Dirt,
+                EnumTerrainAttribute.Ground
+            };
 
-                // 이동 Cost
-                return (1, EnumTerrainAttribute.FlyerOnly);
-            }
-
-            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water)) != 0)
+            foreach(var e in span_terrain_attribute)
             {
-                // 물 지형
-                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) == 0)
-                &&  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) == 0))
-                    return (0, EnumTerrainAttribute.Water);
-                
-                // 물 지형 이동 Cost
-                return (1, EnumTerrainAttribute.Water);
-            }
-
-            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Water_Shallow)) != 0)
-            {
-                // 얕은 물        
-
-                // 비행 또는 얕은 물 이동 가능한 유닛은 Cost 1로 통과가능.
-                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer))         != 0)
-                ||  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water_Shallow)) != 0))
-                    return (1, EnumTerrainAttribute.Water_Shallow);
-
-                // 땅 or 물 이동만 가능한 경우는 이동 COST 3으로 처리.
-                if (((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) != 0)
-                ||  ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Water)) != 0))
-                    return (3, EnumTerrainAttribute.Water_Shallow);
-
-                // 그 외는 이동 불가 처리.
-                return (0, EnumTerrainAttribute.Water_Shallow);
-            }
-
-            else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground)) != 0)
-            {
-                // 땅                
+                // 지형 속성 체크.
+                if ((_terrain_attribute & (1 << (int)e)) != 0)
                 {
-                    // 비병은 지형 Cost 1로 통과가능.
-                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Flyer)) != 0)
-                        return (1, EnumTerrainAttribute.Ground);
-
-                    // 땅 이동이 가능한 지 체크.
-                    if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Ground)) == 0)
-                        return (0, EnumTerrainAttribute.Ground);
-                }
-
-                {
-                    // 경사진 지형.
-                    if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground_Climb)) != 0)
+                    // 실내 지형으로 이동 가능한지 체크.
+                    if (cant_occupy_indoor)
                     {
-                        // 경사면 이동 가능한지 체크.
-                        if ((_path_owner_attribute & (1 << (int)EnumPathOwnerAttribute.Climber)) == 0)
-                            return (0, EnumTerrainAttribute.Ground_Climb);
+                        if (e == EnumTerrainAttribute.Ground_Indoor)
+                        {
+                            return (0, EnumTerrainAttribute.Invalid);
+                        }
+                    }
 
-                        // 경사면 이동 Cost
-                        return (3, EnumTerrainAttribute.Ground_Climb);
-                    }
-                    // 숲 지형
-                    else if ((_terrain_attribute & (1 << (int)EnumTerrainAttribute.Ground_Forest)) != 0)
-                    {
-                        // 숲 지형 이동 Cost
-                        return (2, EnumTerrainAttribute.Ground_Forest);
-                    }
+                    var cost = DataManager.Instance.UnitSheet.GetTerrainCost(terrain_kind, e);
+                    return (cost, e);
                 }
-
-
-                // 일반 땅 지형 이동 Cost
-                return (1, EnumTerrainAttribute.Ground);
             }
-
 
             // 지형 셋팅이 안 되어 있으면 이동 불가.        
             return (0, EnumTerrainAttribute.Invalid);

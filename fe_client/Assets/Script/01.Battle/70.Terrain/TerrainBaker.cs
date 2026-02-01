@@ -195,20 +195,20 @@ namespace Battle
             public Int64 m_entity_id;
             public Int32 m_cell_x;
             public Int32 m_cell_y;
-            public bool  m_is_fixed_object;
+            // public bool  m_is_fixed_object;
 
-            public Data(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y, bool _is_fixed_object)
+            public Data(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y)
             {
                 m_entity_id       = _entity_id;
                 m_cell_x          = _cell_x;
                 m_cell_y          = _cell_y;
-                m_is_fixed_object = _is_fixed_object;
+                // m_is_fixed_object = _is_fixed_object;
             }
         }
 
         public List<Data> m_entities = new();
 
-        public bool AddEntity(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y, bool _is_fixed_object)
+        public bool AddEntity(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y)
         {
             if (m_entities.Any(e => e.m_entity_id == _entity_id))
             {
@@ -217,7 +217,44 @@ namespace Battle
             }
 
 
-            m_entities.Add(new Data(_entity_id, _cell_x, _cell_y, _is_fixed_object));
+            m_entities.Add(new Data(_entity_id, _cell_x, _cell_y));
+            return true;
+        }
+    }
+
+
+    [Serializable]
+    public class MapData_Interactions
+    {
+        [Serializable]
+        public struct Data
+        {
+            public Int64 m_entity_id;
+            public Int32 m_cell_x;
+            public Int32 m_cell_y;
+            // public bool  m_is_fixed_object;
+
+            public Data(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y)
+            {
+                m_entity_id       = _entity_id;
+                m_cell_x          = _cell_x;
+                m_cell_y          = _cell_y;
+                // m_is_fixed_object = _is_fixed_object;
+            }
+        }
+
+        public List<Data> m_repository = new();
+
+        public bool Add(Int64 _entity_id, Int32 _cell_x, Int32 _cell_y)
+        {
+            if (m_repository.Any(e => e.m_entity_id == _entity_id))
+            {
+                Debug.LogError($"Entity {_entity_id} already exists");
+                return false;
+            }
+
+
+            m_repository.Add(new Data(_entity_id, _cell_x, _cell_y));
             return true;
         }
     }
@@ -226,8 +263,9 @@ namespace Battle
     [Serializable]
     public class MapBakeData
     {
-        public MapBakeData_Terrain Terrain  = null;
-        public MapData_Entities    Entities = null;        
+        public MapBakeData_Terrain   Terrain  = null;
+        public MapData_Entities      Entities = null; 
+        public MapData_Interactions  Interactions = null;        
     }
 
 
@@ -283,10 +321,10 @@ namespace Battle
             var list_tiled_object          = m_tile_overlay.Collect_TiledOjects();
             var list_fixed_objects         = m_tile_overlay.Collect_FixedObjects();
             
-            var bake_data      = new MapBakeData();
-            bake_data.Terrain  = new MapBakeData_Terrain(width, length);
-            bake_data.Entities = new MapData_Entities();
-
+            var bake_data          = new MapBakeData();
+            bake_data.Terrain      = new MapBakeData_Terrain(width, length);
+            bake_data.Entities     = new MapData_Entities();
+            bake_data.Interactions = new MapData_Interactions();
 
             // 지형 데이터 베이크.
             bake_data.Terrain.Bake(tile_data, list_tile_dynamic.Value);
@@ -294,10 +332,15 @@ namespace Battle
 
             // 오브젝트 데이터 적재.
             foreach (var e in list_tiled_object)
-                if (e != null) bake_data.Entities.AddEntity(e.EntityID, e.Cell.x, e.Cell.y, false);
+                if (e != null) bake_data.Entities.AddEntity(e.EntityID, e.Cell.x, e.Cell.y);
 
+            // fixed object 데이터 적재.
             foreach (var e in list_fixed_objects)
-                if (e != null) bake_data.Entities.AddEntity(e.EntityID, e.Cell.x, e.Cell.y, true);
+                if (e != null) bake_data.Interactions.Add(e.EntityID, e.Cell.x, e.Cell.y);
+
+
+            // foreach (var e in list_fixed_objects)
+            //     if (e != null) bake_data.Entities.AddEntity(e.EntityID, e.Cell.x, e.Cell.y, true);
             
             
             File.WriteAllText(file_path, JsonUtility.ToJson(bake_data, true));

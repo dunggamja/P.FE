@@ -191,7 +191,7 @@ namespace Battle
 
             foreach(var e in _map_data.Entities.m_entities)
             {
-                var entity = Entity.Create(e.m_entity_id, e.m_is_fixed_object);    
+                var entity = Entity.Create(e.m_entity_id);    
                 if (entity == null)
                 {
                     Debug.LogError($"Failed to create entity {e.m_entity_id}");
@@ -200,18 +200,6 @@ namespace Battle
 
                 // 엔티티 리포지토리에 추가.
                 EntityManager.Instance.AddEntity(entity);
-
-                
-
-                // TODO: 이것은 임시로 해둔 코드. 나중에 고정오브젝트를 어떻게 할것인지 생각해보자.
-                // FIXEDOBJECT와 연결이 필요할 것이다.
-                if (entity.IsFixedObject)
-                {
-                    // 위치 셋팅.
-                    entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
-
-                    continue;
-                }
 
 
                 var setting_entity = _map_setting.GetEntity(e.m_entity_id);
@@ -247,12 +235,19 @@ namespace Battle
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Magic,       setting_status.MAGIC);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Skill,       setting_status.SKILL);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Speed,       setting_status.SPEED);
-                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,    setting_status.MOVEMENT);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Defense,     setting_status.DEFENSE);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Proficiency, setting_status.PROFICIENCY);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Resistance,  setting_status.RESISTANCE);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Luck,        setting_status.LUCK);
 
+                // 이동력은 유닛이 아닌 클래스 단위로 관리하도록 변경. 
+                // 걸어다닐때, 탑승시 이동력 따로 관리.
+                var movement         = DataManager.Instance.UnitSheet.GetTerrainMovement(entity.ClassKind, false);
+                var movement_mounted = DataManager.Instance.UnitSheet.GetTerrainMovement(entity.ClassKind, true);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement, movement);
+                entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement_Mounted, movement_mounted);
+
+                // entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,    setting_status.MOVEMENT);
 
                 // 아이템 셋팅.
                 foreach(var item in setting_items)

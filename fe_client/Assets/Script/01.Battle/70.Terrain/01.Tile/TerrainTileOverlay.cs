@@ -265,6 +265,7 @@ public class TerrainTileOverlay : MonoBehaviour
             case EnumTerrainAttribute.Ground_Forest:
             case EnumTerrainAttribute.Ground_Dirt:
             case EnumTerrainAttribute.Ground_Climb:
+            case EnumTerrainAttribute.Ground_Indoor:
                 data |= 1L << (int)EnumTerrainAttribute.Ground;
                 break;
         }

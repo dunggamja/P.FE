@@ -287,7 +287,7 @@ namespace Battle
           visitor.Value.TerrainMap     = entity.PathNodeManager.TerrainMap;
           visitor.Value.Visitor        = entity;
           visitor.Value.Position       = entity.Cell;
-          visitor.Value.MoveDistance   = entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+          visitor.Value.MoveDistance   = entity.PathMoveRange;
           visitor.Value.BestPath.AddRange(list_path_nodes.Value);
           
           PathAlgorithm.FloodFill(visitor.Value);
@@ -413,7 +413,7 @@ namespace Battle
                         // 도착 범위 체크.
                         PathAlgorithm.PathFindOption.Create()
 
-                        // 장애물 무시.
+                        // 길막을 무시하고 일단 길을 찾습니다.
                         .SetAllowApproximate()
                         // .SetGoalRange(5)
                         ,
