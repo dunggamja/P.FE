@@ -194,6 +194,7 @@ public interface IPathOwner
     (int x, int y)   PathBasePosition   { get; }
     int              PathMoveRange      { get; }
     bool             PathMounted        { get; }
+    bool             PathHasZOC         { get; }
 
     bool             PathIgnoreZOC(int _faction);
 }

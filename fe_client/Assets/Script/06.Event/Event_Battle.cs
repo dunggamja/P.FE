@@ -106,22 +106,25 @@ namespace Battle
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.Immediate;
 
-        public Int64               EntityID        { get; private set; } = 0;
-        public int                 Faction         { get; private set; } = 0;
-        public (int x, int y)      Cell            { get; private set; } = (0, 0);
-        public bool                IsOccupy        { get; private set; } = false;  // 
+        public Int64                 EntityID        { get; private set; } = 0;
+        public int                   Faction         { get; private set; } = 0;
+        public (int x, int y)        Cell            { get; private set; } = (0, 0);
+        public bool                  IsOccupy        { get; private set; } = false;  // 
+        public (bool prev, bool cur) HasZOC          { get; private set; } = (false, false);
         
 
         public Battle_Cell_OccupyEvent Set(
-            Int64               _entity_id, 
-            int                 _faction,
-            (int x, int y)      _cell,
-            bool                _is_occupy)
+            Int64                 _entity_id, 
+            int                   _faction,
+            (int x, int y)        _cell,
+            bool                  _is_occupy,
+            (bool prev, bool cur) _has_zoc)
         {
             EntityID        = _entity_id;
             Faction         = _faction;
             Cell            = _cell;
             IsOccupy        = _is_occupy;
+            HasZOC          = _has_zoc;
             return this;
         }
 
@@ -130,7 +133,8 @@ namespace Battle
             EntityID        = 0;
             Faction         = 0;
             Cell            = (0, 0);  
-            IsOccupy         = false;
+            IsOccupy        = false;
+            HasZOC          = (false, false);
         }
 
         public void Release()

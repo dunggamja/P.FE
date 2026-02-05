@@ -350,7 +350,8 @@ public class InputHandler_Grid_Select : InputHandler
             _draw_flag: 
                   (int)Battle.MoveRange.EnumDrawFlag.MoveRange 
                 | (int)Battle.MoveRange.EnumDrawFlag.AttackRange
-                | (int)Battle.MoveRange.EnumDrawFlag.WandRange,
+                | (int)Battle.MoveRange.EnumDrawFlag.WandRange
+                | (int)Battle.MoveRange.EnumDrawFlag.VisitOccupyCell,
 
             _entityID:    
                 draw_entity_id,
@@ -468,7 +469,7 @@ public class InputHandler_Grid_Select : InputHandler
         // 선택 엔티티 설정.
         CommandEntityID = _entity_id;
 
-        // 선택 엔티티 셀 점유 해제.
+        // 명령을 내렸을 때 시작시...! 셀 점유 해제.
         entity.UpdateCellOccupied(false);
     }
 

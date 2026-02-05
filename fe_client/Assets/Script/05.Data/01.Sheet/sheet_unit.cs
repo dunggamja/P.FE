@@ -7,6 +7,7 @@ using UnityEngine;
 [Serializable]
 public class sheet_class_status_max
 {
+   // TODO: 레벨별 스탯 min/max로 바꿀 예정.
 	public Int32       KIND;
 	public string      MEMO;
 	public Int32       HP;
@@ -162,7 +163,7 @@ public class sheet_unit : ScriptableObject
 
    private Dictionary<Int32, sheet_class_status_max>    m_cache_class_status_max        = new ();
    private Dictionary<Int32, List<EnumUnitAttribute>>   m_cache_class_attribute_unit    = new ();
-   private Dictionary<Int32, List<EnumUnitMountedType>> m_cache_class_mounted_type      = new ();
+   private Dictionary<Int32, EnumUnitMountedType>       m_cache_class_mounted_type      = new ();
    private Dictionary<Int32, List<EnumWeaponCategory>>  m_cache_class_attribute_weapon  = new ();
    private Dictionary<Int32, List<sheet_class_asset>>   m_cache_class_asset             = new ();
    private Dictionary<Int32, (string table, string key)>  m_cache_class_localization    = new ();
@@ -181,7 +182,7 @@ public class sheet_unit : ScriptableObject
       foreach (var item in class_attribute)
       {
          var unit_split    = Util.SplitEnumText<EnumUnitAttribute>(item.UNIT, Data_Const.SHEET_SEPERATOR);
-         var mounted_split = Util.SplitEnumText<EnumUnitMountedType>(item.MOUNT, Data_Const.SHEET_SEPERATOR);
+         var mounted_split = Util.EnumParse<EnumUnitMountedType>(item.MOUNT);
          var weapon_split  = Util.SplitEnumText<EnumWeaponCategory>(item.WEAPON, Data_Const.SHEET_SEPERATOR);
         
 
@@ -244,6 +245,14 @@ public class sheet_unit : ScriptableObject
          return result.Contains(_attribute);
 
       return false;
+   }
+
+   public EnumUnitMountedType GetClassMountedType(Int32 _class_kind)
+   {
+      if (m_cache_class_mounted_type.TryGetValue(_class_kind, out var mounted_type)) 
+         return mounted_type;
+
+      return EnumUnitMountedType.None;
    }
 
    // public int GetClassAttribute_Path(Int32 _class_kind)

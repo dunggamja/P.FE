@@ -12,6 +12,8 @@ namespace Battle.MoveRange
     AttackRange   = 1 << 1,  // 공격 범위
     WandRange     = 1 << 2,  // 지팡이 범위
     ExchangeRange = 1 << 3,  // 교환 범위
+
+    VisitOccupyCell = 1 << 10, // 점유되어 있는 셀 방문 체크.
   }
 
   // 위치별로 체크하는 인터페이스, 1칸 이상 이동하는지 체크하고, 
@@ -35,7 +37,7 @@ namespace Battle.MoveRange
     public IPathOwner         Visitor      { get; set; }
     public (int x, int y)     Position     { get; set; }
     public int                MoveDistance { get; set; }
-    public bool               VisitOnlyEmptyCell  => true;
+    public bool               VisitOnlyEmptyCell  => (DrawFlag & (int)EnumDrawFlag.VisitOccupyCell) == 0;
     public bool               IsStop()            => false;
     public Int64              VisitorID    { get; set; } = 0;
 

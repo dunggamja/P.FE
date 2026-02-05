@@ -48,6 +48,11 @@ public static partial class Util
     static public List<T> SplitEnumText<T>(string _text, char _seperator) where T : struct, Enum
     {
         var    list = SplitText(_text, _seperator);
-        return list.Select(item => Enum.Parse<T>(item)).ToList();
+        return list.Select(item => EnumParse<T>(item)).ToList();
+    }
+
+    static public T EnumParse<T>(string _text) where T : struct, Enum
+    {
+        return Enum.Parse<T>(_text);
     }
 }

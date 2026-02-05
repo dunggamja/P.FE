@@ -16,8 +16,8 @@ namespace Battle
    public enum EnumUnitMountedType
    {
       None,
-      Cavalry,
-      Flyer,
+      Cavalry,  // 기마,
+      Flyer,    // 비병,
    }
 
 

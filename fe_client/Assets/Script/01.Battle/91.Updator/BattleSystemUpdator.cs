@@ -247,6 +247,13 @@ namespace Battle
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement, movement);
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement_Mounted, movement_mounted);
 
+                
+                if (0 < movement_mounted)
+                {
+                    // TODO: 임시코드.
+                    entity.BlackBoard.SetValue(EnumEntityBlackBoard.Mounted, true);
+                }
+
                 // entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,    setting_status.MOVEMENT);
 
                 // 아이템 셋팅.

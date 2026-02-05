@@ -10,10 +10,25 @@ namespace Battle
 
         public void UpdateCellOccupied(bool _is_occupy)
         {
-            if (Cell_Occupied == _is_occupy)
+            // // 점유상태가 동일하면 이벤트 발생하지 않음.
+            // if (Cell_Occupied == _is_occupy)
+            //     return;
+
+            // 점유상태 변경시 이벤트 발생.
+            var prev_occupied = Cell_Occupied;
+            var cur_occupied  = _is_occupy;
+
+            var prev_has_zoc  = HasZOC_Last;
+            var cur_has_zoc   = PathHasZOC;
+
+            // 점유상태와 ZOC 상태가 동일하면 이벤트 발생하지 않음.
+            if (prev_occupied == cur_occupied && prev_has_zoc == cur_has_zoc)
                 return;
 
+
             Cell_Occupied = _is_occupy;
+            HasZOC_Last   = PathHasZOC;
+
 
             // Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
 
@@ -22,7 +37,9 @@ namespace Battle
                 ID,
                 PathZOCFaction,
                 Cell,
-                _is_occupy: Cell_Occupied));
+                _is_occupy: Cell_Occupied,
+                _has_zoc:   (prev_has_zoc, cur_has_zoc))
+                );
         }
 
         

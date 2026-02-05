@@ -18,6 +18,7 @@ namespace Battle
         public (int x, int y)       Cell            { get; private set; }
         public (int x, int y)       Cell_Prev       { get; private set; }
         public bool                 Cell_Occupied   { get; private set; } = false;
+        public bool                 HasZOC_Last     { get; private set; } = false;
         
 
         public EntityBlackBoard     BlackBoard      { get; }
@@ -36,9 +37,12 @@ namespace Battle
                 return DataManager.Instance.UnitSheet.GetTerrainKind(class_kind, mounted);
             }
         }
-        public bool                 PathMounted => BlackBoard.HasValue(EnumEntityBlackBoard.Mounted);
 
-        // public int                  PathAttribute   => StatusManager.Status.GetPathAttribute();
+        public EnumUnitMountedType  PathMountedType => DataManager.Instance.UnitSheet.GetClassMountedType(ClassKind);
+        public bool                 PathMounted     => BlackBoard.HasValue(EnumEntityBlackBoard.Mounted);
+
+        // 비병이 탑승중일 경우 ZOC 체크를 하지 않습니다.
+        public bool                 PathHasZOC      => (PathMounted == false) || (PathMountedType != EnumUnitMountedType.Flyer);
         public int                  PathZOCFaction  => GetFaction();
         public int                  PathMoveRange   => (PathMounted) 
                 ? StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement_Mounted)
