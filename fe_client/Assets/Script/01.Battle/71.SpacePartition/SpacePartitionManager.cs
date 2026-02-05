@@ -54,7 +54,7 @@ namespace Battle
           return;
 
         // 점유 여부는 SET 데이터이므로 준대로 갱신처리.
-        if (_event.IsOccupy)
+        if (_event.IsOccupy.cur)
         {
           UpdateEntity(_event.EntityID);
         }

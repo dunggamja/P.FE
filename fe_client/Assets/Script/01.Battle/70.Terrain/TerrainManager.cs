@@ -78,7 +78,7 @@ namespace Battle
            
 
             // 점유 여부는 SET 데이터이므로 준대로 갱신처리.
-            if (_event.IsOccupy)
+            if (_event.IsOccupy.cur)
             {
                 TerrainMap.EntityManager.SetCellData(_event.Cell.x,  _event.Cell.y, _event.EntityID);
             }
@@ -87,17 +87,14 @@ namespace Battle
                 TerrainMap.EntityManager.RemoveCellData(_event.Cell.x, _event.Cell.y);
             }
 
-            // ZOC는 Increase/Decrease 이벤트로 관리하므로 변경사항이 있을때만 처리.
-            if (_event.HasZOC.cur != _event.HasZOC.prev)
+            // 유닛의 ZOC 상태 변경 또는 점유상태 변경 체크.
+            if (_event.IsIncreaseZOC)
             {
-                if (_event.HasZOC.cur)
-                {
-                    TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);
-                }
-                else
-                {
-                    TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);
-                }
+                TerrainMap.ZOC.IncreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);
+            }
+            else if (_event.IsDecreaseZOC)
+            {
+                TerrainMap.ZOC.DecreaseZOC(_event.Faction, _event.Cell.x, _event.Cell.y);
             }
         }
 

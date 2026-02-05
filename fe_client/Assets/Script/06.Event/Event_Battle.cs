@@ -109,15 +109,50 @@ namespace Battle
         public Int64                 EntityID        { get; private set; } = 0;
         public int                   Faction         { get; private set; } = 0;
         public (int x, int y)        Cell            { get; private set; } = (0, 0);
-        public bool                  IsOccupy        { get; private set; } = false;  // 
+        public (bool prev, bool cur) IsOccupy        { get; private set; } = (false, false);  // 
         public (bool prev, bool cur) HasZOC          { get; private set; } = (false, false);
+
+
+        public bool IsIncreaseZOC 
+        {
+            get
+            {
+                // 현재 ZOC 상태가 아니면 증가하지 않는다.
+                if (IsOccupy.cur == false || HasZOC.cur == false)
+                    return false;
+
+                // 이전에도 이미 ZOC 상태였다면 증가하지 않는다. 
+                if (IsOccupy.prev == true && HasZOC.prev == true)
+                    return false;
+
+                // ZOC 상태가 아니었다가 된 것이므로 증가해야 함.
+                return true;
+            }
+        }
+
+        public bool IsDecreaseZOC 
+        {
+            get
+            {
+                // 현재 ZOC 상태면 감소하지 않는다.
+                if (IsOccupy.cur == true && HasZOC.cur == true)
+                    return false;
+
+                // 이전에도 이미 ZOC 상태가 아니었다면 감소하지 않는다.
+                if (IsOccupy.prev == false || HasZOC.prev == false)
+                    return false;
+
+                // ZOC 상태였다가 아니게 된 것이므로 감소해야 함.
+                return true;
+            }
+        }
         
 
         public Battle_Cell_OccupyEvent Set(
             Int64                 _entity_id, 
             int                   _faction,
             (int x, int y)        _cell,
-            bool                  _is_occupy,
+            (bool prev, bool cur) _is_occupy,
             (bool prev, bool cur) _has_zoc)
         {
             EntityID        = _entity_id;
@@ -133,7 +168,7 @@ namespace Battle
             EntityID        = 0;
             Faction         = 0;
             Cell            = (0, 0);  
-            IsOccupy        = false;
+            IsOccupy        = (false, false);
             HasZOC          = (false, false);
         }
 

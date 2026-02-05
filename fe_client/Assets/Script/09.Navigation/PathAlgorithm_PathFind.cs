@@ -205,6 +205,7 @@ public static partial class PathAlgorithm
             return false;
 
 
+
         // // 출발지가 이동가능한지 체크.
         // if (!Verify_Movecost(
         //     _terrain_map, 
@@ -480,11 +481,22 @@ public static partial class PathAlgorithm
         
         if (_terrain_map.IsInBound(_cell.x, _cell.y) == false)
             return (false, 0);  
+
+        // 점유 체크시에는 ZOC가 아닌 다른 유닛이 해당 셀에 배치되어있는지 체크합니다.
+        // TODO: Occupy 체크가 따로 노는데... 차라리 Enum에서 빼는게 나을지도...
+        if (_check_zoc == EnumCheckZOC.Occupy)
+        {
+            if (0 < _terrain_map.EntityManager.GetCellData(_cell.x, _cell.y))
+                return (false, 0);
+        }
   
 
         // ZOC 체크 여부.
         if (_check_zoc != EnumCheckZOC.None)
         {
+
+
+
             // 통과가 목적일 경우, Entity의 통과 로직 체크.
             Func<int, bool> func_ignore_zoc = (_check_zoc == EnumCheckZOC.PassThrough) ?
                                                _path_owner.PathIgnoreZOC : null;    

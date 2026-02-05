@@ -21,7 +21,7 @@ namespace Battle
             var prev_has_zoc  = HasZOC_Last;
             var cur_has_zoc   = PathHasZOC;
 
-            // 점유상태와 ZOC 상태가 동일하면 이벤트 발생하지 않음.
+            // 이전과 동일한 상태면 처리할 필요 없음.
             if (prev_occupied == cur_occupied && prev_has_zoc == cur_has_zoc)
                 return;
 
@@ -37,7 +37,7 @@ namespace Battle
                 ID,
                 PathZOCFaction,
                 Cell,
-                _is_occupy: Cell_Occupied,
+                _is_occupy: (prev_occupied, cur_occupied),
                 _has_zoc:   (prev_has_zoc, cur_has_zoc))
                 );
         }
@@ -115,10 +115,16 @@ namespace Battle
 
         public bool PathIgnoreZOC(int _faction)
         {
+            // 비병은 ZOC 체크를 하지 않습니다.
+            // TODO: 아니면 비병용 ZOC 레이어를 나누는 것도 방법이 될수도...;;
+            if (PathMounted == true && PathMountedType == EnumUnitMountedType.Flyer)
+                return true;            
+
             // 아군인 경우 제외.
-            return BattleSystemManager
-                .Instance
-                .IsAlly(GetFaction(), _faction);
+            if (BattleSystemManager.Instance.IsAlly(GetFaction(), _faction))
+                return true;
+
+            return false;
         }
 
     }
