@@ -102,7 +102,7 @@ namespace Battle
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
             // 현재 진영.
-            var faction         = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
+            var faction         = (int)BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
 
             // 진영 명령 유형.
             var commander_type  = BattleSystemManager.Instance.GetFactionCommanderType(faction);

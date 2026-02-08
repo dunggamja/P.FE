@@ -37,9 +37,9 @@ public class InputHandler_Grid_Select : InputHandler
     bool                    IsFinish                  { get; set; } = false;                
     float                   MoveTile_LastTime         { get; set; } = 0f;
     Vector2Int              MoveDirection             { get; set; } = Vector2Int.zero;    
-    Int64                   VFX_Select                { get; set; } = 0;
     Int64                   CommandEntityID           { get; set; } = 0; 
     // (int x, int y)          CommandEntityBasePosition { get; set; } = (0, 0);
+    Int64                   m_vfx_select  = 0;
 
 
     
@@ -96,7 +96,7 @@ public class InputHandler_Grid_Select : InputHandler
         ReleaseVFX();
         
         IsFinish                  = false;
-        VFX_Select                = 0;
+        m_vfx_select                = 0;
         MoveTile_LastTime         = 0f; 
         MoveDirection             = Vector2Int.zero;
         CommandEntityID           = 0;
@@ -296,7 +296,7 @@ public class InputHandler_Grid_Select : InputHandler
     void OnUpdate_Tile_Move()
     {
         //  아군 턴 차례가 맞는지 체크.
-        var faction_cur       = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
+        var faction_cur       = (int)BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CurrentFaction);
         var is_player_faction = BattleSystemManager.Instance.GetFactionCommanderType(faction_cur) == EnumCommanderType.Player;        
         if (is_player_faction == false)
             return;
@@ -378,16 +378,9 @@ public class InputHandler_Grid_Select : InputHandler
         // 이동 시간 설정.
         MoveTile_LastTime = Time.time;
 
-        // X, Y 좌표.
-        EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
-            .Set(SelectCursor));
 
-        // 선택 효과 생성.
-        EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<VFX_TransformEvent>.Acquire()
-            .SetID(VFX_Select)
-            .SetPosition(SelectCursor.CellToPosition()));       
+        VFXHelper.UpdateCursorVFX(m_vfx_select, SelectCursor);
+   
 
     }
 
@@ -525,19 +518,12 @@ public class InputHandler_Grid_Select : InputHandler
     void CreateTileSelectVFX()
     {
         // 선택 효과 생성.
-        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
-            .SetVFXRoot_Default()
-            .SetPosition(SelectCursor.CellToPosition())
-            .SetVFXName(AssetName.TILE_SELECTION)
-            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE);
-
-        VFX_Select = VFXManager.Instance.CreateVFXAsync(vfx_param);
-    }
+        m_vfx_select = VFXHelper.CreateCursorVFX(SelectCursor);
+    } 
 
     void ReleaseTileSelectVFX()
     {
-        VFXManager.Instance.ReserveReleaseVFX(VFX_Select);
-        VFX_Select = 0;
+        VFXHelper.ReleaseCursorVFX(ref m_vfx_select);
     }
 
 

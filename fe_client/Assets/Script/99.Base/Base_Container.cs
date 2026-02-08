@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class BaseContainer
 {
-    Dictionary<int, int>        m_real_values        = new Dictionary<int, int>();
+    Dictionary<int, Int64>        m_real_values = new ();
 
-    public int GetValue(int _key)
+    public Int64 GetValue(int _key)
     {
         {
             // 진짜 값
@@ -21,7 +21,7 @@ public class BaseContainer
         return 0 != GetValue(_key);
     }
 
-    public void SetValue(int _key, int _value)
+    public void SetValue(int _key, Int64 _value)
     {
         
         {
@@ -47,7 +47,7 @@ public class BaseContainer
 
     public BaseContainer_IO Save()
     {
-        var values = new List<(int, int)>();
+        var values = new List<(int, Int64)>();
         foreach (var item in m_real_values)
         {
             values.Add((item.Key, item.Value));
@@ -73,5 +73,5 @@ public class BaseContainer
 
 public class BaseContainer_IO
 {
-    public List<(int key, int value)> Values { get; set; } = new();
+    public List<(int key, Int64 value)> Values { get; set; } = new();
 }

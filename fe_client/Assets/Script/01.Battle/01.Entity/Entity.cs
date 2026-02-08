@@ -136,7 +136,7 @@ namespace Battle
 
         public int GetFaction()
         {
-            return BlackBoard.GetValue(EnumEntityBlackBoard.Faction);
+            return (int)BlackBoard.GetValue(EnumEntityBlackBoard.Faction);
         }
 
         public void SetFaction(int _faction)

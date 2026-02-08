@@ -170,12 +170,14 @@ public class VFXObject : MonoBehaviour
         public string     VFXName           { get; set; } = string.Empty;
         public Transform  VFXRoot           { get; set; } = null;
         public Vector3    Position          { get; set; } = Vector3.zero;
-        public Quaternion Rotation          { get; set; } = Quaternion.identity;        public float      Scale             { get; set; } = 1f;
-
+        public Quaternion Rotation          { get; set; } = Quaternion.identity;       
+        public float      Scale             { get; set; } = 1f;
         public (bool snap, float snap_offset) SnapToTerrain { get; set; } = (false, 0f);
 
         public (Transform target, EnumVFXAttachmentType attachment_type) 
         FollowTarget { get; set; } = (null, EnumVFXAttachmentType.World);
+
+        
 
         public virtual void Reset()
         {

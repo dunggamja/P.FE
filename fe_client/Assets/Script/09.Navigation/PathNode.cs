@@ -91,9 +91,9 @@ public struct PathNode : IEquatable<PathNode>, IEqualityComparer<PathNode>
 
 public class PathNodeManager //: IPathNodeManager
 {
-    Queue<PathNode> m_list_path_node = new Queue<PathNode>();
-    // PathNode        m_position_prev  = new PathNode();
-    // PathNode        m_position_cur   = new PathNode();
+    Queue<PathNode> m_list_path_node    = new Queue<PathNode>();
+    List<PathNode>  m_list_arrived_node = new List<PathNode>();
+    
 
     public TerrainMap TerrainMap => TerrainMapManager.Instance.TerrainMap;
     
@@ -119,6 +119,7 @@ public class PathNodeManager //: IPathNodeManager
 
             if (Check_Arrive_Position(node, _owner))             
             {
+                m_list_arrived_node.Add(node);
                 // 
                 m_list_path_node.Dequeue();
             }
@@ -220,7 +221,8 @@ public class PathNodeManager //: IPathNodeManager
         // 경로 저장.
         if (path_find)
         {
-            m_list_path_node.Clear();
+            ClearPath();
+            
             foreach (var node in list_path_node)
                 m_list_path_node.Enqueue(node);
         }
@@ -234,6 +236,7 @@ public class PathNodeManager //: IPathNodeManager
     public void ClearPath()
     {
         m_list_path_node.Clear();
+        m_list_arrived_node.Clear();
     }
 
 }

@@ -365,10 +365,15 @@ namespace Battle
 
             CutsceneBuilder.CreateRoot();
             CutsceneTrack track = new CutsceneTrack();
-            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
-            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
-            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
-            track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
+            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, true, (1, 1)));
+            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
+            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
+
+            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, true, (2, 2)));
+            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
+            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
+            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, false));
+            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, false));
 
 
             CutsceneBuilder.Root.AddTrack(track);

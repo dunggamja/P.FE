@@ -19,7 +19,7 @@ namespace Battle
             return *ptr;
         }
 
-        public int GetValue(T _type)
+        public Int64 GetValue(T _type)
         {   
             return m_repository.GetValue(to_int(_type));
         }
@@ -29,7 +29,7 @@ namespace Battle
             return m_repository.HasValue(to_int(_type));
         }
 
-        public void SetValue(T _type, int _value)
+        public void SetValue(T _type, Int64 _value)
         {
             m_repository.SetValue(to_int(_type), _value);
         }
@@ -51,17 +51,17 @@ namespace Battle
 
         public void SetBitFlag(T _type, byte _bit_index)
         {
-            SetValue(_type, GetValue(_type) | (1 << _bit_index));
+            SetValue(_type, GetValue(_type) | (1L << _bit_index));
         }
 
         public void ResetBitFlag(T _type, byte _bit_index)
         {
-            SetValue(_type, GetValue(_type) & ~(1 << _bit_index));
+            SetValue(_type, GetValue(_type) & ~(1L << _bit_index));
         }
 
         public bool HasBitFlag(T _type, byte _bit_index)
         {
-            return 0 != (GetValue(_type) & (1 << _bit_index));
+            return 0 != (GetValue(_type) & (1L << _bit_index));
         }
 
 

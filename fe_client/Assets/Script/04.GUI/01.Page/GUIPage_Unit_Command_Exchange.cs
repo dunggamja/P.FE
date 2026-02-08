@@ -513,19 +513,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          return;
 
       // 커서 VFX 생성.
-      var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
-         .SetVFXRoot_Default()
-         .SetPosition(entity.Cell.CellToPosition())
-         .SetVFXName(AssetName.TILE_SELECTION)
-         .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE);
-
-      m_vfx_exchange_target = VFXManager.Instance.CreateVFXAsync(vfx_param);
+      m_vfx_exchange_target = VFXHelper.CreateCursorVFX(entity.Cell);
    }
 
    void ReleaseExchangeTargetVFX()
    {
-      VFXManager.Instance.ReserveReleaseVFX(m_vfx_exchange_target);
-      m_vfx_exchange_target = 0;
+      VFXHelper.ReleaseCursorVFX(ref m_vfx_exchange_target);
    }
 
    void UpdateExchangeTargetVFX()
@@ -534,16 +527,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       if (entity == null)
          return;
 
-      EventDispatchManager.Instance.UpdateEvent(
-         ObjectPool<VFX_TransformEvent>.Acquire()
-         .SetID(m_vfx_exchange_target)
-         .SetPosition(entity.Cell.CellToPosition())                
-      ); 
-
-      EventDispatchManager.Instance.UpdateEvent(
-         ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
-         .Set(entity.Cell)
-      ); 
+      VFXHelper.UpdateCursorVFX(m_vfx_exchange_target, entity.Cell);
    }
 
    private void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)

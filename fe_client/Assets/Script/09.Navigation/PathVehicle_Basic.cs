@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +10,7 @@ public class PathVehicle_Basic : PathVehicle
         if (_owner == null || _owner.PathNodeManager == null)
             return (Vector3.zero, Quaternion.identity);
 
-        // PathNode?— ?…‹?Œ…?œ ?œ„ì¹˜ë¡œ ?´?™?„ ?•©?‹ˆ?‹¤.
+        // PathNode?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½ì¹˜ë¡œ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½.
         var path_node         = _owner.PathNodeManager.Peek();        
         var target_position   = path_node.GetPosition();
         // var target_rotation   = path_node.GetRotation();
@@ -27,7 +27,7 @@ public class PathVehicle_Basic : PathVehicle
         // var steering_torque   = (path_node.IsValidRotation()) ? target_rotation * Quaternion.Inverse(m_rotation) : Quaternion.identity;
         // steering_torque   *= Quaternion.Inverse(m_torque);
 
-        // È¸ÀüÀº ÀÏ´Ü ½Å°æ¾²Áö ¾Ê´Â´Ù.
+        // È¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½Å°æ¾²ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
         var steering_torque = Quaternion.identity;
 
         return (steering_velocity, steering_torque);

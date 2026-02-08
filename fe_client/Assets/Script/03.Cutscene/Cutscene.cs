@@ -16,7 +16,19 @@ public enum EnumCutsceneType
 
     Dialogue  = 10,  // 대화 연출
     Unit_Move = 20,
+
+
+    VFX_TileSelect = 100, // 타일 선택 커서 연출.
 }
+
+
+public enum EnumCutsceneBlackBoard
+{
+    // 컷씬에서 표시할 타일 선택 커서 VFX ID.
+    VFX_Tile_Select_Begin = 100,
+    VFX_Tile_Select_End   = 105, 
+}
+
 
 public abstract class Cutscene
 {

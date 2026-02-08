@@ -83,6 +83,14 @@ namespace Battle
             // 카메라 이동 처리.
             // Update_CameraPositionEvent();
 
+            // 위치 갱신은 계속 OnExit에서만 하고,
+            // 매복 승리/패배에 따라 m_cell_to만 바꿔주면 “해당 위치 점유” / “가장 가까운 점유가능 위치로 이동 후 종료”가 됩니다.
+            // PathNodeManager는 “이번 프레임 도착 셀” + “지나온 경로 셀 목록”만 추가해 주고,
+            // Command_Move는 “도착 셀 → 매복 검사 → 전투 → 결과에 따라 m_cell_to 설정 → 경로 클리어 → OnExit에서 위치 갱신”만 담당하면 됩니다.
+
+
+
+
             // 이동이 완료되었으면 완료처리.
             return Owner.PathNodeManager.IsEmpty();
         }

@@ -19,12 +19,12 @@ namespace Battle
 
         public int GetPoint(EnumUnitPoint _point_type)
         {
-            return m_point_repository.GetValue((int)_point_type);
+            return (int)m_point_repository.GetValue((int)_point_type);
         }
 
         public int GetStatus(EnumUnitStatus _status_type)
         {
-            return m_status_repository.GetValue((int)_status_type);
+            return (int)m_status_repository.GetValue((int)_status_type);
         }
 
         public bool HasAttribute(EnumUnitAttribute _attribute_type)

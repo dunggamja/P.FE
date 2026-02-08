@@ -207,16 +207,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         var entity_target = EntityManager.Instance.GetEntity(m_target_id);
         if (entity_target != null)
         {
-            EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<VFX_TransformEvent>.Acquire()
-                .SetID(m_vfx_cursor)
-                .SetPosition(entity_target.Cell.CellToPosition())                
-            ); 
-
-            EventDispatchManager.Instance.UpdateEvent(
-                ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
-                .Set(entity_target.Cell)
-            ); 
+            VFXHelper.UpdateCursorVFX(m_vfx_cursor, entity_target.Cell);
         }
 
         // 전투 예측 결과 셋팅.
@@ -297,19 +288,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
 
         // 커서 VFX 생성.
-        var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
-            .SetVFXRoot_Default()
-            .SetPosition(entity.Cell.CellToPosition())
-            .SetVFXName(AssetName.TILE_SELECTION)
-            .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE);
-
-        m_vfx_cursor = VFXManager.Instance.CreateVFXAsync(vfx_param);
+        m_vfx_cursor = VFXHelper.CreateCursorVFX(entity.Cell);
     }
 
     void ReleaseCursorVFX()
     {
-        VFXManager.Instance.ReserveReleaseVFX(m_vfx_cursor);
-        m_vfx_cursor = 0;
+        VFXHelper.ReleaseCursorVFX(ref m_vfx_cursor);
     }
 
 
