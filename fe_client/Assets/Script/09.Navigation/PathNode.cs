@@ -190,12 +190,31 @@ public class PathNodeManager //: IPathNodeManager
     }
 
 
-    public bool CreatePath(Vector3 _from_position, Vector3 _dest_position, IPathOwner _path_owner)
+    public bool CreatePath(
+        Vector3    _from_position, 
+        Vector3    _dest_position, 
+        IPathOwner _path_owner,
+        bool       _is_force_move = false)
     {
         if (TerrainMap == null)
             return false;
 
         ClearPath();
+
+
+        var option = PathAlgorithm.PathFindOption.Create();
+
+        if (_is_force_move)
+        { 
+            // 이동 비용/ ZOC를 무시하고 길찾기를 진행합니다.
+            option.SetMoveForced();            
+        }
+        else
+        { 
+            // 이동 가능한 범위를 벗어나지 않기위해 (범위,위치) 셋팅
+            option.SetMoveLimitRange(_path_owner.PathMoveRange, _path_owner.PathBasePosition);
+        }
+
         
         var list_path_node = ListPool<PathNode>.Acquire();
 
@@ -209,10 +228,8 @@ public class PathNodeManager //: IPathNodeManager
             _from_position.PositionToCell(), 
             _dest_position.PositionToCell(),
 
-            
-            PathAlgorithm.PathFindOption.Create()
-                // 이동 가능한 범위를 벗어나지 않기위해 (범위,위치) 셋팅
-                .SetMoveLimitRange(_path_owner.PathMoveRange, _path_owner.PathBasePosition),
+            // 길찾기 경로 옵션값.
+            option,
 
             // 길찾기 경로.
             list_path_node

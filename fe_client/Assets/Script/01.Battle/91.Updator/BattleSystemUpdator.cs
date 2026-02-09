@@ -325,7 +325,7 @@ namespace Battle
                 {
                     IsActive = true,
                     Position = DIALOGUE_DATA.EnumPosition.Center,
-                    Name     = "John Doe",
+                    Portrait = new DIALOGUE_PORTRAIT() { Name = "John Doe" },
                     Dialogue = "Hello, World!",
                 }
             });
@@ -341,7 +341,7 @@ namespace Battle
                 {
                     IsActive = true,
                     Position = DIALOGUE_DATA.EnumPosition.Bottom,
-                    Name     = "Jane Doe",
+                    Portrait = new DIALOGUE_PORTRAIT() { Name = "Jane Doe" },
                     Dialogue = "Hello, World!2",
                 }
             });
@@ -354,7 +354,7 @@ namespace Battle
                 {
                     IsActive = true,
                     Position = DIALOGUE_DATA.EnumPosition.Center,
-                    Name     = "Doey Doe",
+                    Portrait = new DIALOGUE_PORTRAIT() { Name = "Doey Doe" },
                     Dialogue = "Hello, World!3",
                 }
             });
@@ -378,7 +378,7 @@ namespace Battle
 
             CutsceneBuilder.Root.AddTrack(track);
 
-            CutsceneBuilder.RegisterCutscene("Dialogue");
+            CutsceneBuilder.Build("Dialogue");
 
             CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
         }

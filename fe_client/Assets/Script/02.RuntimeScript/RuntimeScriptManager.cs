@@ -121,14 +121,81 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
 
     void RegisterFunction()
-    {        
-        // TagManager
+    {
+        var is_registered = GetLuaValue<int>("RegisterFunction", "All");
+        if (is_registered == 1)
+        {
+          Debug.Log("Tag 함수 이미 등록됨");
+          return;
+        }
+
+
+        RegisterFunction_Entity();
+        RegisterFunction_Tag();
+        RegisterFunction_Cutscene();
+
+
+        SetLuaValue("RegisterFunction", "All", 1);
+    }
+
+    void RegisterFunction_Entity()
+    {
+        SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
+        {
+            var entity_id = context.GetArgument<Int64>(0);
+            var entity = EntityManager.Instance.GetEntity(entity_id);
+            if (entity == null)
+              return context.Return(LuaValue.Nil, LuaValue.Nil);
+
+            return context.Return(entity.Cell.x, entity.Cell.y);
+        }));
+    }
+
+    void RegisterFunction_Tag()
+    {
+        // TagManager SetTag 함수 등록.
         SetLuaValue("TagManager", "SetTag", new LuaFunction(async (context, ct) =>
         {
-            TagHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_DATA tag_data);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_DATA tag_data);
             TagManager.Instance.SetTag(tag_data);
             return context.Return();
         }));
+    }
+
+    void RegisterFunction_Cutscene()
+    {
+        SetLuaValue("CutsceneBuilder", "CreateRoot", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.CreateRoot();
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "CreateTrack", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.CreateTrack();
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "FinishTrack", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.FinishTrack();
+            return context.Return();
+        }));
+        
+        SetLuaValue("CutsceneBuilder", "Build", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.Build(context.GetArgument<string>(0));
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "AddCutscene_Dialogue", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.AddCutscene_Dialogue(context.GetArgument<DIALOGUE_SEQUENCE>(0));
+            return context.Return();
+        }));
+
+
+
     }
 
     async UniTask Load_Default_Script()
@@ -203,23 +270,3 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
     }
 }
 
-public static class RuntimeScriptHelper
-{
-
-    public static T GetLuaValue<T>(this LuaTable _table, string _key)
-    {
-       if (_table == null)
-         return default;
-
-       if (_table.TryGetValue(_key, out var value))
-         return value.TryRead<T>(out var result) ? result : default;
-
-       return default;
-    }
-
-    public static void SetLuaValue(this LuaTable _table, string _key, int _value)         => _table[_key] = _value;
-    public static void SetLuaValue(this LuaTable _table, string _key, Int64 _value)       => _table[_key] = _value;
-    public static void SetLuaValue(this LuaTable _table, string _key, LuaFunction _value) => _table[_key] = _value;
-    public static void SetLuaValue(this LuaTable _table, string _key, LuaTable _value)    => _table[_key] = _value;
-
-}

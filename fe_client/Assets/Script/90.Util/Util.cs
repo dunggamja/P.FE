@@ -31,8 +31,6 @@ public static partial class Util
         utc_day  * (ID_SEC_DIGIT) +
         utc_sec;
 
-
-
         // 시간이 바뀌었다면 time, serial 값 초기화.
         if (s_last_generated_time != generate_time)
         {

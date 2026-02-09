@@ -164,7 +164,7 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
 
        if (_data.IsActive)
        {
-         m_dialogue[index].SetDialogue(_data.Name, _data.Dialogue);
+         m_dialogue[index].SetDialogue(_data.Portrait, _data.Dialogue);
          m_dialogue[index].SetActive(true);
        }
        else

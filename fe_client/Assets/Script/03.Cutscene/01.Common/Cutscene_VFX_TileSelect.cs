@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,21 +51,28 @@ public class Cutscene_VFX_TileSelect : Cutscene
     {
         // INDEX가 겹치는 값이 있으면 해제해줍시다.
         var vfx_id = Sequence.BlackBoard.GetValue(BlackBoardKey);
-        if (vfx_id != 0)
-        {
-            VFXHelper.ReleaseCursorVFX(ref vfx_id);
-            Sequence.BlackBoard.SetValue(BlackBoardKey, 0);
-        }
 
 
-        if (Create)        
+        if (Create)
         {
             // 커서 VFX 생성.
-            vfx_id = VFXHelper.CreateCursorVFX(Position);
-            Sequence.BlackBoard.SetValue(BlackBoardKey, vfx_id);
+            if (vfx_id == 0)
+            {
+                vfx_id = VFXHelper.CreateTileSelctVFX(Position);
+                Sequence.BlackBoard.SetValue(BlackBoardKey, vfx_id);
+            }
 
             // 커서 VFX 위치 갱신 및 카메라 위치 갱신 이벤트 발생.
-            VFXHelper.UpdateCursorVFX(vfx_id, Position);
+            VFXHelper.UpdateTileSelectVFX(vfx_id, Position);
+        }
+        else
+        {
+            // 커서 VFX 해제.
+            if (vfx_id != 0)
+            {
+                VFXHelper.ReleaseTileSelectVFX(ref vfx_id);
+                Sequence.BlackBoard.SetValue(BlackBoardKey, 0);
+            }
         }
 
         return UniTask.CompletedTask;

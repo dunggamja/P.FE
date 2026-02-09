@@ -20,6 +20,9 @@ namespace Battle
         public const string LAYER_FIXED_OBJECT = "FixedObject";
 
 
+        public const int    MAX_TERRAIN_COST   = 10;
+
+
 
 
 

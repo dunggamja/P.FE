@@ -379,7 +379,7 @@ public class InputHandler_Grid_Select : InputHandler
         MoveTile_LastTime = Time.time;
 
 
-        VFXHelper.UpdateCursorVFX(m_vfx_select, SelectCursor);
+        VFXHelper.UpdateTileSelectVFX(m_vfx_select, SelectCursor);
    
 
     }
@@ -518,12 +518,12 @@ public class InputHandler_Grid_Select : InputHandler
     void CreateTileSelectVFX()
     {
         // 선택 효과 생성.
-        m_vfx_select = VFXHelper.CreateCursorVFX(SelectCursor);
+        m_vfx_select = VFXHelper.CreateTileSelctVFX(SelectCursor);
     } 
 
     void ReleaseTileSelectVFX()
     {
-        VFXHelper.ReleaseCursorVFX(ref m_vfx_select);
+        VFXHelper.ReleaseTileSelectVFX(ref m_vfx_select);
     }
 
 

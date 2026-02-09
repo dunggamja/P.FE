@@ -513,12 +513,12 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
          return;
 
       // 커서 VFX 생성.
-      m_vfx_exchange_target = VFXHelper.CreateCursorVFX(entity.Cell);
+      m_vfx_exchange_target = VFXHelper.CreateTileSelctVFX(entity.Cell);
    }
 
    void ReleaseExchangeTargetVFX()
    {
-      VFXHelper.ReleaseCursorVFX(ref m_vfx_exchange_target);
+      VFXHelper.ReleaseTileSelectVFX(ref m_vfx_exchange_target);
    }
 
    void UpdateExchangeTargetVFX()
@@ -527,7 +527,7 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
       if (entity == null)
          return;
 
-      VFXHelper.UpdateCursorVFX(m_vfx_exchange_target, entity.Cell);
+      VFXHelper.UpdateTileSelectVFX(m_vfx_exchange_target, entity.Cell);
    }
 
    private void OnReceiveEvent_GUI_Menu_SelectEvent(GUI_Menu_SelectEvent _event)

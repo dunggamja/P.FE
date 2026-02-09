@@ -33,6 +33,10 @@ public static partial class PathAlgorithm
         // TRUE: 목표지점이 점유되어있는지 체크하지 않음, FALSE: 목표지점은 점유가능해야함.
         public bool  MoveApproximately { get; private set; }
 
+
+        // TRUE: 이동 비용/ ZOC를 무시하고 길찾기를 진행합니다.
+        public bool  MoveForced { get; private set; } 
+
         
 
         public PathFindOption SetMoveLimitRange(int _range, (int x, int y) _base_pos)
@@ -53,12 +57,19 @@ public static partial class PathAlgorithm
             return this;
         }
 
+        public PathFindOption SetMoveForced()
+        {
+            MoveForced = true;
+            return this;
+        }
+
 
         public static PathFindOption Create() => new PathFindOption()
         {
             MoveLimitRange    = (false, 0, (0, 0)),
             GoalRange         = (false, 0),
             MoveApproximately = false,
+            MoveForced        = false,
         };
     }
 
@@ -175,8 +186,19 @@ public static partial class PathAlgorithm
         // 목표지점 체크 로직.
         var check_goal_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.Occupy;
 
-        // 통과지점 체크 로직.
+        // 통과지점 체크 로직.        
         var check_pass_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.PassThrough;
+
+
+        // MoveForced 관련 설정
+        if (_option.MoveForced)
+        {
+            check_pass_zoc = EnumCheckZOC.None;
+            check_goal_zoc = EnumCheckZOC.None;
+        }
+
+        // 지형으로 인해 막히는 것은 무시하도록 설정.
+        var allow_move_cost_with_penalty = _option.MoveForced;
 
         // 목표지점 범위 체크.
         var goal_range     = _option.GoalRange.check ? _option.GoalRange.range: 0;
@@ -195,7 +217,8 @@ public static partial class PathAlgorithm
                                             _terrain_map,
                                             _path_owner,
                                             (_goal_cell.x + x, _goal_cell.y + y),
-                                            check_goal_zoc).result;
+                                            check_goal_zoc,
+                                            allow_move_cost_with_penalty).result;
                 }                
             }
         }
@@ -304,7 +327,8 @@ public static partial class PathAlgorithm
                             _terrain_map, 
                             _path_owner, 
                             (x, y), 
-                            check_pass_zoc);
+                            check_pass_zoc,
+                            allow_move_cost_with_penalty);
 
                         if (!moveable)
                             continue;
@@ -474,7 +498,8 @@ public static partial class PathAlgorithm
         TerrainMap     _terrain_map, 
         IPathOwner     _path_owner, 
         (int x, int y) _cell,
-        EnumCheckZOC   _check_zoc)
+        EnumCheckZOC   _check_zoc,
+        bool           _allow_move_cost_with_penalty = false)
     {
         if (_terrain_map == null || _path_owner == null)
             return (false, 0);
@@ -494,9 +519,6 @@ public static partial class PathAlgorithm
         // ZOC 체크 여부.
         if (_check_zoc != EnumCheckZOC.None)
         {
-
-
-
             // 통과가 목적일 경우, Entity의 통과 로직 체크.
             Func<int, bool> func_ignore_zoc = (_check_zoc == EnumCheckZOC.PassThrough) ?
                                                _path_owner.PathIgnoreZOC : null;    
@@ -509,12 +531,18 @@ public static partial class PathAlgorithm
         var move_cost = Terrain_Attribute.Calculate_MoveCost(
             _path_owner, 
             _terrain_map.Attribute.GetCellData(_cell.x, _cell.y),
-            _check_zoc == EnumCheckZOC.Occupy);
+            _check_zoc == EnumCheckZOC.Occupy).cost;
 
-        if (move_cost.cost <= 0)
+        // 지형 비용을 무시하도록 설정.
+        if (_allow_move_cost_with_penalty && move_cost <= 0)
+        {
+            move_cost = Constants.MAX_TERRAIN_COST;
+        }
+
+        if (move_cost <= 0)
             return (false, 0);
 
-        return (true, move_cost.cost);      
+        return (true, move_cost);      
     }
 
 

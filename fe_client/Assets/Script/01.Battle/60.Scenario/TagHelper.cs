@@ -164,54 +164,6 @@ namespace Battle
       }
 
 
-
-      public static void FromLua(LuaTable _table, out TAG_INFO _o)
-      {
-         if (_table == null)
-         {
-            _o = TAG_INFO.Create(EnumTagType.None, 0);
-            return;
-         }
-
-         var tag_type  = _table.GetLuaValue<int>("TagType");
-         var tag_value = _table.GetLuaValue<Int64>("TagValue");        
-         _o            = TAG_INFO.Create((EnumTagType)tag_type, tag_value);
-      }
-
-      public static LuaTable ToLua(this TAG_INFO _tag_info)
-      {
-         var table = new LuaTable();
-         table.SetLuaValue("TagType", (int)_tag_info.TagType);
-         table.SetLuaValue("TagValue", (Int64)_tag_info.TagValue);
-         return table;
-      }
-
-      public static void FromLua(LuaTable _table, out TAG_DATA _o)
-      {
-         if (_table == null)
-         { 
-            _o = TAG_DATA.Create(TAG_INFO.Create(EnumTagType.None, 0), EnumTagAttributeType.None, TAG_INFO.Create(EnumTagType.None, 0));
-            return;
-         }
-
-         var lua_tag    = _table.GetLuaValue<LuaTable>("TagInfo");
-         var lua_attr   = _table.GetLuaValue<int>("Attribute");
-         var lua_target = _table.GetLuaValue<LuaTable>("TargetInfo");
-
-
-         FromLua(lua_tag, out TAG_INFO tag_info);
-         FromLua(lua_target, out TAG_INFO target_info);
-         _o = TAG_DATA.Create(tag_info, (EnumTagAttributeType)lua_attr, target_info);        
-      }
-
-      public static LuaTable ToLua(this TAG_DATA _tag_data)
-      {
-         var table = new LuaTable();
-         table.SetLuaValue("TagInfo", _tag_data.TagInfo.ToLua());
-         table.SetLuaValue("Attribute", (int)_tag_data.Attribute);
-         table.SetLuaValue("TargetInfo", _tag_data.TargetInfo.ToLua());
-         return table;
-      }
    }
 
 

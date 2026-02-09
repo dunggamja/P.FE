@@ -31,7 +31,7 @@ public class GUIElement_Dialogue : GUIElement
     private int m_line_count      = 0;
     private int m_line_index      = 0;
 
-    public void SetDialogue(string _name, string _dialogue)
+    public void SetDialogue(DIALOGUE_PORTRAIT _portrait, string _dialogue)
     {
         OnClear();
 
@@ -40,7 +40,7 @@ public class GUIElement_Dialogue : GUIElement
 
         SetActive(true);
 
-        m_name.text = _name;
+        m_name.text = _portrait.Name;
         m_text.text = _dialogue;
 
         // 스크롤 위치 가장 맨위로.

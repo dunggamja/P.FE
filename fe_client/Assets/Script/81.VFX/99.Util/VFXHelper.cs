@@ -7,7 +7,7 @@ using Battle;
 
 public static class VFXHelper
 {
-    public static Int64 CreateCursorVFX((int x, int y) _cell)
+    public static Int64 CreateTileSelctVFX((int x, int y) _cell)
     {
         // 커서 VFX 생성.
         var vfx_param = ObjectPool<VFXObject.Param>.Acquire()
@@ -19,13 +19,13 @@ public static class VFXHelper
         return VFXManager.Instance.CreateVFXAsync(vfx_param);
     }
 
-    public static void ReleaseCursorVFX(ref Int64 _vfx_id)
+    public static void ReleaseTileSelectVFX(ref Int64 _vfx_id)
     {
         VFXManager.Instance.ReserveReleaseVFX(_vfx_id);
         _vfx_id = 0;
     }
 
-    public static void UpdateCursorVFX(Int64 _vfx_id, (int x, int y) _cell)
+    public static void UpdateTileSelectVFX(Int64 _vfx_id, (int x, int y) _cell)
     {
         // 커서 VFX 위치 갱신.
         EventDispatchManager.Instance.UpdateEvent(

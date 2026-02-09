@@ -23,10 +23,10 @@ public struct DIALOGUE_DATA
    }
 
 
-   public bool         IsActive;
-   public EnumPosition Position;
-   public string       Name;
-   public string       Dialogue;
+   public bool              IsActive;
+   public EnumPosition      Position;
+   public DIALOGUE_PORTRAIT Portrait;
+   public string            Dialogue;
 }
 
 public struct DIALOGUE_SEQUENCE
@@ -37,6 +37,10 @@ public struct DIALOGUE_SEQUENCE
 
    public void SetID(Int64 _id)
    {
+      // 입력된 ID가 없으면 자동생성.
+      if (_id == 0)
+          _id = Util.GenerateID();
+
       ID = _id;
    }
 
@@ -96,6 +100,8 @@ public struct DIALOGUE_SEQUENCE
           DialogueData.Clear();
    }
 }
+
+
 
 public class DialoguePublisher
 {

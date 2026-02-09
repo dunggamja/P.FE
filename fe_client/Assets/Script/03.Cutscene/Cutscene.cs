@@ -7,18 +7,25 @@ using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-
+// TODO: 컷씬 타입이 뭔가 굳이 필요하지 않은 것 같기도?
 public enum EnumCutsceneType
 {
     None      = 0,
 
-    Wait      = 1,   // 대기
+   //  Wait           = 1,   // 대기
 
-    Dialogue  = 10,  // 대화 연출
-    Unit_Move = 20,
+    Dialogue       = 10,  // 대화 연출
 
 
-    VFX_TileSelect = 100, // 타일 선택 커서 연출.
+    Unit_Move      = 20,  // 유닛 이동 연출. 
+
+    Unit_Active    = 21,  // 유닛 표시 On/Off.
+
+
+
+    VFX_TileSelect = 100,  // 타일 선택 커서 연출.
+
+    Trigger        = 1000, // 트리거 관련 동작.
 }
 
 
@@ -27,6 +34,10 @@ public enum EnumCutsceneBlackBoard
     // 컷씬에서 표시할 타일 선택 커서 VFX ID.
     VFX_Tile_Select_Begin = 100,
     VFX_Tile_Select_End   = 105, 
+
+
+    Trigger_Begin = 1000,
+    Trigger_End   = 9999,
 }
 
 

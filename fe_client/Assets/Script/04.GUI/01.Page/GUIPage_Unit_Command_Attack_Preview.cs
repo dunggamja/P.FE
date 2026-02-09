@@ -207,7 +207,7 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         var entity_target = EntityManager.Instance.GetEntity(m_target_id);
         if (entity_target != null)
         {
-            VFXHelper.UpdateCursorVFX(m_vfx_cursor, entity_target.Cell);
+            VFXHelper.UpdateTileSelectVFX(m_vfx_cursor, entity_target.Cell);
         }
 
         // 전투 예측 결과 셋팅.
@@ -288,12 +288,12 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
             return;
 
         // 커서 VFX 생성.
-        m_vfx_cursor = VFXHelper.CreateCursorVFX(entity.Cell);
+        m_vfx_cursor = VFXHelper.CreateTileSelctVFX(entity.Cell);
     }
 
     void ReleaseCursorVFX()
     {
-        VFXHelper.ReleaseCursorVFX(ref m_vfx_cursor);
+        VFXHelper.ReleaseTileSelectVFX(ref m_vfx_cursor);
     }
 
 
