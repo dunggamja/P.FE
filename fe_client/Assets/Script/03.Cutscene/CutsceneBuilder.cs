@@ -11,12 +11,13 @@ public static class CutsceneBuilder
 {
    public static CutsceneSequence Root  { get; private set; } = null;
    public static CutsceneTrack    Track { get; private set; } = null;
+   public static string           Name  { get; private set; } = string.Empty;
    // public static CutsceneSequence BuildCutscene(string _cutscene_name)
    // {
    //    return new CutsceneSequence();
    // }
 
-   public static void CreateRoot()
+   public static void RootBegin(string _name)
    {
       if (Root != null)
       {
@@ -24,10 +25,17 @@ public static class CutsceneBuilder
          return;
       }
 
+      if (string.IsNullOrEmpty(_name))
+      {
+         Debug.LogError("CutsceneBuilder: Cutscene name is empty.");
+         return;
+      }
+
       Root = new CutsceneSequence();
+      Name = _name;
    }
 
-   public static void CreateTrack()
+   public static void TrackBegin()
    {
       if (Root == null)
       {
@@ -44,7 +52,7 @@ public static class CutsceneBuilder
       Track = new CutsceneTrack();
    }
 
-   public static void FinishTrack()
+   public static void TrackEnd()
    {
       if (Root == null)
       {
@@ -64,7 +72,7 @@ public static class CutsceneBuilder
    }
 
 
-   public static void Build(string _cutscene_name)
+   public static void RootEnd()
    {
       if (Root == null)
       {
@@ -72,13 +80,13 @@ public static class CutsceneBuilder
          return;
       }
 
-      if (string.IsNullOrEmpty(_cutscene_name))
+      if (string.IsNullOrEmpty(Name))
       {
          Debug.LogError("CutsceneBuilder: Cutscene name is empty.");
          return;
       }
 
-      CutsceneManager.Instance.RegisterCutscene(_cutscene_name, Root);
+      CutsceneManager.Instance.RegisterCutscene(Name, Root);
       Root  = null;
       Track = null;
    }

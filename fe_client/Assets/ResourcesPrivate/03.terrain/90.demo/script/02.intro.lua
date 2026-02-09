@@ -5,5 +5,14 @@ SCRIPT_MODULE_FUNC = "Run"
 demo_script_02 = {}
 
 -- lua의 주석
-function demo_script_02.Run()    
+function demo_script_02.Run()  
+   CutsceneBuilder.RootBegin("Intro");
+      CutsceneBuilder.TrackBegin();
+      -- CutsceneBuilder.AddCutscene_Dialogue(new DIALOGUE_SEQUENCE(1, true, {
+      --    new DIALOGUE_DATA(true, "Top", "John Doe", "Hello, World!"),
+      --    new DIALOGUE_DATA(true, "Center", "Jane Doe", "Hello, World!2"),
+      --    new DIALOGUE_DATA(true, "Bottom", "Doey Doe", "Hello, World!3"),
+      -- }));
+      CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd();  
 end

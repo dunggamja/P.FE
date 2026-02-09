@@ -363,7 +363,7 @@ namespace Battle
             dialogue_sequence4.SetID(4);
             dialogue_sequence4.SetCloseDialogue(true);
 
-            CutsceneBuilder.CreateRoot();
+            CutsceneBuilder.RootBegin("Dialogue");
             CutsceneTrack track = new CutsceneTrack();
             // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, true, (1, 1)));
             // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
@@ -378,7 +378,7 @@ namespace Battle
 
             CutsceneBuilder.Root.AddTrack(track);
 
-            CutsceneBuilder.Build("Dialogue");
+            CutsceneBuilder.RootEnd();
 
             CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
         }

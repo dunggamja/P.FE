@@ -164,37 +164,68 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
     void RegisterFunction_Cutscene()
     {
-        SetLuaValue("CutsceneBuilder", "CreateRoot", new LuaFunction(async (context, ct) =>
+        SetLuaValue("CutsceneBuilder", "RootBegin", new LuaFunction(async (context, ct) =>
         {
-            CutsceneBuilder.CreateRoot();
+            CutsceneBuilder.RootBegin(context.GetArgument<string>(0));
             return context.Return();
         }));
 
-        SetLuaValue("CutsceneBuilder", "CreateTrack", new LuaFunction(async (context, ct) =>
+        SetLuaValue("CutsceneBuilder", "RootEnd", new LuaFunction(async (context, ct) =>
         {
-            CutsceneBuilder.CreateTrack();
+            CutsceneBuilder.RootEnd();
             return context.Return();
         }));
 
-        SetLuaValue("CutsceneBuilder", "FinishTrack", new LuaFunction(async (context, ct) =>
+        SetLuaValue("CutsceneBuilder", "TrackBegin", new LuaFunction(async (context, ct) =>
         {
-            CutsceneBuilder.FinishTrack();
+            CutsceneBuilder.TrackBegin();
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "TrackEnd", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.TrackEnd();
             return context.Return();
         }));
         
-        SetLuaValue("CutsceneBuilder", "Build", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.Build(context.GetArgument<string>(0));
-            return context.Return();
-        }));
 
         SetLuaValue("CutsceneBuilder", "AddCutscene_Dialogue", new LuaFunction(async (context, ct) =>
         {
-            CutsceneBuilder.AddCutscene_Dialogue(context.GetArgument<DIALOGUE_SEQUENCE>(0));
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out DIALOGUE_SEQUENCE dialogue_sequence);
+            CutsceneBuilder.AddCutscene_Dialogue(dialogue_sequence);
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "AddCutscene_VFX_TileSelect", new LuaFunction(async (context, ct) =>
+        {
+            var vfx_index = context.GetArgument<int>(0);
+            var create    = context.GetArgument<bool>(1);
+            var pos_x     = context.GetArgument<int>(2);
+            var pos_y     = context.GetArgument<int>(3);
+            
+            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, create, (pos_x, pos_y));
             return context.Return();
         }));
 
 
+        SetLuaValue("CutsceneBuilder", "AddCutscene_Trigger", new LuaFunction(async (context, ct) =>
+        {
+            var trigger_id = context.GetArgument<int>(0);
+            var is_wait    = context.GetArgument<bool>(1);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, is_wait);
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "AddCutscene_Unit_Move", new LuaFunction(async (context, ct) =>
+        {
+            var unit_id   = context.GetArgument<Int64>(0);
+            var start_pos_x = context.GetArgument<int>(1);
+            var start_pos_y = context.GetArgument<int>(2);
+            var end_pos_x   = context.GetArgument<int>(3);
+            var end_pos_y   = context.GetArgument<int>(4);
+            CutsceneBuilder.AddCutscene_Unit_Move(unit_id, (start_pos_x, start_pos_y), (end_pos_x, end_pos_y));
+            return context.Return();
+        }));
 
     }
 
