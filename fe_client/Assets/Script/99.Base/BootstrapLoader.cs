@@ -26,7 +26,6 @@ public class BootstrapLoader : MonoBehaviour
 
     void RegisterServices()
     {
-        
         ServiceLocator<CommandQueueHandler>.Register(ServiceLocator.GLOBAL, BattleSystemManager.Instance.CommandHandler);
     }
 

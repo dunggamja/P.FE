@@ -215,9 +215,15 @@ namespace Battle
     {
         None = 0,
 
-        TurnUpdateCount = 1, // [Turn 우선순위] Turn Update Count    
-        CurrentTurn,         // [Turn 우선순위] Turn Number    
-        CurrentFaction,      // [Turn 우선순위] Faction Number  
+        IsBattleStarted = 1, // [Battle] 전투 시작 여부 (value: true/false)
+
+
+        TurnUpdateCount = 100, // [Turn ] Turn Update Count    
+        CurrentTurn,           // [Turn ] Turn Number    
+        CurrentFaction,        // [Turn ] Faction Number  
+
+
+
 
         // SelectCursor_X = 100,
         // SelectCursor_Y,
@@ -397,62 +403,62 @@ namespace Battle
     // }
 
 
-    public enum EnumScenarioTrigger
-    {
-       None = 0,
+    // public enum EnumScenarioTrigger
+    // {
+    //    None = 0,
 
-       OnTurnStart      = 1, // 턴 시작 시 트리거
-       OnTurnEnd        = 2, // 턴 종료 시 트리거
+    //    OnTurnStart      = 1, // 턴 시작 시 트리거
+    //    OnTurnEnd        = 2, // 턴 종료 시 트리거
 
-       OnEntityDefeat   = 11, // 엔티티 사망 시 트리거
+    //    OnEntityDefeat   = 11, // 엔티티 사망 시 트리거
 
-       OnPositionArrive = 21, // 위치 도착 시 트리거
-       OnPositionVisit  = 22, // 위치 방문 시 트리거
+    //    OnPositionArrive = 21, // 위치 도착 시 트리거
+    //    OnPositionVisit  = 22, // 위치 방문 시 트리거
        
-       OnEveryUpdate     = 999, // 매 프레임 트리거
-    }
+    //    OnEveryUpdate     = 999, // 매 프레임 트리거
+    // }
 
-    public enum EnumScenarioCondition
-    {
-       None = 0,
+    // public enum EnumScenarioCondition
+    // {
+    //    None = 0,
 
-       DefeatAllEnemies      = 1, // 모든 적을 사망시키면 조건 충족
-       DefeatSpecificEntity  = 2, // 특정 엔티티를 사망시키면 조건 충족
-       DefeatSpecificFaction = 3, // 특정 진영을 사망시키면 조건 충족
-
-
-       TurnCount             = 11, // 특정 턴수가 되면 조건 충족
+    //    DefeatAllEnemies      = 1, // 모든 적을 사망시키면 조건 충족
+    //    DefeatSpecificEntity  = 2, // 특정 엔티티를 사망시키면 조건 충족
+    //    DefeatSpecificFaction = 3, // 특정 진영을 사망시키면 조건 충족
 
 
-       PositionArrive        = 21, // 위치 도착 시 조건 충족
-       PositionVisit         = 22, // 위치 방문 시 조건 충족
+    //    TurnCount             = 11, // 특정 턴수가 되면 조건 충족
 
 
-       EntityHP_Below        = 31, // 유닛 체력이 특정 이하일 경우 
+    //    PositionArrive        = 21, // 위치 도착 시 조건 충족
+    //    PositionVisit         = 22, // 위치 방문 시 조건 충족
 
-       HasTagID              = 41, // 특정 태그 ID가 있을 경우 조건 충족
-       HasTagName            = 42, // 특정 태그 이름이 있을 경우 조건 충족
-       HasItem               = 43, // 특정 아이템을 보유할 경우 조건 충족
-    }
 
-    public enum EnumScenarioAction
-    {
-       None = 0,
+    //    EntityHP_Below        = 31, // 유닛 체력이 특정 이하일 경우 
 
-       Victory    = 1, // 시나리오 승리
-       Defeat     = 2, // 시나리오 패배
-       Event      = 3, // 시나리오 중간 이벤트
+    //    HasTagID              = 41, // 특정 태그 ID가 있을 경우 조건 충족
+    //    HasTagName            = 42, // 특정 태그 이름이 있을 경우 조건 충족
+    //    HasItem               = 43, // 특정 아이템을 보유할 경우 조건 충족
+    // }
 
-       ShowDialog = 11, // 대화
+    // public enum EnumScenarioAction
+    // {
+    //    None = 0,
 
-       AddTag     = 21, // 태그 추가
-       RemoveTag  = 22, // 태그 제거
+    //    Victory    = 1, // 시나리오 승리
+    //    Defeat     = 2, // 시나리오 패배
+    //    Event      = 3, // 시나리오 중간 이벤트
 
-       AddItem    = 31, // 아이템 추가
-       RemoveItem = 32, // 아이템 제거
+    //    ShowDialog = 11, // 대화
 
-       SetAIType  = 41, // AI 타입 설정.
-    }
+    //    AddTag     = 21, // 태그 추가
+    //    RemoveTag  = 22, // 태그 제거
+
+    //    AddItem    = 31, // 아이템 추가
+    //    RemoveItem = 32, // 아이템 제거
+
+    //    SetAIType  = 41, // AI 타입 설정.
+    // }
 
 
     public enum EnumChapterStageType
@@ -462,7 +468,7 @@ namespace Battle
        Side = 2, // 사이드 챕터 
     }
 
-    public enum EnumRuntimeScriptTrigger
+    public enum EnumCutsceneTrigger
     {
        None = 0,
 

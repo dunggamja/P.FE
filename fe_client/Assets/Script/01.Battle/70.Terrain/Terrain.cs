@@ -94,13 +94,13 @@ namespace Battle
         public void SetCellData(int _x, int _y, Int64 _data)
         {
             m_cell_data[_x % m_block_size, _y % m_block_size] = _data;
-            Debug.Log($"SetCellData: pos:{_x}, {_y}, id:{_data}");
+            // Debug.Log($"SetCellData: pos:{_x}, {_y}, id:{_data}");
         }
 
         public void RemoveCellData(int _x, int _y)
         {
             m_cell_data[_x % m_block_size, _y % m_block_size] = 0;
-            Debug.Log($"RemoveCellData: pos:{_x}, {_y}");
+            // Debug.Log($"RemoveCellData: pos:{_x}, {_y}");
         }
 
         public Int64 GetCellData(int _x, int _y)

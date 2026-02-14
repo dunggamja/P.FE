@@ -2,15 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Battle
 {
     
-    public static class BattleSystemPauseReason
-    {
-        public const int Cutscene = 1;
-    }
+    // public static class BattleSystemPauseReason
+    // {
+    //     public const int Cutscene = 1;
+    // }
 
 
     public class BattleSystemManager : Singleton<BattleSystemManager>, ISystemManager
@@ -38,15 +39,25 @@ namespace Battle
         
         public CommandQueueHandler           CommandHandler { get; private set; } = new();
         public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
-        public bool                          IsPause => m_pause_reasons.Count > 0;
-
-        public void SetPause(int _reason, bool _is_pause)
+        public bool                          IsPause 
         {
-            if (_is_pause)
-                m_pause_reasons.Add(_reason);
-            else
-                m_pause_reasons.Remove(_reason);
+            get
+            {
+                // 컷씬이 재생중이다.
+                if (CutsceneManager.Instance.IsPlayingCutscene)
+                    return true;
+
+                return false;
+            }
         }
+
+        // public void SetPause(int _reason, bool _is_pause)
+        // {
+        //     if (_is_pause)
+        //         m_pause_reasons.Add(_reason);
+        //     else
+        //         m_pause_reasons.Remove(_reason);
+        // }
 
 
         protected override void Init()
@@ -100,6 +111,9 @@ namespace Battle
             // Update 정지 처리.
             if (IsPause)
                 return false;            
+
+            // 전투 시작 처리.
+            BlackBoard.SetValue(EnumBattleBlackBoard.IsBattleStarted, true);
 
             // 시스템을 순차적으로 실행해야 한다.
             for(; m_system_index < m_update_system.Count; ++m_system_index)
@@ -157,6 +171,21 @@ namespace Battle
             Debug.LogError($"Can't Find System, {_system_type.ToString()} in SystemManager[{GetType().ToString()}]");
             return null;
         }
+
+        public T GetSystem<T>() where T : BattleSystem
+        {
+            foreach(var e in m_update_system)
+            {
+                if (e is T system)
+                    return system;
+            }
+
+            Debug.LogError($"Can't Find System, {typeof(T).ToString()} in SystemManager[{GetType().ToString()}]");
+            return null;
+        }
+
+
+
         private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
         {
             var system = GetSystem(_system_type) as BattleSystem;

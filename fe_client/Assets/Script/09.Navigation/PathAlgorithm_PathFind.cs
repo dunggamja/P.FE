@@ -31,7 +31,7 @@ public static partial class PathAlgorithm
 
 
         // TRUE: 목표지점이 점유되어있는지 체크하지 않음, FALSE: 목표지점은 점유가능해야함.
-        public bool  MoveApproximately { get; private set; }
+        public bool  IgnoreOccupancy { get; private set; }
 
 
         // TRUE: 이동 비용/ ZOC를 무시하고 길찾기를 진행합니다.
@@ -53,7 +53,7 @@ public static partial class PathAlgorithm
 
         public PathFindOption SetAllowApproximate()
         {
-            MoveApproximately = true;
+            IgnoreOccupancy = true;
             return this;
         }
 
@@ -68,7 +68,7 @@ public static partial class PathAlgorithm
         {
             MoveLimitRange    = (false, 0, (0, 0)),
             GoalRange         = (false, 0),
-            MoveApproximately = false,
+            IgnoreOccupancy = false,
             MoveForced        = false,
         };
     }
@@ -90,9 +90,9 @@ public static partial class PathAlgorithm
         }
 
 
-        public void Visit(int x, int y)
+        public void Visit(IFloodFillVisitor.VisitNode _node)
         {
-            VisitList.Add((x, y));
+            VisitList.Add((_node.x, _node.y));
             // return true;
         }
 
@@ -184,10 +184,10 @@ public static partial class PathAlgorithm
 
 
         // 목표지점 체크 로직.
-        var check_goal_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.Occupy;
+        var check_goal_zoc = _option.IgnoreOccupancy ? EnumCheckZOC.None : EnumCheckZOC.Occupy;
 
         // 통과지점 체크 로직.        
-        var check_pass_zoc = _option.MoveApproximately ? EnumCheckZOC.None : EnumCheckZOC.PassThrough;
+        var check_pass_zoc = _option.IgnoreOccupancy ? EnumCheckZOC.None : EnumCheckZOC.PassThrough;
 
 
         // MoveForced 관련 설정
@@ -385,6 +385,21 @@ public static partial class PathAlgorithm
 
     public interface IFloodFillVisitor
     {
+        public struct VisitNode
+        {
+            public int x;
+            public int y;
+            public int cost;
+
+            public VisitNode(int _x, int _y, int _cost)
+            {
+                x    = _x;
+                y    = _y;
+                cost = _cost;
+            }
+        }
+
+
         TerrainMap     TerrainMap         { get; }
         IPathOwner     Visitor            { get; }
         (int x, int y) Position           { get; }
@@ -393,7 +408,7 @@ public static partial class PathAlgorithm
 
 
         bool  IsStop();
-        void  Visit(int x, int y);
+        void  Visit(VisitNode _node);
     }
 
     static public void FloodFill(IFloodFillVisitor _visitor)
@@ -439,7 +454,7 @@ public static partial class PathAlgorithm
             var call_visit = (is_start_position) || enable_visit;                                    
             if (call_visit)
             {
-                _visitor.Visit(item.x, item.y);                
+                _visitor.Visit(new IFloodFillVisitor.VisitNode(item.x, item.y, item.move_cost));                
             }
 
             // open/close list 추가.
@@ -533,10 +548,11 @@ public static partial class PathAlgorithm
             _terrain_map.Attribute.GetCellData(_cell.x, _cell.y),
             _check_zoc == EnumCheckZOC.Occupy).cost;
 
-        // 지형 비용을 무시하도록 설정.
-        if (_allow_move_cost_with_penalty && move_cost <= 0)
+        // 갈수없는 지형을 강제로 갈수있게 설정.
+        if (_allow_move_cost_with_penalty)
         {
-            move_cost = Constants.MAX_TERRAIN_COST;
+            if (move_cost <= 0)
+                move_cost = Constants.PENALTY_TERRAIN_COST;
         }
 
         if (move_cost <= 0)

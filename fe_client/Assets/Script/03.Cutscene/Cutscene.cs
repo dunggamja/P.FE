@@ -29,15 +29,18 @@ public enum EnumCutsceneType
 }
 
 
-public enum EnumCutsceneBlackBoard
+public enum EnumCutsceneLocalMemory
 {
     // 컷씬에서 표시할 타일 선택 커서 VFX ID.
     VFX_Tile_Select_Begin = 100,
-    VFX_Tile_Select_End   = 105, 
+    VFX_Tile_Select_End   = 110, 
+}
 
 
-    Trigger_Begin = 1000,
-    Trigger_End   = 9999,
+public enum EnumCutsceneGlobalMemory
+{
+   Trigger_Begin = 1,
+   Trigger_End   = 1_000_000,
 }
 
 
@@ -107,7 +110,7 @@ public class CutsceneSequence
 {
    private List<CutsceneTrack> Tracks     { get; set; }         = new();
 
-   public  BaseContainer       BlackBoard { get; private set; } = new();
+   public  BaseContainer       Memory { get; private set; } = new();
 
    public  bool IsPlaying { get; private set; } = false; // 연출이 진행중인지 체크.
    public  bool HasPlayed { get; private set; } = false; // 연출이 한번 실행되었는지 체크.

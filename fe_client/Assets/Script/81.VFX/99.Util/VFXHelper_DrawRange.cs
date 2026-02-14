@@ -52,10 +52,10 @@ namespace Battle.MoveRange
 
 
 
-    public void Visit(int _visit_x, int _visit_y)
+    public void Visit(PathAlgorithm.IFloodFillVisitor.VisitNode _node)
     {
         // 이동 범위에 넣어두자.
-        Visit_Move.Add((_visit_x, _visit_y));
+        Visit_Move.Add((_node.x, _node.y));
         
         var weapon_range_min = WeaponRange.min;
         var weapon_range_max = WeaponRange.max;        
@@ -78,35 +78,35 @@ namespace Battle.MoveRange
           {
               for(int y = -max_range; y <= max_range; ++y)
               {
-                  var pos_x = _visit_x + x;
-                  var pos_y = _visit_y + y;
+                  var pos_x = _node.x + x;
+                  var pos_y = _node.y + y;
 
                   // 맵 바운더리 체크.
                   if (TerrainMap != null && TerrainMap.IsInBound(pos_x, pos_y) == false)
                       continue;
 
                   // 사거리 체크.
-                  var distance = PathAlgorithm.Distance(_visit_x, _visit_y, pos_x, pos_y);
+                  var distance = PathAlgorithm.Distance(_node.x, _node.y, pos_x, pos_y);
 
                   // 공격 사거리.
                   if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
                   {
                     if (weapon_range_min <= distance && distance <= weapon_range_max)
-                        Visit_Weapon.Add((pos_x, pos_y));
+                        Visit_Weapon.Add((_node.x, _node.y));
                   }
 
                   // 지팡이 사거리.
                   if ((DrawFlag & (int)EnumDrawFlag.WandRange) != 0)
                   {
                     if (wand_range_min <= distance && distance <= wand_range_max)
-                        Visit_Wand.Add((pos_x, pos_y));
+                        Visit_Wand.Add((_node.x, _node.y));
                   }
 
                   // 교환 사거리.
                   if ((DrawFlag & (int)EnumDrawFlag.ExchangeRange) != 0)
                   {
                     if (exchange_range_min <= distance && distance <= exchange_range_max)
-                        Visit_Exchange.Add((pos_x, pos_y));
+                        Visit_Exchange.Add((_node.x, _node.y));
                   }
               }
           }

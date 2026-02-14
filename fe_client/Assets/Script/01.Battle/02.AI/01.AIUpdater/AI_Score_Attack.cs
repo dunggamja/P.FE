@@ -484,7 +484,7 @@ namespace Battle
 
 
 
-            public void Visit(int _visit_x, int _visit_y)
+            public void Visit(PathAlgorithm.IFloodFillVisitor.VisitNode _node)
             {
                 // bool result = false;
 
@@ -492,11 +492,11 @@ namespace Battle
                 {
                     for(int k = -WeaponRangeMax; k <= WeaponRangeMax; ++k)
                     {
-                        var x = _visit_x + i;
-                        var y = _visit_y + k;
+                        var x = _node.x + i;
+                        var y = _node.y + k;
 
                         // 무기 사거리 체크
-                        var distance = PathAlgorithm.Distance(_visit_x, _visit_y, x, y);
+                        var distance = PathAlgorithm.Distance(_node.x, _node.y, x, y);
                         if (distance < WeaponRangeMin || WeaponRangeMax < distance)
                         {
                             continue;
@@ -515,7 +515,7 @@ namespace Battle
                         var entity_id = TerrainMap.EntityManager.GetCellData(x, y);
                         if (entity_id > 0)
                         {
-                            CollectTargets.Add((entity_id, _visit_x, _visit_y));
+                            CollectTargets.Add((entity_id, _node.x, _node.y));
                             // result = true;
                         }
                     }

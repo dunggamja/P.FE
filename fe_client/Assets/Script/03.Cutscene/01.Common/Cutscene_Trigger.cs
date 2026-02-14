@@ -21,9 +21,9 @@ public class Cutscene_Trigger : Cutscene
     {
         get
         {
-            var key = (int)EnumCutsceneBlackBoard.Trigger_Begin + TriggerID;
-            if (key < (int)EnumCutsceneBlackBoard.Trigger_Begin
-            ||  key > (int)EnumCutsceneBlackBoard.Trigger_End)
+            var key = (int)EnumCutsceneGlobalMemory.Trigger_Begin + TriggerID;
+            if (key < (int)EnumCutsceneGlobalMemory.Trigger_Begin
+            ||  key > (int)EnumCutsceneGlobalMemory.Trigger_End)
             {
                 Debug.LogError($"Cutscene_Trigger: BlackBoard_Index is out of range: {key}");
                 return 0;
@@ -50,12 +50,12 @@ public class Cutscene_Trigger : Cutscene
         if (IsWait)
         {
             // 트리거가 실행될때까지 대기.
-            await UniTask.WaitUntil(() => Sequence.BlackBoard.HasValue(BlackBoardKey), cancellationToken: _skip_token);
+            await UniTask.WaitUntil(() => CutsceneManager.Instance.Memory.HasValue(BlackBoardKey), cancellationToken: _skip_token);
         }
         else
         {
             // 트리거 실행.
-            Sequence.BlackBoard.SetValue(BlackBoardKey, true);
+            CutsceneManager.Instance.Memory.SetValue(BlackBoardKey, true);
         }        
     }
 

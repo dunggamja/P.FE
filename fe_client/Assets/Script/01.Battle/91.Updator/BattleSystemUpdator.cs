@@ -52,6 +52,12 @@ namespace Battle
             if (IsInitialized == false)
                 return;
 
+            if (BattleSystemManager.Instance.BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleStarted) == false)
+            {
+                // 전투 처음 시작이라면. 인트로 컷씬을 재생합니다.
+            }
+
+
             BattleSystemManager.Instance.Update();
         }
 

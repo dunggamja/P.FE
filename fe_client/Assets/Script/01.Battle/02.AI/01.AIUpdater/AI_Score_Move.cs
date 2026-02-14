@@ -105,48 +105,52 @@ namespace Battle
       }
 
 
-      public static float CalculateScore_CloseToTarget(int _x, int _y, List<PathNode> _path_to_target)
-      {
-          // 점수 계산 :
-          //  a : (현재 위치에서 가장 가까운 경로의 이동 비용 - 현재 위치에서 가장 가까운 경로의 거리)
-          //  b : (길찾기 마지막 경로까지의 이동 비용)
-          //  score = a / b
-
-          if (_path_to_target == null || _path_to_target.Count == 0)
-            return 0f;
-
-
-           // 이동이 불가능?
-          var move_cost_max = _path_to_target[_path_to_target.Count - 1].MoveCost;
-          if (move_cost_max <= 0)
-            return 0f;
-
-
-          // 현재 위치에서 가장 가까운 경로의 거리와 이동 비용을 찾습니다.
-          var close_node_distance = int.MaxValue;
-          var close_node_movecost = 0;
-          for (int i = 0; i < _path_to_target.Count; ++i)
-          {
-              var position  = _path_to_target[i].GetPosition().PositionToCell();
-              var distance  = PathAlgorithm.Distance(_x, _y, position.x, position.y);
-              if (close_node_distance > distance)
-              {
-                  // 현재 위치에서 가장 가까운 경로의 거리
-                  close_node_distance = distance;
-
-                  // (현재 위치에서 가장 가까운 경로의 이동 비용 - 현재 위치에서 가장 가까운 경로의 거리)
-                  close_node_movecost = _path_to_target[i].MoveCost - distance;
-              }
-          }
-
-          // 점수 계산.
-          return Mathf.Clamp01((float)close_node_movecost / move_cost_max);   
-      }
+      
 
       
     }
 
 
+    class DistanceFromTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
+    {
+      public TerrainMap     TerrainMap     { get; set; }  
+      public IPathOwner     Visitor        { get; set; }  
+      public (int x, int y) Position       { get; set; }  
+      public int            MoveDistance   => int.MaxValue;  // 무제한 이동.
+      public bool           VisitOnlyEmptyCell => false;
+      public bool           IsStop()
+      {
+         // 전체 맵 순회를 하도록 하자.
+         return false;
+      }
+
+
+      public Dictionary<(int x, int y), int> DistanceFromTarget { get; private set; } = new();
+
+
+      public int GetMoveCostFromTarget(int _x, int _y)
+      {
+        if (DistanceFromTarget.TryGetValue((_x, _y), out var distance))
+            return distance;
+
+        return -1;
+      }
+
+
+
+      public void Visit(PathAlgorithm.IFloodFillVisitor.VisitNode _node)
+      {
+         DistanceFromTarget.Add((_node.x, _node.y), _node.cost);
+      }
+
+      public void Reset()
+      {
+        TerrainMap = null;
+        Visitor    = null;
+        Position   = (0, 0);
+        DistanceFromTarget.Clear();
+      }
+    }
 
 
     class PositionVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
@@ -160,33 +164,38 @@ namespace Battle
 
 
       
-      public Result         BestResult        { get; set; } = new();
-      public List<PathNode> BestPath          { get; set; } = new();
+      public Result              BestResult            { get; set; } = new();
+      public Func<int, int, int> GetMoveCostFromTarget { get; set; } = null;
+      
       // public (int x, int y) BestPosition      { get; set; } = (0, 0);
       // public float          BestScore         { get; set; } = 0f;
 
       public void Reset()
       {
-        TerrainMap     = null;
-        Visitor        = null;
-        Position       = (0, 0);
-        MoveDistance   = 0;
+        TerrainMap            = null;
+        Visitor               = null;
+        Position              = (0, 0);
+        MoveDistance          = 0;
+        GetMoveCostFromTarget = null;
 
         // BestPosition   = (0, 0);
         // BestScore      = 0f;
-        BestPath.Clear();
         BestResult.Reset();
       }
 
-      public void Visit(int x, int y)
+      public void Visit(PathAlgorithm.IFloodFillVisitor.VisitNode _node)
       {  
          using var temp_result = ObjectPool<Result>.AcquireWrapper();       
 
          // 위치 셋팅.
-         temp_result.Value.SetPosition(x, y);
+         temp_result.Value.SetPosition(_node.x, _node.y);
+
+
+         var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;
+         var move_score = (move_cost >= 0 && MoveDistance > 0) ? 1f - (float)move_cost / MoveDistance : 0f;
 
          // 타겟과의 거리에 대한 점수 셋팅.
-         temp_result.Value.SetScore(Result.EnumScoreType.CloseToTarget, Result.CalculateScore_CloseToTarget(x, y, BestPath));
+         temp_result.Value.SetScore(Result.EnumScoreType.CloseToTarget, move_score);
 
          // 점수가 더 좋다면 교체.
          if (BestResult.CalculateScore() < temp_result.Value.CalculateScore())
@@ -266,7 +275,8 @@ namespace Battle
     bool Process_Closest_Enemy(IAIDataManager _owner)
     {
         using var list_path_nodes = ListPool<PathNode>.AcquireWrapper();
-        using var visitor         = ObjectPool<PositionVisitor>.AcquireWrapper();
+        using var visit_target    = ObjectPool<DistanceFromTargetVisitor>.AcquireWrapper();
+        using var visit_position  = ObjectPool<PositionVisitor>.AcquireWrapper();
 
         {          
           // 가장 가까운 적에게 최대한 가까운 위치로 이동한다. 
@@ -279,25 +289,32 @@ namespace Battle
 
 
           // 가장 가까운 적과 경로를 찾아봅시다.
-          var target_id = Find_Closest_Enemy(entity, list_path_nodes.Value);
-          if (target_id == 0)
+          var target = Find_Closest_Enemy(entity, list_path_nodes.Value);
+          if (target == null)
             return false;
 
+          // 타겟으로부터 각 셀들의 거리를 미리 계산해둡니다.
+          visit_target.Value.TerrainMap     = entity.PathNodeManager.TerrainMap;
+          visit_target.Value.Visitor        = entity;
+          visit_target.Value.Position       = target.Cell;
+          PathAlgorithm.FloodFill(visit_target.Value);
+
+
           // 해당 경로와 가장 가까운 위치를 찾아봅시다.
-          visitor.Value.TerrainMap     = entity.PathNodeManager.TerrainMap;
-          visitor.Value.Visitor        = entity;
-          visitor.Value.Position       = entity.Cell;
-          visitor.Value.MoveDistance   = entity.PathMoveRange;
-          visitor.Value.BestPath.AddRange(list_path_nodes.Value);
+          visit_position.Value.TerrainMap            = entity.PathNodeManager.TerrainMap;
+          visit_position.Value.Visitor               = entity;
+          visit_position.Value.Position              = entity.Cell;
+          visit_position.Value.MoveDistance          = entity.PathMoveRange;
+
+          // 타겟으로부터 각 셀들의 거리를 콜백으로 전달합니다.
+          visit_position.Value.GetMoveCostFromTarget = visit_target.Value.GetMoveCostFromTarget;
           
-          PathAlgorithm.FloodFill(visitor.Value);
+          // 타겟으로부터 가장 최적의 위치를 찾아봅시다.
+          PathAlgorithm.FloodFill(visit_position.Value);
 
           // 점수 셋팅.
-          entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
-          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visitor.Value.BestResult.CalculateScore());
-
-          // entity.BlackBoard.Score_Move.CopyFrom(visitor.Value.BestResult);
-          // entity.BlackBoard.SetBPValue(EnumEntityBlackBoard.AIScore_Move, visitor.Value.BestResult.CalculateScore());
+          entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visit_position.Value.BestResult);
+          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
         }
 
         return true;
@@ -305,12 +322,13 @@ namespace Battle
 
     
 
-    Int64 Find_Closest_Enemy(Entity _entity, List<PathNode> _path_nodes)
+    Entity Find_Closest_Enemy(Entity _entity, List<PathNode> _path_nodes)
     {
       // 가장 가까운 적을 찾아봅시다.
       if (_entity == null || _path_nodes == null)
-          return 0;
+          return null;
 
+        // 최대 100칸 이내의 적을 5칸씩 범위를 확장해가면서 찾습니다.
         const int RANGE_STEP   = 5;
         const int RANGE_MAX    = 100;
 
@@ -443,7 +461,8 @@ namespace Battle
             ++range_level;            
         }
 
-        return target_id;
+
+        return EntityManager.Instance.GetEntity(target_id);
     }
   
   

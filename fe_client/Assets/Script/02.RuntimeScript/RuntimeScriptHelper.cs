@@ -102,14 +102,15 @@ public static class RuntimeScriptHelper
         };        
     }
 
-    public static LuaTable ToLua(this DIALOGUE_PORTRAIT _dialogue_portrait)
-    {
-        var table = new LuaTable();
-        table.SetLuaValue("Name", _dialogue_portrait.Name);
-        table.SetLuaValue("PortraitAsset", _dialogue_portrait.PortraitAsset);
-        table.SetLuaValue("PortraitSprite", _dialogue_portrait.PortraitSprite);
-        return table;
-    }
+    // 다이얼로그를 Lua로 전달할 일은 없을듯?
+    // public static LuaTable ToLua(this DIALOGUE_PORTRAIT _dialogue_portrait)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("Name", _dialogue_portrait.Name);
+    //     table.SetLuaValue("PortraitAsset", _dialogue_portrait.PortraitAsset);
+    //     table.SetLuaValue("PortraitSprite", _dialogue_portrait.PortraitSprite);
+    //     return table;
+    // }
 
     public static void FromLua(LuaTable _table, out DIALOGUE_DATA _o)
     {
@@ -132,16 +133,17 @@ public static class RuntimeScriptHelper
             Dialogue = dialogue
         };
     }
-
-    public static LuaTable ToLua(this DIALOGUE_DATA _dialogue_data)
-    {
-        var table = new LuaTable();
-        table.SetLuaValue("IsActive", _dialogue_data.IsActive);
-        table.SetLuaValue("Position", (int)_dialogue_data.Position);
-        table.SetLuaValue("Dialogue", _dialogue_data.Dialogue);
-        table.SetLuaValue("Portrait", _dialogue_data.Portrait.ToLua());
-        return table;
-    }
+    
+    // 다이얼로그를 Lua로 전달할 일은 없을듯?
+    // public static LuaTable ToLua(this DIALOGUE_DATA _dialogue_data)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("IsActive", _dialogue_data.IsActive);
+    //     table.SetLuaValue("Position", (int)_dialogue_data.Position);
+    //     table.SetLuaValue("Dialogue", _dialogue_data.Dialogue);
+    //     table.SetLuaValue("Portrait", _dialogue_data.Portrait.ToLua());
+    //     return table;
+    // }
 
 
     public static void FromLua(LuaTable _table, out DIALOGUE_SEQUENCE _o)
@@ -152,7 +154,6 @@ public static class RuntimeScriptHelper
         return;
         }
         
-        var id             = _table.GetLuaValue<Int64>("ID");
         var close_dialogue = _table.GetLuaValue<bool>("CloseDialogue");
         var dialogue_data  = _table.GetLuaValue<LuaTable>("DialogueData");
 
@@ -171,28 +172,29 @@ public static class RuntimeScriptHelper
 
         _o = new DIALOGUE_SEQUENCE()
         {
-            ID            = id,
+            ID            = 0,
             CloseDialogue = close_dialogue,
             DialogueData  = dialogue_data_queue
         };
     }
 
-    public static LuaTable ToLua(this DIALOGUE_SEQUENCE _dialogue_sequence)
-    {
-        var table = new LuaTable();
-        table.SetLuaValue("ID", _dialogue_sequence.ID);
-        table.SetLuaValue("CloseDialogue", _dialogue_sequence.CloseDialogue);
+    // 다이얼로그를 Lua로 전달할 일은 없을듯?
+    // public static LuaTable ToLua(this DIALOGUE_SEQUENCE _dialogue_sequence)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("ID", _dialogue_sequence.ID);
+    //     table.SetLuaValue("CloseDialogue", _dialogue_sequence.CloseDialogue);
 
-        var dialogue_data = new LuaTable();
-        int index = 1;
-        foreach (var e in _dialogue_sequence.DialogueData)
-        {
-            dialogue_data[index++] = (e.ToLua());
-        }
+    //     var dialogue_data = new LuaTable();
+    //     int index = 1;
+    //     foreach (var e in _dialogue_sequence.DialogueData)
+    //     {
+    //         dialogue_data[index++] = (e.ToLua());
+    //     }
 
-        table.SetLuaValue("DialogueData", dialogue_data);
-        return table;
-    }
+    //     table.SetLuaValue("DialogueData", dialogue_data);
+    //     return table;
+    // }
 
 
 }

@@ -7,9 +7,11 @@ using Lua.Standard;
 using Lua.Unity;
 using Battle;
 using Cysharp.Threading.Tasks;
+using Sirenix.Utilities;
+using Sirenix.OdinInspector;
 #pragma warning disable CS1998 
 
-public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
+public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
 {
     private LuaState                     m_lua_state  = null;
 
@@ -17,9 +19,11 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
     // 상수 및 콜백만 Lua에 저장한다.
     private Dictionary<string, LuaTable> m_lua_tables = new ();
 
-    protected override void OnInitialize()
+
+
+    protected override void Init()
     {
-        base.OnInitialize();
+        base.Init();
 
         m_lua_state = LuaState.Create();
         m_lua_state.OpenStandardLibraries();
@@ -38,9 +42,11 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
         RegisterEnum<EnumUnitCommandType>();
         RegisterEnum<EnumTagType>();
         RegisterEnum<EnumTagAttributeType>();
-        RegisterEnum<EnumScenarioTrigger>();
-        RegisterEnum<EnumScenarioCondition>();
+        // RegisterEnum<EnumScenarioTrigger>();
+        // RegisterEnum<EnumScenarioCondition>();
         RegisterEnum<EnumCutsceneType>();
+
+        RegisterEnum<DIALOGUE_DATA.EnumPosition>();
 
         // constants
         SetLuaValue("Constants", "MAX_MAP_SIZE", Constants.MAX_MAP_SIZE);
@@ -53,23 +59,18 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
         // Load_Default_Script().GetAwaiter().GetResult();
     }
     
-    protected override void OnRelease(bool _is_shutdown)
-    {
-        base.OnRelease(_is_shutdown);
-
-
-        // if (_is_shutdown)
-        //     return;
-
-
-        if (m_lua_state != null)
-        {
-            m_lua_state.Dispose();
-            m_lua_state = null;
-        }
-
-        m_lua_tables.Clear();
-    }
+    // protected override void OnRelease(bool _is_shutdown)
+    // {
+    //     base.OnRelease(_is_shutdown);
+    //     // if (_is_shutdown)
+    //     //     return;
+    //     if (m_lua_state != null)
+    //     {
+    //         m_lua_state.Dispose();
+    //         m_lua_state = null;
+    //     }
+    //     m_lua_tables.Clear();
+    // }
 
 
     private LuaTable GetLuaTable(string _name)
@@ -111,8 +112,25 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
     void RegisterEnum<T>() where T : Enum
     {
-        var table_name = typeof(T).Name;
-        var table      = TryAddLuaTable(table_name);
+        var t = typeof(T);
+
+        
+        var fullname = t.FullName;
+
+        if (string.IsNullOrEmpty(t.Namespace) == false)
+        {
+          if (fullname.StartsWith(t.Namespace))
+              fullname = fullname.Substring(t.Namespace.Length + 1);
+        }
+
+        // + 기호는 생소하므로... _으로 바꾼다.
+        fullname = fullname.Replace('+', '_');
+
+        // Debug.Log($"RegisterEnum: {fullname}");
+
+
+        // var table_name = typeof(T).Name;
+        var table      = TryAddLuaTable(fullname);
         foreach (var value in Enum.GetValues(typeof(T)))
         {
             table.SetLuaValue(value.ToString(), (int)value);
@@ -122,118 +140,29 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
     void RegisterFunction()
     {
-        var is_registered = GetLuaValue<int>("RegisterFunction", "All");
-        if (is_registered == 1)
+        var is_done = GetLuaValue<int>("RegisterFunction", "IsDone");
+        if (is_done == 1)
         {
           Debug.Log("Tag 함수 이미 등록됨");
           return;
         }
-
 
         RegisterFunction_Entity();
         RegisterFunction_Tag();
         RegisterFunction_Cutscene();
 
 
-        SetLuaValue("RegisterFunction", "All", 1);
+        SetLuaValue("RegisterFunction", "IsDone", 1);
     }
 
-    void RegisterFunction_Entity()
-    {
-        SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
-        {
-            var entity_id = context.GetArgument<Int64>(0);
-            var entity = EntityManager.Instance.GetEntity(entity_id);
-            if (entity == null)
-              return context.Return(LuaValue.Nil, LuaValue.Nil);
-
-            return context.Return(entity.Cell.x, entity.Cell.y);
-        }));
-    }
-
-    void RegisterFunction_Tag()
-    {
-        // TagManager SetTag 함수 등록.
-        SetLuaValue("TagManager", "SetTag", new LuaFunction(async (context, ct) =>
-        {
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_DATA tag_data);
-            TagManager.Instance.SetTag(tag_data);
-            return context.Return();
-        }));
-    }
-
-    void RegisterFunction_Cutscene()
-    {
-        SetLuaValue("CutsceneBuilder", "RootBegin", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.RootBegin(context.GetArgument<string>(0));
-            return context.Return();
-        }));
-
-        SetLuaValue("CutsceneBuilder", "RootEnd", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.RootEnd();
-            return context.Return();
-        }));
-
-        SetLuaValue("CutsceneBuilder", "TrackBegin", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.TrackBegin();
-            return context.Return();
-        }));
-
-        SetLuaValue("CutsceneBuilder", "TrackEnd", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.TrackEnd();
-            return context.Return();
-        }));
-        
-
-        SetLuaValue("CutsceneBuilder", "AddCutscene_Dialogue", new LuaFunction(async (context, ct) =>
-        {
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out DIALOGUE_SEQUENCE dialogue_sequence);
-            CutsceneBuilder.AddCutscene_Dialogue(dialogue_sequence);
-            return context.Return();
-        }));
-
-        SetLuaValue("CutsceneBuilder", "AddCutscene_VFX_TileSelect", new LuaFunction(async (context, ct) =>
-        {
-            var vfx_index = context.GetArgument<int>(0);
-            var create    = context.GetArgument<bool>(1);
-            var pos_x     = context.GetArgument<int>(2);
-            var pos_y     = context.GetArgument<int>(3);
-            
-            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, create, (pos_x, pos_y));
-            return context.Return();
-        }));
 
 
-        SetLuaValue("CutsceneBuilder", "AddCutscene_Trigger", new LuaFunction(async (context, ct) =>
-        {
-            var trigger_id = context.GetArgument<int>(0);
-            var is_wait    = context.GetArgument<bool>(1);
-            CutsceneBuilder.AddCutscene_Trigger(trigger_id, is_wait);
-            return context.Return();
-        }));
-
-        SetLuaValue("CutsceneBuilder", "AddCutscene_Unit_Move", new LuaFunction(async (context, ct) =>
-        {
-            var unit_id   = context.GetArgument<Int64>(0);
-            var start_pos_x = context.GetArgument<int>(1);
-            var start_pos_y = context.GetArgument<int>(2);
-            var end_pos_x   = context.GetArgument<int>(3);
-            var end_pos_y   = context.GetArgument<int>(4);
-            CutsceneBuilder.AddCutscene_Unit_Move(unit_id, (start_pos_x, start_pos_y), (end_pos_x, end_pos_y));
-            return context.Return();
-        }));
-
-    }
 
     async UniTask Load_Default_Script()
     {
         // 기본 스크립트 로드 완료 여부 확인.
-        var is_loaded = GetLuaValue<int>("Load_Default_Script", "IsLoaded");
-        if (is_loaded == 1)
+        var is_done = GetLuaValue<int>("Load_Default_Script", "IsDone");
+        if (is_done == 1)
         {
           Debug.Log("기본 스크립트 이미 로드됨");
           return;
@@ -241,9 +170,11 @@ public class RuntimeScriptManager : SingletonMono<RuntimeScriptManager>
 
         await Load_Script("runtimescript/common");
         await Load_Script("runtimescript/tag");    
+        await Load_Script("runtimescript/cutscene");
+        await Load_Script("runtimescript/dialogue");
 
         // 기본 스크립트 로드 완료.
-        SetLuaValue("Load_Default_Script", "IsLoaded", 1);    
+        SetLuaValue("Load_Default_Script", "IsDone", 1);    
     }
 
     async UniTask Load_Script(string _asset_name)

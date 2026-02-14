@@ -13,10 +13,12 @@ using System.Threading;
 public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 {
    
-   private Dictionary<string, CutsceneSequence> m_repository       = new();
-   private Queue<string>                        m_queue_cutscene   = new();
-   private string                               m_playing_cutscene = string.Empty;
+   private Dictionary<string, CutsceneSequence> m_repository          = new();
+   private Queue<string>                        m_queue_cutscene      = new();
+   private string                               m_playing_cutscene    = string.Empty;
    private CancellationTokenSource              m_cancel_token_source = null;
+
+   public  BaseContainer                        Memory { get; private set; } = new();
 
 
    public bool IsPlayingCutscene 
@@ -49,8 +51,8 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
          PlayCutscene(cutscene_name).Forget();
       }
 
-      // 컷씬 재생중에는 전투시스템을 정지합시다.
-      BattleSystemManager.Instance.SetPause(BattleSystemPauseReason.Cutscene, IsPlayingCutscene);
+      // // 컷씬 재생중에는 전투시스템을 정지합시다.
+      // BattleSystemManager.Instance.SetPause(BattleSystemPauseReason.Cutscene, IsPlayingCutscene);
 
     }
 
@@ -66,6 +68,11 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       // 대기중인 컷씬 목록에 추가.
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
+
+    public void RequestPlayCutscene()
+    {}
+
+
     
     public void RegisterCutscene(string _cutscene_name, CutsceneSequence _cutscene)
     {

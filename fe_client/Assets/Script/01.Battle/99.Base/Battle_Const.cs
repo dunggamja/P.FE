@@ -20,7 +20,8 @@ namespace Battle
         public const string LAYER_FIXED_OBJECT = "FixedObject";
 
 
-        public const int    MAX_TERRAIN_COST   = 10;
+        // 갈수없는 지형인데 강제로 이동시켜야 할경우 사용하는 값(연출등)
+        public const int    PENALTY_TERRAIN_COST = 30;
 
 
 
