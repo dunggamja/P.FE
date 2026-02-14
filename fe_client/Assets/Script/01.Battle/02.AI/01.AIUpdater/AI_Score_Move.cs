@@ -191,8 +191,9 @@ namespace Battle
          temp_result.Value.SetPosition(_node.x, _node.y);
 
 
-         var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;
-         var move_score = (move_cost >= 0 && MoveDistance > 0) ? 1f - (float)move_cost / MoveDistance : 0f;
+         // 타겟과 가까울수록 높은 점수.
+         var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;         
+         var move_score = (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
 
          // 타겟과의 거리에 대한 점수 셋팅.
          temp_result.Value.SetScore(Result.EnumScoreType.CloseToTarget, move_score);

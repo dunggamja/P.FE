@@ -362,10 +362,9 @@ namespace Battle
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
 
-       // AI 타입.
-       AIType         = 200, // AI 타입.
-
-       Trigger        = 10000, // 트리거.
+      //  // AI 타입.
+      //  AIType         = 200, // AI 타입.
+      //  Trigger        = 10000, // 트리거.
 
 
     }
@@ -468,7 +467,7 @@ namespace Battle
        Side = 2, // 사이드 챕터 
     }
 
-    public enum EnumCutsceneTrigger
+    public enum EnumCutsceneRequestEvent
     {
        None = 0,
 

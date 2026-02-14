@@ -69,8 +69,9 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
 
-    public void RequestPlayCutscene()
-    {}
+    public void RequestPlayCutscene(CutsceneRequest _trigger)
+    {
+    }
 
 
     
