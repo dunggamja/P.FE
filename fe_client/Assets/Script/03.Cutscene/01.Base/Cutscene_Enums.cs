@@ -45,16 +45,16 @@ public enum EnumCutscenePlayEvent
 
     OnVerifyCondition  = 1, // 챕터 등장 조건 검사 시 실행할 스크립트. [kind]
 
-    OnChapterStart     = 11, // 챕터 시작 시 실행할 스크립트. (시나리오 연출 등) [kind]
-    OnChapterEnd       = 12, // 챕터 종료 시 실행할 스크립트. (시나리오 연출 등) [kind]
+    OnChapterStart     = 11, // 챕터 시작 시 실행할 스크립트. (시나리오 연출 등) []
+    OnChapterEnd       = 12, // 챕터 종료 시 실행할 스크립트. (시나리오 연출 등) []
 
-    OnMapSetting       = 21, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅) [kind]
+    OnMapSetting       = 21, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅) []
 
-    OnArrangementStart = 31, // 배치 시작 시 실행할 스크립트. [kind]
-    OnArrangementEnd   = 32, // 배치 종료 시 실행할 스크립트. [kind]
+    OnArrangementStart = 31, // 배치 시작 시 실행할 스크립트. []
+    OnArrangementEnd   = 32, // 배치 종료 시 실행할 스크립트. []
 
-    OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) [kind]
-    OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) [kind]
+    OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) []
+    OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) []
 
     OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트. [turn_number]
     OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number]

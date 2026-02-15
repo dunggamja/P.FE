@@ -132,7 +132,7 @@ using Battle;
 
 
 
-         //  ENTITY_FACTION, ENTITY_ALL 태그 일단 삭제 후 살아있으면 다시 셋팅합니다.
+         //  ENTITY_FACTION, ENTITY_ALL
          {
             using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
             TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.ENTITY_HIERARCHY, list_remove.Value);

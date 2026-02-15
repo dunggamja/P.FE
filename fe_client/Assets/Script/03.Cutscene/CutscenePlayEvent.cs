@@ -16,7 +16,10 @@ public struct CutscenePlayEvent : IEquatable<CutscenePlayEvent>
     public Int64 Value2;
 
 
-    public static CutscenePlayEvent Create(EnumCutscenePlayEvent _event, Int64 _value1 = 0, Int64 _value2 = 0)
+    public static CutscenePlayEvent Create(
+        EnumCutscenePlayEvent _event, 
+        Int64 _value1 = 0, 
+        Int64 _value2 = 0)
     {
         return new CutscenePlayEvent()
         {

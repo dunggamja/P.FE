@@ -94,6 +94,11 @@ public static class CutsceneBuilder
       Track = null;
    }
 
+
+
+
+
+#region cutscene_action
    // 컷씬 추가.
    public static void AddCutscene(Cutscene _cutscene)
    {
@@ -104,18 +109,6 @@ public static class CutsceneBuilder
       }
 
       Track.AddCutscene(_cutscene);
-   }
-
-   // 조건 추가.
-   public static void AddCondition(CutsceneCondition _condition)
-   {
-      if (Root == null)
-      {
-         Debug.LogError("CutsceneBuilder: Root not created.");
-         return;
-      }
-
-      Root.AddCondition(_condition);
    }
 
    // 대화 컷씬 추가.
@@ -141,7 +134,44 @@ public static class CutsceneBuilder
    {
       AddCutscene(new Cutscene_Unit_Move(Root, _unit_id, _start_position, _end_position));      
    }
+#endregion cutscene_action
 
+
+#region cutscene_condition
+   // 조건 추가.
+   public static void AddCondition(CutsceneCondition _condition)
+   {
+      if (Root == null)
+      {
+         Debug.LogError("CutsceneBuilder: Root not created.");
+         return;
+      }
+
+      Root.AddCondition(_condition);
+   }
+
+   public static void AddCondition_PlayOneShot()
+   {
+      AddCondition(new CutsceneCondition_PlayOneShot());
+   }
+#endregion cutscene_condition
+
+
+#region cutscene_play_event
+   public static void AddPlayEvent(CutscenePlayEvent _event)
+   {
+      if (Root == null)
+      {
+         Debug.LogError("CutsceneBuilder: Root not created.");
+         return;
+      }
+   }
+
+   public static void AddPlayEvent(EnumCutscenePlayEvent _event, Int64 _value1 = 0, Int64 _value2 = 0)
+   {
+      AddPlayEvent(CutscenePlayEvent.Create(_event, _value1, _value2));
+   }
+#endregion cutscene_play_event
 
 
 }

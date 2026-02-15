@@ -77,9 +77,9 @@ public class CutsceneTrack
 
 public class CutsceneSequence
 {
-   private List<CutscenePlayEvent> PlayEvents { get; set; } = new();
    private List<CutsceneCondition> Conditions { get; set; } = new();
    private List<CutsceneTrack>     Tracks     { get; set; } = new();       
+   public  List<CutscenePlayEvent>  PlayEvents { get; private set; } = new();
    public  BaseContainer           Memory     { get; private set; } = new();
 
    public  bool IsPlaying { get; private set; } = false; // 연출이 진행중인지 체크.
@@ -88,11 +88,15 @@ public class CutsceneSequence
    public async UniTask Play(CancellationToken _skip_token)
    {
       IsPlaying = true;
+
       Debug.Log($"CutsceneSequence: Play start");
-      // 병렬로 진행.
+
+      // 각 트랙들은 병렬로 진행.
       await UniTask.WhenAll(Tracks.Select(e => e.Play(_skip_token)));
+
       IsPlaying = false;
       HasPlayed = true;
+
       Debug.Log($"CutsceneSequence: Play complete");
    }
 

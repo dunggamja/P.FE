@@ -6,6 +6,7 @@ using Lua;
 using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System.Linq;
 
 // [EventReceiver(
 //    typeof(Dialogue_CompleteEvent)
@@ -14,7 +15,7 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 {
    
    private Dictionary<string, CutsceneSequence> m_repository          = new();
-   private Dictionary<EnumCutscenePlayEvent, HashSet<string>> 
+   private Dictionary<CutscenePlayEvent, HashSet<string>> 
                                                 m_repository_by_event = new();
    private Queue<string>                        m_queue_cutscene      = new();
    private string                               m_playing_cutscene    = string.Empty;
@@ -36,6 +37,14 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
          return false;
       }
    }
+
+    private CutsceneSequence GetCutscene(string _cutscene_name)
+    {
+      if (m_repository.TryGetValue(_cutscene_name, out var cutscene))
+         return cutscene;
+
+      return null;
+    }
 
    
 
@@ -76,8 +85,22 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
 
-    public void EventReceive(CutscenePlayEvent _trigger)
+    public void OnPlayEventReceive(CutscenePlayEvent _event)
     {
+        if (m_repository_by_event.TryGetValue(_event, out var list_cutscene) == false)
+            return;
+
+         foreach (var name in list_cutscene)
+         {
+            // var cutscene = GetCutscene(name);
+            // if (cutscene == null)
+            //    continue;
+            // if (cutscene.PlayEvents.Any(e => e == _event) == false)
+            //    continue;
+            
+            RequestPlayCutscene(name);
+         }
+
     }
 
 
@@ -90,7 +113,20 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       if (_cutscene == null)
          return;
 
+      // 컷씬 등록.
       m_repository[_cutscene_name] = _cutscene;
+
+      // 컷씬 이벤트 호출 등록.
+      foreach (var e in _cutscene.PlayEvents)
+      {
+         if (m_repository_by_event.TryGetValue(e, out var list_cutscene) == false)
+         {
+            list_cutscene = new HashSet<string>();
+            m_repository_by_event.Add(e, list_cutscene);
+         }
+
+         list_cutscene.Add(_cutscene_name);
+      }
     }
 
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Battle;
    
-
+//TODO: 이것은 다시 Battle로 옮기는게 나을거 같은...
 
 // namespace Battle
 // {
