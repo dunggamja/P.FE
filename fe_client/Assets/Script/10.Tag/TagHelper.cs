@@ -2,14 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Lua;
-using MagicaCloth2;
-using Shapes;
-using Sirenix.OdinInspector.Editor;
-using Sirenix.Utilities;
 using UnityEngine;
+using Battle;
 
-namespace Battle
-{
+// namespace Battle
+// {
    public struct TAG_INFO : IEquatable<TAG_INFO>
    {
       public  EnumTagType  TagType;
@@ -70,10 +67,7 @@ namespace Battle
 
          return false;
       }
-
     }
-
-
 
    public static class TagHelper
    {
@@ -167,9 +161,4 @@ namespace Battle
    }
 
 
-
-   
-
-
-
-}
+// }

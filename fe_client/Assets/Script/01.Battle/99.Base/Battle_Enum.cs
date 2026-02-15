@@ -326,14 +326,13 @@ namespace Battle
     }
 
 
-    public enum EnumCellPositionEvent
-    {
-        Enter,  // 입장
-        Exit,  // 퇴장
-        Move, // 이동
-
-        // MAX = 32,
-    }
+    // public enum EnumCellPositionEvent
+    // {
+    //     Enter,  // 입장
+    //     Exit,  // 퇴장
+    //     Move, // 이동
+    //     // MAX = 32,
+    // }
 
 
 
@@ -347,50 +346,6 @@ namespace Battle
         Item,     // 아이템
         Wait,     // 대기.
     }
-
-    public enum EnumTagType
-    {
-       None = 0, 
-
-       Entity         = 1,    // 엔티티.
-       Entity_Faction = 2,    // 진영.
-       Entity_All     = 3,    // 구분 없이 모든 엔티티.   // All > Faction > Entity, 이것은 일일이 문서화하기 힘드므로 시스템으로 처리한다.
-
-       Entity_Group   = 10,    // 따로 그룹 ID가 존재할 경우. // TODO: 맵셋팅. 시나리오를 통해 관리할것 같은데...
-
-       Position       = 100, // 위치 - 점.
-       Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
-
-
-      //  // AI 타입.
-      //  AIType         = 200, // AI 타입.
-      //  Trigger        = 10000, // 트리거.
-
-
-    }
-
-    public enum EnumTagAttributeType
-    {
-       None = 0,
-
-       TARGET_FOCUS     = 1, // 타겟팅 집중.
-       TARGET_IGNORE    = 2, // 타겟팅 제외.
-       TARGET_CONTAIN   = 3, // 타겟팅 포함.
-
-
-       POSITION_VISIT   = 11, // 위치 - 방문 가능       
-       POSITION_EXIT    = 12, // 위치 - 이탈 
-
-       TALK_COMMAND     = 21,  // 대화 명령 가능
-
-
-       AI_TYPE          = 31, // AI 타입 설정
-
-       ENTITY_HIERARCHY = 100, // 엔티티들 그룹핑을 위한 값.
-
-       FromScenario     = 999,
-    }
-
 
     // public enum EnumScenarioType
     // {
@@ -467,40 +422,6 @@ namespace Battle
        Side = 2, // 사이드 챕터 
     }
 
-    public enum EnumCutsceneRequestEvent
-    {
-       None = 0,
-
-       OnVerifyCondition  = 1, // 챕터 등장 조건 검사 시 실행할 스크립트.
-
-       OnChapterStart     = 11, // 챕터 시작 시 실행할 스크립트. (시나리오 연출 등)
-       OnChapterEnd       = 12, // 챕터 종료 시 실행할 스크립트. (시나리오 연출 등)
-
-       OnMapSetting       = 21, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅)
-
-       OnArrangementStart = 31, // 배치 시작 시 실행할 스크립트. 
-       OnArrangementEnd   = 32, // 배치 종료 시 실행할 스크립트. 
-
-       OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등)
-       OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등)
-
-       OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트.
-       OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트.
-
-       OnCombatStart      = 61, // 전투 시작 시 실행할 스크립트.
-       OnCombatEnd        = 62, // 전투 종료 시 실행할 스크립트.
-
-
-       OnTileSelect       = 71, // 타일 선택 시 실행할 스크립트.
-
-       OnCommandStart     = 81, // 명령 시작 시 실행할 스크립트.
-       OnCommandEnd       = 82, // 명령 종료 시 실행할 스크립트.
-       
-
-       OnEveryUpdate      = 999, // 매 프레임 트리거
-
-    }
-    
 
 
 }

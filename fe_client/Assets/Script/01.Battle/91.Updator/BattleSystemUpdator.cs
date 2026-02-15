@@ -55,7 +55,7 @@ namespace Battle
             // 전투 처음 시작이라면. 인트로 컷씬을 재생합니다.
             if (BattleSystemManager.Instance.BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleStarted) == false)
             {
-                CutsceneManager.Instance.RequestPlayCutscene(CutsceneRequest.Create(EnumCutsceneRequestEvent.OnBattleStart));
+                CutsceneManager.Instance.EventReceive(CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnBattleStart));
             }
 
 

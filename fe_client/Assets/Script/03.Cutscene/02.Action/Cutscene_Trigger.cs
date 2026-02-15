@@ -12,7 +12,7 @@ using R3;
 
 public class Cutscene_Trigger : Cutscene
 {
-    public override EnumCutsceneType Type => EnumCutsceneType.Trigger;
+    // public override EnumCutsceneType Type => EnumCutsceneType.Trigger;
 
     public int      TriggerID { get; private set; } = 0;
     public bool     IsWait    { get; private set; } = false;

@@ -14,6 +14,8 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 {
    
    private Dictionary<string, CutsceneSequence> m_repository          = new();
+   private Dictionary<EnumCutscenePlayEvent, HashSet<string>> 
+                                                m_repository_by_event = new();
    private Queue<string>                        m_queue_cutscene      = new();
    private string                               m_playing_cutscene    = string.Empty;
    private CancellationTokenSource              m_cancel_token_source = null;
@@ -63,13 +65,18 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       {
          // 이미 repository에 존재해야 한다.?
          Debug.LogError($"CutsceneManager: RequestPlayCutscene failed to find cutscene. {_cutscene_name}");
+         return;
       }
+
+      // 재생 조건 검사.
+      if (VerifyPlayCutscene(_cutscene_name) == false)
+         return;
 
       // 대기중인 컷씬 목록에 추가.
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
 
-    public void RequestPlayCutscene(CutsceneRequest _trigger)
+    public void EventReceive(CutscenePlayEvent _trigger)
     {
     }
 
@@ -95,6 +102,9 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       if (m_repository.TryGetValue(_cutscene_name, out var cutscene) == false)
          return;
 
+      if (cutscene.VerifyConditions() == false)
+         return;
+
 
       DisposeCancelToken();
       m_playing_cutscene    = _cutscene_name;
@@ -115,5 +125,16 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
          m_cancel_token_source.Dispose();
          m_cancel_token_source = null;
       }
+    }
+
+    private bool VerifyPlayCutscene(string _cutscene_name)
+    {
+      if (string.IsNullOrEmpty(_cutscene_name))
+         return false;
+
+      if (m_repository.TryGetValue(_cutscene_name, out var cutscene) == false)
+         return false;
+
+      return cutscene.VerifyConditions();
     }
 }

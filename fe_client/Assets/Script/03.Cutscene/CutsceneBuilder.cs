@@ -106,6 +106,18 @@ public static class CutsceneBuilder
       Track.AddCutscene(_cutscene);
    }
 
+   // 조건 추가.
+   public static void AddCondition(CutsceneCondition _condition)
+   {
+      if (Root == null)
+      {
+         Debug.LogError("CutsceneBuilder: Root not created.");
+         return;
+      }
+
+      Root.AddCondition(_condition);
+   }
+
    // 대화 컷씬 추가.
    public static void AddCutscene_Dialogue(DIALOGUE_SEQUENCE _dialogue_sequence)
    {

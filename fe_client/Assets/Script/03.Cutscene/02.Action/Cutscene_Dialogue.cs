@@ -134,7 +134,7 @@ public class DialoguePublisher
 // [EventReceiver(typeof(Dialogue_CompleteEvent))]
 public class Cutscene_Dialogue : Cutscene//, IEventReceiver
 {
-   public override EnumCutsceneType Type => EnumCutsceneType.Dialogue;
+   // public override EnumCutsceneType Type => EnumCutsceneType.Dialogue;
    private DIALOGUE_SEQUENCE m_dialogue_data = new ();
    private bool              m_dialogue_done = false;
 

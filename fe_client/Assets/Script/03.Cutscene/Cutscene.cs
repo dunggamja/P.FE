@@ -7,55 +7,20 @@ using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-// TODO: 컷씬 타입이 뭔가 굳이 필요하지 않은 것 같기도?
-public enum EnumCutsceneType
+public abstract class CutsceneCondition
 {
-    None      = 0,
-
-   //  Wait           = 1,   // 대기
-
-    Dialogue       = 10,  // 대화 연출
-
-
-    Unit_Move      = 20,  // 유닛 이동 연출. 
-
-    Unit_Active    = 21,  // 유닛 표시 On/Off.
-
-
-
-    VFX_TileSelect = 100,  // 타일 선택 커서 연출.
-
-    Trigger        = 1000, // 트리거 관련 동작.
+   public abstract bool Verify(CutsceneSequence _sequence);
 }
-
-
-public enum EnumCutsceneLocalMemory
-{
-    // 컷씬에서 표시할 타일 선택 커서 VFX ID.
-    VFX_Tile_Select_Begin = 100,
-    VFX_Tile_Select_End   = 110, 
-}
-
-
-public enum EnumCutsceneGlobalMemory
-{
-   Trigger_Begin = 1,
-   Trigger_End   = 1_000_000,
-}
-
 
 public abstract class Cutscene
 {
-   public abstract EnumCutsceneType Type     { get; }
+   // public abstract EnumCutsceneType Type     { get; }
    protected       CutsceneSequence Sequence { get; private set; }
 
    protected Cutscene(CutsceneSequence _sequence)
    {
       Sequence = _sequence;
    }
-
-
-
 
    public async UniTask Execute(CancellationToken _skip_token)
    {
@@ -106,11 +71,16 @@ public class CutsceneTrack
    }
 }
 
+
+
+
+
 public class CutsceneSequence
 {
-   private List<CutsceneTrack> Tracks     { get; set; }         = new();
-
-   public  BaseContainer       Memory { get; private set; } = new();
+   private List<CutscenePlayEvent> PlayEvents { get; set; } = new();
+   private List<CutsceneCondition> Conditions { get; set; } = new();
+   private List<CutsceneTrack>     Tracks     { get; set; } = new();       
+   public  BaseContainer           Memory     { get; private set; } = new();
 
    public  bool IsPlaying { get; private set; } = false; // 연출이 진행중인지 체크.
    public  bool HasPlayed { get; private set; } = false; // 연출이 한번 실행되었는지 체크.
@@ -133,6 +103,34 @@ public class CutsceneSequence
          return;
 
       Tracks.Add(_track);
+   }
+
+   public void AddCondition(CutsceneCondition _condition)
+   {
+      if (_condition == null)
+         return;
+
+      Conditions.Add(_condition);
+   }
+   public void AddPlayEvent(CutscenePlayEvent _event)
+   {
+      PlayEvents.Add(_event);
+   }
+
+   public bool VerifyConditions()
+   {
+      // 재생중인 컷씬은... 당연히 막아야겠지?
+      if (IsPlaying)
+         return false;
+
+      // 조건 검사.
+      foreach (var condition in Conditions)
+      {
+         if (!condition.Verify(this))
+            return false;
+      }
+
+      return true;
    }
 }
 

@@ -11,7 +11,7 @@ using R3;
 
 public class Cutscene_Unit_Move : Cutscene
 {
-    public override EnumCutsceneType Type => EnumCutsceneType.Unit_Move;
+    // public override EnumCutsceneType Type => EnumCutsceneType.Unit_Move;
 
     public Int64          UnitID             { get; private set; } = 0;
     public (int x, int y) StartPosition      { get; private set; } = (0, 0);

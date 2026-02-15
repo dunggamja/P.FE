@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Battle;
    
 
 
-namespace Battle
-{
+// namespace Battle
+// {
    public struct TAG_DATA : IEquatable<TAG_DATA>
    {
       public TAG_INFO              TagInfo      { get; private set; }
@@ -51,6 +51,7 @@ namespace Battle
 
    public class TagManager : Singleton<TagManager>
    {
+      // 계층이 10개 이상 누적될 일이 없다고 가정하고 10개로 설정.
       const int MAX_RECURSIVE_DEPTH = 10;
       
       Dictionary<TAG_INFO, Dictionary<EnumTagAttributeType, HashSet<TAG_DATA>>> m_repository          = new();
@@ -361,6 +362,6 @@ namespace Battle
 
    }
 
-}
+// }
 
 

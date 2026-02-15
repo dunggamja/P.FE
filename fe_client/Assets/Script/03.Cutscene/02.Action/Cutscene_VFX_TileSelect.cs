@@ -11,7 +11,7 @@ using R3;
 
 public class Cutscene_VFX_TileSelect : Cutscene
 {
-   public override EnumCutsceneType Type => EnumCutsceneType.VFX_TileSelect;
+//    public override EnumCutsceneType Type => EnumCutsceneType.VFX_TileSelect;
    public bool           Create { get; private set; } = false;
    public int            Index   { get; private set; } = 0;
    public (int x, int y) Position { get; private set; } = (0, 0);
