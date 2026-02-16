@@ -26,9 +26,10 @@ class InputParam_Result : IPoolObject
     }
 }
 
-
-public class InputHandler_Grid_Select : InputHandler
+[EventReceiver(typeof(Grid_Cursor_Event))]
+public class InputHandler_Grid_Select : InputHandler, IEventReceiver
 {   
+
 
     public override EnumInputHandlerType HandlerType => EnumInputHandlerType.Grid_Select;
 
@@ -42,13 +43,18 @@ public class InputHandler_Grid_Select : InputHandler
     Int64                   m_vfx_select  = 0;
 
 
+
+
     
 
 
     public InputHandler_Grid_Select(InputHandlerContext _context) 
         : base(_context)
     {
+        
     }
+
+    
 
 
 
@@ -56,6 +62,9 @@ public class InputHandler_Grid_Select : InputHandler
     protected override void OnStart()
     {
         CreateTileSelectVFX();
+
+        EventDispatchManager.Instance.AttachReceiver(this);
+        Debug.Log("InputHandler_Grid_Select OnStart");
     }
 
     protected override bool OnUpdate()
@@ -102,6 +111,9 @@ public class InputHandler_Grid_Select : InputHandler
         CommandEntityID           = 0;
         // SelectTile_X      = 0;
         // SelectTile_Y      = 0;
+
+        EventDispatchManager.Instance.DetachReceiver(this);
+        Debug.Log("InputHandler_Grid_Select OnFinish");
     }
 
     protected override void OnPause()
@@ -524,6 +536,25 @@ public class InputHandler_Grid_Select : InputHandler
     void ReleaseTileSelectVFX()
     {
         VFXHelper.ReleaseTileSelectVFX(ref m_vfx_select);
+    }
+
+
+    public void OnReceiveEvent(IEventParam _event)
+    {
+        switch (_event)
+        {
+            case Grid_Cursor_Event grid_cursor_event:
+                OnReceiveEvent_GridCursorEvent(grid_cursor_event);
+                break;
+        }
+    }
+
+    void OnReceiveEvent_GridCursorEvent(Grid_Cursor_Event _event)
+    {
+        if (_event == null)
+            return;
+
+        MoveSelcectCursor(_event.Cell.x, _event.Cell.y);        
     }
 
 

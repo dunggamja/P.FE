@@ -115,7 +115,7 @@ public partial class RuntimeScriptManager
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out List<UNIT_MOVE_DATA> unit_move_data);
             var update_cell_position = context.GetArgument<bool>(1);
-            
+
             CutsceneBuilder.AddCutscene_Unit_Move(unit_move_data, update_cell_position);
             return context.Return();
         }));
@@ -125,6 +125,15 @@ public partial class RuntimeScriptManager
         {
             var delay_time = context.GetArgument<float>(0);
             CutsceneBuilder.AddCutscene_Delay(delay_time);
+            return context.Return();
+        }));
+
+        // 그리드 커서 컷씬 추가.
+        SetLuaValue("CutsceneBuilder", "Grid_Cursor", new LuaFunction(async (context, ct) =>
+        {
+            var pos_x = context.GetArgument<int>(0);
+            var pos_y = context.GetArgument<int>(1);
+            CutsceneBuilder.AddCutscene_Grid_Cursor((pos_x, pos_y));
             return context.Return();
         }));
 

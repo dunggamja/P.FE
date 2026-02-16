@@ -148,6 +148,12 @@ public static class CutsceneBuilder
       AddCutscene(new Cutscene_Delay(Root, _wait_time));      
    }
 
+   // 그리드 커서 컷씬 추가.
+   public static void AddCutscene_Grid_Cursor((int x, int y) _position)
+   {
+      AddCutscene(new Cutscene_Grid_Cursor(Root, _position));      
+   }
+
 #endregion cutscene_action
 
 

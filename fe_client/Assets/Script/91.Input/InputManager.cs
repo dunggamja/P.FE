@@ -24,9 +24,6 @@ public partial class InputManager : SingletonMono<InputManager>, IEventReceiver
     // Stack<InputHandler>                            m_stack_input_handler    = new();
     [SerializeField]
     PlayerInput         m_player_input          = null;
-
-    // InputHandlerContext m_input_handler_context = new();
-
     InputHandler        m_input_handler         = null;     
 
     public InputHandler FocusInputHandler
@@ -50,16 +47,13 @@ public partial class InputManager : SingletonMono<InputManager>, IEventReceiver
     {
         get
         {
-            
-            var    input_handler  = FocusInputHandler;
-            return input_handler?.HandlerType ?? EnumInputHandlerType.None;
+            return FocusInputHandler?.HandlerType ?? EnumInputHandlerType.None;
         }
     }
 
     InputHandlerContext GetFocusInputHandlerContext()
     {
-        var input_handler = FocusInputHandler;
-        return input_handler?.Context ?? null;
+        return FocusInputHandler?.Context ?? null;
     }
 
 
@@ -97,13 +91,12 @@ public partial class InputManager : SingletonMono<InputManager>, IEventReceiver
     {
         base.OnLoop(); 
 
-        // UI 입력 처리 중인 경우 입력 처리 종료.
+        // UI 메뉴 관련 input handler 가 필요한지 체크.
         if (GUIManager.Instance.HasInputFocusGUI() 
         &&  FocusInputHandlerType != EnumInputHandlerType.UI_Menu)
         {
-            // TODO: Child 입력 처리 중인 경우 입력 처리 종료?
-            var ui_handler = new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create());
-            FocusInputHandler?.SetChildHandler(ui_handler);
+            FocusInputHandler?.SetChildHandler(
+                new InputHandler_UI_Menu(InputHandler_UI_Menu.HandlerContext.Create()));
         }
 
 

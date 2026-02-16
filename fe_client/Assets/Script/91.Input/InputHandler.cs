@@ -8,11 +8,11 @@ public enum EnumInputHandlerType
 {
     None,
 
-    Grid_Select,    // Ÿ�� ����
+    Grid_Select,    // 그리드 선택.
     // Grid_Command,   // ���ֿ��� ������ ������ (�̵�,����,��ų ��) 
 
-    UI_Menu,        // UI �޴�
-    UI_Command,     // ���� �ൿ �޴� (�̵�, ����, ��ų)
+    UI_Menu,        // UI 메뉴
+    UI_Command,     // UI 명령 <- 이게 뭐지?
     
 }
 

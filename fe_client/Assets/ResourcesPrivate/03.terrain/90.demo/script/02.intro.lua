@@ -24,7 +24,7 @@ function demo_script_02.Run()
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE({dialogue_intro}));
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
 
-         -- 타일 선택 및 카메라 포커스 (index:0, 성 위치.)
+         -- 시작 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
          CutsceneBuilder.VFX_TileSelect_On(0, 3, 24);         
          CutsceneBuilder.Delay(1.0);
 
@@ -53,20 +53,17 @@ function demo_script_02.Run()
 [[나도 따라갈거임
 너 먼저 가서 기다리고 있으면 됨]]),
 
-               dialogue.BOTTOM_HIDE(),
 
-               
-               dialogue.CENTER_SHOW(portrait_jade, 
+               dialogue.BOTTOM_SHOW(portrait_jade, 
 [[안 가고 같이 싸울까 말까]]),
-               dialogue.CENTER_SHOW(portrait_jade, 
+               dialogue.BOTTOM_SHOW(portrait_jade, 
 [[음...]]),
-               dialogue.BOTTOM_SHOW(portrait_garan, 
+               dialogue.CENTER_SHOW(portrait_garan, 
 [[꾸물꾸물대지말고 빨리가자
 배 떠나겠다.]]),
                
                dialogue.BOTTOM_HIDE(),
                dialogue.TOP_HIDE(),
-               dialogue.CENTER_HIDE(),
 
                dialogue.CENTER_SHOW(portrait_garan, 
 [[자 빨리 짐 싸고 가자
@@ -95,6 +92,29 @@ function demo_script_02.Run()
              cutscene.UNIT_MOVE_DATA(4, 3, 24, pos_4_x, pos_4_y),
              cutscene.UNIT_MOVE_DATA(5, 3, 24, pos_5_x, pos_5_y)},
             false);
+
+         -- 1초 대기.
+         CutsceneBuilder.Delay(1.0);
+
+
+         -- 탈출 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
+         CutsceneBuilder.VFX_TileSelect_On(0, 16, 2);         
+         CutsceneBuilder.Delay(1.0);
+
+         -- 여기가 탈출 위치임.
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.CENTER_SHOW(portrait_empty, "여기가 탈출 위치임.")
+            }
+         ));
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
+
+         -- 타일 선택 해제. (index:0)
+         CutsceneBuilder.Delay(1.0);
+         CutsceneBuilder.VFX_TileSelect_Off(0);  
+
+         -- 시작 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
+         CutsceneBuilder.Grid_Cursor(3, 22);             
 
 
       CutsceneBuilder.TrackEnd();
