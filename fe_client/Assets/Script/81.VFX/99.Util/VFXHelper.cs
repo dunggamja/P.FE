@@ -25,7 +25,7 @@ public static class VFXHelper
         _vfx_id = 0;
     }
 
-    public static void UpdateTileSelectVFX(Int64 _vfx_id, (int x, int y) _cell)
+    public static void UpdateTileSelectVFX(Int64 _vfx_id, (int x, int y) _cell, bool _camera_focus = true)
     {
         // 커서 VFX 위치 갱신.
         EventDispatchManager.Instance.UpdateEvent(
@@ -34,11 +34,15 @@ public static class VFXHelper
             .SetPosition(_cell.CellToPosition())                
         ); 
 
-        // 커서 위치 이벤트 발생. (카메라 갱신)
-        EventDispatchManager.Instance.UpdateEvent(
-            ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
-            .Set(_cell)
-        ); 
+
+        if (_camera_focus)
+        {
+            // 커서 위치 이벤트 발생. (카메라 갱신)
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Cursor_PositionEvent>.Acquire()
+                .Set(_cell)
+            ); 
+        }
     }
 
 }

@@ -98,29 +98,22 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
 
     protected override void OnLoop()
     {
-        base.OnLoop(); 
+         base.OnLoop(); 
 
-        // 대기중인 대화가 있을 경우 재생.
-        if (DialogueState != EnumDialogueState.Playing)
-        {
+         // 대기중인 대화가 있을 경우 재생.
+         if (DialogueState != EnumDialogueState.Playing)
+         {
             // 대화 재생.
             if (m_dialogue_data.HasDialogueData())
             {
                PlayDialogue(m_dialogue_data.DequeueDialogueData());
             }
-        }
-
-         // 대화 완료 시 종료.
-         if (m_dialogue_data.CloseDialogue)
-         {
-            // 종료 메시지.
-            CompleteDialogue();
-
-            // UI 종료.
-            CloseSelf();
+            // 대화 완료.
+            else           
+            {
+               CompleteDialogue();
+            }
          }
-
-        
     }
 
     protected override void OnClose()
@@ -156,10 +149,10 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
        if (index < 0 || index >= m_dialogue.Length)
           return;
 
-
-
        
        DialogueState = EnumDialogueState.Playing;
+
+      //  Debug.Log($"PlayDialogue: {_data.Portrait.Name}, {_data.Dialogue}");
                   
 
        if (_data.IsActive)
@@ -170,6 +163,9 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
        else
        {
          m_dialogue[index].SetActive(false);
+
+         // OFF는 자동으로 다음 대화로 넘긴다.
+         CheckAndCompleteDialogue();
        }
     }
 
@@ -180,24 +176,48 @@ public class GUIPage_Dialogue : GUIPage, IEventReceiver
          return;
 
 
-      var scroll_result = false;
+      // 각 대화창 스크롤 처리.
       foreach (var e in m_dialogue)
       {
-         scroll_result |= e.ScrollToNextDialogue();
+         e.ScrollToNextDialogue();
       }
 
-      // 재생중인 대화를 끝까지 확인했다.
-      if (scroll_result == false)
-      {
-         CompleteDialogue();
-      }
+      // 대화 완료 처리.
+      CheckAndCompleteDialogue();
     }
 
-    void CompleteDialogue()
+    bool CheckAndCompleteDialogue()
     {
-      DialogueState = EnumDialogueState.Complete;
+      if (DialogueState != EnumDialogueState.Playing)
+         return false;
 
-      DialoguePublisher.PublishComplete(m_dialogue_data.ID);
+      var has_next_dialogue = false;
+      foreach (var e in m_dialogue)
+      {
+         if (e.HasNextDialogue())
+            has_next_dialogue = true;
+      }
+
+      if (has_next_dialogue == false)
+      {
+         DialogueState = EnumDialogueState.Complete;
+         return true;
+      }
+
+      return false;
+    }
+
+
+    void CompleteDialogue()
+    {      
+      var dialogue_id = m_dialogue_data.ID;
+      if (dialogue_id <= 0)
+         return;
+
+      m_dialogue_data.Reset();
+      
+      DialoguePublisher.PublishComplete(dialogue_id);
+
     }
 
 }

@@ -124,6 +124,12 @@ public static class CutsceneBuilder
       AddCutscene(new Cutscene_VFX_TileSelect(Root, _vfx_index, _create, _position));      
    }
 
+   // 카메라 포커스 컷씬 추가.
+   public static void AddCutscene_Camera_Position((int x, int y) _position)
+   {
+      AddCutscene(new Cutscene_Camera_Position(Root, _position));      
+   }
+
    // 트리거 컷씬 추가.
    public static void AddCutscene_Trigger(int _trigger_id, bool _is_wait)
    {
@@ -131,10 +137,17 @@ public static class CutsceneBuilder
    }
 
    // 유닛 이동 컷씬 추가.
-   public static void AddCutscene_Unit_Move(Int64 _unit_id, (int x, int y) _start_position, (int x, int y) _end_position)
+   public static void AddCutscene_Unit_Move(List<UNIT_MOVE_DATA> _unit_move_data, bool _update_cell_position)
    {
-      AddCutscene(new Cutscene_Unit_Move(Root, _unit_id, _start_position, _end_position));      
+      AddCutscene(new Cutscene_Unit_Move(Root, _unit_move_data, _update_cell_position));      
    }
+
+   // Delay 컷씬 추가.
+   public static void AddCutscene_Delay(float _wait_time)
+   {
+      AddCutscene(new Cutscene_Delay(Root, _wait_time));      
+   }
+
 #endregion cutscene_action
 
 

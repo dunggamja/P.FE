@@ -47,13 +47,7 @@ public static class RuntimeScriptHelper
         _o            = TAG_INFO.Create((EnumTagType)tag_type, tag_value);
     }
 
-    public static LuaTable ToLua(this TAG_INFO _tag_info)
-    {
-        var table = new LuaTable();
-        table.SetLuaValue("TagType", (int)_tag_info.TagType);
-        table.SetLuaValue("TagValue", (Int64)_tag_info.TagValue);
-        return table;
-    }
+
 
     public static void FromLua(LuaTable _table, out TAG_DATA _o)
     {
@@ -71,16 +65,7 @@ public static class RuntimeScriptHelper
         FromLua(lua_tag, out TAG_INFO tag_info);
         FromLua(lua_target, out TAG_INFO target_info);
         _o = TAG_DATA.Create(tag_info, (EnumTagAttributeType)lua_attr, target_info);        
-    }
-
-    public static LuaTable ToLua(this TAG_DATA _tag_data)
-    {
-        var table = new LuaTable();
-        table.SetLuaValue("TagInfo", _tag_data.TagInfo.ToLua());
-        table.SetLuaValue("Attribute", (int)_tag_data.Attribute);
-        table.SetLuaValue("TargetInfo", _tag_data.TargetInfo.ToLua());
-        return table;
-    } 
+    }    
 
     public static void FromLua(LuaTable _table, out DIALOGUE_PORTRAIT _o)
     {
@@ -102,15 +87,6 @@ public static class RuntimeScriptHelper
         };        
     }
 
-    // 다이얼로그를 Lua로 전달할 일은 없을듯?
-    // public static LuaTable ToLua(this DIALOGUE_PORTRAIT _dialogue_portrait)
-    // {
-    //     var table = new LuaTable();
-    //     table.SetLuaValue("Name", _dialogue_portrait.Name);
-    //     table.SetLuaValue("PortraitAsset", _dialogue_portrait.PortraitAsset);
-    //     table.SetLuaValue("PortraitSprite", _dialogue_portrait.PortraitSprite);
-    //     return table;
-    // }
 
     public static void FromLua(LuaTable _table, out DIALOGUE_DATA _o)
     {
@@ -132,18 +108,8 @@ public static class RuntimeScriptHelper
             Portrait = portrait,
             Dialogue = dialogue
         };
-    }
-    
-    // 다이얼로그를 Lua로 전달할 일은 없을듯?
-    // public static LuaTable ToLua(this DIALOGUE_DATA _dialogue_data)
-    // {
-    //     var table = new LuaTable();
-    //     table.SetLuaValue("IsActive", _dialogue_data.IsActive);
-    //     table.SetLuaValue("Position", (int)_dialogue_data.Position);
-    //     table.SetLuaValue("Dialogue", _dialogue_data.Dialogue);
-    //     table.SetLuaValue("Portrait", _dialogue_data.Portrait.ToLua());
-    //     return table;
-    // }
+    }   
+
 
 
     public static void FromLua(LuaTable _table, out DIALOGUE_SEQUENCE _o)
@@ -181,6 +147,85 @@ public static class RuntimeScriptHelper
             DialogueData  = dialogue_data_queue
         };
     }
+
+    public static void FromLua(LuaTable _table, out UNIT_MOVE_DATA _o)
+    {
+        if (_table == null)
+        {
+        _o = default(UNIT_MOVE_DATA);
+        return;
+        }
+
+        var unit_id     = _table.GetLuaValue<Int64>("UnitID");
+        var start_pos_x = _table.GetLuaValue<int>("StartPosX");
+        var start_pos_y = _table.GetLuaValue<int>("StartPosY");
+        var end_pos_x   = _table.GetLuaValue<int>("EndPosX");
+        var end_pos_y   = _table.GetLuaValue<int>("EndPosY");
+
+        _o = new UNIT_MOVE_DATA()
+        {
+            UnitID        = unit_id,
+            StartPosition = (start_pos_x, start_pos_y),
+            EndPosition   = (end_pos_x, end_pos_y)
+        };
+    }
+
+    public static void FromLua(LuaTable _table, out List<UNIT_MOVE_DATA> _o)
+    {
+        _o = new List<UNIT_MOVE_DATA>();
+
+        if (_table != null)
+        {
+            foreach (var e in _table.GetArraySpan())
+            {
+                if (e.TryRead<LuaTable>(out var table) == false)
+                        continue;
+                    
+                FromLua(table, out UNIT_MOVE_DATA data);             
+                _o.Add(data);
+            }
+        }
+    }
+
+
+    // public static LuaTable ToLua(this TAG_INFO _tag_info)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("TagType", (int)_tag_info.TagType);
+    //     table.SetLuaValue("TagValue", (Int64)_tag_info.TagValue);
+    //     return table;
+    // }
+
+    // public static LuaTable ToLua(this TAG_DATA _tag_data)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("TagInfo", _tag_data.TagInfo.ToLua());
+    //     table.SetLuaValue("Attribute", (int)_tag_data.Attribute);
+    //     table.SetLuaValue("TargetInfo", _tag_data.TargetInfo.ToLua());
+    //     return table;
+    // } 
+
+
+    // 다이얼로그 캐릭터 정보를 Lua로 전달할 일은 없을듯?
+    // public static LuaTable ToLua(this DIALOGUE_PORTRAIT _dialogue_portrait)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("Name", _dialogue_portrait.Name);
+    //     table.SetLuaValue("PortraitAsset", _dialogue_portrait.PortraitAsset);
+    //     table.SetLuaValue("PortraitSprite", _dialogue_portrait.PortraitSprite);
+    //     return table;
+    // }
+    
+    // 다이얼로그를 Lua로 전달할 일은 없을듯?
+    // public static LuaTable ToLua(this DIALOGUE_DATA _dialogue_data)
+    // {
+    //     var table = new LuaTable();
+    //     table.SetLuaValue("IsActive", _dialogue_data.IsActive);
+    //     table.SetLuaValue("Position", (int)_dialogue_data.Position);
+    //     table.SetLuaValue("Dialogue", _dialogue_data.Dialogue);
+    //     table.SetLuaValue("Portrait", _dialogue_data.Portrait.ToLua());
+    //     return table;
+    // }
 
     // 다이얼로그를 Lua로 전달할 일은 없을듯?
     // public static LuaTable ToLua(this DIALOGUE_SEQUENCE _dialogue_sequence)

@@ -71,15 +71,32 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
-        // 타일 선택 컷씬 추가.
-        SetLuaValue("CutsceneBuilder", "VFX_TileSelect", new LuaFunction(async (context, ct) =>
+        // 타일 선택 및 카메라 포커스.
+        SetLuaValue("CutsceneBuilder", "VFX_TileSelect_On", new LuaFunction(async (context, ct) =>
         {
             var vfx_index = context.GetArgument<int>(0);
-            var create    = context.GetArgument<bool>(1);
-            var pos_x     = context.GetArgument<int>(2);
-            var pos_y     = context.GetArgument<int>(3);
+            var pos_x     = context.GetArgument<int>(1);
+            var pos_y     = context.GetArgument<int>(2);
             
-            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, create, (pos_x, pos_y));
+            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, true, (pos_x, pos_y));
+            return context.Return();
+        }));
+
+        // 타일 선택 OFF
+        SetLuaValue("CutsceneBuilder", "VFX_TileSelect_Off", new LuaFunction(async (context, ct) =>
+        {
+            var vfx_index = context.GetArgument<int>(0);
+            
+            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, false, default);
+            return context.Return();
+        }));
+
+        // 카메라 포커스 컷씬 추가.
+        SetLuaValue("CutsceneBuilder", "Camera_Position", new LuaFunction(async (context, ct) =>
+        {
+            var pos_x = context.GetArgument<int>(0);
+            var pos_y = context.GetArgument<int>(1);
+            CutsceneBuilder.AddCutscene_Camera_Position((pos_x, pos_y));
             return context.Return();
         }));
 
@@ -96,14 +113,22 @@ public partial class RuntimeScriptManager
         // 유닛 이동 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Unit_Move", new LuaFunction(async (context, ct) =>
         {
-            var unit_id     = context.GetArgument<Int64>(0);
-            var start_pos_x = context.GetArgument<int>(1);
-            var start_pos_y = context.GetArgument<int>(2);
-            var end_pos_x   = context.GetArgument<int>(3);
-            var end_pos_y   = context.GetArgument<int>(4);
-            CutsceneBuilder.AddCutscene_Unit_Move(unit_id, (start_pos_x, start_pos_y), (end_pos_x, end_pos_y));
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out List<UNIT_MOVE_DATA> unit_move_data);
+            var update_cell_position = context.GetArgument<bool>(1);
+            
+            CutsceneBuilder.AddCutscene_Unit_Move(unit_move_data, update_cell_position);
             return context.Return();
         }));
+
+        // Delay 컷씬 추가.
+        SetLuaValue("CutsceneBuilder", "Delay", new LuaFunction(async (context, ct) =>
+        {
+            var delay_time = context.GetArgument<float>(0);
+            CutsceneBuilder.AddCutscene_Delay(delay_time);
+            return context.Return();
+        }));
+
+
 #endregion cutscene_action
 
 #region cutscene_condition

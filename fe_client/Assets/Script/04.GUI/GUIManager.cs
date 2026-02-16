@@ -206,15 +206,15 @@ public class GUIManager : SingletonMono<GUIManager>
     public void CloseUI(string name)
     {
         // UI 이름별 목록에서 찾기.
-        var list_gui_id = HashSetPool<Int64>.Acquire();
+        using var list_temp = HashSetPool<Int64>.AcquireWrapper();
 
-        if (m_active_gui_by_name.TryGetValue(name, out list_gui_id))
+        if (m_active_gui_by_name.TryGetValue(name, out var list_gui))
         {
-            foreach (var e in list_gui_id)
-                CloseUI(e);
+            list_temp.Value.UnionWith(list_gui);
         }   
 
-        HashSetPool<Int64>.Return(list_gui_id);
+        foreach (var e in list_temp.Value)
+            CloseUI(e);
     }
 
     public void CloseUI(Int64 _id)
@@ -316,7 +316,7 @@ public class GUIManager : SingletonMono<GUIManager>
         return open_state;
     }
 
-    EnumGUIOpenState IsOpenUI(Int64 _id)
+    public EnumGUIOpenState IsOpenUI(Int64 _id)
     {
         // UI 객체가 null이면 Opening 상태.
         if (m_active_gui.TryGetValue(_id, out var gui_object))

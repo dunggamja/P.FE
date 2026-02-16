@@ -106,6 +106,7 @@ public class DialoguePublisher
 {
    private static Subject<DIALOGUE_SEQUENCE> s_dialogue_sequence    = new();
    private static Subject<Int64>             s_complete_dialogue_id = new();
+   private static bool                       s_ui_is_open           = false;
 
    public static void PublishDialogueSequence(DIALOGUE_SEQUENCE _dialogue_sequence)
    {
@@ -127,6 +128,30 @@ public class DialoguePublisher
    {
       return s_complete_dialogue_id.Where(e => e == _id).Take(1);
    }
+
+   public static async UniTask TryOpenUI(CancellationToken _skip_token)
+   {
+      if (s_ui_is_open == false)
+      {
+         s_ui_is_open = true;
+
+         var gui_id = GUIManager.Instance.OpenUI(GUIPage_Dialogue.PARAM.Create());
+         await UniTask.WaitUntil(() 
+            => 
+            GUIManager.Instance.IsOpenUI(gui_id) == GUIManager.EnumGUIOpenState.Open, 
+            cancellationToken: _skip_token)
+            .Timeout(TimeSpan.FromSeconds(30));  
+      }
+   }
+
+   public static void CloseUI()
+   {
+      if (s_ui_is_open)
+      {
+         s_ui_is_open = false;
+         GUIManager.Instance.CloseUI(GUIPage_Dialogue.PARAM.Create().GUIName);
+      }
+   }
 }
 
 
@@ -135,7 +160,7 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
 {
    // public override EnumCutsceneType Type => EnumCutsceneType.Dialogue;
    private DIALOGUE_SEQUENCE m_dialogue_data = new ();
-   private bool              m_dialogue_done = false;
+   // private bool              m_dialogue_done = false;
 
    public Cutscene_Dialogue(CutsceneSequence _sequence, DIALOGUE_SEQUENCE _dialogue_data) : base(_sequence)
    {
@@ -149,19 +174,8 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
 
    protected override async UniTask OnUpdate(CancellationToken _skip_token)
    {
-      var gui_name      = GUIPage_Dialogue.PARAM.Create().GUIName;
-      var gui_not_exist = GUIManager.Instance.IsOpenUI(gui_name) == GUIManager.EnumGUIOpenState.None;           
-      if (gui_not_exist) 
-         GUIManager.Instance.OpenUI(GUIPage_Dialogue.PARAM.Create());
-
-
-      // GUI가 열릴때까지 대기. (최대 30초 간 대기 후 에러 처리.)
-      await UniTask.WaitUntil(() 
-         => 
-         GUIManager.Instance.IsOpenUI(gui_name) == GUIManager.EnumGUIOpenState.Open, 
-         cancellationToken: _skip_token)
-         .Timeout(TimeSpan.FromSeconds(30));      
-
+      // GUI 열기 & 대기.
+      await DialoguePublisher.TryOpenUI(_skip_token);
 
       // 대화 완료 이벤트 구독.
       var observer = DialoguePublisher.GetObserverComplete(m_dialogue_data.ID);
@@ -171,6 +185,12 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
     
       // 대화 완료 이벤트 대기.
       await observer.WaitAsync(_skip_token);
+
+      // 대화 UI 종료 처리.
+      if (m_dialogue_data.CloseDialogue)
+      {
+         DialoguePublisher.CloseUI();
+      }
 
       // Debug.Log($"Cutscene_Dialogue: Dialogue complete {m_dialogue_data.ID}");
 
