@@ -52,13 +52,6 @@ namespace Battle
             if (IsInitialized == false)
                 return;
 
-            // 전투 처음 시작이라면. 인트로 컷씬을 재생합니다.
-            if (BattleSystemManager.Instance.BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleStarted) == false)
-            {
-                CutsceneManager.Instance.OnPlayEventReceive(CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnBattleStart));
-            }
-
-
             BattleSystemManager.Instance.Update();
         }
 
@@ -118,6 +111,11 @@ namespace Battle
 
 
             IsInitialized = true;
+
+
+            // 전투 처음 시작이라면. 인트로 컷씬을 재생합니다.
+            // if (BattleSystemManager.Instance.BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleStarted) == false)
+            CutsceneManager.Instance.OnPlayEventReceive(CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnBattleStart));            
         }
 
 

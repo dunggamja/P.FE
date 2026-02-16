@@ -100,7 +100,7 @@ public static class CutsceneBuilder
 
 #region cutscene_action
    // 컷씬 추가.
-   public static void AddCutscene(Cutscene _cutscene)
+   private static void AddCutscene(Cutscene _cutscene)
    {
       if (Track == null)
       {
@@ -114,6 +114,7 @@ public static class CutsceneBuilder
    // 대화 컷씬 추가.
    public static void AddCutscene_Dialogue(DIALOGUE_SEQUENCE _dialogue_sequence)
    {
+      // _dialogue_sequence.SetID(Util.GenerateID());
       AddCutscene(new Cutscene_Dialogue(Root, _dialogue_sequence));      
    }
 
@@ -139,7 +140,7 @@ public static class CutsceneBuilder
 
 #region cutscene_condition
    // 조건 추가.
-   public static void AddCondition(CutsceneCondition _condition)
+   private static void AddCondition(CutsceneCondition _condition)
    {
       if (Root == null)
       {
@@ -158,13 +159,15 @@ public static class CutsceneBuilder
 
 
 #region cutscene_play_event
-   public static void AddPlayEvent(CutscenePlayEvent _event)
+   private static void AddPlayEvent(CutscenePlayEvent _event)
    {
       if (Root == null)
       {
          Debug.LogError("CutsceneBuilder: Root not created.");
          return;
       }
+
+      Root.AddPlayEvent(_event);
    }
 
    public static void AddPlayEvent(EnumCutscenePlayEvent _event, Int64 _value1 = 0, Int64 _value2 = 0)

@@ -45,7 +45,7 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         // RegisterEnum<EnumScenarioTrigger>();
         // RegisterEnum<EnumScenarioCondition>();
         // RegisterEnum<EnumCutsceneType>();
-
+        RegisterEnum<EnumCutscenePlayEvent>();
         RegisterEnum<DIALOGUE_DATA.EnumPosition>();
 
         // constants

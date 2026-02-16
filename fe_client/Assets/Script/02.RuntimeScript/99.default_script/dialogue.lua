@@ -17,9 +17,16 @@ function dialogue.DATA(is_active, position, portrait, dialogue)
    }
 end
 
-function dialogue.SEQUENCE(close_dialogue, dialogue_data)
+function dialogue.SEQUENCE(dialogue_data)
    return {
-      CloseDialogue = close_dialogue,
+      CloseDialogue = false,
       DialogueData  = dialogue_data
+   }
+end
+
+function dialogue.SEQUENCE_END()
+   return {
+      CloseDialogue = true,
+      DialogueData  = nil
    }
 end

@@ -62,6 +62,8 @@ public partial class RuntimeScriptManager
         }));
         
 
+#region cutscene_action
+        // 대화 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Dialogue", new LuaFunction(async (context, ct) =>
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out DIALOGUE_SEQUENCE dialogue_sequence);
@@ -69,6 +71,7 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
+        // 타일 선택 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "VFX_TileSelect", new LuaFunction(async (context, ct) =>
         {
             var vfx_index = context.GetArgument<int>(0);
@@ -81,6 +84,7 @@ public partial class RuntimeScriptManager
         }));
 
 
+        // 트리거 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Trigger", new LuaFunction(async (context, ct) =>
         {
             var trigger_id = context.GetArgument<int>(0);
@@ -89,6 +93,7 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
+        // 유닛 이동 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Unit_Move", new LuaFunction(async (context, ct) =>
         {
             var unit_id     = context.GetArgument<Int64>(0);
@@ -99,6 +104,27 @@ public partial class RuntimeScriptManager
             CutsceneBuilder.AddCutscene_Unit_Move(unit_id, (start_pos_x, start_pos_y), (end_pos_x, end_pos_y));
             return context.Return();
         }));
+#endregion cutscene_action
 
+#region cutscene_condition
+        // 한번만 실행되도록 조건 추가.
+        SetLuaValue("CutsceneBuilder", "Condition_PlayOneShot", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.AddCondition_PlayOneShot();
+            return context.Return();
+        }));
+#endregion cutscene_condition
+
+#region cutscene_play_event
+        // 컷씬 이벤트 추가.
+        SetLuaValue("CutsceneBuilder", "PlayEvent", new LuaFunction(async (context, ct) =>
+        {
+            var event_type = context.GetArgument<int>(0);
+            var value1     = context.GetArgument<Int64>(1);
+            var value2     = context.GetArgument<Int64>(2);
+            CutsceneBuilder.AddPlayEvent((EnumCutscenePlayEvent)event_type, value1, value2);
+            return context.Return();
+        }));
+#endregion cutscene_play_event
     }
 }

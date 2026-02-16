@@ -40,7 +40,7 @@ namespace Battle
             var new_value = m_faction_zoc[_faction].GetCellData(_x, _y) + 1;
             m_faction_zoc[_faction].SetCellData(_x, _y, new_value);
 
-            Debug.Log($"IncreaseZOC: f:{_faction}, pos:{_x}, {_y}, count:{new_value}");
+            // Debug.Log($"IncreaseZOC: f:{_faction}, pos:{_x}, {_y}, count:{new_value}");
         }
 
         public void DecreaseZOC(int _faction, int _x, int _y)
@@ -57,7 +57,7 @@ namespace Battle
             var new_value = m_faction_zoc[_faction].GetCellData(_x, _y) - 1;
             m_faction_zoc[_faction].SetCellData(_x, _y, new_value);
 
-            Debug.Log($"DecreaseZOC: f:{_faction}, pos:{_x}, {_y}, count:{new_value}");
+            // Debug.Log($"DecreaseZOC: f:{_faction}, pos:{_x}, {_y}, count:{new_value}");
         }
 
         public bool IsBlockedZOC(int _x, int _y, Func<int, bool> _func_ignore_zoc)

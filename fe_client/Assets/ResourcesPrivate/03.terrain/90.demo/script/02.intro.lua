@@ -12,16 +12,22 @@ function demo_script_02.Run()
 
 
    CutsceneBuilder.RootBegin("Intro");
-      CutsceneBuilder.TrackBegin();
-         CutsceneBuilder.VFX_TileSelect(0, true, 3, 24);
-         
-         dialogue.DATA(true, DIALOGUE_DATA_EnumPosition.Center, portrait_empty, "서장");
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnBattleStart, 0, 0);
+      CutsceneBuilder.Condition_PlayOneShot();
 
-      -- CutsceneBuilder.AddCutscene_Dialogue(new DIALOGUE_SEQUENCE(1, true, {
-      --    new DIALOGUE_DATA(true, "Top", "John Doe", "Hello, World!"),
-      --    new DIALOGUE_DATA(true, "Center", "Jane Doe", "Hello, World!2"),
-      --    new DIALOGUE_DATA(true, "Bottom", "Doey Doe", "Hello, World!3"),
-      -- }));
+      CutsceneBuilder.TrackBegin();
+         -- 타일 선택 
+         CutsceneBuilder.VFX_TileSelect(0, true, 3, 24);         
+
+         -- 대화 연출
+         local dialogue_intro = dialogue.DATA(true, DIALOGUE_DATA_EnumPosition.Center, portrait_empty, "서장");
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE({dialogue_intro}));
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
+
+         -- 타일 선택 해제.
+         CutsceneBuilder.VFX_TileSelect(0, false, 0, 0);  
+
+
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();  
 end

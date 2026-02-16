@@ -37,10 +37,9 @@ public struct DIALOGUE_SEQUENCE
 
    public void SetID(Int64 _id)
    {
-      // 입력된 ID가 없으면 자동생성.
-      if (_id == 0)
-          _id = Util.GenerateID();
-
+      // // 입력된 ID가 없으면 자동생성.
+      // if (_id == 0)
+      //     _id = Util.GenerateID();
       ID = _id;
    }
 
@@ -173,7 +172,7 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
       // 대화 완료 이벤트 대기.
       await observer.WaitAsync(_skip_token);
 
-      Debug.Log($"Cutscene_Dialogue: Dialogue complete {m_dialogue_data.ID}");
+      // Debug.Log($"Cutscene_Dialogue: Dialogue complete {m_dialogue_data.ID}");
 
    }
 

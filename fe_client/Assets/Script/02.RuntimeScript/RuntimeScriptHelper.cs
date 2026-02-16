@@ -160,19 +160,23 @@ public static class RuntimeScriptHelper
 
         Queue<DIALOGUE_DATA> dialogue_data_queue = new();
 
-        foreach( var e in dialogue_data.GetArraySpan())
+        if (dialogue_data != null)
         {
-            if (e.TryRead<LuaTable>(out var table) == false)
-                continue;
-            
-            FromLua(table, out DIALOGUE_DATA data);
-            dialogue_data_queue.Enqueue(data);
+            foreach( var e in dialogue_data.GetArraySpan())
+            {
+                if (e.TryRead<LuaTable>(out var table) == false)
+                    continue;
+                
+                FromLua(table, out DIALOGUE_DATA data);
+                dialogue_data_queue.Enqueue(data);
+            }
         }
+
 
 
         _o = new DIALOGUE_SEQUENCE()
         {
-            ID            = 0,
+            ID            = Util.GenerateID(),
             CloseDialogue = close_dialogue,
             DialogueData  = dialogue_data_queue
         };
