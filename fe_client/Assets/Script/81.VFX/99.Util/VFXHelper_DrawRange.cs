@@ -92,21 +92,21 @@ namespace Battle.MoveRange
                   if ((DrawFlag & (int)EnumDrawFlag.AttackRange) != 0)
                   {
                     if (weapon_range_min <= distance && distance <= weapon_range_max)
-                        Visit_Weapon.Add((_node.x, _node.y));
+                        Visit_Weapon.Add((pos_x, pos_y));
                   }
 
                   // 지팡이 사거리.
                   if ((DrawFlag & (int)EnumDrawFlag.WandRange) != 0)
                   {
                     if (wand_range_min <= distance && distance <= wand_range_max)
-                        Visit_Wand.Add((_node.x, _node.y));
+                        Visit_Wand.Add((pos_x, pos_y));
                   }
 
                   // 교환 사거리.
                   if ((DrawFlag & (int)EnumDrawFlag.ExchangeRange) != 0)
                   {
                     if (exchange_range_min <= distance && distance <= exchange_range_max)
-                        Visit_Exchange.Add((_node.x, _node.y));
+                        Visit_Exchange.Add((pos_x, pos_y));
                   }
               }
           }

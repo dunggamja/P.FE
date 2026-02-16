@@ -416,28 +416,32 @@ public static partial class PathAlgorithm
         if (_visitor == null)
             return;
 
-        var open_list_move    = HashSetPool<(int x, int y, int move_cost)>.Acquire();
-        var close_list_move   = HashSetPool<(int x, int y, int move_cost)>.Acquire();
+            
+        using var open_list_move    = DictionaryPool<(int x, int y), int>.AcquireWrapper();
+        using var close_list_move   = HashSetPool<(int x, int y)>.AcquireWrapper();
 
-        open_list_move.Add((_visitor.Position.x, _visitor.Position.y, 0));
+        open_list_move.Value.Add((_visitor.Position.x, _visitor.Position.y), 0);
         // Debug.Log($"FloodFill, Start, x:{_position.x}, y:{_position.y}");
 
-        while(open_list_move.Count > 0)
+        while(open_list_move.Value.Count > 0)
         {
             // 중단 조건 체크.
             if (_visitor.IsStop())
                 break;
 
             // movecost 최소값 찾기.            
-            var item = open_list_move.First();            
-            foreach(var e in open_list_move)
+            var item = open_list_move.Value.First();            
+            foreach(var e in open_list_move.Value)
             {
-                if (e.move_cost < item.move_cost) 
+                if (e.Value < item.Value) 
                     item = e;
             }            
 
-            // #1. 시작 위치 체크. 
-            var is_start_position = (item.x == _visitor.Position.x && item.y == _visitor.Position.y);
+            var open_pos  = item.Key;
+            var open_cost = item.Value;
+
+            // #1. 시작 위치 체크.  
+            var is_start_position = (open_pos.x == _visitor.Position.x && open_pos.y == _visitor.Position.y);
 
             // 점유 가능한지 체크.
             var check_zoc = (_visitor.VisitOnlyEmptyCell) ? EnumCheckZOC.Occupy : EnumCheckZOC.PassThrough;
@@ -446,7 +450,7 @@ public static partial class PathAlgorithm
             var enable_visit  = Verify_Movecost(
                 _visitor.TerrainMap,
                 _visitor.Visitor, 
-                (item.x, item.y), 
+                open_pos, 
                 check_zoc)
                 .result;
 
@@ -454,58 +458,67 @@ public static partial class PathAlgorithm
             var call_visit = (is_start_position) || enable_visit;                                    
             if (call_visit)
             {
-                _visitor.Visit(new IFloodFillVisitor.VisitNode(item.x, item.y, item.move_cost));                
+                _visitor.Visit(new IFloodFillVisitor.VisitNode(open_pos.x, open_pos.y, open_cost));                
             }
 
             // open/close list 추가.
-            open_list_move.Remove(item);
-            close_list_move.Add((item.x, item.y, 0));
+            open_list_move.Value.Remove(open_pos);
+            close_list_move.Value.Add(open_pos);
             // Debug.Log($"FloodFill, CloseList Add, x:{item.x}, y:{item.y}");
 
-            // 이동 가능한 좌표 찾기. (FloodFill)
-            for(int i = -1; i <= 1; ++i)
+            Span<(int x, int y)> move_list = stackalloc (int x, int y)[] 
             {
-                for(int k = -1; k <= 1; ++k)
+                (-1, 0), (1, 0), (0, -1), (0, 1)
+            };
+
+            // 이동 가능한 좌표 찾기. (FloodFill)
+            foreach(var e in move_list)
+            {
+                var x = open_pos.x + e.x;
+                var y = open_pos.y + e.y;                    
+
+                // 이미 방문한 좌표인지 체크.
+                if (close_list_move.Value.Contains((x, y)))
+                    continue;
+
+                // 이미 open list에 존재하는지 체크.
+                if (open_list_move.Value.ContainsKey((x, y)))
+                    continue;
+
+                // 맵 바운더리 체크.
+                if (_visitor.TerrainMap.IsInBound(x, y) == false)
+                    continue;
+
+                // // 1칸 이상 이동하는지 체크. 
+                // if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
+                //     continue;
+                // Debug.Log($"FloodFill, x:{x}, y:{y}");
+
+                // 이동 가능한지 체크.
+                (var moveable, var move_cost) = Verify_Movecost(
+                    _visitor.TerrainMap,
+                    _visitor.Visitor, 
+                    (x, y),   
+                    _check_zoc: EnumCheckZOC.PassThrough);
+
+
+                // 이동 가능한지 체크.
+                if (!moveable)
+                    continue;
+
+                // 이동 비용 체크.
+                var total_cost = open_cost + move_cost;
+                if (total_cost > _visitor.MoveDistance)
                 {
-                    var x = item.x + i;
-                    var y = item.y + k;                    
-
-                    // 이미 방문한 좌표인지 체크.
-                    if (close_list_move.Contains((x, y, 0)))
-                        continue;
-
-                    // 1칸 이상 이동하는지 체크. 
-                    if (1 < PathAlgorithm.Distance(item.x, item.y, x, y))
-                        continue;
-
-                    // Debug.Log($"FloodFill, x:{x}, y:{y}");
-
-                    // 이동 가능한지 체크.
-                    (var moveable, var move_cost) = Verify_Movecost(
-                        _visitor.TerrainMap,
-                        _visitor.Visitor, 
-                        (x, y), 
-                        _check_zoc: EnumCheckZOC.PassThrough);
-
-
-                    if (!moveable)
-                        continue;
-
-                    // 이동 가능한지 체크.
-                    var total_cost = item.move_cost + move_cost;
-                    if (total_cost > _visitor.MoveDistance)
-                    {
-                        continue;
-                    }
-
-                    // open_list 추가.
-                    open_list_move.Add((x, y, total_cost));
+                    continue;
                 }
+
+                // open list에 추가.
+                open_list_move.Value.Add((x, y), total_cost);
+
+                // Debug.Log($"FloodFill, OpenList Add, x:{x}, y:{y}, total_cost:{total_cost}");
             }   
         }
-
-        HashSetPool<(int x, int y, int move_cost)>.Return( open_list_move);
-        HashSetPool<(int x, int y, int move_cost)>.Return( close_list_move);
         // Debug.Log($"FloodFill, Complete, x:{_visitor.Position.x}, y:{_visitor.Position.y}");            
     }
 
