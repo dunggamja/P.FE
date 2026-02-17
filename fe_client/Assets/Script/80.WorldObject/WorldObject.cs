@@ -70,4 +70,12 @@ public class WorldObject : MonoBehaviour
         var time_rate      = Mathf.Clamp01((Time.time - m_position_time) / INTERPOLATION_INTERVAL);
         transform.position = Vector3.Lerp(m_position_prev, m_position, time_rate);
     }    
+
+    public void SetShow(bool _show)
+    {
+        if (m_mesh_root == null)
+            return;
+
+        m_mesh_root.gameObject.SetActive(_show);
+    }
 }

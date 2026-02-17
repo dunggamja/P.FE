@@ -117,13 +117,35 @@ public partial class RuntimeScriptManager
         }));
 
 
-        // 트리거 컷씬 추가.
-        SetLuaValue("CutsceneBuilder", "Trigger", new LuaFunction(async (context, ct) =>
+        // 글로벌 트리거 SET
+        SetLuaValue("CutsceneBuilder", "GlobalTriggerSet", new LuaFunction(async (context, ct) =>
         {
             var trigger_id = context.GetArgument<int>(0);
-            var is_wait    = context.GetArgument<bool>(1);
-            var is_local   = context.GetArgument<bool>(2);
-            CutsceneBuilder.AddCutscene_Trigger(trigger_id, is_wait, is_local);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, _is_set: true, _is_local: false);
+            return context.Return();
+        }));
+
+        // 로컬 트리거 SET
+        SetLuaValue("CutsceneBuilder", "LocalTriggerSet", new LuaFunction(async (context, ct) =>
+        {
+            var trigger_id = context.GetArgument<int>(0);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, _is_set: true, _is_local: true);
+            return context.Return();
+        }));
+
+        // 글로벌 트리거 WAIT
+        SetLuaValue("CutsceneBuilder", "GlobalTriggerWait", new LuaFunction(async (context, ct) =>
+        {
+            var trigger_id = context.GetArgument<int>(0);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, _is_set: false, _is_local: false);
+            return context.Return();
+        }));
+
+        // 로컬 트리거 WAIT
+        SetLuaValue("CutsceneBuilder", "LocalTriggerWait", new LuaFunction(async (context, ct) =>
+        {
+            var trigger_id = context.GetArgument<int>(0);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, _is_set: false, _is_local: true);
             return context.Return();
         }));
 
@@ -134,6 +156,17 @@ public partial class RuntimeScriptManager
             var update_cell_position = context.GetArgument<bool>(1);
 
             CutsceneBuilder.AddCutscene_Unit_Move(unit_move_data, update_cell_position);
+            return context.Return();
+        }));
+
+        // 유닛 표시 On/Off 추가.
+        SetLuaValue("CutsceneBuilder", "Unit_Show", new LuaFunction(async (context, ct) =>
+        {
+            var table = context.GetArgument<LuaTable>(0);            
+            var show  = context.GetArgument<bool>(1);
+
+            RuntimeScriptHelper.FromLua(table, out List<Int64> list_unit_id);
+            CutsceneBuilder.AddCutscene_Unit_Show(list_unit_id, show);
             return context.Return();
         }));
 

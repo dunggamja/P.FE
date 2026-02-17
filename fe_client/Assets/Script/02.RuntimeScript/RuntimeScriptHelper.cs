@@ -187,6 +187,19 @@ public static class RuntimeScriptHelper
         }
     }
 
+    public static void FromLua(LuaTable _table, out List<Int64> _o)
+    {
+        _o = new List<Int64>();
+        if (_table != null)
+        {
+            foreach (var e in _table.GetArraySpan())
+            {
+                if (e.TryRead<Int64>(out var unit_id))
+                    _o.Add(unit_id);
+            }
+        }
+    }
+
 
     // public static LuaTable ToLua(this TAG_INFO _tag_info)
     // {

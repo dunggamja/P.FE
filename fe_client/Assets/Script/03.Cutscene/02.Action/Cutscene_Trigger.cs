@@ -11,7 +11,7 @@ using R3;
 public class Cutscene_LocalTrigger : Cutscene
 {
     public int  TriggerID { get; private set; } = 0;
-    public bool IsWait    { get; private set; } = false;    
+    public bool IsSet     { get; private set; } = false;    
     
     protected int BlackBoardKey
     {
@@ -32,7 +32,7 @@ public class Cutscene_LocalTrigger : Cutscene
     public Cutscene_LocalTrigger(CutsceneSequence _sequence, int _trigger_id, bool _is_wait) : base(_sequence)
     {
         TriggerID = _trigger_id;
-        IsWait    = _is_wait;
+        IsSet     = _is_wait;
     }
 
     protected override void OnEnter()
@@ -42,15 +42,15 @@ public class Cutscene_LocalTrigger : Cutscene
     
     protected override async UniTask OnUpdate(CancellationToken _skip_token)
     {
-        if (IsWait)
-        {
-            // 트리거가 실행될때까지 대기.
-            await UniTask.WaitUntil(() => Sequence.Memory.HasValue(BlackBoardKey), cancellationToken: _skip_token);
-        }
-        else
+        if (IsSet)
         {
             // 트리거 셋팅
             Sequence.Memory.SetValue(BlackBoardKey, true);
+        }
+        else
+        {
+            // 트리거가 실행될때까지 대기.
+            await UniTask.WaitUntil(() => Sequence.Memory.HasValue(BlackBoardKey), cancellationToken: _skip_token);
         }  
     }
 
@@ -65,7 +65,7 @@ public class Cutscene_Trigger : Cutscene
     // public override EnumCutsceneType Type => EnumCutsceneType.Trigger;
 
     public int      TriggerID { get; private set; } = 0;
-    public bool     IsWait    { get; private set; } = false;    
+    public bool     IsSet     { get; private set; } = false;    
 
     protected int BlackBoardKey
     {
@@ -86,7 +86,7 @@ public class Cutscene_Trigger : Cutscene
     public Cutscene_Trigger(CutsceneSequence _sequence, int _trigger_id, bool _is_wait) : base(_sequence)
     {
         TriggerID = _trigger_id;
-        IsWait    = _is_wait;
+        IsSet     = _is_wait;
     }
 
 
@@ -97,15 +97,15 @@ public class Cutscene_Trigger : Cutscene
     }
     protected override async UniTask OnUpdate(CancellationToken _skip_token)
     {
-        if (IsWait)
-        {
-            // 트리거가 실행될때까지 대기.
-            await UniTask.WaitUntil(() => CutsceneManager.Instance.Memory.HasValue(BlackBoardKey), cancellationToken: _skip_token);
-        }
-        else
+        if (IsSet)
         {
             // 트리거 실행.
             CutsceneManager.Instance.Memory.SetValue(BlackBoardKey, true);
+        }
+        else
+        {
+            // 트리거가 실행될때까지 대기.
+            await UniTask.WaitUntil(() => CutsceneManager.Instance.Memory.HasValue(BlackBoardKey), cancellationToken: _skip_token);
         }        
     }
 

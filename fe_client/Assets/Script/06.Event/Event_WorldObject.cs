@@ -5,6 +5,32 @@ using UnityEngine;
 
 // namespace Battle
 // {
+
+    public class WorldObject_ShowEvent : IEventParam
+    {
+        public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+        public Int64 ID   { get; private set; } = 0;
+        public bool  Show { get; private set; } = false;        
+
+        public WorldObject_ShowEvent Set(Int64 _id, bool _show)
+        {
+            ID   = _id;
+            Show = _show;
+            return this;
+        }
+        
+        public void Reset()
+        {
+            ID   = 0;
+            Show = false;
+        }
+
+        public void Release()
+        {
+            ObjectPool<WorldObject_ShowEvent>.Return(this);
+        }
+    }   
+
     public class WorldObject_PositionEvent : IEventParam
     {
         public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;

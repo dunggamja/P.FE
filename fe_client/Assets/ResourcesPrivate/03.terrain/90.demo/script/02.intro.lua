@@ -13,15 +13,39 @@ function demo_script_02.Run()
    local portrait_garan = dialogue.PORTRAIT("Garan", "", "");
 
 
+   -- 유닛들 원래 좌표 받아옴.
+   local pos_1_x, pos_1_y = EntityManager.GetPosition(1);
+   local pos_2_x, pos_2_y = EntityManager.GetPosition(2);
+   local pos_3_x, pos_3_y = EntityManager.GetPosition(3);
+   local pos_4_x, pos_4_y = EntityManager.GetPosition(4);
+   local pos_5_x, pos_5_y = EntityManager.GetPosition(5);
+
 
    CutsceneBuilder.RootBegin("Intro");
       -- 전투 시작시 실행.
       CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnBattleStart, 0, 0);
       -- 1번만 실행.
       CutsceneBuilder.Condition_PlayOneShot();
-      
-      -- 트랙 시작.
+
+      -- 트랙 0 
       CutsceneBuilder.TrackBegin();
+         -- 유닛 표시 OFF, 
+         CutsceneBuilder.Unit_Show({1, 2, 3, 4, 5}, false);
+         -- 유닛들 3,24 위치로 이동시켜 놓기.
+         CutsceneBuilder.Unit_Move(
+            {cutscene.UNIT_MOVE_DATA(1, 3, 24, 3, 24),
+             cutscene.UNIT_MOVE_DATA(2, 3, 24, 3, 24),
+             cutscene.UNIT_MOVE_DATA(3, 3, 24, 3, 24),
+             cutscene.UNIT_MOVE_DATA(4, 3, 24, 3, 24),
+             cutscene.UNIT_MOVE_DATA(5, 3, 24, 3, 24)},
+            false);
+         -- 로컬 트리거 1번 셋팅. 
+         CutsceneBuilder.LocalTriggerSet(1);
+      CutsceneBuilder.TrackEnd();
+
+      -- 트랙 1 : 시작.
+      CutsceneBuilder.TrackBegin();
+
          -- 대화 연출
          local dialogue_intro = dialogue.CENTER_SHOW(portrait_empty, "서장-demo test");
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE({dialogue_intro}));
@@ -80,21 +104,20 @@ function demo_script_02.Run()
          CutsceneBuilder.VFX_TileSelect_Off(0);  
 
 
+         -- 로컬 트리거 1번 대기.
+         CutsceneBuilder.LocalTriggerWait(1);
+
+         -- 유닛들 표시 ON.
+         CutsceneBuilder.Unit_Show({1, 2, 3, 4, 5}, true);
+
          -- 유닛들 이동 연출. 
-         -- 유닛들 원래 좌표 받아옴.
-         local pos_1_x, pos_1_y = EntityManager.GetPosition(1);
-         local pos_2_x, pos_2_y = EntityManager.GetPosition(2);
-         local pos_3_x, pos_3_y = EntityManager.GetPosition(3);
-         local pos_4_x, pos_4_y = EntityManager.GetPosition(4);
-         local pos_5_x, pos_5_y = EntityManager.GetPosition(5);
-         
          CutsceneBuilder.Unit_Move(
             {cutscene.UNIT_MOVE_DATA(1, 3, 24, pos_1_x, pos_1_y),
              cutscene.UNIT_MOVE_DATA(2, 3, 24, pos_2_x, pos_2_y),
              cutscene.UNIT_MOVE_DATA(3, 3, 24, pos_3_x, pos_3_y),
              cutscene.UNIT_MOVE_DATA(4, 3, 24, pos_4_x, pos_4_y),
              cutscene.UNIT_MOVE_DATA(5, 3, 24, pos_5_x, pos_5_y)},
-            false);
+            true);
 
          -- 1초 대기.
          CutsceneBuilder.Delay(1.0);

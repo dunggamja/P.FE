@@ -131,18 +131,24 @@ public static class CutsceneBuilder
    }
 
    // 트리거 컷씬 추가.
-   public static void AddCutscene_Trigger(int _trigger_id, bool _is_wait, bool _is_local)
+   public static void AddCutscene_Trigger(int _trigger_id, bool _is_set, bool _is_local)
    {
       if (_is_local)
-         AddCutscene(new Cutscene_LocalTrigger(Root, _trigger_id, _is_wait));
+         AddCutscene(new Cutscene_LocalTrigger(Root, _trigger_id, _is_set));
       else
-         AddCutscene(new Cutscene_Trigger(Root, _trigger_id, _is_wait));
+         AddCutscene(new Cutscene_Trigger(Root, _trigger_id, _is_set));
    }
 
    // 유닛 이동 컷씬 추가.
    public static void AddCutscene_Unit_Move(List<UNIT_MOVE_DATA> _unit_move_data, bool _update_cell_position)
    {
       AddCutscene(new Cutscene_Unit_Move(Root, _unit_move_data, _update_cell_position));      
+   }
+
+   // 유닛 표시 On/Off 컷씬 추가.
+   public static void AddCutscene_Unit_Show(List<Int64> _unit_id, bool _show)
+   {
+      AddCutscene(new Cutscene_Unit_Show(Root, _unit_id, _show));      
    }
 
    // Delay 컷씬 추가.
