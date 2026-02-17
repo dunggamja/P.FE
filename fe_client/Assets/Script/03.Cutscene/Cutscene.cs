@@ -185,7 +185,6 @@ public class CutsceneSequence
          case EnumCutsceneLifeTime.Battle:
             // TODO: 전투 중인지 검사해야함.
             return true;
-
          case EnumCutsceneLifeTime.None:
             // TODO: 라이프 타임 없으면 그냥 실행 가능으로 쳐보자.
             return true;         

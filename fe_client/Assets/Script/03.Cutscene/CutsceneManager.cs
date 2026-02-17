@@ -129,6 +129,21 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       }
     }
 
+    void RemoveCutscene(string _cutscene_name)
+    {
+      if (string.IsNullOrEmpty(_cutscene_name))
+         return;
+
+      // 컷씬 목록에서 제거.
+      m_repository.Remove(_cutscene_name);
+
+      // 컷씬 이벤트 호출 등록 목록에서 제거.
+      foreach (var e in m_repository_by_event)
+      {
+         e.Value.Remove(_cutscene_name);
+      }
+    }
+
 
     private async UniTask PlayCutscene(string _cutscene_name)
     {
@@ -151,6 +166,8 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 
       DisposeCancelToken();         
       m_playing_cutscene = string.Empty;
+
+
     }
 
 
@@ -172,5 +189,22 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
          return false;
 
       return cutscene.VerifyConditions();
+    }
+
+    // 수명이 종료된 컷씬들을 제거합니다.
+    // TODO: 언제 호출할지 고민해야봐야 함.
+    public void CleanUpLifeTimeOver()
+    {
+       // 수명이 종료된 컷씬들을 수집합니다.
+       using var list_remove = ListPool<string>.AcquireWrapper();
+       foreach (var e in m_repository)
+       {
+         if (e.Value.VerifyLifeTime() == false)
+            list_remove.Value.Add(e.Key);
+       }
+
+       // 수명이 종료된 컷씬들을 제거
+       foreach (var name in list_remove.Value)
+         RemoveCutscene(name);
     }
 }
