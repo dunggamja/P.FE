@@ -15,9 +15,12 @@ function demo_script_02.Run()
 
 
    CutsceneBuilder.RootBegin("Intro");
+      -- 전투 시작시 실행.
       CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnBattleStart, 0, 0);
+      -- 1번만 실행.
       CutsceneBuilder.Condition_PlayOneShot();
-
+      
+      -- 트랙 시작.
       CutsceneBuilder.TrackBegin();
          -- 대화 연출
          local dialogue_intro = dialogue.CENTER_SHOW(portrait_empty, "서장-demo test");
@@ -70,7 +73,7 @@ function demo_script_02.Run()
 배타러 가자]]),
             }
          ));
-         CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
+         CutsceneBuilder.DialogueEnd();
 
 
          -- 타일 선택 해제. (index:0)
@@ -107,7 +110,7 @@ function demo_script_02.Run()
                dialogue.CENTER_SHOW(portrait_empty, "여기가 탈출 위치임.")
             }
          ));
-         CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
+         CutsceneBuilder.DialogueEnd();
 
          -- 타일 선택 해제. (index:0)
          CutsceneBuilder.Delay(1.0);

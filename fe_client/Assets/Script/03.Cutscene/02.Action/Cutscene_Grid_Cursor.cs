@@ -26,7 +26,6 @@ public class Cutscene_Grid_Cursor : Cutscene
     protected override UniTask OnUpdate(CancellationToken _skip_token)
     {
         // throw new NotImplementedException();
-
         EventDispatchManager.Instance.UpdateEvent(
                ObjectPool<Grid_Cursor_Event>.Acquire()
                .Set(Position));

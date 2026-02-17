@@ -230,6 +230,9 @@ namespace Battle
         // CommandProgress_EntityID,
 
 
+        // // 트리거 관련 블랙보드. (BattleSystem보다 상위에서 관리해야 할것 같은...)
+        // Trigger_Begin = 100_000_000,
+        // Trigger_End   = 200_000_000,
     }
 
     /// <summary>

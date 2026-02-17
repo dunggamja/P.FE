@@ -131,9 +131,12 @@ public static class CutsceneBuilder
    }
 
    // 트리거 컷씬 추가.
-   public static void AddCutscene_Trigger(int _trigger_id, bool _is_wait)
+   public static void AddCutscene_Trigger(int _trigger_id, bool _is_wait, bool _is_local)
    {
-      AddCutscene(new Cutscene_Trigger(Root, _trigger_id, _is_wait));      
+      if (_is_local)
+         AddCutscene(new Cutscene_LocalTrigger(Root, _trigger_id, _is_wait));
+      else
+         AddCutscene(new Cutscene_Trigger(Root, _trigger_id, _is_wait));
    }
 
    // 유닛 이동 컷씬 추가.

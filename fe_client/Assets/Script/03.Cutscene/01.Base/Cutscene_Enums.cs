@@ -22,18 +22,24 @@ using System.Threading;
 // }
 
 
+// 로컬 블랙보드는, Sequence 내에서만 사용되고 버려진다.
 public enum EnumCutsceneLocalMemory
 {
+
     // 컷씬에서 표시할 타일 선택 커서 VFX ID.
     VFX_Tile_Select_Begin = 100,
     VFX_Tile_Select_End   = 110, 
+
+    // 트리거 범위
+    Trigger_Begin = 100_000_000,
+    Trigger_End   = 200_000_000,
 }
 
-
+// 글로벌 블랙보드는, Save/Load 대상에도 포함된다.
 public enum EnumCutsceneGlobalMemory
 {
-   Trigger_Begin = 1,
-   Trigger_End   = 1_000_000,
+   Trigger_Begin = 100_000_000,
+   Trigger_End   = 200_000_000,
 }
 
 

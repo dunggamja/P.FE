@@ -71,6 +71,20 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
+        // 대화창 종료
+        SetLuaValue("CutsceneBuilder", "DialogueEnd", new LuaFunction(async (context, ct) =>
+        {
+            var dialogue = new DIALOGUE_SEQUENCE()
+            {
+                ID            = Util.GenerateID(),
+                CloseDialogue = true,
+                DialogueData  = null
+            };
+            
+            CutsceneBuilder.AddCutscene_Dialogue(dialogue);
+            return context.Return();
+        }));
+
         // 타일 선택 및 카메라 포커스.
         SetLuaValue("CutsceneBuilder", "VFX_TileSelect_On", new LuaFunction(async (context, ct) =>
         {
@@ -106,7 +120,8 @@ public partial class RuntimeScriptManager
         {
             var trigger_id = context.GetArgument<int>(0);
             var is_wait    = context.GetArgument<bool>(1);
-            CutsceneBuilder.AddCutscene_Trigger(trigger_id, is_wait);
+            var is_local   = context.GetArgument<bool>(2);
+            CutsceneBuilder.AddCutscene_Trigger(trigger_id, is_wait, is_local);
             return context.Return();
         }));
 
