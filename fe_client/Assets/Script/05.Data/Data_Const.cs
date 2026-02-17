@@ -37,5 +37,8 @@ public static class Data_Const
 
     public const int  UNIT_INVENTORY_MAX = 8;
 
+    public const int  CHAPTER_NUMBER_MAX = 1000;
+    public const int  STAGE_NUMBER_MAX   = 1000;
+
 }
 

@@ -200,6 +200,26 @@ public static class RuntimeScriptHelper
         }
     }
 
+    public static void FromLua(LuaTable _table, out CutsceneLifeTime _o)
+    {
+        if (_table == null)
+        {
+        _o = default(CutsceneLifeTime);
+        return;
+        }
+
+        var life_type     = _table.GetLuaValue<int>("LifeType");
+        var value         = _table.GetLuaValue<Int64>("Value");
+        var is_repeatable = _table.GetLuaValue<bool>("IsRepeatable");
+
+        _o = new CutsceneLifeTime()
+        {
+            LifeType     = (EnumCutsceneLifeTime)life_type,
+            Value        = value,
+            IsRepeatable = is_repeatable
+        };
+    }
+
 
     // public static LuaTable ToLua(this TAG_INFO _tag_info)
     // {

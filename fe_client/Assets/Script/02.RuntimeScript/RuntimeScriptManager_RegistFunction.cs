@@ -191,12 +191,12 @@ public partial class RuntimeScriptManager
 #endregion cutscene_action
 
 #region cutscene_condition
-        // 한번만 실행되도록 조건 추가.
-        SetLuaValue("CutsceneBuilder", "Condition_PlayOneShot", new LuaFunction(async (context, ct) =>
-        {
-            CutsceneBuilder.AddCondition_PlayOneShot();
-            return context.Return();
-        }));
+        // // 한번만 실행되도록 조건 추가.
+        // SetLuaValue("CutsceneBuilder", "Condition_PlayOneShot", new LuaFunction(async (context, ct) =>
+        // {
+        //     CutsceneBuilder.AddCondition_PlayOneShot();
+        //     return context.Return();
+        // }));
 #endregion cutscene_condition
 
 #region cutscene_play_event
@@ -210,5 +210,14 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 #endregion cutscene_play_event
+
+#region cutscene_life_time
+        SetLuaValue("CutsceneBuilder", "LifeTime", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out CutsceneLifeTime life_time);
+            CutsceneBuilder.SetLifeTime(life_time);
+            return context.Return();
+        }));
+#endregion cutscene_life_time
     }
 }

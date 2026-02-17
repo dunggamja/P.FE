@@ -21,6 +21,13 @@ using System.Threading;
 //     Trigger        = 1000, // 트리거 관련 동작.
 // }
 
+public enum EnumCutsceneLifeTime
+{
+    None    = 0,
+    Chapter = 1,    
+    Battle  = 2,
+}
+
 
 // 로컬 블랙보드는, Sequence 내에서만 사용되고 버려진다.
 public enum EnumCutsceneLocalMemory

@@ -16,3 +16,22 @@ function cutscene.UNIT_MOVE(unit_move_data, update_cell_position)
       UpdateCellPosition = update_cell_position
    }
 end
+
+function cutscene.LIFE_TIME(life_type, value, is_repeatable)
+   return {
+      LifeType       = life_type,
+      Value          = value,
+      IsRepeatable   = is_repeatable
+   }
+end
+
+function cutscene.LIFE_TIME_CHAPTER(chapter_number, stage_number, is_repeatable)
+   return cutscene.LIFE_TIME(
+      EnumCutsceneLifeTime.Chapter, 
+      chapter_number * Constants.STAGE_NUMBER_MAX + stage_number, 
+      is_repeatable);
+end
+
+function cutscene.LIFE_TIME_BATTLE(is_repeatable)
+   return cutscene.LIFE_TIME(EnumCutsceneLifeTime.Battle, 0, is_repeatable);
+end

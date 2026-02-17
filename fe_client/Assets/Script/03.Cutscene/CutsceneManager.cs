@@ -163,7 +163,7 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       }
     }
 
-    private bool VerifyPlayCutscene(string _cutscene_name)
+    public bool VerifyPlayCutscene(string _cutscene_name)
     {
       if (string.IsNullOrEmpty(_cutscene_name))
          return false;

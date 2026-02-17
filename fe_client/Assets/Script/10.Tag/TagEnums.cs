@@ -13,6 +13,8 @@
        Position       = 100, // 위치 - 점.
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
+       BattleMap      = 1000, // 배틀 맵.
+
 
       //  // AI 타입.
       //  AIType         = 200, // AI 타입.

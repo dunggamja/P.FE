@@ -46,10 +46,13 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         // RegisterEnum<EnumScenarioCondition>();
         // RegisterEnum<EnumCutsceneType>();
         RegisterEnum<EnumCutscenePlayEvent>();
+        RegisterEnum<EnumCutsceneLifeTime>();
         RegisterEnum<DIALOGUE_DATA.EnumPosition>();
 
         // constants
-        SetLuaValue("Constants", "MAX_MAP_SIZE", Constants.MAX_MAP_SIZE);
+        SetLuaValue("Constants", "MAX_MAP_SIZE",       Constants.MAX_MAP_SIZE);
+        SetLuaValue("Constants", "CHAPTER_NUMBER_MAX", Data_Const.CHAPTER_NUMBER_MAX);
+        SetLuaValue("Constants", "STAGE_NUMBER_MAX",   Data_Const.STAGE_NUMBER_MAX);
 
 
         // 필요한 함수들 등록.

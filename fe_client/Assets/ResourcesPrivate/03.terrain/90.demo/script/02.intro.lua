@@ -24,9 +24,10 @@ function demo_script_02.Run()
    CutsceneBuilder.RootBegin("Intro");
       -- 전투 시작시 실행.
       CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnBattleStart, 0, 0);
-      -- 1번만 실행.
-      CutsceneBuilder.Condition_PlayOneShot();
 
+      -- 전투내에서만 사용되는 컷씬.
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+      
       -- 트랙 0 
       CutsceneBuilder.TrackBegin();
          -- 유닛 표시 OFF, 

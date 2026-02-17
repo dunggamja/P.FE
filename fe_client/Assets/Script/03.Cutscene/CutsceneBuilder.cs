@@ -179,10 +179,10 @@ public static class CutsceneBuilder
       Root.AddCondition(_condition);
    }
 
-   public static void AddCondition_PlayOneShot()
-   {
-      AddCondition(new CutsceneCondition_PlayOneShot());
-   }
+   // public static void AddCondition_PlayOneShot()
+   // {
+   //    AddCondition(new CutsceneCondition_PlayOneShot());
+   // }
 #endregion cutscene_condition
 
 
@@ -204,5 +204,18 @@ public static class CutsceneBuilder
    }
 #endregion cutscene_play_event
 
+
+#region cutscene_life_time
+   public static void SetLifeTime(CutsceneLifeTime _life_time)
+   {
+      if (Root == null)
+      {
+         Debug.LogError("CutsceneBuilder: Root not created.");
+         return;
+      }
+
+      Root.SetLifeTime(_life_time);
+   }
+#endregion cutscene_life_time
 
 }
