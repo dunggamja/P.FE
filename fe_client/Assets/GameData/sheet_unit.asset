@@ -290,51 +290,51 @@ MonoBehaviour:
   - KIND: 1
     MEMO: "\uB85C\uB4DC"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 2
     MEMO: "\uD558\uC774\uB85C\uB4DC"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 21
     MEMO: "\uD504\uB9B0\uC138\uC2A4"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 31
     MEMO: "\uB098\uC774\uD2B8_\uB0A8"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 32
     MEMO: "\uD314\uB77C\uB518_\uB0A8"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 41
     MEMO: "\uAC00\uB4DC \uB098\uC774\uD2B8_\uB0A8"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 42
     MEMO: "\uC544\uBA38 \uB098\uC774\uD2B8_\uB0A8"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   - KIND: 1000
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uC0B0\uC801"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_enemy
+    ASSET_KEY: worldobject/unit/enemy
   - KIND: 1010
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uB3C4\uB451"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_enemy_thief
+    ASSET_KEY: worldobject/unit/enemy_thief
   - KIND: 1020
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uBD88\uB7C9\uBC30"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_enemy
+    ASSET_KEY: worldobject/unit/enemy
   - KIND: 1030
     MEMO: "\uC801\uAD70\uC720\uB2DB_\uD574\uC801"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_enemy
+    ASSET_KEY: worldobject/unit/enemy
   - KIND: 10000
     MEMO: "NPC_\uBCF4\uD638\uB300\uC0C1_\uBC30"
     UNIT_ID: 0
-    ASSET_KEY: demo/unit_alliance
+    ASSET_KEY: worldobject/unit/alliance
   class_localization:
   - KIND: 1
     MEMO: "\uB85C\uB4DC"

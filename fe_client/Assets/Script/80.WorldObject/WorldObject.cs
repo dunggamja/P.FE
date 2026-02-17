@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using Battle;
 using UnityEngine;
 
 
 public class WorldObject : MonoBehaviour
 {
+    
+    [SerializeField]
+    private Transform m_mesh_root = null;
+
+
     
     public Int64 ID { get; private set; } = 0;
 

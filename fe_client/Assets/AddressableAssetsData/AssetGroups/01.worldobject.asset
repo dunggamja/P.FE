@@ -10,46 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: 99.demo
+  m_Name: 01.worldobject
   m_EditorClassIdentifier: 
-  m_GroupName: 99.demo
-  m_GUID: 025beef1c1e5446509cd2949c64c89d9
+  m_GroupName: 01.worldobject
+  m_GUID: f33f6fcafd94e4c8b9cf3b1f5d2bd9a7
   m_SerializeEntries:
-  - m_GUID: 0cf31cb3628824743b21f2a85dbb43b3
-    m_Address: demo/map_setting
+  - m_GUID: 12deae743ccb0408eb4054089c9c551a
+    m_Address: worldobject/unit/basic
     m_ReadOnly: 0
     m_SerializedLabels:
-    - setting
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1ff0cce54952a4a4aaeef5adc44fa2d4
-    m_Address: demo/map_file
+  - m_GUID: 9ef057eadb8ee490a93280f7c9a20170
+    m_Address: worldobject/unit/enemy_thief
     m_ReadOnly: 0
     m_SerializedLabels:
-    - setting
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 357abf2119972406aa32ec1837c17fcf
-    m_Address: demo/map_faction_setting
+  - m_GUID: df0468bdfbff744329077f2bf5bf8e17
+    m_Address: worldobject/unit/alliance
     m_ReadOnly: 0
     m_SerializedLabels:
-    - setting
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7d2a557de92054245be8f79741e87034
-    m_Address: demo/scene
+  - m_GUID: eb111a7a885424975900ac95101d9b7c
+    m_Address: worldobject/unit/enemy
     m_ReadOnly: 0
     m_SerializedLabels:
-    - scene
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: def02c405544f40a783057f9eb916c28
-    m_Address: demo/script_02.intro
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - runtimescript
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f1ba583a706614c37baa0f9ebf695436
-    m_Address: demo/script_01.setting
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - runtimescript
+    - prefab
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2404c432b87f5477a9ac44b41624fae0, type: 2}

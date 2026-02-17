@@ -37,6 +37,7 @@ public partial class RuntimeScriptManager
 
     void RegisterFunction_Cutscene()
     {
+#region base
         SetLuaValue("CutsceneBuilder", "RootBegin", new LuaFunction(async (context, ct) =>
         {
             CutsceneBuilder.RootBegin(context.GetArgument<string>(0));
@@ -60,16 +61,17 @@ public partial class RuntimeScriptManager
             CutsceneBuilder.TrackEnd();
             return context.Return();
         }));
-        
+#endregion base
 
 #region cutscene_action
-        // 대화 컷씬 추가.
+        // 대화창 시작
         SetLuaValue("CutsceneBuilder", "Dialogue", new LuaFunction(async (context, ct) =>
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out DIALOGUE_SEQUENCE dialogue_sequence);
             CutsceneBuilder.AddCutscene_Dialogue(dialogue_sequence);
             return context.Return();
         }));
+
 
         // 대화창 종료
         SetLuaValue("CutsceneBuilder", "DialogueEnd", new LuaFunction(async (context, ct) =>
