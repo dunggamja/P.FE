@@ -135,7 +135,8 @@ using Battle;
          // 상위 계층에 등록된 정보들을 제거해줍시다. (ENTITY_FACTION, ENTITY_ALL)
          {
             using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
-            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.HIERARCHY, list_remove.Value);
+            TagManager.Instance.CollectTag_Target(tag_entity, EnumTagAttributeType.HIERARCHY, list_remove.Value);
+
             foreach(var tag in list_remove.Value)
             {
                TagManager.Instance.RemoveTag(tag);
