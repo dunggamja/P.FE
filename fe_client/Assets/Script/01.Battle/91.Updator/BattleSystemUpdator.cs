@@ -105,9 +105,7 @@ namespace Battle
 
             // 런타임 스크립트 실행.
             await Test_BattleSystem_Setup_Script(map_setting);   
-
-            // TODO: 테스트용 코드...
-            TestCode_Dialogue();         
+    
 
 
             IsInitialized = true;
@@ -319,74 +317,70 @@ namespace Battle
             }
         }
 
-        [ContextMenu("TestCode_Dialogue")]
-        void TestCode_Dialogue()
-        {
-            var dialogue_sequence = new DIALOGUE_SEQUENCE();
-            dialogue_sequence.SetID(1);
-            dialogue_sequence.AddDialogueData(new List<DIALOGUE_DATA>
-            {
-                new DIALOGUE_DATA()
-                {
-                    IsActive = true,
-                    Position = DIALOGUE_DATA.EnumPosition.Center,
-                    Portrait = new DIALOGUE_PORTRAIT() { Name = "John Doe" },
-                    Dialogue = "Hello, World!",
-                }
-            });
+        // [ContextMenu("TestCode_Dialogue")]
+        // void TestCode_Dialogue()
+        // {
+        //     var dialogue_sequence = new DIALOGUE_SEQUENCE();
+        //     dialogue_sequence.SetID(1);
+        //     dialogue_sequence.AddDialogueData(new List<DIALOGUE_DATA>
+        //     {
+        //         new DIALOGUE_DATA()
+        //         {
+        //             IsActive = true,
+        //             Position = DIALOGUE_DATA.EnumPosition.Center,
+        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "John Doe" },
+        //             Dialogue = "Hello, World!",
+        //         }
+        //     });
+        //     var dialogue_sequence2 = new DIALOGUE_SEQUENCE();
+        //     dialogue_sequence2.SetID(2);
+        //     dialogue_sequence2.AddDialogueData(new List<DIALOGUE_DATA>
+        //     {
+        //         new DIALOGUE_DATA()
+        //         {
+        //             IsActive = true,
+        //             Position = DIALOGUE_DATA.EnumPosition.Bottom,
+        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "Jane Doe" },
+        //             Dialogue = "Hello, World!2",
+        //         }
+        //     });
+
+        //     var dialogue_sequence3 = new DIALOGUE_SEQUENCE();
+        //     dialogue_sequence3.SetID(3);
+        //     dialogue_sequence3.AddDialogueData(new List<DIALOGUE_DATA>
+        //     {
+        //         new DIALOGUE_DATA()
+        //         {
+        //             IsActive = true,
+        //             Position = DIALOGUE_DATA.EnumPosition.Center,
+        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "Doey Doe" },
+        //             Dialogue = "Hello, World!3",
+        //         }
+        //     });
+
+        //     var dialogue_sequence4 = new DIALOGUE_SEQUENCE();
+        //     dialogue_sequence4.SetID(4);
+        //     dialogue_sequence4.SetCloseDialogue(true);
+
+        //     CutsceneBuilder.RootBegin("Dialogue");
+        //     CutsceneTrack track = new CutsceneTrack();
+        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, true, (1, 1)));
+        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
+        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
+
+        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, true, (2, 2)));
+        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
+        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
+        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, false));
+        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, false));
 
 
+        //     CutsceneBuilder.Root.AddTrack(track);
 
+        //     CutsceneBuilder.RootEnd();
 
-            var dialogue_sequence2 = new DIALOGUE_SEQUENCE();
-            dialogue_sequence2.SetID(2);
-            dialogue_sequence2.AddDialogueData(new List<DIALOGUE_DATA>
-            {
-                new DIALOGUE_DATA()
-                {
-                    IsActive = true,
-                    Position = DIALOGUE_DATA.EnumPosition.Bottom,
-                    Portrait = new DIALOGUE_PORTRAIT() { Name = "Jane Doe" },
-                    Dialogue = "Hello, World!2",
-                }
-            });
-
-            var dialogue_sequence3 = new DIALOGUE_SEQUENCE();
-            dialogue_sequence3.SetID(3);
-            dialogue_sequence3.AddDialogueData(new List<DIALOGUE_DATA>
-            {
-                new DIALOGUE_DATA()
-                {
-                    IsActive = true,
-                    Position = DIALOGUE_DATA.EnumPosition.Center,
-                    Portrait = new DIALOGUE_PORTRAIT() { Name = "Doey Doe" },
-                    Dialogue = "Hello, World!3",
-                }
-            });
-
-            var dialogue_sequence4 = new DIALOGUE_SEQUENCE();
-            dialogue_sequence4.SetID(4);
-            dialogue_sequence4.SetCloseDialogue(true);
-
-            CutsceneBuilder.RootBegin("Dialogue");
-            CutsceneTrack track = new CutsceneTrack();
-            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, true, (1, 1)));
-            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
-            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
-
-            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, true, (2, 2)));
-            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
-            // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
-            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, false));
-            // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, false));
-
-
-            CutsceneBuilder.Root.AddTrack(track);
-
-            CutsceneBuilder.RootEnd();
-
-            CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
-        }
+        //     CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
+        // }
 
     }
 }

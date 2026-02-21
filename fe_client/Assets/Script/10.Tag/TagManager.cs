@@ -330,7 +330,7 @@ using Battle;
          }
 
          // 계층 태그 정보들 컬렉트.
-         using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
+         using var list_parents = ListPool<TAG_INFO>.AcquireWrapper();
          
          // 재귀 방향에 따라 레포지토리를 다르게 선택합시다.         
          if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
@@ -339,18 +339,18 @@ using Battle;
             {
                 foreach(var tag_data in repo_tag_data)
                 {
-                    list_hierarchy.Value.Add(tag_data.TagInfo);
+                    list_parents.Value.Add(tag_data.TagInfo);
                 }
             }
          }
 
          // 결과값 추가.
-         _result.AddRange(list_hierarchy.Value);
+         _result.AddRange(list_parents.Value);
 
          // 재귀 탐색 진행.
          if (_recursive)
          {
-            foreach(var tag_parent in list_hierarchy.Value)
+            foreach(var tag_parent in list_parents.Value)
             {
                CollectTag_Parents(tag_parent, _result, true, _recursive_depth + 1);
             }
@@ -371,27 +371,28 @@ using Battle;
          }
 
          // 계층 태그 정보들 컬렉트.
-         using var list_hierarchy = ListPool<TAG_INFO>.AcquireWrapper();
+         using var list_children = ListPool<TAG_INFO>.AcquireWrapper();
          
-         // 재귀 방향에 따라 레포지토리를 다르게 선택합시다.         
+          
          if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
          {
             if (repo_attribute.TryGetValue(EnumTagAttributeType.HIERARCHY, out var repo_tag_data))
             {
                 foreach(var tag_data in repo_tag_data)
                 {
-                    list_hierarchy.Value.Add(tag_data.TagInfo);
+                    // 타겟 태그를 찾는다.
+                    list_children.Value.Add(tag_data.TargetInfo);
                 }
             }
          }
 
          // 결과값 추가.
-         _result.AddRange(list_hierarchy.Value);
+         _result.AddRange(list_children.Value);
 
          // 재귀 탐색 진행.
          if (_recursive)
          {
-            foreach(var tag_parent in list_hierarchy.Value)
+            foreach(var tag_parent in list_children.Value)
             {
                CollectTag_Children(tag_parent, _result, true, _recursive_depth + 1);
             }

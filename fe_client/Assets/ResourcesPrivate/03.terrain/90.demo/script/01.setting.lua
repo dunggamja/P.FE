@@ -5,7 +5,7 @@ SCRIPT_MODULE_FUNC = "Run"
 demo_script_01 = {}
 
 
-function demo_script_01.Setting_Tag()
+function demo_script_01.Setting()
    
    --  진영(아군)_위치(탈출)_위치(015,001)
    TagManager.SetTag(
@@ -14,7 +14,7 @@ function demo_script_01.Setting_Tag()
          EnumTagAttributeType.POSITION_EXIT,
          tag.TAG_POSITION(15, 1)
       )
-   )
+   );
 
    -- 진영(적)_포커싱(제외)_진영(선박)
    TagManager.SetTag(
@@ -23,7 +23,7 @@ function demo_script_01.Setting_Tag()
          EnumTagAttributeType.TARGET_IGNORE,
          tag.TAG_INFO(EnumTagType.Entity_Faction, 3)
       )
-   )
+   );
 
    -- 유닛(해적3031)_타겟팅포함_진영(선박)
    TagManager.SetTag(
@@ -32,7 +32,7 @@ function demo_script_01.Setting_Tag()
          EnumTagAttributeType.TARGET_CONTAIN,
          tag.TAG_INFO(EnumTagType.Entity_Faction, 3)
       )
-   )
+   );
 
    -- 유닛(해적3031)_타겟팅포함_진영(선박)
    TagManager.SetTag(
@@ -41,12 +41,30 @@ function demo_script_01.Setting_Tag()
          EnumTagAttributeType.TARGET_CONTAIN,
          tag.TAG_INFO(EnumTagType.Entity_Faction, 3)
       )
-   )
+   );
+
+   -- 적 불량배를 그룹 1로 묶어보자. (3021, 3022)
+   for entity_id = 3021, 3022 do
+      TagManager.SetTag(
+         tag.TAG_DATA(
+            tag.TAG_INFO(EnumTagType.Entity_Group, 1),
+            EnumTagAttributeType.HIERARCHY,
+            tag.TAG_INFO(EnumTagType.Entity, entity_id)
+         )
+      );
+   end
+
+   -- 적(불량배들)의 행동순서를 빠르게 셋팅. 
+   for _, entity_id in ipairs(EntityManager.GetEntity_Tag(tag.TAG_INFO(EnumTagType.Entity_Group, 1))) do
+      EntityManager.SetCommandPriority(entity_id, 10);
+   end
+
 end
+
 
 
 -- main 함수.
 function demo_script_01.Run()     
-   -- 태그 설정.
-   demo_script_01.Setting_Tag()
+   -- 초기 설정 (태그 등).
+   demo_script_01.Setting()
 end

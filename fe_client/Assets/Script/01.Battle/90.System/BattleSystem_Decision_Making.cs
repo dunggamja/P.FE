@@ -136,7 +136,7 @@ namespace Battle
         }
 
 
-        bool OnUpdate_DecisionMaking_AI(int _faction)//, EnumCommandPriority _priority)
+        void OnUpdate_DecisionMaking_AI(int _faction)//, EnumCommandPriority _priority)
         {
             // 진영 설정.
 
@@ -147,33 +147,39 @@ namespace Battle
             // 현재 행동가능한 유닛중 가장 행동우선순위가 높은 유닛을 찾습니다.
             EntityManager.Instance.Loop(e =>
             {
+                // 기본 체크 1. (진영, 생존 체크)
                 if (e == null || e.IsDead || e.GetFaction() != _faction)
                     return;
+
+                // 기본 체크 2. (행동 가능 체크)
                 if (e.IsEnableCommandProgress() == false)
                     return;
 
                 priority = Mathf.Max(priority, e.GetCommandPriority());
             });
 
-            // 이번에 AI 연산을 진행할 유닛 목록.
+            // 행동 우선순위가 일치하는 유닛 목록을 찾습니다.
             using var list_entity = ListPool<Entity>.AcquireWrapper();
             EntityManager.Instance.Loop(e =>
             {
+                // 진영, 생존 체크.
                 if (e == null || e.IsDead || e.GetFaction() != _faction)
                     return;
+
+                // 행동 가능 체크
                 if (e.IsEnableCommandProgress() == false)
                     return;
 
+                // 행동 우선순위 체크.
                 if (e.GetCommandPriority() != priority)
                     return;
 
                 list_entity.Value.Add(e);
             });
 
-            // AI 연산을 진행 및 가장 최적의 행동을 할수있는 유닛을 고른다.
+            // 추출된 유닛 목록중 가장 최적의 행동을 할수있는 유닛을 고른다.
             Int64 best_score_id = 0;
             float best_score    = 0f;
-
             foreach(var entity in list_entity.Value)
             {
                 entity.AIManager.Update(entity.AIDataManager);
@@ -186,30 +192,22 @@ namespace Battle
                 }
             }
 
-            // 최고점 유닛을 찾지 못하였으면 그냥 행동가능한 유닛 아무나 찾아본다.
-            if (best_score_id == 0)
+            //  AI 연산 결과후 최적의 행동을 할수있는 유닛이 없으면... 그냥 첫번째 유닛으로...
+            if (best_score_id == 0 && list_entity.Value.Count > 0)
             {
-                var entity_commandable = EntityManager.Instance.Find(e =>
-                {
-                    if (e == null || e.IsDead || e.GetFaction() != _faction)
-                        return false;
-                    return e.IsEnableCommandProgress();
-                });
-
-                if (entity_commandable != null)
-                {
-                    best_score_id = entity_commandable.ID;
-                }
+                best_score_id = list_entity.Value[0].ID;
             }
 
             // 최고점 유닛은 행동 명령을 실행.
             if (best_score_id != 0)
             {
                 PushCommand(best_score_id);
+                Debug.Log($"PushCommand: {priority}, {best_score_id}");
             }
-
-
-            return false;
+            else
+            {
+                // 이런 경우는 없을 것이다.
+            }
         }
 
         bool PushCommand(Int64 _entity_id)
@@ -269,6 +267,9 @@ namespace Battle
                         _damage_score.WeaponID,
                         _damage_score.Position
                     ));
+
+            // 행동 종료 명령.
+            m_command_queue_handler.PushCommand(new Command_Done(_entity_id));
         }
 
         void PushCommand_Done(Int64 _entity_id)
@@ -278,6 +279,7 @@ namespace Battle
 
         void PushCommand_Move(Int64 _entity_id, AI_Score_Move.Result _move_score)
         {
+            // 이동 명령
             m_command_queue_handler.PushCommand(new Command_Move(
                 _entity_id, 
                 _move_score.Position,
@@ -285,6 +287,9 @@ namespace Battle
                 _visual_immediate: false,
                 _is_plan: false
             ));
+
+            // 행동 종료 명령.
+            m_command_queue_handler.PushCommand(new Command_Done(_entity_id));
         }
 
     }

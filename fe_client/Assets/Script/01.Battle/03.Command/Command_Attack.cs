@@ -87,7 +87,7 @@ namespace Battle
             {
                 // Owner.SetCommandDone(EnumCommandFlag.Action);
                 // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
-                Owner.SetAllCommandDone();
+                // Owner.SetAllCommandDone();
             }
 
         }
