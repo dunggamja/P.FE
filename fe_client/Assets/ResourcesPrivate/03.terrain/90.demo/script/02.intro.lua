@@ -21,6 +21,13 @@ function demo_script_02.Run()
    local pos_5_x, pos_5_y = EntityManager.GetPosition(5);
 
 
+   -- lua에서 반복문 문법이군...
+   -- nums = { 10, 20, 30 }
+   -- for idx, val in ipairs(nums) do
+   --    print(idx, val)
+   -- end
+
+
    CutsceneBuilder.RootBegin("Intro");
       -- 전투 시작시 실행.
       CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnBattleStart, 0, 0);
@@ -47,9 +54,8 @@ function demo_script_02.Run()
       -- 트랙 1 : 시작.
       CutsceneBuilder.TrackBegin();
 
-         -- 대화 연출
-         local dialogue_intro = dialogue.CENTER_SHOW(portrait_empty, "서장-demo test");
-         CutsceneBuilder.Dialogue(dialogue.SEQUENCE({dialogue_intro}));
+         -- 서장 표시.
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE({dialogue.CENTER_SHOW(portrait_empty, "서장-demo test")}));
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
 
          -- 시작 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
@@ -129,11 +135,9 @@ function demo_script_02.Run()
          CutsceneBuilder.Delay(1.0);
 
          -- 여기가 탈출 위치임.
-         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
-            {
-               dialogue.CENTER_SHOW(portrait_empty, "여기가 탈출 위치임.")
-            }
-         ));
+         CutsceneBuilder.Dialogue(
+            dialogue.SEQUENCE({dialogue.CENTER_SHOW(portrait_empty, "여기가 탈출 위치임.")})
+         );
          CutsceneBuilder.DialogueEnd();
 
          -- 타일 선택 해제. (index:0)

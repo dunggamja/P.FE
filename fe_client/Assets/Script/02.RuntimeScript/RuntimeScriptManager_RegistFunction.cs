@@ -13,6 +13,20 @@ public partial class RuntimeScriptManager
 {
     void RegisterFunction_Entity()
     {
+        SetLuaValue("EntityManager", "GetEntityID", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+
+            // TagManager.Instance.CollectTagTarget
+
+
+            // var entity = EntityManager.Instance.GetEntity(entity_id);
+            // return context.Return(entity);
+            return context.Return();
+        }));
+
+
         SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
         {
             var entity_id = context.GetArgument<Int64>(0);
@@ -22,6 +36,21 @@ public partial class RuntimeScriptManager
 
             return context.Return(entity.Cell.x, entity.Cell.y);
         }));
+
+
+        SetLuaValue("EntityManager", "SetCommandPriority", new LuaFunction(async (context, ct) =>
+        {
+            var entity_id = context.GetArgument<Int64>(0);
+            var priority  = context.GetArgument<int>(1);
+            var entity  = EntityManager.Instance.GetEntity(entity_id);
+            if (entity != null)
+                entity.SetCommandPriority(priority);
+
+            return context.Return();
+        }));
+
+
+
     }
 
     void RegisterFunction_Tag()

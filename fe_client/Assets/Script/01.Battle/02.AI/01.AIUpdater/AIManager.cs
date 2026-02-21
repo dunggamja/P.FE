@@ -21,7 +21,7 @@ namespace Battle
             Score_Wand.Reset();
         }
 
-        public EnumAIBlackBoard GetBestScoreType()
+        public (EnumAIBlackBoard type, float score) GetBestScore()
         {
             var top_score_type = EnumAIBlackBoard.None;
             var top_score      = 0f;
@@ -36,7 +36,7 @@ namespace Battle
                 }
             }
 
-            return top_score_type;
+            return (top_score_type, top_score);
         }
     }
 
@@ -85,7 +85,7 @@ namespace Battle
                 list_updater.ForEach(e => e.Update(_param));
 
                 // 최고 점수 셋팅 성공.
-                if (AIBlackBoard.GetBestScoreType() != EnumAIBlackBoard.None)
+                if (AIBlackBoard.GetBestScore().type != EnumAIBlackBoard.None)
                     break;                
             }
         }

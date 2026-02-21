@@ -180,8 +180,10 @@ namespace Battle
         CommandOwner = 1,  // [명령] 소유자
         CommandFlag,       // [명령] 명령 (0 : 이동, 1 : 공격)
         Faction,           // [명령] 진영
+        CommandPriority,   // [명령] 명령 우선순위.
         
-        Mounted, // 탑승 상태.
+        Mounted,           // 탑승 상태. (기마, 비병)
+
 
 
     }

@@ -141,6 +141,17 @@ namespace Battle
             return false;
         }
 
+        public int GetCommandPriority()
+        {
+            // 행동 우선순위 값. 높을 수록 먼저 행동합니다. (최소값 0)
+            return (int)BlackBoard.GetValue(EnumEntityBlackBoard.CommandPriority);
+        }
+
+        public void SetCommandPriority(int _priority)
+        {
+            BlackBoard.SetValue(EnumEntityBlackBoard.CommandPriority, _priority);
+        }
+
         // public EnumCommandPriority GetCommandPriority()
         // {
         //     if (IsEnableCommandProgress() == false)

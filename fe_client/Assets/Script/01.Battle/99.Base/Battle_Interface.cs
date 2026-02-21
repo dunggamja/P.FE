@@ -65,21 +65,21 @@ namespace Battle
 
     /// <summary>
     /// 유닛의 제어
-    /// </summary>
-    public interface ICommand
-    {
-        // bool IsCommandDirty { get; }
-        // bool IsCommandAbort { get; }
+    // /// </summary>
+    // public interface ICommand
+    // {
+    //     // bool IsCommandDirty { get; }
+    //     // bool IsCommandAbort { get; }
 
-        // void SetCommandDirty(bool _is_dirty);
-        // void SetCommandAbort(bool _is_abort);
+    //     // void SetCommandDirty(bool _is_dirty);
+    //     // void SetCommandAbort(bool _is_abort);
 
-        // EnumCommandOwner  GetCommandOwner();
-        // void              SetCommandOwner(EnumCommandOwner _command_owner);
+    //     // EnumCommandOwner  GetCommandOwner();
+    //     // void              SetCommandOwner(EnumCommandOwner _command_owner);
 
-        // bool             HasCommandFlag(); 
-        // void             SetCommandEnable(bool _enable); 
-    }
+    //     // bool             HasCommandFlag(); 
+    //     // void             SetCommandEnable(bool _enable); 
+    // }
 
 
     

@@ -1,5 +1,12 @@
 ﻿// namespace Battle
 // {
+    public enum EnumTagRecursiveDirection
+    {
+      //  None   = 0,
+       Upward   = 1, // 상위 계층 방향으로 재귀.
+       Downward = 2, // 하위 계층 방향으로 재귀.
+    }
+
     public enum EnumTagType
     {
        None = 0, 
@@ -38,9 +45,9 @@
        TALK_COMMAND     = 21,  // 대화 명령 가능
 
 
-       AI_TYPE          = 31, // AI 타입 설정
+      //  AI_TYPE          = 31, // AI 타입 설정 (이건 태그로 하기 애매한 거 같음.)
 
-       ENTITY_HIERARCHY = 100, // 엔티티들 그룹핑을 위한 값.
+       HIERARCHY        = 100, // 그룹핑을 위한 값. (TODO: 현재는 ENTITY에서 밖에 사용하지 않는다. 확장을 하려면 어떻게 할지 고민필요.)
 
        FromScenario     = 999,
     }

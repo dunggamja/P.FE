@@ -132,19 +132,13 @@ using Battle;
 
 
 
-         //  ENTITY_FACTION, ENTITY_ALL
+         // 상위 계층에 등록된 정보들을 제거해줍시다. (ENTITY_FACTION, ENTITY_ALL)
          {
             using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
-            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.ENTITY_HIERARCHY, list_remove.Value);
+            TagManager.Instance.CollectTagTarget(tag_entity, EnumTagAttributeType.HIERARCHY, list_remove.Value);
             foreach(var tag in list_remove.Value)
             {
-               switch(tag.TagInfo.TagType)
-               {
-                  case EnumTagType.Entity_Faction:
-                  case EnumTagType.Entity_All:
-                     TagManager.Instance.RemoveTag(tag);
-                     break;
-               }
+               TagManager.Instance.RemoveTag(tag);
             }
          }
 
@@ -152,8 +146,8 @@ using Battle;
          // 유닛이 살아있다면. 태그 셋팅.
          if (_is_alive)
          {
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.ENTITY_HIERARCHY, tag_entity));
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.ENTITY_HIERARCHY, tag_entity));
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.HIERARCHY, tag_entity));
+            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.HIERARCHY, tag_entity));
          }
       }
 

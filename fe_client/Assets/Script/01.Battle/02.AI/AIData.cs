@@ -15,19 +15,19 @@ namespace Battle
         {
             get 
             {
-                // TAG에 셋팅된 AIType 조회. 그 중 첫번째 것을 반환
-                {
+                // // TAG에 셋팅된 AIType 조회. 그 중 첫번째 것을 반환
+                // {
 
-                    var tag_info       = TAG_INFO.Create(EntityManager.Instance.GetEntity(ID));
-                    using var list_tag = ListPool<TAG_DATA>.AcquireWrapper();
+                //     var tag_info       = TAG_INFO.Create(EntityManager.Instance.GetEntity(ID));
+                //     using var list_tag = ListPool<TAG_DATA>.AcquireWrapper();
 
-                    //
-                    TagManager.Instance.CollectTagOwner(tag_info, EnumTagAttributeType.AI_TYPE, list_tag.Value);
-                    foreach(var tag in list_tag.Value)
-                    {         
-                        return (EnumAIType)tag.TargetInfo.TagValue;
-                    }
-                }
+                //     //
+                //     TagManager.Instance.CollectTagOwner(tag_info, EnumTagAttributeType.AI_TYPE, list_tag.Value);
+                //     foreach(var tag in list_tag.Value)
+                //     {         
+                //         return (EnumAIType)tag.TargetInfo.TagValue;
+                //     }
+                // }
 
                 // 없으면 기본 AIType 반환.
                 return m_ai_type_base;

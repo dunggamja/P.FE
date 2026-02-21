@@ -8,9 +8,9 @@ namespace Battle
     public partial class Entity : 
      IOwner,
      IFaction,
-     ICommand,
      IEventReceiver,
      IPathOwner
+    //  ICommand,
     {
         public Int64                ID              { get; private set; }
         // public bool                 IsFixedObject   { get; private set; } = false;

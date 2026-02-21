@@ -379,42 +379,44 @@ namespace Battle
             // 타겟을 죽일수 있는지 체크.
             var target_kill        = result.Defender.HP_After <= 0 && 0 < damage_dealt;
 
-
             // 포커싱 대상이 있다면 점수 셋팅.
-            var focus_score        = 0f;
-            if (TagManager.Instance.IsExistTagOwner(_owner, EnumTagAttributeType.TARGET_FOCUS))
-            {
-                if (AIHelper.Verify_Target_Focus(_owner, _target))
-                {
-                    // 포커싱 대상일 경우.
-                    focus_score = 1f;                    
-                }
-                else
-                {
-                    // 포커싱 대상이 아니라면 특정 거리내에 있는 포커싱 타겟과의 거리를 기반으로 점수 체크.
-                    const int QUERY_RANGE = 10;
-                    using var list_target = ListPool<Int64>.AcquireWrapper();
-                    SpacePartitionManager.Instance.Query_Position_Range(list_target.Value, _target.Cell, QUERY_RANGE);
+            var focus_score        =  AIHelper.Verify_Target_Focus(_owner, _target) ? 1f : 0f;
 
-                    // 그 중 가장 짧은 거리에 있는 포커싱 타겟을 찾습니다.
-                    int min_distance = int.MaxValue;
-                    foreach(var e in list_target.Value)
-                    {
-                        var check_target = EntityManager.Instance.GetEntity(e);                        
-                        if (check_target == null)
-                            continue;
 
-                        // 포커싱 대상과의 거리를 기반으로 점수 체크.
-                        var distance = PathAlgorithm.Distance(_target.Cell, check_target.Cell);
-                        if (distance < min_distance)
-                            min_distance = distance;
-                    }
+            // TODO: 뭔가 포커싱 주변 유닛에 대해서 가산점을 주려고 했던거 같은데... 뭔가 이런거는 상황에 따라 다를수 있다. 주석처리해보자.
+            // if (TagManager.Instance.IsExistTagOwner(_owner, EnumTagAttributeType.TARGET_FOCUS))
+            // {
+            //     if (AIHelper.Verify_Target_Focus(_owner, _target))
+            //     {
+            //         // 포커싱 대상일 경우.
+            //         focus_score = 1f;                    
+            //     }
+            //     else
+            //     {
+            //         // 포커싱 대상이 아니라면 특정 거리내에 있는 포커싱 타겟과의 거리를 기반으로 점수 체크.
+            //         const int QUERY_RANGE = 10;
+            //         using var list_target = ListPool<Int64>.AcquireWrapper();
+            //         SpacePartitionManager.Instance.Query_Position_Range(list_target.Value, _target.Cell, QUERY_RANGE);
 
-                    // 거리를 기반으로 점수 셋팅. 진짜 포커싱을 한 경우와 차이를 두기위해 0.5 곱 처리.
-                    focus_score  = Mathf.Clamp01((float)(QUERY_RANGE - min_distance) / QUERY_RANGE);
-                    focus_score *= 0.5f;                    
-                }
-            }
+            //         // 그 중 가장 짧은 거리에 있는 포커싱 타겟을 찾습니다.
+            //         int min_distance = int.MaxValue;
+            //         foreach(var e in list_target.Value)
+            //         {
+            //             var check_target = EntityManager.Instance.GetEntity(e);                        
+            //             if (check_target == null)
+            //                 continue;
+
+            //             // 포커싱 대상과의 거리를 기반으로 점수 체크.
+            //             var distance = PathAlgorithm.Distance(_target.Cell, check_target.Cell);
+            //             if (distance < min_distance)
+            //                 min_distance = distance;
+            //         }
+
+            //         // 거리를 기반으로 점수 셋팅. 진짜 포커싱을 한 경우와 차이를 두기위해 0.5 곱 처리.
+            //         focus_score  = Mathf.Clamp01((float)(QUERY_RANGE - min_distance) / QUERY_RANGE);
+            //         focus_score *= 0.5f;                    
+            //     }
+            // }
 
 
 
