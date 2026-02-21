@@ -13,17 +13,36 @@ public partial class RuntimeScriptManager
 {
     void RegisterFunction_Entity()
     {
-        SetLuaValue("EntityManager", "GetEntityID", new LuaFunction(async (context, ct) =>
+        SetLuaValue("EntityManager", "GetEntity_Tag", new LuaFunction(async (context, ct) =>
         {
+            // 태그로 인해 어떤식으로 찾기 요청이 들어올지 생각해보자.
+            // 1. Entity, Entity_Faction, Entity_All, Entity_Group, 하위 계층 탐색하여서 전달하면 된다.
+            // 2. 뭔가 속성에 대한 EnumTagAttributeType가 들어오면...? 그건 상위계층 탐색해서 주면 되겠군...?
+            // 그럼 여기서는 하위계층 탐색해서 주면 끝.
+
+            // 태그 정보.
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+            
+            // 하위 계층 태그 데이터까지 컬렉트 해보자.
+            using var list_result = ListPool<TAG_INFO>.AcquireWrapper();
+            TagManager.Instance.CollectTag_Children(tag_info, list_result.Value);
+
+            // 자기 자신도 추가.
+            list_result.Value.Add(tag_info);
 
 
-            // TagManager.Instance.CollectTagTarget
+            // 엔티티 타입인지 체크하고, 반환값 셋팅.
+            var lua_table       = new LuaTable();
+            var lua_table_index = 1;
+            foreach(var e in list_result.Value)
+            {
+                if (e.TagType != EnumTagType.Entity)
+                    continue;
 
+                lua_table[lua_table_index++] = e.TagValue;
+            }
 
-            // var entity = EntityManager.Instance.GetEntity(entity_id);
-            // return context.Return(entity);
-            return context.Return();
+            return context.Return(lua_table);
         }));
 
 

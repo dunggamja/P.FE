@@ -228,7 +228,7 @@ using Battle;
          {
             // 상위 계층 데이터 컬렉트.
             using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
-            CollectTag_Hierarchy_Upward(_tag_info, list_tag.Value, false);
+            CollectTag_Parents(_tag_info, list_tag.Value, false);
 
             // 재귀적으로 순회.
             foreach(var e in list_tag.Value)
@@ -265,7 +265,7 @@ using Battle;
          {
             // 상위 계층 데이터 컬렉트.
             using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
-            CollectTag_Hierarchy_Upward(_tag_info, list_tag.Value, false);
+            CollectTag_Parents(_tag_info, list_tag.Value, false);
 
             // 재귀적으로 순회.
             foreach(var e in list_tag.Value)
@@ -281,13 +281,6 @@ using Battle;
          TAG_INFO                   _target_info, 
          List<EnumTagAttributeType> _result)
       {
-         // if (_recursive_depth <= 0)
-         // {
-         //    Debug.LogError($"CollectTagRelation: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, TargetInfo: {_target_info.TagType}.{_target_info.TagValue}, RecursiveDepth: {_recursive_depth}");
-         //    return;
-         // }
-
-
          using var list_owner  = ListPool<TAG_INFO>.AcquireWrapper();
          using var list_target = ListPool<TAG_INFO>.AcquireWrapper();
 
@@ -295,9 +288,12 @@ using Battle;
          list_target.Value.Add(_target_info);
 
          //  Owner/Target 의 상위 계층 수집. 
+         //  - 하위 계층은 상위계층 영향안에 있지만...
+         //  - 상위 계층은 하위계층 영향을 받지 않는다.
+         //  - 따라서 상위 계층의 태그 목록만 수집을 해서 관계성을 체크하면 된다.
          {
-            CollectTag_Hierarchy_Upward(_tag_info,    list_owner.Value,  true);
-            CollectTag_Hierarchy_Upward(_target_info, list_target.Value, true);
+            CollectTag_Parents(_tag_info,    list_owner.Value,  true);
+            CollectTag_Parents(_target_info, list_target.Value, true);
          }
 
          // 관계 목록 수집
@@ -313,8 +309,14 @@ using Battle;
          }
       }
 
+      public void CollectTag_Parents(TAG_INFO _tag_info, List<TAG_INFO> _result)
+               => CollectTag_Parents(_tag_info, _result, true);
+
+      public void CollectTag_Children(TAG_INFO _tag_info, List<TAG_INFO> _result)
+               => CollectTag_Children(_tag_info, _result, true);
+
       //  현재는 Hierarchy를 ENTITY만 사용하는 중...;;
-      private void CollectTag_Hierarchy_Upward(
+      private void CollectTag_Parents(
          TAG_INFO                  _tag_info, 
          List<TAG_INFO>            _result, 
          bool                      _recursive,
@@ -323,7 +325,7 @@ using Battle;
          // 최대 깊이 체크.
          if (MAX_RECURSIVE_DEPTH < _recursive_depth)
          {
-            Debug.LogError($"CollectTagHierarchy: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, RecursiveDepth: {_recursive_depth}");
+            Debug.LogError($"CollectTag_Parents: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, RecursiveDepth: {_recursive_depth}");
             return;
          }
 
@@ -350,12 +352,12 @@ using Battle;
          {
             foreach(var tag_parent in list_hierarchy.Value)
             {
-               CollectTag_Hierarchy_Upward(tag_parent, _result, true, _recursive_depth + 1);
+               CollectTag_Parents(tag_parent, _result, true, _recursive_depth + 1);
             }
          }
       }
 
-      private void CollectTag_Hierarchy_Downward(
+      private void CollectTag_Children(
          TAG_INFO                  _tag_info, 
          List<TAG_INFO>            _result, 
          bool                      _recursive,
@@ -364,7 +366,7 @@ using Battle;
          // 최대 깊이 체크.
          if (MAX_RECURSIVE_DEPTH < _recursive_depth)
          {
-            Debug.LogError($"CollectTagHierarchy_Downward: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, RecursiveDepth: {_recursive_depth}");
+            Debug.LogError($"CollectTag_Children: MAX_RECURSIVE_DEPTH <= _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, RecursiveDepth: {_recursive_depth}");
             return;
          }
 
@@ -391,7 +393,7 @@ using Battle;
          {
             foreach(var tag_parent in list_hierarchy.Value)
             {
-               CollectTag_Hierarchy_Downward(tag_parent, _result, true, _recursive_depth + 1);
+               CollectTag_Children(tag_parent, _result, true, _recursive_depth + 1);
             }
          }
       }

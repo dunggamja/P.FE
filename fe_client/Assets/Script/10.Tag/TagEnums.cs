@@ -49,6 +49,6 @@
 
        HIERARCHY        = 100, // 그룹핑을 위한 값. (TODO: 현재는 ENTITY에서 밖에 사용하지 않는다. 확장을 하려면 어떻게 할지 고민필요.)
 
-       FromScenario     = 999,
+      //  FromScenario     = 999, // 이건 뭐냐?
     }
 // }

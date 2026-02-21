@@ -120,7 +120,7 @@ using Battle;
 
 
 
-      public static void SetupTag_Entity_Hierarchy(Entity _entity, bool _is_alive)
+      public static void SetupTag_Entity_Faction(Entity _entity)
       {
          if (_entity == null)
             return;
@@ -129,28 +129,38 @@ using Battle;
          var tag_entity_all = TAG_INFO.Create(EnumTagType.Entity_All, 0);
          var tag_faction    = TAG_INFO.Create(EnumTagType.Entity_Faction, _entity.GetFaction());
          var tag_entity     = TAG_INFO.Create(_entity);
+         
+         // 셋업.
+         TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.HIERARCHY, tag_entity));
+         TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.HIERARCHY, tag_entity));
+      }
 
+   public static void RemoveTag_Entity_Faction(Entity _entity)
+      {
+         if (_entity == null)
+            return;
 
-
-         // 상위 계층에 등록된 정보들을 제거해줍시다. (ENTITY_FACTION, ENTITY_ALL)
-         {
-            using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
-            TagManager.Instance.CollectTag_Target(tag_entity, EnumTagAttributeType.HIERARCHY, list_remove.Value);
-
-            foreach(var tag in list_remove.Value)
-            {
-               TagManager.Instance.RemoveTag(tag);
-            }
-         }
+         //  ENTITY_FACTION, ENTITY_ALL 태그 관련 처리를 진행합니다.
+         var tag_entity     = TAG_INFO.Create(_entity);
 
          
-         // 유닛이 살아있다면. 태그 셋팅.
-         if (_is_alive)
+         // ENTITY_FACTION, ENTITY_ALL 태그 제거.
+         using var list_remove = ListPool<TAG_DATA>.AcquireWrapper();
+         TagManager.Instance.CollectTag_Target(tag_entity, EnumTagAttributeType.HIERARCHY, list_remove.Value);
+         foreach(var tag in list_remove.Value)
          {
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_entity_all, EnumTagAttributeType.HIERARCHY, tag_entity));
-            TagManager.Instance.SetTag(TAG_DATA.Create(tag_faction,    EnumTagAttributeType.HIERARCHY, tag_entity));
+            switch(tag.TagInfo.TagType)
+            {
+               case EnumTagType.Entity_Faction:
+               case EnumTagType.Entity_All:
+                  TagManager.Instance.RemoveTag(tag);                
+                  break;
+            }
          }
       }
+
+
+      
 
 
    }
