@@ -202,7 +202,7 @@ namespace Battle
             if (best_score_id != 0)
             {
                 PushCommand(best_score_id);
-                Debug.Log($"PushCommand: {priority}, {best_score_id}");
+                // Debug.Log($"PushCommand: {priority}, {best_score_id}");
             }
             else
             {

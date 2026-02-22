@@ -153,6 +153,7 @@ namespace Battle
             BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentTurn,     Turn_Cur);
             BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CurrentFaction,  Faction_Cur);
 
+
             // 이벤트 디스팻치.
             if (Faction_Cur != Faction_Prev) 
             {                  
@@ -174,6 +175,11 @@ namespace Battle
                 // 턴 변경시 GUI 열기.
                 GUIManager.Instance.OpenUI(GUIPage_Turn_Start.PARAM.Create(Turn_Cur));
             }    
+
+
+            // 컷씬 이벤트 실행.
+            CutsceneManager.Instance.OnPlayEventReceive(
+                CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnTurnStart, Turn_Cur, Faction_Cur));
         }
 
         void Clear()

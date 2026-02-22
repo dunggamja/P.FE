@@ -82,6 +82,9 @@ public enum EnumCutscenePlayEvent
 
     OnCommandStart     = 81, // 명령 시작 시 실행할 스크립트. [id]
     OnCommandEnd       = 82, // 명령 종료 시 실행할 스크립트. [id]
+
+    OnEntityCreate     = 91, // 엔티티 생성 시 실행할 스크립트. [entity_id]
+    OnEntityDead       = 92, // 엔티티 죽음 시 실행할 스크립트. [entity_id]
     
 
     OnEveryUpdate      = 999, // 매 프레임 트리거
