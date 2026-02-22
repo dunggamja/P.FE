@@ -437,3 +437,7 @@ MonoBehaviour:
     MEMO: "\uCD08\uAE30 \uB9F5 \uC14B\uD305 \uAD00\uB828"
   - SCRIPT: demo/script_02.intro
     MEMO: "\uCD08\uBC18 \uC778\uD2B8\uB85C \uB300\uD654"
+  - SCRIPT: demo/script_03.enemy
+    MEMO: "\uC801 \uAD00\uB828 \uC774\uBCA4\uD2B8 \uC14B\uD305"
+  - SCRIPT: demo/script_04.villiage
+    MEMO: "\uB9C8\uC744 \uBC29\uBB38 \uAD00\uB828 \uC774\uBCA4\uD2B8 \uC14B\uD305"

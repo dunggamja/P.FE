@@ -58,13 +58,13 @@ function demo_script_03.Enemy_Bully_Turn_1_Start()
 [[전쟁에 참패해서 도망치는 놈들이야]]),
                dialogue.BOTTOM_SHOW(portrait_3022,
 [[지금까지 잘난체 했던 녀석들 꼴좋군.
-이 때 모두 죽여버려야 겠어]]),
+원한을 갚을 때가 왔어.]]),
                dialogue.TOP_SHOW(portrait_3021,
 [[이제보니 저 녀석들 성을 버리고
 배타는 곳으로 가려는 것 같군]]),
                dialogue.TOP_SHOW(portrait_3021,
 [[항구로 가는 길 근처에서
-놈들을 잡을수 있을 거 같은데?]),
+놈들을 잡을수 있을 거 같은데?]]),
                dialogue.BOTTOM_SHOW(portrait_3022,
 [[후후 좋아. 건방진 놈들
 다 죽여서 쓸어버리자고!]])
@@ -88,14 +88,11 @@ function demo_script_03.Enemy_Thief_Turn_2_Start()
 end
 
 -- 해당 도적이 죽을때 대화 이벤트. (도적: '보석단검을 줄게 목숨만은 살려줘') (ENTITY.3011)
-function demo_script_03.Enemy_Thief_Dead()
+function demo_script_03.Enemy_Thief_Battle_End_Dead()
 end
-
 
 -- 해적이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군')
 function demo_script_03.Enemy_Pirate_Battle_Start_Ship()
-
-   
 end
 
 -- 해적 (3031)은 적이 특정 거리 이내에 들어와야 공격을 시작한다. (ENTITY.3031)
