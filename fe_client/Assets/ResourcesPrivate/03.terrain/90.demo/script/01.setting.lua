@@ -12,7 +12,7 @@ function demo_script_01.Setting()
       tag.TAG_DATA(
          tag.TAG_INFO(EnumTagType.Entity_Faction, 1),
          EnumTagAttributeType.POSITION_EXIT,
-         tag.TAG_POSITION(15, 1)
+         tag.POSITION(15, 1)
       )
    );
 
@@ -55,7 +55,7 @@ function demo_script_01.Setting()
    end
 
    -- 적(불량배들)의 행동순서를 빠르게 셋팅. 
-   for _, entity_id in ipairs(EntityManager.GetEntity_Tag(tag.TAG_INFO(EnumTagType.Entity_Group, 1))) do
+   for _, entity_id in ipairs(EntityManager.GetEntity(tag.TAG_INFO(EnumTagType.Entity_Group, 1))) do
       EntityManager.SetCommandPriority(entity_id, 10);
    end
 

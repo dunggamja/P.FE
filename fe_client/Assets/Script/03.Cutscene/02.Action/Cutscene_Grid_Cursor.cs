@@ -8,13 +8,14 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using R3;
 
+
 public class Cutscene_Grid_Cursor : Cutscene
 {
-    public (int x, int y) Position { get; private set; } = (0, 0);
+    public TAG_INFO Tag {get; private set;} = TAG_INFO.Create(EnumTagType.None, 0);
 
-    public Cutscene_Grid_Cursor(CutsceneSequence _sequence, (int x, int y) _position) : base(_sequence)
+    public Cutscene_Grid_Cursor(CutsceneSequence _sequence, TAG_INFO _tag) : base(_sequence)
     {
-        Position = _position;
+        Tag = _tag;
     }
 
     protected override void OnEnter()
@@ -22,20 +23,20 @@ public class Cutscene_Grid_Cursor : Cutscene
         // throw new NotImplementedException();
     }
 
-    
     protected override UniTask OnUpdate(CancellationToken _skip_token)
     {
-        // throw new NotImplementedException();
+        // Tag 정보를 통해 포지션을 가져옵니다.
+        var position = TagHelper.Peek_Position(Tag);
+
         EventDispatchManager.Instance.UpdateEvent(
-               ObjectPool<Grid_Cursor_Event>.Acquire()
-               .Set(Position));
+            ObjectPool<Grid_Cursor_Event>.Acquire()
+            .Set(position));
 
         return UniTask.CompletedTask;
     }
 
     protected override void OnExit()
     {
-        // throw new NotImplementedException();
     }
 
 

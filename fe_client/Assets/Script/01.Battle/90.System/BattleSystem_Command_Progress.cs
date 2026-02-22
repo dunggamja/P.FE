@@ -106,15 +106,23 @@ namespace Battle
             // 명령 진햌 중인 엔티티 처리.
             foreach (var entity_id in m_entity_progress)
             {
-                var entity = EntityManager.Instance.GetEntity(entity_id);
-                if (entity == null)
-                    continue;
+                // 명령이 진행중인지 체크하기 위한 변수.
+                var is_progress = false;
 
-                // 명령 진행.
-                entity.CommandManager.Update();     
 
-                // 명령 진행 완료 엔티티 추가.
-                if (entity.CommandManager.PeekCommand() == null)
+                var entity  = EntityManager.Instance.GetEntity(entity_id);
+                if (entity != null)
+                {
+                    // 명령 진행.
+                    entity.CommandManager.Update();     
+
+                    // 명령 진행중인게 있는지 체크.
+                    is_progress = (entity.CommandManager.PeekCommand() != null);
+                }
+
+
+                // 명령 진행중인게 없으면 완료상태로.
+                if (is_progress == false)
                     m_entity_completed.Add(entity_id);
             }
 

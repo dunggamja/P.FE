@@ -12,11 +12,11 @@ using R3;
 
 public class Cutscene_Camera_Position : Cutscene
 {
-    public (int x, int y) Position { get; private set; } = (0, 0);
+    public TAG_INFO Tag { get; private set; } = TAG_INFO.Create(EnumTagType.None, 0);
 
-    public Cutscene_Camera_Position(CutsceneSequence _sequence, (int x, int y) _position) : base(_sequence)
+    public Cutscene_Camera_Position(CutsceneSequence _sequence, TAG_INFO _tag) : base(_sequence)
     {
-        Position = _position;
+        Tag = _tag;
     }
 
     protected override void OnEnter()
@@ -26,9 +26,11 @@ public class Cutscene_Camera_Position : Cutscene
 
     protected override UniTask OnUpdate(CancellationToken _skip_token)
     {
+        var position = TagHelper.Peek_Position(Tag);
+
         EventDispatchManager.Instance.UpdateEvent(
                ObjectPool<Battle_Camera_PositionEvent>.Acquire()
-               .SetCell(Position));
+               .SetCell(position));
 
         return UniTask.CompletedTask;        
     }

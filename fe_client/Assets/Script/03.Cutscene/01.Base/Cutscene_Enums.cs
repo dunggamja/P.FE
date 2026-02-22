@@ -40,6 +40,7 @@ public enum EnumCutsceneLocalMemory
     // 트리거 범위
     Trigger_Begin = 100_000_000,
     Trigger_End   = 200_000_000,
+
 }
 
 // 글로벌 블랙보드는, Save/Load 대상에도 포함된다.
@@ -69,8 +70,9 @@ public enum EnumCutscenePlayEvent
     OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) []
     OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) []
 
-    OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트. [turn_number]
-    OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number]
+    OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트. [turn_number, faction_id]
+    OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number, faction_id]
+
 
     OnCombatStart      = 61, // 전투 시작 시 실행할 스크립트. [attacker, defender]
     OnCombatEnd        = 62, // 전투 종료 시 실행할 스크립트. [attacker, defender]

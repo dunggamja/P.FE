@@ -13,7 +13,7 @@ public partial class RuntimeScriptManager
 {
     void RegisterFunction_Entity()
     {
-        SetLuaValue("EntityManager", "GetEntity_Tag", new LuaFunction(async (context, ct) =>
+        SetLuaValue("EntityManager", "GetEntity", new LuaFunction(async (context, ct) =>
         {
             // 태그로 인해 어떤식으로 찾기 요청이 들어올지 생각해보자.
             // 1. Entity, Entity_Faction, Entity_All, Entity_Group, 하위 계층 탐색하여서 전달하면 된다.
@@ -23,23 +23,16 @@ public partial class RuntimeScriptManager
             // 태그 정보.
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
             
-            // 하위 계층 태그 데이터까지 컬렉트 해보자.
-            using var list_result = ListPool<TAG_INFO>.AcquireWrapper();
-            TagManager.Instance.CollectTag_Children(tag_info, list_result.Value);
 
-            // 자기 자신도 추가.
-            list_result.Value.Add(tag_info);
-
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
 
             // 엔티티 타입인지 체크하고, 반환값 셋팅.
             var lua_table       = new LuaTable();
             var lua_table_index = 1;
-            foreach(var e in list_result.Value)
+            foreach(var e in list_collect.Value)
             {
-                if (e.TagType != EnumTagType.Entity)
-                    continue;
-
-                lua_table[lua_table_index++] = e.TagValue;
+                lua_table[lua_table_index++] = e.ID;
             }
 
             return context.Return(lua_table);
@@ -139,10 +132,9 @@ public partial class RuntimeScriptManager
         SetLuaValue("CutsceneBuilder", "VFX_TileSelect_On", new LuaFunction(async (context, ct) =>
         {
             var vfx_index = context.GetArgument<int>(0);
-            var pos_x     = context.GetArgument<int>(1);
-            var pos_y     = context.GetArgument<int>(2);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), out TAG_INFO tag);
             
-            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, true, (pos_x, pos_y));
+            CutsceneBuilder.AddCutscene_VFX_TileSelect(vfx_index, true, tag);
             return context.Return();
         }));
 
@@ -158,9 +150,8 @@ public partial class RuntimeScriptManager
         // 카메라 포커스 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Camera_Position", new LuaFunction(async (context, ct) =>
         {
-            var pos_x = context.GetArgument<int>(0);
-            var pos_y = context.GetArgument<int>(1);
-            CutsceneBuilder.AddCutscene_Camera_Position((pos_x, pos_y));
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag);var pos_y = context.GetArgument<int>(1);
+            CutsceneBuilder.AddCutscene_Camera_Position(tag);
             return context.Return();
         }));
 
@@ -229,9 +220,8 @@ public partial class RuntimeScriptManager
         // 그리드 커서 컷씬 추가.
         SetLuaValue("CutsceneBuilder", "Grid_Cursor", new LuaFunction(async (context, ct) =>
         {
-            var pos_x = context.GetArgument<int>(0);
-            var pos_y = context.GetArgument<int>(1);
-            CutsceneBuilder.AddCutscene_Grid_Cursor((pos_x, pos_y));
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag);
+            CutsceneBuilder.AddCutscene_Grid_Cursor(tag);
             return context.Return();
         }));
 

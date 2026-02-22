@@ -29,7 +29,7 @@ function tag.TAG_DATA(tag_info, attribute, target_info)
    }
 end
 
-function tag.TAG_POSITION(pos_x, pos_y)
+function tag.POSITION(pos_x, pos_y)
    return tag.TAG_INFO(
       EnumTagType.Position,
       pos_x * Constants.MAX_MAP_SIZE + pos_y

@@ -59,7 +59,7 @@ function demo_script_02.Run()
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE_END());
 
          -- 시작 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
-         CutsceneBuilder.VFX_TileSelect_On(0, 3, 24);         
+         CutsceneBuilder.VFX_TileSelect_On(0, tag.POSITION(3, 24));         
          CutsceneBuilder.Delay(1.0);
 
          -- 성 이라는 표시.
@@ -131,7 +131,7 @@ function demo_script_02.Run()
 
 
          -- 탈출 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
-         CutsceneBuilder.VFX_TileSelect_On(0, 16, 2);         
+         CutsceneBuilder.VFX_TileSelect_On(0, tag.POSITION(16, 2));         
          CutsceneBuilder.Delay(1.0);
 
          -- 여기가 탈출 위치임.
@@ -145,7 +145,7 @@ function demo_script_02.Run()
          CutsceneBuilder.VFX_TileSelect_Off(0);  
 
          -- 시작 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
-         CutsceneBuilder.Grid_Cursor(3, 22);             
+         CutsceneBuilder.Grid_Cursor(tag.POSITION(3, 22));             
 
 
       CutsceneBuilder.TrackEnd();

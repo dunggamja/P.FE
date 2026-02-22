@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - setting
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3df001d036d1441aba67cc040cbc0246
+    m_Address: demo/script_04.villiage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - runtimescript
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d2a557de92054245be8f79741e87034
     m_Address: demo/scene
     m_ReadOnly: 0

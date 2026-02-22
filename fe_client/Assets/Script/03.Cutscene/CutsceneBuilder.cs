@@ -119,15 +119,15 @@ public static class CutsceneBuilder
    }
 
    // 타일 선택 컷씬 추가.
-   public static void AddCutscene_VFX_TileSelect(int _vfx_index, bool _create, (int x, int y) _position)
+   public static void AddCutscene_VFX_TileSelect(int _vfx_index, bool _create, TAG_INFO _tag)
    {
-      AddCutscene(new Cutscene_VFX_TileSelect(Root, _vfx_index, _create, _position));      
+      AddCutscene(new Cutscene_VFX_TileSelect(Root, _vfx_index, _create, _tag));      
    }
 
    // 카메라 포커스 컷씬 추가.
-   public static void AddCutscene_Camera_Position((int x, int y) _position)
+   public static void AddCutscene_Camera_Position(TAG_INFO _tag)
    {
-      AddCutscene(new Cutscene_Camera_Position(Root, _position));      
+      AddCutscene(new Cutscene_Camera_Position(Root, _tag));      
    }
 
    // 트리거 컷씬 추가.
@@ -158,9 +158,9 @@ public static class CutsceneBuilder
    }
 
    // 그리드 커서 컷씬 추가.
-   public static void AddCutscene_Grid_Cursor((int x, int y) _position)
+   public static void AddCutscene_Grid_Cursor(TAG_INFO _tag)
    {
-      AddCutscene(new Cutscene_Grid_Cursor(Root, _position));      
+      AddCutscene(new Cutscene_Grid_Cursor(Root, _tag));      
    }
 
 #endregion cutscene_action

@@ -203,77 +203,77 @@ using Battle;
       }
 
 
-      public void CollectTag_Owner(
-         TAG_INFO                  _tag_info, 
-         EnumTagAttributeType      _attribute, 
-         List<TAG_DATA>            _result, 
-         int                       _recursive_depth = 0)
-      {
-         // 최대 재귀 횟수 체크.
-         if (MAX_RECURSIVE_DEPTH < _recursive_depth)
-         {
-            Debug.LogError($"CollectTag_Owner: MAX_RECURSIVE_DEPTH < _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
-            return;
-         }
+      // public void CollectTag_Owner(
+      //    TAG_INFO                  _tag_info, 
+      //    EnumTagAttributeType      _attribute, 
+      //    List<TAG_DATA>            _result, 
+      //    int                       _recursive_depth = 0)
+      // {
+      //    // 최대 재귀 횟수 체크.
+      //    if (MAX_RECURSIVE_DEPTH < _recursive_depth)
+      //    {
+      //       Debug.LogError($"CollectTag_Owner: MAX_RECURSIVE_DEPTH < _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
+      //       return;
+      //    }
 
-         // 태그 데이터 컬렉트.
-         if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
-         {
-            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-                  _result.AddRange(repo_tag_data);
-         }
-
-
-         // 재귀적으로 조회할 경우.
-         {
-            // 상위 계층 데이터 컬렉트.
-            using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
-            CollectTag_Parents(_tag_info, list_tag.Value, false);
-
-            // 재귀적으로 순회.
-            foreach(var e in list_tag.Value)
-            {
-               CollectTag_Owner(e, _attribute, _result, _recursive_depth + 1);
-            }
-         }
-      }
-
-      public void CollectTag_Target(
-         TAG_INFO                  _tag_info, 
-         EnumTagAttributeType      _attribute, 
-         List<TAG_DATA>            _result, 
-         int                       _recursive_depth     = 0)
-         // EnumTagRecursiveDirection _recursive_direction = EnumTagRecursiveDirection.Owner,
-      {
-         // 최대 재귀 횟수 체크.
-         if (MAX_RECURSIVE_DEPTH < _recursive_depth)
-         {
-            Debug.LogError($"CollectTag_Target: MAX_RECURSIVE_DEPTH < _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
-            return;
-         }
+      //    // 태그 데이터 컬렉트.
+      //    if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
+      //    {
+      //       if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+      //             _result.AddRange(repo_tag_data);
+      //    }
 
 
-         // 타겟의 태그 데이터 컬렉트.
-         if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
-         {           
-            if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
-                  _result.AddRange(repo_tag_data);
-         }
+      //    // 재귀적으로 조회할 경우.
+      //    {
+      //       // 상위 계층 데이터 컬렉트.
+      //       using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
+      //       CollectTag_Parents(_tag_info, list_tag.Value, false);
+
+      //       // 재귀적으로 순회.
+      //       foreach(var e in list_tag.Value)
+      //       {
+      //          CollectTag_Owner(e, _attribute, _result, _recursive_depth + 1);
+      //       }
+      //    }
+      // }
+
+      // public void CollectTag_Target(
+      //    TAG_INFO                  _tag_info, 
+      //    EnumTagAttributeType      _attribute, 
+      //    List<TAG_DATA>            _result, 
+      //    int                       _recursive_depth     = 0)
+      //    // EnumTagRecursiveDirection _recursive_direction = EnumTagRecursiveDirection.Owner,
+      // {
+      //    // 최대 재귀 횟수 체크.
+      //    if (MAX_RECURSIVE_DEPTH < _recursive_depth)
+      //    {
+      //       Debug.LogError($"CollectTag_Target: MAX_RECURSIVE_DEPTH < _recursive_depth, TagInfo: {_tag_info.TagType}.{_tag_info.TagValue}, Attribute: {_attribute}, RecursiveDepth: {_recursive_depth}");
+      //       return;
+      //    }
 
 
-         // 재귀적으로 조회할 경우.
-         {
-            // 상위 계층 데이터 컬렉트.
-            using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
-            CollectTag_Parents(_tag_info, list_tag.Value, false);
+      //    // 타겟의 태그 데이터 컬렉트.
+      //    if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
+      //    {           
+      //       if (repo_attribute.TryGetValue(_attribute, out var repo_tag_data))
+      //             _result.AddRange(repo_tag_data);
+      //    }
 
-            // 재귀적으로 순회.
-            foreach(var e in list_tag.Value)
-            {
-               CollectTag_Target(e, _attribute, _result, _recursive_depth + 1);
-            }
-         }
-      }      
+
+      //    // 재귀적으로 조회할 경우.
+      //    {
+      //       // 상위 계층 데이터 컬렉트.
+      //       using var list_tag = ListPool<TAG_INFO>.AcquireWrapper();
+      //       CollectTag_Parents(_tag_info, list_tag.Value, false);
+
+      //       // 재귀적으로 순회.
+      //       foreach(var e in list_tag.Value)
+      //       {
+      //          CollectTag_Target(e, _attribute, _result, _recursive_depth + 1);
+      //       }
+      //    }
+      // }      
 
 
       public void CollectTagRelation(
@@ -332,14 +332,14 @@ using Battle;
          // 계층 태그 정보들 컬렉트.
          using var list_parents = ListPool<TAG_INFO>.AcquireWrapper();
          
-         // 재귀 방향에 따라 레포지토리를 다르게 선택합시다.         
+         // 부모 TAG_INFO 컬렉트.
          if (m_repository_target.TryGetValue(_tag_info, out var repo_attribute))
          {
             if (repo_attribute.TryGetValue(EnumTagAttributeType.HIERARCHY, out var repo_tag_data))
             {
-                foreach(var tag_data in repo_tag_data)
+                foreach(var e in repo_tag_data)
                 {
-                    list_parents.Value.Add(tag_data.TagInfo);
+                    list_parents.Value.Add(e.TagInfo);
                 }
             }
          }
@@ -347,12 +347,12 @@ using Battle;
          // 결과값 추가.
          _result.AddRange(list_parents.Value);
 
-         // 재귀 탐색 진행.
+         // 부모방향으로 재귀 탐색 진행.
          if (_recursive)
          {
-            foreach(var tag_parent in list_parents.Value)
+            foreach(var e in list_parents.Value)
             {
-               CollectTag_Parents(tag_parent, _result, true, _recursive_depth + 1);
+               CollectTag_Parents(e, _result, true, _recursive_depth + 1);
             }
          }
       }
@@ -373,15 +373,14 @@ using Battle;
          // 계층 태그 정보들 컬렉트.
          using var list_children = ListPool<TAG_INFO>.AcquireWrapper();
          
-          
+         // 자식 TAG_INFO 컬렉트.
          if (m_repository.TryGetValue(_tag_info, out var repo_attribute))
          {
             if (repo_attribute.TryGetValue(EnumTagAttributeType.HIERARCHY, out var repo_tag_data))
             {
-                foreach(var tag_data in repo_tag_data)
+                foreach(var e in repo_tag_data)
                 {
-                    // 타겟 태그를 찾는다.
-                    list_children.Value.Add(tag_data.TargetInfo);
+                    list_children.Value.Add(e.TargetInfo);
                 }
             }
          }
@@ -389,12 +388,12 @@ using Battle;
          // 결과값 추가.
          _result.AddRange(list_children.Value);
 
-         // 재귀 탐색 진행.
+         // 자식 방향으로 재귀 탐색 진행.
          if (_recursive)
          {
-            foreach(var tag_parent in list_children.Value)
+            foreach(var e in list_children.Value)
             {
-               CollectTag_Children(tag_parent, _result, true, _recursive_depth + 1);
+               CollectTag_Children(e, _result, true, _recursive_depth + 1);
             }
          }
       }
