@@ -7,7 +7,8 @@ using Battle;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-public class CutsceneCondition_Entity
+public class CutsceneCondition_Entity //: CutsceneCondition
 {
+    
 
 }

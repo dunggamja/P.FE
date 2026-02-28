@@ -9,14 +9,11 @@ namespace Battle
     public interface ICombatSystemParam : ISystemParam
     {
         // BHManager BHManager { get; }
-        Entity                Attacker  { get; }
-        Entity                Defender  { get; }        
-        EnumUnitCommandType   CommandType   { get; }
-        bool                  IsPlan    { get; }
-
-
-
-        // List<IBHEffect> Results { get; }
+        Entity                Attacker     { get; }
+        Entity                Defender     { get; }        
+        EnumUnitCommandType   CommandType  { get; }
+        bool                  IsPlan       { get; }
+        float                 DeltaTime    { get; }
     }
 
     public class CombatParam_Plan : ICombatSystemParam
@@ -25,8 +22,8 @@ namespace Battle
         public Entity                Attacker      { get; private set; } = null;
         public Entity                Defender      { get; private set; } = null;
         public EnumUnitCommandType   CommandType   { get; private set; } = EnumUnitCommandType.None;
-        public bool                  IsPlan => true;
-
+        public bool                  IsPlan    => true;
+        public float                 DeltaTime => CombatSystemManager.Instance.DeltaTime;
 
         public CombatParam_Plan Set(Entity _attacker, Entity _defender, EnumUnitCommandType _command_type)
         {
@@ -55,6 +52,8 @@ namespace Battle
         public Entity                Defender    { get; private set; }
         public EnumUnitCommandType   CommandType { get; private set; } = EnumUnitCommandType.None;
         public bool                  IsPlan    => false;
+        public float                 DeltaTime => CombatSystemManager.Instance.DeltaTime;
+
 
 
         public CombatParam Set(Entity _attacker, Entity _defender, EnumUnitCommandType _command_type)

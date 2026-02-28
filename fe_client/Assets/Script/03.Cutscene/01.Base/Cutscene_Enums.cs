@@ -74,8 +74,10 @@ public enum EnumCutscenePlayEvent
     OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number, faction_id]
 
 
-    OnCombatStart      = 61, // 전투 시작 시 실행할 스크립트. [attacker, defender]
-    OnCombatEnd        = 62, // 전투 종료 시 실행할 스크립트. [attacker, defender]
+    OnCombatStart          = 61, // 전투 시작 시 실행할 스크립트. [attacker, defender]    
+    OnCombatEnd            = 62, // 전투 종료 시 실행할 스크립트. [attacker, defender]
+    OnCombatDirectionStart = 63, // 전투 연출 시작 시 실행할 스크립트 [attacker, defender]
+    OnCombatDirectionEnd   = 64, // 전투 연출 종료 시 실행할 스크립트 [attacker, defender]
 
 
     OnTileSelect       = 71, // 타일 선택 시 실행할 스크립트. [x, y]

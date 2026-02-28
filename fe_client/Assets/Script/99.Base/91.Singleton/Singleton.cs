@@ -33,6 +33,7 @@ public class Singleton<T> where T : Singleton<T>, new()
     protected virtual float           LoopInterval      => 0f;
     private   CancellationTokenSource LoopCancelToken   = null;
 
+
  
     protected virtual void Init() 
     { 
@@ -67,6 +68,7 @@ public class Singleton<T> where T : Singleton<T>, new()
     protected virtual void OnLoop()
     {  
         // Debug.LogWarning(this.GetType().Name);
+
     }
 
 

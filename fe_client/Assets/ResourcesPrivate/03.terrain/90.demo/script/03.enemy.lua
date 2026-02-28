@@ -9,20 +9,26 @@ function demo_script_03.Run()
    -- 1턴, 적 진영 시작시 대화 이벤트, (건달들: '다 죽여버리자')
    demo_script_03.Enemy_Bully_Turn_1_Start();
 
-   -- 건달 3021 전투중 죽음 이벤트.
-   demo_script_03.Enemy_Bully_3021_Battle_End_Dead();
+   -- 건달 3021 전투 시작 시 대화 이벤트. (히히히, 돈을 내놓고 가라고)
+   demo_script_03.Enemy_Bully_3021_Combat_Start();
 
-   -- 건달 3022 전투중 죽음 이벤트.
-   demo_script_03.Enemy_Bully_3022_Battle_End_Dead();
+   -- 건달 3022 전투 시작 시 대화 이벤트. (지금까지의 원한을 갚아주마)
+   demo_script_03.Enemy_Bully_3022_Combat_Start();
+
+   -- 건달 3021 전투중 죽음 이벤트. (칫. 제길...)
+   demo_script_03.Enemy_Bully_3021_Combat_Dead();
+
+   -- 건달 3022 전투중 죽음 이벤트. (거짓말이지? 이렇게 강하다니...)
+   demo_script_03.Enemy_Bully_3022_Combat_Dead();
 
    -- 2턴, 적 진영 시작시 도적의 대화 이벤트, (도적: '이 보석단검은 아무에게도 안 줘') (ENTITY.3011)
    demo_script_03.Enemy_Thief_Turn_2_Start();
 
    -- 해당 도적이 죽을때 대화 이벤트. (도적: '보석단검을 줄게 목숨만은 살려줘') (ENTITY.3011)
-   demo_script_03.Enemy_Thief_Battle_End_Dead();
+   demo_script_03.Enemy_Thief_Combat_Dead();
 
    -- 해적이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군') 
-   demo_script_03.Enemy_Pirate_Battle_Start_Ship();
+   demo_script_03.Enemy_Pirate_Combat_Start_Ship();
 
    -- 해적 (3031)은 적이 특정 거리 이내에 들어와야 공격을 시작한다. (ENTITY.3031)
    demo_script_03.Enemy_Pirate_Wait_Enemy();
@@ -32,8 +38,8 @@ end
 -- 1턴, 적 진영 시작시 대화 이벤트, (건달들: '다 죽여버리자') (ENTITY.3021, ENTITY.3022) (Entity_Group: 1)
 function demo_script_03.Enemy_Bully_Turn_1_Start()
 
-   local portrait_3021 = dialogue.PORTRAIT("건달", "", "");
-   local portrait_3022 = dialogue.PORTRAIT("건달", "", "");
+   local portrait_3021 = dialogue.PORTRAIT("건달1", "", "");
+   local portrait_3022 = dialogue.PORTRAIT("건달2", "", "");
 
    CutsceneBuilder.RootBegin("Enemy_Faction_Turn_1_Start");
       -- 턴1_진영2 시작시 실행
@@ -75,12 +81,119 @@ function demo_script_03.Enemy_Bully_Turn_1_Start()
    CutsceneBuilder.RootEnd();
 end
 
+-- 건달 3021 전투 시작 이벤트
+function demo_script_03.Enemy_Bully_3021_Combat_Start()
+   local portrait_3021 = dialogue.PORTRAIT("건달1", "", "");
+
+   CutsceneBuilder.RootBegin("Enemy_Bully_3021_Combat_Start");
+      -- 전투시작시 컷씬 이벤트 실행
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionStart, 0, 0);
+
+      -- 건달 3021이 전투에 참여하고 있는지 체크.
+      CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3021));
+
+      -- 전투내에서만 사용되는 컷씬
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+      CutsceneBuilder.TrackBegin();
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.TOP_SHOW(portrait_3021,
+[[히히히, 돈을 내놓고 가라고]]),
+            }
+         ));
+         CutsceneBuilder.DialogueEnd();
+      CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd()
+end
+
+-- 건달 3022 전투 시작 이벤트.
+function demo_script_03.Enemy_Bully_3022_Combat_Start()
+   local portrait_3022 = dialogue.PORTRAIT("건달2", "", "");
+
+   CutsceneBuilder.RootBegin("Enemy_Bully_3022_Combat_Start");
+         -- 전투시작시 컷씬 이벤트 실행
+         CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionStart, 0, 0);
+
+         -- 건달 3022이 전투에 참여하고 있는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
+
+         -- 전투내에서만 사용되는 컷씬
+         CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+         -- 건달 3022이 전투에 참여하고 있는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
+
+         CutsceneBuilder.TrackBegin();
+            CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+               {
+                  dialogue.TOP_SHOW(portrait_3021,
+[[헷헷헷, 드디어 만났구먼
+지금까지의 원한을 갚아주마.]]),
+               }
+            ));
+            CutsceneBuilder.DialogueEnd();
+         CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd()
+end
+
 -- 건달 3021 전투중 죽음 이벤트.
-function demo_script_03.Enemy_Bully_3021_Battle_End_Dead()
+function demo_script_03.Enemy_Bully_3021_Combat_Dead()
+   local portrait_3021 = dialogue.PORTRAIT("건달1", "", "");
+
+   CutsceneBuilder.RootBegin("Enemy_Bully_3021_Combat_Dead");
+      -- 전투중 죽음 이벤트 실행
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionEnd, 0, 0);
+
+      -- 건달 3021이 전투에 참여하고 있는지 체크.
+      CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3021));
+
+      -- 건달 3021이 죽었는지 체크.
+      CutsceneBuilder.Condition_Combat_Unit_Dead(tag.TAG_INFO(EnumTagType.Entity, 3021));
+
+      -- 전투내에서만 사용되는 컷씬
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+      CutsceneBuilder.TrackBegin();
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.TOP_SHOW(portrait_3021,
+[[칫. 제길...]]),
+            }
+         ));
+         CutsceneBuilder.DialogueEnd();
+      CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd()
 end
 
 -- 건달 3022 전투중 죽음 이벤트.
-function demo_script_03.Enemy_Bully_3022_Battle_End_Dead()
+function demo_script_03.Enemy_Bully_3022_Combat_Dead()
+   local portrait_3022 = dialogue.PORTRAIT("건달2", "", "");
+
+   CutsceneBuilder.RootBegin("Enemy_Bully_3022_Combat_Dead");
+         -- 전투중 죽음 이벤트 실행
+         CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionEnd, 0, 0);
+
+         -- 건달 3022이 전투에 참여하고 있는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
+
+         -- 건달 3022이 죽었는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit_Dead(tag.TAG_INFO(EnumTagType.Entity, 3022));
+
+         -- 전투내에서만 사용되는 컷씬
+         CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+
+         CutsceneBuilder.TrackBegin();
+            CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+               {
+                  dialogue.TOP_SHOW(portrait_3021,
+[[거짓말이지? 이렇게 강하다니...]]),
+               }
+            ));
+            CutsceneBuilder.DialogueEnd();
+         CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd()
 end
 
 -- 2턴, 적 진영 시작시 도적의 대화 이벤트, (도적: '이 보석단검은 아무에게도 안 줘') (ENTITY.3011)
@@ -88,11 +201,11 @@ function demo_script_03.Enemy_Thief_Turn_2_Start()
 end
 
 -- 해당 도적이 죽을때 대화 이벤트. (도적: '보석단검을 줄게 목숨만은 살려줘') (ENTITY.3011)
-function demo_script_03.Enemy_Thief_Battle_End_Dead()
+function demo_script_03.Enemy_Thief_Combat_Dead()
 end
 
 -- 해적이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군')
-function demo_script_03.Enemy_Pirate_Battle_Start_Ship()
+function demo_script_03.Enemy_Pirate_Combat_Start_Ship()
 end
 
 -- 해적 (3031)은 적이 특정 거리 이내에 들어와야 공격을 시작한다. (ENTITY.3031)

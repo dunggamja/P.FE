@@ -74,7 +74,11 @@ namespace Battle
 
         public ICombatSystemParam  Param      { get; private set; }
         public EnumState           State      { get; private set; }
-        public bool                IsPause    { get; private set; } = false;
+        public bool                IsPause    => false;
+
+
+        public    float            DeltaTime { get; private set; } = 0f;
+        private   float            m_last_time = 0f;
 
 
         public bool IsProgress => State == EnumState.Progress;
@@ -91,10 +95,6 @@ namespace Battle
             base.Init();
 
             // 현재는 파엠을 의식하고 1대1 전투를 상정하고 만들어져 있음.
-
-
-            // TODO: combatsyste_turn + combatsystem_damage 를 1개로 합쳐야 구조가 좀 깔끔할 것 같음.
-            // 지금은 코드가 뭔가 좀 지저분하다....
 
             var turn_sytem         = new CombatSystem_Turn();        // 전투 공/방 순서 진행.
             var damage_sytem       = new CombatSystem_Damage();      // 전투 공/방 데미지 처리.
@@ -153,10 +153,28 @@ namespace Battle
                 if (Param.Defender != null)
                     Param.Defender.Equip_Weapon_Auto();
             }
+
+
+
+
+            // 컷씬 이벤트 실행.
+            if (Param.IsPlan == false)
+            {                
+                CutsceneManager.Instance.OnPlayEvent(
+                    CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnCombatStart));
+            }            
         }
 
         bool OnUpdate()
         {
+            if (m_last_time > 0f)
+            {
+                DeltaTime = Time.time - m_last_time;
+            }
+
+            m_last_time = Time.time;
+
+
             if (IsPause)
                 return false;
 
@@ -180,11 +198,20 @@ namespace Battle
         {
             //Debug.Log("Battle Finished");
 
+            if (Param.IsPlan == false)
+            {
+                // 컷씬 이벤트 실행.
+                CutsceneManager.Instance.OnPlayEvent(
+                    CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnCombatEnd));
+            }  
+
             // 모든 시스템이 순차적으로 완료처리된다는 보장이 없어서... 여기서 종료처리 합니다...;;;
             foreach (var e in m_repository.Values)
                 e.Release();
 
-            Param = null;
+            Param       = null;
+            m_last_time =  0f;
+            DeltaTime   =  0f;
         }
 
 
@@ -256,6 +283,9 @@ namespace Battle
         public bool IsEngaged(Int64 _id)  => IsAttacker(_id) || IsDefender(_id);
         public bool IsAttacker(Int64 _id) => (Param != null && Param.Attacker != null && Param.Attacker.ID == _id) && 0 < _id;
         public bool IsDefender(Int64 _id) => (Param != null && Param.Defender != null && Param.Defender.ID == _id) && 0 < _id;
+
+        public Int64 AttackerID => Param?.Attacker?.ID ?? 0;
+        public Int64 DefenderID => Param?.Defender?.ID ?? 0;
 
 
 

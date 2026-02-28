@@ -38,6 +38,18 @@ public partial class RuntimeScriptManager
             return context.Return(lua_table);
         }));
 
+        // 유닛 삭제.
+        SetLuaValue("EntityManager", "RemoveEntity", new LuaFunction(async (context, ct) =>
+        {
+            return context.Return();
+        }));
+
+        // 유닛 생성.
+        SetLuaValue("EntityManager", "CreateEntity", new LuaFunction(async (context, ct) =>
+        {
+            return context.Return();
+        }));
+
 
         SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
         {
@@ -60,6 +72,10 @@ public partial class RuntimeScriptManager
 
             return context.Return();
         }));
+
+
+
+        // 
 
 
 
@@ -235,6 +251,22 @@ public partial class RuntimeScriptManager
         //     CutsceneBuilder.AddCondition_PlayOneShot();
         //     return context.Return();
         // }));
+
+        // 공격 또는 방어유닛에 대상 유닛이 존재하는지 체크합니다.
+        SetLuaValue("CutsceneBuilder", "Condition_Combat_Unit", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO unit_tag);
+            CutsceneBuilder.AddCondition_Combat_Unit(unit_tag);
+            return context.Return();
+        }));
+
+        // 공격 또는 방어유닛에 대상 유닛이 존재하는지 체크합니다.
+        SetLuaValue("CutsceneBuilder", "Condition_Combat_Unit_Dead", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO unit_tag);
+            CutsceneBuilder.AddCondition_Combat_Unit_Dead(unit_tag);
+            return context.Return();
+        }));
 #endregion cutscene_condition
 
 #region cutscene_play_event

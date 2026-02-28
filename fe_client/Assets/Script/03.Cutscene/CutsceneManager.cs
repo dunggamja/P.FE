@@ -85,7 +85,7 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
 
-    public void OnPlayEventReceive(CutscenePlayEvent _event)
+    public void OnPlayEvent(CutscenePlayEvent _event)
     {
         if (m_repository_by_event.TryGetValue(_event, out var list_cutscene) == false)
             return;
