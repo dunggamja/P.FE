@@ -55,9 +55,7 @@ function demo_script_01.Setting()
    end
 
    -- 적(불량배들)의 행동순서를 빠르게 셋팅. 
-   for _, entity_id in ipairs(EntityManager.GetEntity(tag.TAG_INFO(EnumTagType.Entity_Group, 1))) do
-      EntityManager.SetCommandPriority(entity_id, 10);
-   end
+   EntityManager.SetCommandPriority(tag.TAG_INFO(EnumTagType.Entity_Group, 1), 10);
 
 end
 

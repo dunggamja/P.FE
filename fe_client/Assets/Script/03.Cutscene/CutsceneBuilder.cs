@@ -151,6 +151,12 @@ public static class CutsceneBuilder
       AddCutscene(new Cutscene_Unit_Show(Root, _unit_id, _show));      
    }
 
+   // 유닛 AI 타입 컷씬 추가.
+   public static void AddCutscene_Unit_AIType(List<Int64> _unit_id, EnumAIType _ai_type)
+   {
+      AddCutscene(new Cutscene_Unit_AIType(Root, _unit_id, _ai_type));      
+   }
+
    // Delay 컷씬 추가.
    public static void AddCutscene_Delay(float _wait_time)
    {

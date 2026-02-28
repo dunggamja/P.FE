@@ -40,11 +40,13 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         RegisterEnum<EnumBuffTarget>();
         RegisterEnum<EnumBuffContentsType>();
         RegisterEnum<EnumUnitCommandType>();
+        RegisterEnum<EnumAIType>();
+        RegisterEnum<EnumAIMoveType>();
+        RegisterEnum<EnumAIAggressiveType>();
+
         RegisterEnum<EnumTagType>();
-        RegisterEnum<EnumTagAttributeType>();
-        // RegisterEnum<EnumScenarioTrigger>();
-        // RegisterEnum<EnumScenarioCondition>();
-        // RegisterEnum<EnumCutsceneType>();
+        RegisterEnum<EnumTagAttributeType>();        
+
         RegisterEnum<EnumCutscenePlayEvent>();
         RegisterEnum<EnumCutsceneLifeTime>();
         RegisterEnum<DIALOGUE_DATA.EnumPosition>();

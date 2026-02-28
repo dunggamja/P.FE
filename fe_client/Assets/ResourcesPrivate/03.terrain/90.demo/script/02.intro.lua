@@ -14,18 +14,19 @@ function demo_script_02.Run()
 
 
    -- 유닛들 원래 좌표 받아옴.
-   local pos_1_x, pos_1_y = EntityManager.GetPosition(1);
-   local pos_2_x, pos_2_y = EntityManager.GetPosition(2);
-   local pos_3_x, pos_3_y = EntityManager.GetPosition(3);
-   local pos_4_x, pos_4_y = EntityManager.GetPosition(4);
-   local pos_5_x, pos_5_y = EntityManager.GetPosition(5);
+   local list_entity_position = EntityManager.GetPosition(tag.TAG_INFO(EnumTagType.Entity_Faction, 1));
+   local fix_pos_x, fix_pos_y = 3, 24;
+   local list_unit_init_data  = {};
+   local list_unit_move_data  = {};
 
 
-   -- lua에서 반복문 문법이군...
-   -- nums = { 10, 20, 30 }
-   -- for idx, val in ipairs(nums) do
-   --    print(idx, val)
-   -- end
+   for i, pos in ipairs(list_entity_position) do
+      -- 유닛들 3,24 위치로 이동시켜 놓기.
+      table.insert(list_unit_init_data, cutscene.UNIT_MOVE_DATA(pos.id, fix_pos_x, fix_pos_y, fix_pos_x, fix_pos_y));
+      
+      -- 유닛들 3,24 에서 원래 위치로 이동.
+      table.insert(list_unit_move_data, cutscene.UNIT_MOVE_DATA(pos.id, fix_pos_x, fix_pos_y, pos.x, pos.y));
+   end
 
 
    CutsceneBuilder.RootBegin("Intro");
@@ -40,13 +41,7 @@ function demo_script_02.Run()
          -- 유닛 표시 OFF, 
          CutsceneBuilder.Unit_Show({1, 2, 3, 4, 5}, false);
          -- 유닛들 3,24 위치로 이동시켜 놓기.
-         CutsceneBuilder.Unit_Move(
-            {cutscene.UNIT_MOVE_DATA(1, 3, 24, 3, 24),
-             cutscene.UNIT_MOVE_DATA(2, 3, 24, 3, 24),
-             cutscene.UNIT_MOVE_DATA(3, 3, 24, 3, 24),
-             cutscene.UNIT_MOVE_DATA(4, 3, 24, 3, 24),
-             cutscene.UNIT_MOVE_DATA(5, 3, 24, 3, 24)},
-            false);
+         CutsceneBuilder.Unit_Move(list_unit_init_data,false);
          -- 로컬 트리거 1번 셋팅. 
          CutsceneBuilder.LocalTriggerSet(1);
       CutsceneBuilder.TrackEnd();
@@ -117,14 +112,8 @@ function demo_script_02.Run()
          -- 유닛들 표시 ON.
          CutsceneBuilder.Unit_Show({1, 2, 3, 4, 5}, true);
 
-         -- 유닛들 이동 연출. 
-         CutsceneBuilder.Unit_Move(
-            {cutscene.UNIT_MOVE_DATA(1, 3, 24, pos_1_x, pos_1_y),
-             cutscene.UNIT_MOVE_DATA(2, 3, 24, pos_2_x, pos_2_y),
-             cutscene.UNIT_MOVE_DATA(3, 3, 24, pos_3_x, pos_3_y),
-             cutscene.UNIT_MOVE_DATA(4, 3, 24, pos_4_x, pos_4_y),
-             cutscene.UNIT_MOVE_DATA(5, 3, 24, pos_5_x, pos_5_y)},
-            true);
+         -- 유닛들 3,24 에서 원래 위치로 이동.
+         CutsceneBuilder.Unit_Move(list_unit_move_data, true);
 
          -- 1초 대기.
          CutsceneBuilder.Delay(1.0);

@@ -53,25 +53,43 @@ public partial class RuntimeScriptManager
 
         SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
         {
-            var entity_id = context.GetArgument<Int64>(0);
-            var entity = EntityManager.Instance.GetEntity(entity_id);
-            if (entity == null)
-              return context.Return(LuaValue.Nil, LuaValue.Nil);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
 
-            return context.Return(entity.Cell.x, entity.Cell.y);
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
+            // 엔티티 타입인지 체크하고, 반환값 셋팅.
+            var lua_table       = new LuaTable();
+            var lua_table_index = 1;
+            foreach(var e in list_collect.Value)
+            {
+                var entity_position   = new LuaTable();
+                entity_position["id"] = e.ID;
+                entity_position["x"]  = e.Cell.x;
+                entity_position["y"]  = e.Cell.y;
+
+                lua_table[lua_table_index++] = entity_position;
+            }
+            
+            return context.Return(lua_table);
         }));
 
 
         SetLuaValue("EntityManager", "SetCommandPriority", new LuaFunction(async (context, ct) =>
         {
-            var entity_id = context.GetArgument<Int64>(0);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
             var priority  = context.GetArgument<int>(1);
-            var entity  = EntityManager.Instance.GetEntity(entity_id);
-            if (entity != null)
+            
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+            foreach(var entity in list_collect.Value)
+            {
                 entity.SetCommandPriority(priority);
+            }
 
             return context.Return();
         }));
+
 
 
 
@@ -222,6 +240,27 @@ public partial class RuntimeScriptManager
 
             RuntimeScriptHelper.FromLua(table, out List<Int64> list_unit_id);
             CutsceneBuilder.AddCutscene_Unit_Show(list_unit_id, show);
+            return context.Return();
+        }));
+
+        
+        SetLuaValue("CutsceneBuilder", "Unit_AIType", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+            var ai_type = context.GetArgument<int>(1);
+
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            using var list_unit_id = ListPool<Int64>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
+            foreach(var e in list_collect.Value)
+            {
+                list_unit_id.Value.Add(e.ID);
+            }            
+            
+            CutsceneBuilder.AddCutscene_Unit_AIType(list_unit_id.Value, (EnumAIType)ai_type);
+
+            
             return context.Return();
         }));
 

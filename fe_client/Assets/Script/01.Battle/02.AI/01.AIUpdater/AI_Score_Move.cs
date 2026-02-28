@@ -16,6 +16,9 @@ namespace Battle
 
        // 타겟과의 가까워지는 것을 최우선.
        Closest_Target,
+
+       // 랜덤으로 이동.
+       Random,
     }
 
 
@@ -25,7 +28,7 @@ namespace Battle
     {
       public enum EnumScoreType
       {
-        CloseToTarget,    // 목표 위치와 가까운지 체크.
+        Goal,             // 목표 위치와 가까울수록 높은 점수.
         TerrainAdvantage, // 지형 이득 점수.
         TerrainDamage,    // 지형 데미지 점수.
         MAX,
@@ -36,7 +39,7 @@ namespace Battle
         var multiplier = 0f;
         switch(_type)
         {
-          case EnumScoreType.CloseToTarget:    multiplier = 1f;  break;
+          case EnumScoreType.Goal:             multiplier = 1f;  break;
           case EnumScoreType.TerrainAdvantage: multiplier = 1f;  break;
           case EnumScoreType.TerrainDamage:    multiplier = -1f; break;
         }
@@ -128,12 +131,18 @@ namespace Battle
       public Dictionary<(int x, int y), int> DistanceFromTarget { get; private set; } = new();
 
 
-      public int GetMoveCostFromTarget(int _x, int _y)
+      int GetMoveCostFromTarget(int _x, int _y)
       {
         if (DistanceFromTarget.TryGetValue((_x, _y), out var distance))
             return distance;
 
         return -1;
+      }
+
+      public float CalcScore(int _x, int _y)
+      {
+        var     move_cost = GetMoveCostFromTarget(_x, _y);
+        return (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
       }
 
 
@@ -164,8 +173,10 @@ namespace Battle
 
 
       
-      public Result              BestResult            { get; set; } = new();
-      public Func<int, int, int> GetMoveCostFromTarget { get; set; } = null;
+      public Result                BestResult            { get; set; } = new();
+      // public Func<int, int, int>   GetMoveCostFromTarget { get; set; } = null;
+      public Func<int, int, float> CalcScore             { get; set; } = null;
+      
       
       // public (int x, int y) BestPosition      { get; set; } = (0, 0);
       // public float          BestScore         { get; set; } = 0f;
@@ -176,7 +187,7 @@ namespace Battle
         Visitor               = null;
         Position              = (0, 0);
         MoveDistance          = 0;
-        GetMoveCostFromTarget = null;
+        CalcScore             = null;
 
         // BestPosition   = (0, 0);
         // BestScore      = 0f;
@@ -192,11 +203,12 @@ namespace Battle
 
 
          // 타겟과 가까울수록 높은 점수.
-         var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;         
-         var move_score = (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
+         //var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;         
+         //  var move_score = (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
+         var move_score = CalcScore?.Invoke(_node.x, _node.y) ?? 0f;
 
          // 타겟과의 거리에 대한 점수 셋팅.
-         temp_result.Value.SetScore(Result.EnumScoreType.CloseToTarget, move_score);
+         temp_result.Value.SetScore(Result.EnumScoreType.Goal, move_score);
 
          // 점수가 더 좋다면 교체.
          if (BestResult.CalculateScore() < temp_result.Value.CalculateScore())
@@ -231,7 +243,11 @@ namespace Battle
       switch(BehaviorType)
       {
         case EnumBehavior.Closest_Enemy:
-          return Process_Closest_Enemy(_param);
+        case EnumBehavior.Closest_Target:
+          return Process_Closest_Target(_param, BehaviorType);
+
+        case EnumBehavior.Random:
+          return Process_Random(_param);
       }
 
       return false;
@@ -265,17 +281,8 @@ namespace Battle
 
 
 
-
-
-    void Process_TargetPosition(IAIDataManager _owner)
+    bool Process_Closest_Target(IAIDataManager _owner, EnumBehavior _behavior_type)
     {
-      if (_owner == null)
-        return;
-    }
-
-    bool Process_Closest_Enemy(IAIDataManager _owner)
-    {
-        using var list_path_nodes = ListPool<PathNode>.AcquireWrapper();
         using var visit_target    = ObjectPool<DistanceFromTargetVisitor>.AcquireWrapper();
         using var visit_position  = ObjectPool<PositionVisitor>.AcquireWrapper();
 
@@ -288,9 +295,8 @@ namespace Battle
           if (entity == null)
             return false;
 
-
-          // 가장 가까운 적과 경로를 찾아봅시다.
-          var target = Find_Closest_Enemy(entity, list_path_nodes.Value);
+          // 가장 가까운 타겟을 찾아봅시다.
+          var target = Find_Closest_Target(entity);         
           if (target == null)
             return false;
 
@@ -307,8 +313,8 @@ namespace Battle
           visit_position.Value.Position              = entity.Cell;
           visit_position.Value.MoveDistance          = entity.PathMoveRange;
 
-          // 타겟으로부터 각 셀들의 거리를 콜백으로 전달합니다.
-          visit_position.Value.GetMoveCostFromTarget = visit_target.Value.GetMoveCostFromTarget;
+          // 점수 계산 공식. (타겟과 거리가 가까울수록 높은 점수를 줍니다.)
+          visit_position.Value.CalcScore = visit_target.Value.CalcScore;
           
           // 타겟으로부터 가장 최적의 위치를 찾아봅시다.
           PathAlgorithm.FloodFill(visit_position.Value);
@@ -321,12 +327,11 @@ namespace Battle
         return true;
     }
 
-    
 
-    Entity Find_Closest_Enemy(Entity _entity, List<PathNode> _path_nodes)
+    Entity Find_Closest_Target(Entity _entity)
     {
       // 가장 가까운 적을 찾아봅시다.
-      if (_entity == null || _path_nodes == null)
+      if (_entity == null)
           return null;
 
         // 최대 100칸 이내의 적을 5칸씩 범위를 확장해가면서 찾습니다.
@@ -449,10 +454,6 @@ namespace Battle
                         {
                           target_id       = e;
                           target_movecost = path_find.move_cost;
-
-                          // 길찾기 경로 저장.
-                          _path_nodes.Clear();
-                          _path_nodes.AddRange(list_target_path_nodes.Value);
                         }
                     }
                 }
@@ -471,6 +472,38 @@ namespace Battle
     {
       if (_owner == null)
         return;
+    }
+
+    bool Process_Random(IAIDataManager _owner)
+    {
+      // 
+      if (_owner == null)
+        return false;
+
+      var entity = EntityManager.Instance.GetEntity(_owner.ID);
+      if (entity == null)
+        return false;
+
+      using var visit_position  = ObjectPool<PositionVisitor>.AcquireWrapper();
+
+
+      // 빈 좌표들에 랜덤한 점수를 줘봅시다.
+      visit_position.Value.TerrainMap            = entity.PathNodeManager.TerrainMap;
+      visit_position.Value.Visitor               = entity;
+      visit_position.Value.Position              = entity.Cell;
+      visit_position.Value.MoveDistance          = entity.PathMoveRange;
+
+      // 점수 계산 공식. (랜덤 점수입니다.)
+      visit_position.Value.CalcScore = (x, y) => Util.Random01();
+      
+      // 빈 좌표 탐색.
+      PathAlgorithm.FloodFill(visit_position.Value);
+
+      // 점수 셋팅.
+      entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visit_position.Value.BestResult);
+      entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
+  
+      return true;
     }
 
     private bool Verify_Enemy(Entity _entity, Entity _target) 

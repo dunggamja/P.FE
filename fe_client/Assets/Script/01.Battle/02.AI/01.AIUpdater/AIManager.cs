@@ -99,6 +99,7 @@ namespace Battle
             m_repository.Clear();
             m_priority_list.Clear();
 
+            // AI 블랙보드 초기화.
             AIBlackBoard.Reset();
 
             // 대기 : 다른 행동들 모두 할거 없을때 처리.
@@ -161,6 +162,11 @@ namespace Battle
                 case EnumAIType.Fixed:
                     // 1. 이동하지 않은 상태에서 공격 가능하면 공격.
                     AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Fixed));
+                    break;
+
+                case EnumAIType.Wandering:
+                    // 1. 랜덤으로 이동.
+                    AddAIUpdater(1, new AI_Score_Move(AI_Score_Move.EnumBehavior.Random));
                     break;
 
             }
