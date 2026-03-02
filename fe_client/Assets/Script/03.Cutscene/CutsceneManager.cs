@@ -15,7 +15,8 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
 {
    
    private Dictionary<string, CutsceneSequence> m_repository          = new();
-   private Dictionary<CutscenePlayEvent, HashSet<string>> 
+
+   private Dictionary<CutscenePlayEvent, HashSet<string>>
                                                 m_repository_by_event = new();
    private Queue<string>                        m_queue_cutscene      = new();
    private string                               m_playing_cutscene    = string.Empty;
@@ -81,26 +82,38 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       if (VerifyPlayCutscene(_cutscene_name) == false)
          return;
 
+      // 이미 재생 대기중인지 체크.
+      foreach(var e in m_queue_cutscene)
+      {
+         if (e == _cutscene_name)
+            return;
+      }
+
       // 대기중인 컷씬 목록에 추가.
       m_queue_cutscene.Enqueue(_cutscene_name);
     }
 
     public void OnPlayEvent(CutscenePlayEvent _event)
-    {
-        if (m_repository_by_event.TryGetValue(_event, out var list_cutscene) == false)
-            return;
+    { 
+      // 0은 조건 체크 없음을 의미합니다.
+      Span<Int64> list_value1 = stackalloc Int64[2] { _event.Value1, 0 };
+      Span<Int64> list_value2 = stackalloc Int64[2] { _event.Value2, 0 };
 
-         foreach (var name in list_cutscene)
+      for(int i = 0; i < list_value1.Length; ++i)
+      {
+         for(int k = 0; k < list_value2.Length; ++k)
          {
-            // var cutscene = GetCutscene(name);
-            // if (cutscene == null)
-            //    continue;
-            // if (cutscene.PlayEvents.Any(e => e == _event) == false)
-            //    continue;
-            
-            RequestPlayCutscene(name);
-         }
+            CutscenePlayEvent temp = CutscenePlayEvent.Create(_event.Event, list_value1[i], list_value2[k]);
+            if (m_repository_by_event.TryGetValue(temp, out var list_cutscene) == false)
+               continue;               
 
+            foreach (var name in list_cutscene)
+            {
+               // 컷씬 재생 요청.
+               RequestPlayCutscene(name);        
+            }            
+         }
+      }
     }
 
 

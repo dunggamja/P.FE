@@ -178,6 +178,8 @@ namespace Battle
 
 
             // 컷씬 이벤트 실행.
+
+            
             CutsceneManager.Instance.OnPlayEvent(
                 CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnTurnStart, Turn_Cur, Faction_Cur));
         }

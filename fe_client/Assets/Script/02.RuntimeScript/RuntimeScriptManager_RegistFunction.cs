@@ -222,7 +222,7 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
-        // 유닛 이동 컷씬 추가.
+        // 유닛 이동 컷씬 
         SetLuaValue("CutsceneBuilder", "Unit_Move", new LuaFunction(async (context, ct) =>
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out List<UNIT_MOVE_DATA> unit_move_data);
@@ -232,7 +232,7 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
-        // 유닛 표시 On/Off 추가.
+        // 유닛 표시 On/Off 
         SetLuaValue("CutsceneBuilder", "Unit_Show", new LuaFunction(async (context, ct) =>
         {
             var table = context.GetArgument<LuaTable>(0);            
@@ -243,7 +243,7 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
-        
+        // 유닛 AI 타입 변경
         SetLuaValue("CutsceneBuilder", "Unit_AIType", new LuaFunction(async (context, ct) =>
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
@@ -306,6 +306,18 @@ public partial class RuntimeScriptManager
             CutsceneBuilder.AddCondition_Combat_Unit_Dead(unit_tag);
             return context.Return();
         }));
+
+        // 유닛과 대상 유닛의 거리가 조건에 맞는지 체크합니다.
+        SetLuaValue("CutsceneBuilder", "Condition_Range", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO unit_tag);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), out TAG_INFO target_tag);
+            var min_range = context.GetArgument<int>(2);
+            var max_range = context.GetArgument<int>(3);
+            CutsceneBuilder.AddCondition_Range(unit_tag, target_tag, min_range, max_range);
+            return context.Return();
+        }));
+
 #endregion cutscene_condition
 
 #region cutscene_play_event

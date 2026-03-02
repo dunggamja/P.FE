@@ -34,7 +34,7 @@ function demo_script_01.Setting()
       )
    );
 
-   -- 유닛(해적3031)_타겟팅포함_진영(선박)
+   -- 유닛(해적3032)_타겟팅포함_진영(선박)
    TagManager.SetTag(
       tag.TAG_DATA(
          tag.TAG_INFO(EnumTagType.Entity, 3032),

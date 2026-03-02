@@ -27,11 +27,14 @@ function demo_script_03.Run()
    -- 해당 도적이 죽을때 대화 이벤트. (도적: '보석단검을 줄게 목숨만은 살려줘') (ENTITY.3011)
    demo_script_03.Enemy_Thief_Combat_Dead();
 
-   -- 해적이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군') 
-   demo_script_03.Enemy_Pirate_Combat_Start_Ship();
+   -- 해적 (3032)이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군') 
+   demo_script_03.Enemy_Pirate_3032_Combat_Start_Ship();
+
+   -- 해적 (3032)이 죽을때 대사 연출. ('육지에 오지 말았어야 했는데') 
+   demo_script_03.Enemy_Pirate_3032_Combat_Dead();
 
    -- 해적 (3031)은 적이 특정 거리 이내에 들어와야 공격을 시작한다. (ENTITY.3031)
-   demo_script_03.Enemy_Pirate_Wait_Enemy();
+   demo_script_03.Enemy_Pirate_3031_Wait_Enemy();
 end
 
 
@@ -121,13 +124,10 @@ function demo_script_03.Enemy_Bully_3022_Combat_Start()
          -- 전투내에서만 사용되는 컷씬
          CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
 
-         -- 건달 3022이 전투에 참여하고 있는지 체크.
-         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
-
          CutsceneBuilder.TrackBegin();
             CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
                {
-                  dialogue.TOP_SHOW(portrait_3021,
+                  dialogue.TOP_SHOW(portrait_3022,
 [[헷헷헷, 드디어 만났구먼
 지금까지의 원한을 갚아주마.]]),
                }
@@ -187,7 +187,7 @@ function demo_script_03.Enemy_Bully_3022_Combat_Dead()
          CutsceneBuilder.TrackBegin();
             CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
                {
-                  dialogue.TOP_SHOW(portrait_3021,
+                  dialogue.TOP_SHOW(portrait_3022,
 [[거짓말이지? 이렇게 강하다니...]]),
                }
             ));
@@ -269,28 +269,25 @@ function demo_script_03.Enemy_Thief_Combat_Dead()
 end
 
 -- 해적이 배를 때릴때 대사 연출. ('딱 좋은 사냥감이군')
-function demo_script_03.Enemy_Pirate_Combat_Start_Ship()
-   local portrait_3022 = dialogue.PORTRAIT("건달2", "", "");
+function demo_script_03.Enemy_Pirate_3032_Combat_Start_Ship()
+   local portrait_3032 = dialogue.PORTRAIT("해적", "", "");
 
-   CutsceneBuilder.RootBegin("Enemy_Bully_3022_Combat_Start");
+   CutsceneBuilder.RootBegin("Enemy_Pirate_Combat_Start_Ship");
          -- 전투시작시 컷씬 이벤트 실행
          CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionStart, 0, 0);
 
-         -- 건달 3022이 전투에 참여하고 있는지 체크.
-         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
+         -- 해적 3032이 전투에 참여하고 있는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3032));
 
          -- 전투내에서만 사용되는 컷씬
          CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
 
-         -- 건달 3022이 전투에 참여하고 있는지 체크.
-         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3022));
 
          CutsceneBuilder.TrackBegin();
             CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
                {
-                  dialogue.TOP_SHOW(portrait_3021,
-[[헷헷헷, 드디어 만났구먼
-지금까지의 원한을 갚아주마.]]),
+                  dialogue.TOP_SHOW(portrait_3032,
+[[히힛. 딱 좋은 사냥감이군.]]),
                }
             ));
             CutsceneBuilder.DialogueEnd();
@@ -298,8 +295,54 @@ function demo_script_03.Enemy_Pirate_Combat_Start_Ship()
    CutsceneBuilder.RootEnd()
 end
 
+-- 해적 (3032)이 죽을때 대사 연출. ('육지에 오지 말았어야 했는데') 
+function demo_script_03.Enemy_Pirate_3032_Combat_Dead()
+   local portrait_3032 = dialogue.PORTRAIT("해적", "", "");
+
+   CutsceneBuilder.RootBegin("Enemy_Pirate_3032_Combat_Dead");
+         -- 전투중 죽음 이벤트 실행
+         CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnCombatDirectionEnd, 0, 0);
+
+         -- 도적 3011이 전투에 참여하고 있는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit(tag.TAG_INFO(EnumTagType.Entity, 3032));
+
+         -- 도적 3011이 죽었는지 체크.
+         CutsceneBuilder.Condition_Combat_Unit_Dead(tag.TAG_INFO(EnumTagType.Entity, 3032));
+
+         -- 전투내에서만 사용되는 컷씬
+         CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+
+         CutsceneBuilder.TrackBegin();
+            CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+               {
+                  dialogue.TOP_SHOW(portrait_3032,
+[[육지에 오지 말았어야 했는데...]]),
+               }
+            ));
+            CutsceneBuilder.DialogueEnd();
+         CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd()
+end
+
+
 -- 해적 (3031)은 적이 특정 거리 이내에 들어와야 공격을 시작한다. (ENTITY.3031)
-function demo_script_03.Enemy_Pirate_Wait_Enemy()
+function demo_script_03.Enemy_Pirate_3031_Wait_Enemy()
+   CutsceneBuilder.RootBegin("Enemy_Pirate_3031_Wait_Enemy");
+      -- 매 턴 시작 시 실행
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnTurnStart, 0, 2);
+
+      -- 해적 3031이 적이 특정 거리 이내에 들어와야 공격을 시작한다.
+      CutsceneBuilder.Condition_Range(tag.TAG_INFO(EnumTagType.Entity, 3031), tag.TAG_INFO(EnumTagType.Entity_Faction, 1), 0, 3);
+
+      -- 전투내에서만 사용되는 컷씬
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+      -- 해적 3031이 공격 상태로 변경.
+      CutsceneBuilder.TrackBegin();
+         CutsceneBuilder.Unit_AIType(tag.TAG_INFO(EnumTagType.Entity, 3031), EnumAIType.Attack);
+      CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd();
 end
 
 

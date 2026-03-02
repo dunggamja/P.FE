@@ -197,6 +197,13 @@ public static class CutsceneBuilder
    {
       AddCondition(new CutsceneCondition_Combat_Unit_Dead(_unit_tag));
    }
+
+   // 유닛과 대상 유닛의 거리가 조건에 맞는지 체크합니다.
+   public static void AddCondition_Range(TAG_INFO _unit_tag, TAG_INFO _target_tag, int _min_range, int _max_range)
+   {
+      AddCondition(new CutsceneCondition_Range(_unit_tag, _target_tag, _min_range, _max_range));
+   }
+
 #endregion cutscene_condition
 
 
