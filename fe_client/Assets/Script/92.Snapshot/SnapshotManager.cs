@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public class SnapshotManager : Singleton<SnapshotManager>
     //     var snapshot_id = Util.GenerateID();
     //     var snapshot    = new GameSnapshot(snapshot_id, _is_full_snapshot);
         
-    //     // ÇöÀç °ÔÀÓ »óÅÂ¸¦ ½º³À¼¦¿¡ ÀúÀå
+    //     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     //     // SaveCurrentState(snapshot);
         
     //     m_snapshots[snapshot_id] = snapshot;
@@ -27,7 +27,7 @@ public class SnapshotManager : Singleton<SnapshotManager>
         if (!m_snapshots.TryGetValue(snapshot_id, out var snapshot))
             return;
             
-        // ½º³À¼¦ »óÅÂ·Î º¹¿ø
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
         // RestoreState(snapshot);
     }
 

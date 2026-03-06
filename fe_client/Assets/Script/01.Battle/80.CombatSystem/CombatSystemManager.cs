@@ -5,63 +5,137 @@ using UnityEngine;
 
 namespace Battle
 {
-    public struct Combat_DamageResult
+    // 전투 연출을 위한 정보들.
+
+    // 결과 정보 (HP, 명중여부, 필살여부, 방어여부, 데미지)
+    public struct CombatRecord_Result
     {
+        public int    HP_Attacker { get; private set; }
+        public int    HP_Target   { get; private set; }   
+        public bool   Hit         { get; private set; }
+        public bool   Critical    { get; private set; }
+        public bool   Guard       { get; private set; }
+        public int    Damage      { get; private set; }   
+
+        public static CombatRecord_Result Create(
+            int _hp_attacker,
+            int _hp_target,
+            bool _hit,
+            bool _critical,
+            bool _guard,
+            int _damage)
+        {
+            return new CombatRecord_Result
+            {
+                HP_Attacker = _hp_attacker,
+                HP_Target   = _hp_target,
+                Hit         = _hit,
+                Critical    = _critical,
+                Guard       = _guard,
+                Damage      = _damage,
+            };
+        }
+    }
+
+    // 확률 정보 (명중, 필살, 방어)
+    public struct CombatRecord_Rate
+    {
+        public float  HitRate             { get; private set; }
+        public float  CriticalRate        { get; private set; }
+        public float  GuardRate           { get; private set; }        
+        public bool   WeaponEffectiveness { get; private set; }
+
+        public int    HitRate_Percent      => Math.Clamp((int)(HitRate * 100), 0, 100);
+        public int    CriticalRate_Percent => Math.Clamp((int)(CriticalRate * 100), 0, 100);
+        public int    GuardRate_Percent    => Math.Clamp((int)(GuardRate * 100), 0, 100);
+
+        public static CombatRecord_Rate Create(
+            float _hit_rate,
+            float _critical_rate,
+            float _guard_rate,
+            bool _weapon_effectiveness)
+        {
+            return new CombatRecord_Rate
+            {
+                HitRate             = _hit_rate,
+                CriticalRate        = _critical_rate,
+                GuardRate           = _guard_rate,
+                WeaponEffectiveness = _weapon_effectiveness,
+            };
+        }
+    }
+
+    // 아이템 변도사항 (강탈/파괴 등)
+    public struct CombatRecord_Item
+    {
+        public enum EnumInventoryActionType
+        {
+            None, Steal, Destroy, Disarm, Acquire
+        }
+
+        public EnumInventoryActionType ActionType { get; private set; }
+        public Int64 EntityID  { get; private set; }
+        public int   ItemKind  { get; private set; }
+        public int   ItemValue { get; private set; }
+
+        public static CombatRecord_Item Create(
+            EnumInventoryActionType _action_type,
+            Int64                   _entity_id,
+            int                     _item_kind,
+            int                     _item_value)
+        {
+            return new CombatRecord_Item
+            {
+                ActionType = _action_type,
+                EntityID   = _entity_id,
+                ItemKind   = _item_kind,
+                ItemValue  = _item_value,
+            };
+        }
+    }
+
+
+    public struct CombatRecord
+    {
+        // 공격자 / 타겟 / 무기 ID
         public Int64  AttackerID         { get; private set; }
         public Int64  TargetID           { get; private set; }
-        public Int64  WeaponID           { get; private set; }
+        public Int64  WeaponID           { get; private set; }        
 
-        public int    Result_HP_Attacker { get; private set; }
-        public int    Result_HP_Target   { get; private set; }
-        
+        public CombatRecord_Result Result { get; private set; }
 
+        public CombatRecord_Rate   Rate { get; private set; }
 
-        public bool   WeaponEffectiveness { get; private set; }
-        public bool   Result_Hit          { get; private set; }
-        public bool   Result_Critical     { get; private set; }
-        public bool   Result_Guard        { get; private set; }
+        public CombatRecord_Item   Item { get; private set; }
 
-        public float  Result_HitRate      { get; private set; }
-        public float  Result_CriticalRate { get; private set; }
-        public float  Result_GuardRate    { get; private set; }
-        public int    Result_Damage       { get; private set; }   
-
-        public int    Result_HitRate_Percent      => Math.Clamp((int)(Result_HitRate * 100), 0, 100);
-        public int    Result_CriticalRate_Percent => Math.Clamp((int)(Result_CriticalRate * 100), 0, 100);
-        public int    Result_GuardRate_Percent    => Math.Clamp((int)(Result_GuardRate * 100), 0, 100);
-
-        public static Combat_DamageResult Create(
+        public static CombatRecord Create(
             Int64 _attacker_id,
             Int64 _target_id,
-            Int64 _weapon_id,
-            int   _result_hp_attacker,
-            int   _result_hp_target,
-            bool  _weapon_effectiveness, 
-            bool  _result_hit,
-            bool  _result_critical, 
-            bool  _result_guard, 
-            float _result_hit_rate, 
-            float _result_critical_rate,
-            float _result_guard_rate, 
-            int   _result_damage)
+            Int64 _weapon_id)
         {
-            return new Combat_DamageResult
+            return new CombatRecord
             {
                 AttackerID          = _attacker_id,
                 TargetID            = _target_id,
-                WeaponID            = _weapon_id,
-                Result_HP_Attacker  = _result_hp_attacker,
-                Result_HP_Target    = _result_hp_target,
-                WeaponEffectiveness = _weapon_effectiveness,
-                Result_Hit          = _result_hit,
-                Result_Critical     = _result_critical,
-                Result_Guard        = _result_guard,
-                Result_HitRate      = _result_hit_rate,
-                Result_CriticalRate = _result_critical_rate,
-                Result_GuardRate    = _result_guard_rate,
-                Result_Damage       = _result_damage,
+                WeaponID            = _weapon_id
             };
         }
+
+        public void SetResult(CombatRecord_Result _result)
+        {
+            Result = _result;
+        }
+
+        public void SetRate(CombatRecord_Rate _rate)
+        {
+            Rate = _rate;
+        }
+
+        public void SetItem(CombatRecord_Item _item)
+        {
+            Item = _item;
+        }
+
     }
 
     
@@ -87,7 +161,7 @@ namespace Battle
 
         private bool                      m_is_logic_finished        = false;
         private bool                      m_is_post_process_finished = false;
-        private List<Combat_DamageResult> m_list_damage_result       = new List<Combat_DamageResult>();
+        private List<CombatRecord> m_list_record       = new List<CombatRecord>();
 
 
         protected override void Init()
@@ -120,7 +194,7 @@ namespace Battle
 
             m_is_logic_finished = false;
             m_is_post_process_finished = false;
-            m_list_damage_result.Clear();
+            m_list_record.Clear();
 
 
             foreach (var e in m_repository.Values)
@@ -140,11 +214,12 @@ namespace Battle
         {
             m_is_logic_finished = false;
             m_is_post_process_finished = false;
-            m_list_damage_result.Clear();
+            m_list_record.Clear();
             // Debug.LogWarning("list_damage_result.Clear()");
 
 
             // 공격자 / 방어자 무기 장착이 안되어 있을 경우, 자동 장착 처리.
+            // TODO: Berwick에서는 안해도 될듯.
             if (Param.CommandType == EnumUnitCommandType.Attack)
             {
                 if (Param.Attacker != null)
@@ -153,8 +228,6 @@ namespace Battle
                 if (Param.Defender != null)
                     Param.Defender.Equip_Weapon_Auto();
             }
-
-
 
 
             // 컷씬 이벤트 실행.
@@ -180,14 +253,18 @@ namespace Battle
 
             switch(Param.CommandType)
             {
+                // 전투 로직.
                 case EnumUnitCommandType.Attack:
                     OnUpdate_Combat_Logic();
                     break;
+
+                // 지팡이 로직.
                 case EnumUnitCommandType.Wand:
                     OnUpdate_Wand_Logic();
                     break;
             }
             
+            // 전투 종료 후 처리.
             OnUpdate_PostProcess();
 
             return m_is_logic_finished && m_is_post_process_finished;
@@ -268,14 +345,14 @@ namespace Battle
         }
 
 
-        public void AddCombatDamageResult(Combat_DamageResult _damage)
+        public void AddCombatRecord(CombatRecord _record)
         {
-            m_list_damage_result.Add(_damage);
+            m_list_record.Add(_record);
         }
 
-        public List<Combat_DamageResult> GetCombatDamageResult()
+        public List<CombatRecord> GetCombatRecord()
         {
-            return m_list_damage_result;
+            return m_list_record;
         }
 
 

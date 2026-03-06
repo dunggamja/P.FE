@@ -262,8 +262,12 @@ namespace Battle
                 // 아이템 셋팅.
                 foreach(var item in setting_items)
                 {
-                    var item_entity = Item.Create(Util.GenerateID(), item.ITEM_KIND);
-                    entity.Inventory.AddItem(item_entity);
+                    // 드랍 여부 
+                    var is_drop     = (item.DROP > 0) ? true : false;
+
+                    var item_entity = Item.Create(Util.GenerateID(), item.ITEM_KIND, _value: item.VALUE, _is_drop: is_drop);
+                    if (item_entity != null)
+                        entity.Inventory.AddItem(item_entity);
                 }    
 
                 // 무기 장착.

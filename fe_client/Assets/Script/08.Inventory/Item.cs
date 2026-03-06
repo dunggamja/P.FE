@@ -15,31 +15,50 @@ public partial class Item
     private Int32        m_kind      = 0;
     [SerializeField]
     private Int32        m_count_cur = 0;
+    [SerializeField]
+    private Int32        m_value     = 0;
 
     [SerializeField]
-    private EnumItemType m_item_type = EnumItemType.None;
+    private bool         m_is_drop   = false;
+    // [SerializeField]
+    // private EnumItemType m_item_type = EnumItemType.None;
+
 
     // [SerializeField]
     // private Int32 m_count_max = 0;
 
-    private Item(EnumItemType _item_type, Int64 _id, Int32 _kind, Int32 _count_cur)
+    public Item()
+    { }
+
+    private Item(Int64 _id, Int32 _kind, Int32 _count_cur, Int32 _value = 0, bool _is_drop = false)
     {
         m_id        = _id;
         m_kind      = _kind;
-        m_item_type = _item_type;
         m_count_cur = _count_cur;
+        m_value     = _value;
+        m_is_drop   = _is_drop;
+        // m_item_type = _item_type;
     }
-
-    public Item()
-    { }
 
 
     public  long          ID           => m_id;
     public  int           Kind         => m_kind;
-    public  int           CurCount     => m_count_cur;             
-    // public  int           MaxCount     => m_count_max;       
-    public  bool          IsDisposable => true;
-    public  EnumItemType  ItemType     => m_item_type;   
+    public  int           CurCount     => m_count_cur;   
+    public  int           Value        => m_value;
+    public  bool          IsDrop       => m_is_drop;
+
+    public  EnumItemType  ItemType     
+    {
+        get
+        {
+            var sheet_item = DataManager.Instance.ItemSheet.GetStatus(Kind);
+            if (sheet_item == null)
+                return EnumItemType.None;
+
+            return (EnumItemType)sheet_item.TYPE;
+        }
+    }
+    // public  bool          IsDisposable => true;
 
     public  int           ItemCategory
     {
@@ -105,12 +124,13 @@ public partial class Item
 
 
 
-    static public Item Create(Int64 _id, Int32 _kind)
+    static public Item Create(Int64 _id, Int32 _kind, int _value = 0, bool _is_drop = false)
     {
         var sheet_item = DataManager.Instance.ItemSheet.GetStatus(_kind);
-        var item_type  = (sheet_item != null) ? (EnumItemType)sheet_item.TYPE : EnumItemType.None;
+        
+        // 
         var item_count = (sheet_item != null) ? sheet_item.MAX_COUNT : 0;
-        var item       = new Item(item_type, _id, _kind, item_count);
+        var item       = new Item(_id, _kind, item_count, _value: _value, _is_drop: _is_drop);
 
         return item;
     }
@@ -123,7 +143,8 @@ public partial class Item
             ID        = ID,
             Kind      = Kind,
             Count     = CurCount,
-            ItemType  = (int)ItemType,
+            Value     = Value,
+            // ItemType  = (int)ItemType,
         };
     }
 
@@ -132,7 +153,8 @@ public partial class Item
         m_id        = _snapshot.ID;
         m_kind      = _snapshot.Kind;
         m_count_cur = _snapshot.Count;
-        m_item_type = (EnumItemType)_snapshot.ItemType;
+        m_value     = _snapshot.Value;
+        // m_item_type = (EnumItemType)_snapshot.ItemType;
     }
 }
 
@@ -141,7 +163,8 @@ public class Item_IO
     public Int64        ID        { get; set; } = 0;
     public Int32        Kind      { get; set; } = 0;
     public Int32        Count     { get; set; } = 0;
-    public Int32        ItemType  { get; set; } = 0;
+    public Int32        Value     { get; set; } = 0;
+    // public Int32        ItemType  { get; set; } = 0;
     // public Int32        MaxCount  { get; set; } = 0;
 
     // public BaseContainer_IO Status    { get; set; } = new();

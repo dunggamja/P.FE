@@ -8,68 +8,6 @@ using UnityEngine.SocialPlatforms.Impl;
 namespace Battle
 {
 
-    // class Entity_Score_Calculator
-    // {
-    //     // public int      Faction      { get; private set; } = 0;
-    //     // public int      Priority     { get; private set; } = 0;
-
-    //     public float               BestScore    { get; private set; } = 0;
-    //     public Int64               BestEntityID { get; private set; } = 0;
-
-    //     // public EnumCommandPriority Priority     { get; private set; } = EnumCommandPriority.None;
-    //     public void Reset()
-    //     {
-    //         // Faction      = 0;
-    //         // Priority     = 0;
-
-    //         BestScore    = 0;
-    //         BestEntityID = 0;
-    //         // Priority     = EnumCommandPriority.None;
-    //     }
-
-    //     // public void SetFaction(int _faction)
-    //     // {
-    //     //     Faction = _faction;
-    //     // }
-
-    //     // public void SetPriority(int _priority)
-    //     // {
-    //     //     Priority = _priority;
-    //     // }
-
-
-    //     public void OnUpdate_Entity_Command_Score(Entity _entity)
-    //     {
-    //         // 죽었다.
-    //         if (_entity.IsDead)
-    //             return;
-
-    //         // // 진영이 다르다.
-    //         // if (Faction != _entity.GetFaction())
-    //         //     return;
-
-    //         // 행동이 진행 중이 아니다.
-    //         if (_entity.IsEnableCommandProgress() == false)
-    //             return;
-
-    //         // 행동 우선순위가 다르다.
-    //         // if (Priority != _entity.GetCommandPriority())
-    //         //     return;
-            
-
-
-    //         _entity.AIManager.Update(Priority, _entity.AIDataManager);
-
-    //         var entity_score = _entity.GetAIScoreMax().score;
-    //         if (entity_score > BestScore)
-    //         {
-    //             BestScore      = entity_score;
-    //             BestEntityID   = _entity.ID;
-    //         }
-    //     }
-    // }
-
-
     public partial class BattleSystem_Decision_Making : BattleSystem//, IEventReceiver
     {
         // 행동 우선순위.

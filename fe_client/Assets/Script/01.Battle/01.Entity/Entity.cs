@@ -96,7 +96,7 @@ namespace Battle
 
         public void Initialize()
         {
-            Inventory.Initialize(this);
+            Inventory.SetOwner(this);
             AIDataManager.Initialize(this);
             AIManager.Initialize(AIDataManager);
             CommandManager.Initialize(this);

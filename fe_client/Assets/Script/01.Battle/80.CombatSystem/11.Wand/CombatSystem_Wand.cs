@@ -65,27 +65,28 @@ namespace Battle
                target.ApplyHeal(Result_Heal);
             }
 
+            var combat_record = CombatRecord.Create(dealer.ID, target.ID, dealer.StatusManager.Weapon.ItemID);
 
-            CombatSystemManager.Instance.AddCombatDamageResult(
-                Combat_DamageResult.Create
-                (
-                    dealer.ID,
-                    target.ID,
-                    dealer.StatusManager.Weapon.ItemID,
+            combat_record.SetResult(
+                CombatRecord_Result.Create(
                     dealer.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
                     target.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
-                    false,
                     Result_Hit,
                     false,
                     Result_Guard,
-                    Result_HitRate,
-                    0f,
-                    0f,
                     Result_Heal
-                )
-            );
+            ));
 
-            // 바로 완료처리.              
+            combat_record.SetRate(CombatRecord_Rate.Create(
+                Result_HitRate,
+                0f,
+                0f,
+                false
+            ));
+
+
+            CombatSystemManager.Instance.AddCombatRecord(combat_record);
+
 
 
             return true;

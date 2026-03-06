@@ -17,6 +17,7 @@ public enum EnumSystem
     BattleSystem_Turn,                // (전투필드),  턴   진행    
     BattleSystem_Decision_Making,     // (전투필드),  유닛들 의사결정.
     BattleSystem_Command_Progress,    // (전투필드),  유닛들 명령 처리.
+    BattleSystem_Inventory,           // (전투필드), 인벤토리 정리.
     // BattleSystem_Navigation,  // (전투필드), 유닛들 이동 처리
 }
 
@@ -60,7 +61,7 @@ public enum EnumItemType
 
     Weapon     = 1, // 무기
     Consumable = 2, // 소모품
-    Accessory  = 3, // 액세서리 <- TODO: 장비 해야 효과 적용 (장비 가능한 물품 1개?)
+    Accessory  = 3, // 액세서리 (장비 해야 효과 적용) (장비 가능한 물품 1개?)
     Misc       = 4, // 잡화
     Resource   = 5, // 자원 <= 얻을때 아이템이 아닌 공용 자원으로 합산 처리됨.
 }

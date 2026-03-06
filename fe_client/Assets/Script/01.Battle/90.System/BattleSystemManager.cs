@@ -38,12 +38,14 @@ namespace Battle
         
         
         public CommandQueueHandler           CommandHandler { get; private set; } = new();
+
+        
         public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
         public bool                          IsPause 
         {
             get
             {
-                // 컷씬이 재생중이다.
+                // 컷씬이 재생중이면 정지.
                 if (CutsceneManager.Instance.IsPlayingCutscene)
                     return true;
 
@@ -73,6 +75,8 @@ namespace Battle
             m_update_system.Add(new BattleSystem_Decision_Making(CommandHandler));    
             // 명령 처리
             m_update_system.Add(new BattleSystem_Command_Progress(CommandHandler));
+            // 인벤토리 정리
+            m_update_system.Add(new BattleSystem_Inventory());
 
 
 
@@ -172,42 +176,42 @@ namespace Battle
             return null;
         }
 
-        public T GetSystem<T>() where T : BattleSystem
-        {
-            foreach(var e in m_update_system)
-            {
-                if (e is T system)
-                    return system;
-            }
+        // public T GetSystem<T>() where T : BattleSystem
+        // {
+        //     foreach(var e in m_update_system)
+        //     {
+        //         if (e is T system)
+        //             return system;
+        //     }
 
-            Debug.LogError($"Can't Find System, {typeof(T).ToString()} in SystemManager[{GetType().ToString()}]");
-            return null;
-        }
+        //     Debug.LogError($"Can't Find System, {typeof(T).ToString()} in SystemManager[{GetType().ToString()}]");
+        //     return null;
+        // }
 
 
 
-        private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
-        {
-            var system = GetSystem(_system_type) as BattleSystem;
-            if (system != null)
-                return system.Update(_param);
+        // private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
+        // {
+        //     var system = GetSystem(_system_type) as BattleSystem;
+        //     if (system != null)
+        //         return system.Update(_param);
 
-            return EnumState.None;
-        }
+        //     return EnumState.None;
+        // }
 
-        private EnumState GetSystemState(EnumSystem _system_type)
-        {
-            var system = GetSystem(_system_type);
-            if (system != null)
-                return system.State;
+        // private EnumState GetSystemState(EnumSystem _system_type)
+        // {
+        //     var system = GetSystem(_system_type);
+        //     if (system != null)
+        //         return system.State;
 
-            return EnumState.None;
-        }
+        //     return EnumState.None;
+        // }
 
-        private bool IsSystemFinished(EnumSystem _system_type)
-        {
-            return GetSystemState(_system_type) == EnumState.Finished;
-        }
+        // private bool IsSystemFinished(EnumSystem _system_type)
+        // {
+        //     return GetSystemState(_system_type) == EnumState.Finished;
+        // }
 
 
         public EnumCommanderType GetFactionCommanderType(int _faction)

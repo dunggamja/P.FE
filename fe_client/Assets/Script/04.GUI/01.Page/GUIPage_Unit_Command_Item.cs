@@ -201,10 +201,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             if (item_object.ItemType == EnumItemType.Consumable && target_type != EnumTargetType.Owner)
                 return;
 
-
-
             var is_command_action = ItemHelper.IsCommandAction(action_type);
-
 
            
             //if (entity.Cell != entity.PathBasePosition)

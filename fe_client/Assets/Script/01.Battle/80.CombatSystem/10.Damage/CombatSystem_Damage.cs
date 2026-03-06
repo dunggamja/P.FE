@@ -105,26 +105,23 @@ namespace Battle
             }
 
 
-           
+            var combat_record = CombatRecord.Create(dealer.ID, target.ID, dealer.StatusManager.Weapon.ItemID);
+            combat_record.SetResult(CombatRecord_Result.Create(
+                dealer.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
+                target.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
+                Result_Hit,
+                false,
+                Result_Guard,
+                Result_Damage
+            ));
+            combat_record.SetRate(CombatRecord_Rate.Create(
+                Result_HitRate,
+                0f,
+                0f,
+                false
+            ));
 
-            CombatSystemManager.Instance.AddCombatDamageResult(
-                Combat_DamageResult.Create
-                (
-                    dealer.ID,
-                    target.ID,
-                    dealer.StatusManager.Weapon.ItemID,
-                    dealer.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
-                    target.StatusManager.Status.GetPoint(EnumUnitPoint.HP),
-                    WeaponEffectiveness,
-                    Result_Hit,
-                    Result_Critical,
-                    Result_Guard,
-                    Result_HitRate,
-                    Result_CriticalRate,
-                    Result_GuardRate,
-                    Result_Damage
-                )
-            );
+            CombatSystemManager.Instance.AddCombatRecord(combat_record);
 
             // 바로 완료처리.
             return true;

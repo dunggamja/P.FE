@@ -135,7 +135,10 @@ public class DialoguePublisher
       {
          s_ui_is_open = true;
 
+         // 대화 UI 오픈.
          var gui_id = GUIManager.Instance.OpenUI(GUIPage_Dialogue.PARAM.Create());
+
+         // 대화 UI 오픈 대기.
          await UniTask.WaitUntil(() 
             => 
             GUIManager.Instance.IsOpenUI(gui_id) == GUIManager.EnumGUIOpenState.Open, 
@@ -152,6 +155,18 @@ public class DialoguePublisher
          GUIManager.Instance.CloseUI(GUIPage_Dialogue.PARAM.Create().GUIName);
       }
    }
+
+    public static async UniTask PlayDialogueAsync(DIALOGUE_SEQUENCE _dialogue_sequence, CancellationToken _skip_token)
+    {
+       // 대화 완료 이벤트 구독.
+      var observer = GetObserverComplete(_dialogue_sequence.ID);
+
+      // 대화 시퀀스 발행.
+      PublishDialogueSequence(_dialogue_sequence);
+
+      // 대화 완료 이벤트 대기.
+      await observer.WaitAsync(_skip_token);
+    }
 }
 
 
@@ -177,14 +192,8 @@ public class Cutscene_Dialogue : Cutscene//, IEventReceiver
       // GUI 열기 & 대기.
       await DialoguePublisher.TryOpenUI(_skip_token);
 
-      // 대화 완료 이벤트 구독.
-      var observer = DialoguePublisher.GetObserverComplete(m_dialogue_data.ID);
-
-      // 대화 시퀀스 발행.
-      DialoguePublisher.PublishDialogueSequence(m_dialogue_data);
-    
-      // 대화 완료 이벤트 대기.
-      await observer.WaitAsync(_skip_token);
+      // 대화 재생.
+      await DialoguePublisher.PlayDialogueAsync(m_dialogue_data, _skip_token);
 
       // 대화 UI 종료 처리.
       if (m_dialogue_data.CloseDialogue)

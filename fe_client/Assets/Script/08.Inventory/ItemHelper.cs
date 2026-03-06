@@ -22,7 +22,7 @@ public static class ItemHelper
 			if (attribute.TYPE != (int)Battle.EnumItemAttribute.ExclusiveAttribute)
 				continue;	
 
-            has_exclusive_attribute = true;
+      has_exclusive_attribute = true;
 
 			// 1개라도 일치하면 성공.
 			if (DataManager.Instance.UnitSheet.HasClassAttribute_Unit(_class_kind, (Battle.EnumUnitAttribute)attribute.VALUE))
@@ -36,23 +36,23 @@ public static class ItemHelper
 
     public static bool VerifyItem_ExclusiveClass(int _item_kind, int _class_kind)
     {
-         // 클래스 제한 조건 체크.
-		var attributes = DataManager.Instance.ItemSheet.GetAttribute(_item_kind);
-		if (attributes == null)
-			return true;
+      // 클래스 제한 조건 체크.
+      var attributes = DataManager.Instance.ItemSheet.GetAttribute(_item_kind);
+      if (attributes == null)
+        return true;
 
-		bool has_exclusive_class = false;
-		foreach (var attribute in attributes)
-		{
-			if (attribute.TYPE != (int)Battle.EnumItemAttribute.ExclusiveClass)
-				continue;
+      bool has_exclusive_class = false;
+      foreach (var attribute in attributes)
+      {
+        if (attribute.TYPE != (int)Battle.EnumItemAttribute.ExclusiveClass)
+          continue;
 
-			has_exclusive_class = true;
+        has_exclusive_class = true;
 
-			// 클래스 중 1개라도 일치하면 성공.
-			if (attribute.VALUE == _class_kind)
-				return true;			
-		}
+        // 클래스 중 1개라도 일치하면 성공.
+        if (attribute.VALUE == _class_kind)
+          return true;			
+      }
 
 		// 클래스 제한 조건이 있고, CLASS KIND 가 일치하지 않으면 실패 처리.
 		return has_exclusive_class == false;
@@ -83,6 +83,26 @@ public static class ItemHelper
     }
 
 
+   public static EnumItemType GetItemType(int _item_kind)
+   {
+    var status = DataManager.Instance.ItemSheet.GetStatus(_item_kind);
+    if (status == null)
+      return EnumItemType.None;
+
+    return (EnumItemType)status.TYPE;
+   }
+
+   public static EnumResourceCategory GetResourceCategory(int _item_kind)
+   {
+    var status = DataManager.Instance.ItemSheet.GetStatus(_item_kind);
+    if (status == null)
+      return EnumResourceCategory.None;
+
+    if (status.TYPE == (int)EnumItemType.Resource)
+      return (EnumResourceCategory)status.CATEGORY;
+
+    return EnumResourceCategory.None;
+   }
 
 	 // 아이템 사용 대상 체크.
 	 public static EnumTargetType GetItemTargetType(int _item_kind)
@@ -118,8 +138,8 @@ public static class ItemHelper
 		return EnumTargetType.Owner;
 	 }
 
-    public static bool IsCommandAction(EnumItemActionType _action_type)
-    {
+   public static bool IsCommandAction(EnumItemActionType _action_type)
+   {
         switch(_action_type)
         {
             // 아이템 사용인 경우 커맨드 처리.
@@ -127,7 +147,7 @@ public static class ItemHelper
                return true;
         }
         return false;
-    }
+   }
 
 
     public static bool Verify_Item_Use(int _item_kind, Entity _entity)
@@ -140,20 +160,20 @@ public static class ItemHelper
          if (item_data == null)
             return false;
 
-         // 숙련도 체크.
+         // 숙련도 체크. (TODO: 베르위크식으로 수정하자.)
          var proficiency = _entity.StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Proficiency);
          if (proficiency < item_data.PROFICIENCY)
             return false;
 
 
+         // 무기 클래스 속성 체크.
          if (item_data.TYPE == (int)EnumItemType.Weapon)
          {
-            // 무기 클래스 속성 체크.
             if (_entity.StatusManager.Status.HasClassAttribute_Weapon((EnumWeaponCategory)item_data.CATEGORY) == false)
                return false;
          }
 
-         // 전용 캐릭터 체크.
+         // 전용 캐릭터 체크. (TODO: 베르위크식으로 수정하자.)
          if (VerifyItem_ExclusiveCharacter(_item_kind, _entity.ID) == false)
             return false;
 
@@ -276,6 +296,63 @@ public static class ItemHelper
 
         return heal_value;
     }
+
+
+    // 아이템 획득 로직.
+    public static void AcquireItem(Entity _entity, Item _item)
+    {
+       if (_entity == null || _item == null)
+          return;
+        
+       // 자원 형태의 아이템일 경우, 따로 처리합니다.
+       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
+       if (resource_category != EnumResourceCategory.None)
+       {
+          GlobalInventoryManager.Instance.IncreaseResource(resource_category, _item.Value);
+          return;         
+       }
+
+       // 아이템 추가.
+       _entity.Inventory.AddItem(_item);       
+    }
+
+    
+
+    // 아이템 버리기 로직.
+    public static void DisposeItem(Entity _entity, Item _item)
+    {
+       if (_entity == null || _item == null)
+          return;
+        
+       // 자원 형태의 아이템일 경우, 따로 처리합니다.
+       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
+       if (resource_category != EnumResourceCategory.None)
+       {
+          GlobalInventoryManager.Instance.DecreaseResource(resource_category, _item.Value);
+          return;
+       }
+
+       // 아이템 제거.
+       _entity.Inventory.RemoveItem(_item.ID);
+    }
+
+    // 아이템 버리기 가능 여부 체크.
+    public static bool VerifyItemDispose(Entity _entity, Int32 _item_kind, Int32 _value = 0)
+    {
+       if (_entity == null)
+          return false;
+        
+       // 자원 형태의 아이템일 경우, 따로 처리합니다.
+       var resource_category =  ItemHelper.GetResourceCategory(_item_kind);
+       if (resource_category != EnumResourceCategory.None)
+       {
+           var    has_amount = GlobalInventoryManager.Instance.GetResource(resource_category);
+           return has_amount >= _value;
+       }
+
+       return _entity.Inventory.GetItem(_item_kind) != null;
+    }
+    
 
 
     

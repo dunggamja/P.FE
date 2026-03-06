@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using Battle;
 using UnityEngine;
@@ -8,7 +8,7 @@ public class GameSnapshot
 {
     public Int64  ID             { get; private set; } = 0;
     
-    // ¿£Æ¼Æ¼ »óÅÂµé
+    // ï¿½ï¿½Æ¼Æ¼ ï¿½ï¿½ï¿½Âµï¿½
     public EntityManager_IO       EntityManager       { get; private set; } = new();
     public BattleSystemManager_IO BattleSystemManager { get; private set; } = new();    
     public TerrainMapManager_IO   TerrainMapManager   { get; private set; } = new();

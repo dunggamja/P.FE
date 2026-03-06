@@ -100,7 +100,7 @@ namespace Battle
                     }
 
                     // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
-                    var damage_result = CombatSystemManager.Instance.GetCombatDamageResult();
+                    var damage_result = CombatSystemManager.Instance.GetCombatRecord();
                     foreach (var damage in damage_result)
                     {
                         // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
@@ -108,13 +108,12 @@ namespace Battle
 
                         // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                         var unit_info          = (is_attacker) ? result.Attacker: result.Defender;
-                        unit_info.Damage       = Math.Max(damage.Result_Damage, unit_info.Damage);
-                        unit_info.HitRate      = Math.Max(damage.Result_HitRate_Percent, unit_info.HitRate);
-                        unit_info.CriticalRate = Math.Max(damage.Result_CriticalRate_Percent, unit_info.CriticalRate);
-
+                        unit_info.Damage       = Math.Max(damage.Result.Damage, unit_info.Damage);
+                        unit_info.HitRate      = Math.Max(damage.Rate.HitRate_Percent, unit_info.HitRate);
+                        unit_info.CriticalRate = Math.Max(damage.Rate.CriticalRate_Percent, unit_info.CriticalRate);
 
                         // 공격자와 타겟 데미지 저장.
-                        var damage_value = damage.Result_Damage;
+                        var damage_value = damage.Result.Damage;
 
                         result.Actions.Add(Result_Action.Create(is_attacker, damage_value));
                     }
