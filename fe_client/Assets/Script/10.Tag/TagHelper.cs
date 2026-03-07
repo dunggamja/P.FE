@@ -25,6 +25,14 @@ using Battle;
          return TAG_INFO.Create(EnumTagType.Entity, _entity.ID);
       }
 
+      public static TAG_INFO Create(MapObject _map_object)
+      {
+         if (_map_object == null)
+            return TAG_INFO.Create(EnumTagType.None, 0);
+
+         return TAG_INFO.Create(EnumTagType.MapObject, _map_object.ID);
+      }
+
       public static bool operator <(TAG_INFO _left, TAG_INFO _right)
       {
          if (_left.TagType != _right.TagType)

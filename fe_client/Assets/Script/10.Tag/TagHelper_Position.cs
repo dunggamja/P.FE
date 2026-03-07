@@ -114,6 +114,20 @@ public static partial class TagHelper
                 _list.Add(e.Cell);
             }            
         }
+        else if (Verify_TagType_MapObject(_tag_info.TagType))
+        {
+            // 맵 오브젝트들 위치 모음.
+            using var list_map_object = ListPool<MapObject>.AcquireWrapper();
+            Collect_MapObject(_tag_info, list_map_object.Value);
+
+            foreach(var m in list_map_object.Value)
+            {
+                _list.Add(m.Cell);
+            }
+        }
     }    
 
+
+
+    
 }

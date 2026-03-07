@@ -9,15 +9,27 @@ namespace Battle
 
    public struct MapObject : IEquatable<MapObject>
    {
-      public Int64          ID           { get; private set; }
-      public (int x, int y) Cell         { get; private set; }
-      // public string         CutsceneName { get; private set; }
+      public enum EnumState
+      {
+         None,
+         Ready,
+         Finished,
+      }
 
 
-      public static MapObject Create(Int64 _id, int _x, int _y)
+      public Int64          ID     { get; private set; }
+      public EnumState      State  { get; private set; }
+      public (int x, int y) Cell   { get; private set; }
+
+
+      public bool           IsEnable => State == EnumState.Ready;
+
+
+      public static MapObject Create(EnumState _state, Int64 _id, int _x, int _y)
       {
          var interaction          = new MapObject();
          interaction.ID           = _id;
+         interaction.State        = _state;
          interaction.Cell         = (_x, _y);
          // interaction.CutsceneName = _cutscene_name;
          return interaction;
@@ -35,12 +47,12 @@ namespace Battle
 
       public bool Equals(MapObject _other)
       {
-         return ID == _other.ID && Cell == _other.Cell;
+         return ID == _other.ID && Cell == _other.Cell && State == _other.State;
       }
 
       public override int GetHashCode()
       {
-         return HashCode.Combine(ID, Cell);
+         return HashCode.Combine(ID, Cell, State);
       }
 
       public override bool Equals(object _other)

@@ -42,10 +42,13 @@
        TARGET_CONTAIN   = 3, // 타겟팅 포함.
 
 
-       POSITION_VISIT   = 11, // 위치 - 방문 가능       
-       POSITION_EXIT    = 12, // 위치 - 이탈 
+      //  MAP_VISIT = 11, // 위치 - 방문 가능 (타겟과 거리 0) 
+      //  MAP_EXIT = 12,  // 위치 - 이탈     (타겟과 거리 0)
+      //  TALK = 21, // 대화 명령 가능  (타겟과 거리 1)
 
-       TALK_COMMAND     = 21,  // 대화 명령 가능
+       POSITION_VISIT   = 11, // 위치 - 방문 가능 (Entity <-> MapObject, 거리 0)      
+       POSITION_EXIT    = 12, // 위치 - 이탈     (Entity <-> MapObject, 거리 0)
+       TALK_COMMAND     = 21,  // 대화 명령 가능  (Entity <-> Entity, 거리 1)
 
 
       //  AI_TYPE          = 31, // AI 타입 설정 (이건 태그로 하기 애매한 거 같음.)
