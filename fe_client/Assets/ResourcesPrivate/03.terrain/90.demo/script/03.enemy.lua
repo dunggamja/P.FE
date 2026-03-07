@@ -332,7 +332,7 @@ function demo_script_03.Enemy_Pirate_3031_Wait_Enemy()
       -- 매 턴 시작 시 실행
       CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnTurnStart, 0, 2);
 
-      -- 해적 3031이 적이 특정 거리 이내에 들어와야 공격을 시작한다.
+      -- 해적 3031이 플레이어가 3칸 이내에 들어와야 공격을 시작한다.
       CutsceneBuilder.Condition_Range(tag.TAG_INFO(EnumTagType.Entity, 3031), tag.TAG_INFO(EnumTagType.Entity_Faction, 1), 0, 3);
 
       -- 전투내에서만 사용되는 컷씬
@@ -342,6 +342,7 @@ function demo_script_03.Enemy_Pirate_3031_Wait_Enemy()
       CutsceneBuilder.TrackBegin();
          CutsceneBuilder.Unit_AIType(tag.TAG_INFO(EnumTagType.Entity, 3031), EnumAIType.Attack);
       CutsceneBuilder.TrackEnd();
+      
    CutsceneBuilder.RootEnd();
 end
 

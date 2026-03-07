@@ -20,6 +20,9 @@
        Position       = 100, // 위치 - 점.
        Position_Rect  = 101, // 위치 - 사각형. 12자리 사용. (XXXYYYXXXYYY) (min,max)
 
+
+       MapObject      = 200, // 맵오브젝트.
+
        BattleMap      = 1000, // 배틀 맵.
 
 

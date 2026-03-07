@@ -16,5 +16,10 @@ end
 
 
 
+   -- 5턴, 선박 진영 시작시 이벤트, 
+   -- 유닛이동: (배 1개가 떠나서 사라짐)
+   -- 대화:    (항구가 위험해... 빨리 좀 와달라고...)
 function demo_script_04.Ship_Turn_5_Start()
 end
+
+function demo_script_04.Villiage_

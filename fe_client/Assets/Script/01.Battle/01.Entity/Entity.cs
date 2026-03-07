@@ -53,10 +53,15 @@ namespace Battle
         public CommandManager       CommandManager  { get; private set; }    
 
 
-        public int     ClassKind    => StatusManager.Status.ClassKIND;
+        public int     ClassKind   => StatusManager.Status.ClassKIND;
 
 
-        public bool    IsDead       => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+        public bool    IsDead      => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
+        
+        
+        // 맵에서 사라진 상태.
+        public bool    IsOffMap    => BlackBoard.HasValue(EnumEntityBlackBoard.Exited)    // 이탈 (자발적)
+                                   || BlackBoard.HasValue(EnumEntityBlackBoard.Vanished); // 사라짐 (이벤트)
 
         public string  AssetName  { get; private set; } = string.Empty;
 

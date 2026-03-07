@@ -102,6 +102,9 @@ namespace Battle
             // 진영 셋팅.
             Test_BattleSystem_Setup_Faction(faction_setting);
 
+            // 맵오브젝트 셋팅.
+            Test_BattleSystem_Setup_MapObject(map_file);
+
 
             // 런타임 스크립트 실행.
             await Test_BattleSystem_Setup_Script(map_setting);   
@@ -306,6 +309,20 @@ namespace Battle
                 BattleSystemManager.Instance.SetFactionAlliance(e.Faction_1, e.Faction_2);
             }
         }
+
+        void Test_BattleSystem_Setup_MapObject(MapBakeData _map_data)
+        {
+            if (_map_data == null)
+                return;
+            
+            foreach(var e in _map_data.Interactions.m_repository)
+            {
+                var map_object = MapObject.Create(e.m_entity_id, e.m_cell_x, e.m_cell_y);
+                MapObjectManager.Instance.AddMapObject(map_object);
+            }
+        }
+
+
 
         async UniTask Test_BattleSystem_Setup_Script(sheet_map_setting _map_setting)
         {

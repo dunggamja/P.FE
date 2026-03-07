@@ -310,11 +310,11 @@ public partial class RuntimeScriptManager
         // 유닛과 대상 유닛의 거리가 조건에 맞는지 체크합니다.
         SetLuaValue("CutsceneBuilder", "Condition_Range", new LuaFunction(async (context, ct) =>
         {
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO unit_tag);
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), out TAG_INFO target_tag);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_1);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), out TAG_INFO tag_2);
             var min_range = context.GetArgument<int>(2);
             var max_range = context.GetArgument<int>(3);
-            CutsceneBuilder.AddCondition_Range(unit_tag, target_tag, min_range, max_range);
+            CutsceneBuilder.AddCondition_Range(tag_1, tag_2, min_range, max_range);
             return context.Return();
         }));
 

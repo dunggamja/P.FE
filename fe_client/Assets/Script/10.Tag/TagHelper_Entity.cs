@@ -50,6 +50,15 @@ public static partial class TagHelper
     }
 
 
+    // // 맵 오브젝트는 딱히 관계를 지을만한게 없군...
+    // public static void SetupTag_MapObject(MapObject _map_object)
+    // {
+    //     if (_map_object == null)
+    //         return;
+    //     // var tag_map_object = TAG_INFO.Create(EnumTagType.MapObject, _map_object.ID);
+    // }
+
+
 
     public static void SetupTag_Entity_Faction(Entity _entity)
     {
