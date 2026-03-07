@@ -380,7 +380,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             {
                 // 아이템 GUI 오픈.
                 GUIManager.Instance.OpenUI(
-                    GUIPage_Unit_Command_Item.PARAM.Create(m_entity_id)
+                    GUIPage_Unit_Command_Item.PARAM.Create(GUIPage_Unit_Command_Item.EnumMode.None, m_entity_id)
                     );
             }
                 break;  

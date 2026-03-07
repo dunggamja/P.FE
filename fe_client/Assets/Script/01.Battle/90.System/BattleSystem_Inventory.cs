@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Battle
 {
     
-
 
     public class BattleSystem_Inventory : BattleSystem
     {
@@ -82,7 +82,19 @@ namespace Battle
         {
             // TODO: 인벤토리 관련 유니태스크 처리 진행.
 
+            // 인벤토리가 FULL 상태인경우 아이템 버리기 UI를 계속 띄워줍시다.
+            var entity = EntityManager.Instance.GetEntity(_entity_id);
+            while (entity != null && entity.Inventory.IsFull)
+            {
+                // 아이템 GUI 오픈. 
+                var gui_id = GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Command_Item.PARAM.Create(GUIPage_Unit_Command_Item.EnumMode.Discard, _entity_id));
 
+                // 아이템 GUI 오픈 대기.
+                await GUIManager.Instance.WaitForOpenUI(gui_id, CancellationToken.None);
+
+                // 아이템 GUI 종료 대기.
+            }
             
         }
 

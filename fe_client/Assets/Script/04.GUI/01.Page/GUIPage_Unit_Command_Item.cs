@@ -16,13 +16,24 @@ using UnityEngine.UI;
     )]
 public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
 {
-   public class PARAM : GUIOpenParam
+    public enum EnumMode
     {
-        public Int64    EntityID { get; private set; }
+        None,     // 모두 가능
+        Discard,  // 버리기
+        Equip,    // 장비
+        Use,      // 사용
+        Organize, // 정리
+    }
+
+    public class PARAM : GUIOpenParam
+    {
+        public EnumMode Mode     { get; private set; } = EnumMode.None;
+        public Int64    EntityID { get; private set; } = 0;
+
       //   public EnumUnitCommandType  MenuType  { get; private set; }
         public override EnumGUIType GUIType => EnumGUIType.Screen;
 
-        private PARAM(Int64 _entity_id) 
+        private PARAM(EnumMode _mode, Int64 _entity_id) 
         : base(
             // id      
             GUIPage.GenerateID(),           
@@ -37,14 +48,14 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             false
             )             
         { 
+            Mode     = _mode;
             EntityID = _entity_id;  
-            // MenuType = _menu_type;
         }
 
 
-        static public PARAM Create(Int64 _entity_id)
+        static public PARAM Create(EnumMode _mode, Int64 _entity_id)
         {
-            return new PARAM(_entity_id);
+            return new PARAM(_mode, _entity_id);
         }
     }
 
@@ -75,6 +86,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
     private GUIElement_Grid_Item_MenuText m_grid_menu_item;
 
 
+    private EnumMode                      m_mode                   = EnumMode.None;
     private Int64                         m_entity_id              = 0;    
     private List<MENU_ITEM_DATA>          m_menu_item_datas        = new();
     private BehaviorSubject<int>          m_cursor_index_subject   = new(0);
@@ -97,6 +109,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
     protected override void OnOpen(GUIOpenParam _param)
     {
         var param   = _param as PARAM;
+        m_mode      = param?.Mode ?? EnumMode.None;
         m_entity_id = param?.EntityID ?? 0;
 
         // 아이템 목록 추출.
@@ -173,13 +186,13 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
          if (entity == null)
             return;
 
-         // var item_object = entity.Inventory.GetItem(item_id);
-         // if (item_object == null)
-         //    return;
 
-
+         // 해당 아이템에서 사용가능한 액션 목록 추출.
          using var list_action_type = ListPool<EnumItemActionType>.AcquireWrapper();
          ItemHelper.Verify_Item_Action(item_id, entity, list_action_type.Value);
+
+         // 모드에 따라 액션 필터링.
+         FilterActionByMode(list_action_type.Value);
 
 
          var entity_id = entity.ID;
@@ -201,19 +214,17 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             if (item_object.ItemType == EnumItemType.Consumable && target_type != EnumTargetType.Owner)
                 return;
 
-            var is_command_action = ItemHelper.IsCommandAction(action_type);
-
-           
-            //if (entity.Cell != entity.PathBasePosition)
-            {
-                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-                new Command_Move(
-                    m_entity_id,
-                    entity.Cell,
-                    _execute_command: is_command_action,
-                    _visual_immediate: true,
-                    _is_plan: is_command_action == false));
-            }
+            // 굳이 이동관련 처리가 필요없을 것 같아서 수정...
+            // // 커맨드 처리 여부 체크. (사용하면 이동완료 처리가 되버린다.)
+            // var is_move_done = ItemHelper.IsCommandAction(action_type);           
+            // //if (entity.Cell != entity.PathBasePosition)
+            // ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+            // new Command_Move(
+            //     m_entity_id,
+            //     entity.Cell,
+            //     _execute_command: is_move_done,
+            //     _visual_immediate: true,
+            //     _is_plan: is_move_done == false));
 
             // 아이템 사용 Command 
             ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
@@ -266,9 +277,15 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
         if (entity == null)
           return;
 
+        
+
         // 소지한 아이템 목록 추출.
         using var list_items = ListPool<Item>.AcquireWrapper();
         entity.Inventory.CollectItem(list_items.Value);
+
+        // 모드에 따라 아이템 목록 필터링.
+        FilterItemByMode(list_items.Value);
+
 
         // 메뉴 아이템 목록 초기화.
         m_menu_item_datas.Clear();
@@ -295,7 +312,65 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
         }
 
 
-        m_cursor_index_subject.OnNext(0);
-       
+        m_cursor_index_subject.OnNext(0);       
+    }
+
+
+    void FilterItemByMode(List<Item> _items)
+    {
+        // 아이템 목록이 없으면 종료.
+        if (_items == null || _items.Count == 0)
+            return;
+
+        // TODO: 공용 인벤토리에서 처리는 어떻게? 해야할까?
+        var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        if (entity == null)
+            return;
+
+
+        switch(m_mode)
+        {            
+            case EnumMode.Discard:
+                // 버리기 가능한 아이템만 남김.
+                _items.RemoveAll(e => entity.IsEnableAction(e, EnumItemActionType.Discard) == false);
+                break;
+            case EnumMode.Equip:
+                // 장비 가능한 아이템만 남김.
+                _items.RemoveAll(e => entity.IsEnableAction(e, EnumItemActionType.Equip) == false);
+                break;
+            case EnumMode.Use:
+                // 사용 가능한 아이템만 남김.
+                _items.RemoveAll(e => entity.IsEnableAction(e, EnumItemActionType.Consume) == false);
+                break;
+            case EnumMode.Organize:
+                // 요거는 딱히 필터링 필요없음.
+                break;
+        }
+    }
+
+    void FilterActionByMode(List<EnumItemActionType> _actions)
+    {
+        if (_actions == null || _actions.Count == 0)
+            return;
+
+        switch(m_mode)
+        {
+            case EnumMode.Discard:
+                // 버리기 액션만 허용.
+                _actions.RemoveAll(e => e != EnumItemActionType.Discard);
+                break;
+            case EnumMode.Equip:
+                // 장비, 해제 액션만 허용.
+                _actions.RemoveAll(e => (e != EnumItemActionType.Equip) && (e != EnumItemActionType.Unequip));
+                break;
+            case EnumMode.Use:
+                // 사용 액션만 허용.
+                _actions.RemoveAll(e => e != EnumItemActionType.Consume);
+                break;
+            case EnumMode.Organize:
+                // 요거는... 뭘해야 하지...? 
+                // TODO: 주머니 기능이 생기기 전까지는 할일이 없을거 같은 느낌...
+                break;
+        }
     }
 }

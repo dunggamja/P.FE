@@ -207,7 +207,7 @@ public static class ItemHelper
       if (_entity.IsEnableAction(item, EnumItemActionType.Unequip)) _list_verify_action_type.Add(EnumItemActionType.Unequip);
       if (_entity.IsEnableAction(item, EnumItemActionType.Consume)) _list_verify_action_type.Add(EnumItemActionType.Consume);
       if (_entity.IsEnableAction(item, EnumItemActionType.Acquire)) _list_verify_action_type.Add(EnumItemActionType.Acquire);
-      if (_entity.IsEnableAction(item, EnumItemActionType.Dispose)) _list_verify_action_type.Add(EnumItemActionType.Dispose);     
+      if (_entity.IsEnableAction(item, EnumItemActionType.Discard)) _list_verify_action_type.Add(EnumItemActionType.Discard);     
       
     }
 
@@ -235,9 +235,9 @@ public static class ItemHelper
                 table = "localization_base";
                 key   = "ui_menu_item_acquire";
                 break;
-            case EnumItemActionType.Dispose:
+            case EnumItemActionType.Discard:
                 table = "localization_base";
-                key   = "ui_menu_item_dispose";
+                key   = "ui_menu_item_dispose"; //TODO: 키 이름 discard로 변경 필요.
                 break;
         }
         return LocalizeKey.Create(table, key);

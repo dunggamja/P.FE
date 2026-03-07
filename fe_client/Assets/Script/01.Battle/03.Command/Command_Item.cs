@@ -53,7 +53,7 @@ namespace Battle
             {
                 if (m_is_command_action)
                 {
-                    // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
+                    // 모든행동 종료 처리. 
                     owner_entity.SetAllCommandDone();
 
                     // 좌표 처리.

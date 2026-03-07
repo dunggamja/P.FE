@@ -151,7 +151,7 @@ namespace Battle
 
                 // 무기 수량이 0이 되면 버리기.
                 if (dealer_weapon.CurCount <= 0)
-                    dealer.ProcessAction(dealer_weapon, EnumItemActionType.Dispose);
+                    dealer.ProcessAction(dealer_weapon, EnumItemActionType.Discard);
             }
         }
 

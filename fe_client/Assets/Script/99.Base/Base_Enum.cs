@@ -74,7 +74,7 @@ public enum EnumItemActionType
     Unequip, // 장비 해제
     Consume, // 사용 (무기는 내구도 감소...)
     Acquire, // 획득
-    Dispose, // 버리기/매각
+    Discard, // 버리기/매각
 }
 
 

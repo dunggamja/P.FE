@@ -73,7 +73,7 @@ public static partial class BuffHelper
 
 
                 case EnumItemActionType.Acquire: // 액세서리, 잡화 획득 시 버프 적용.
-                case EnumItemActionType.Dispose: // 액세서리, 잡화 버리기/매각 시 버프 제거.
+                case EnumItemActionType.Discard: // 액세서리, 잡화 버리기/매각 시 버프 제거.
                 {
                     return _item_type switch {                        
                         EnumItemType.Accessory => true,
@@ -95,7 +95,7 @@ public static partial class BuffHelper
             case EnumItemActionType.Acquire: return true;  // 버프 추가.
             
             case EnumItemActionType.Unequip: return false; // 버프 제거.
-            case EnumItemActionType.Dispose: return false; // 버프 제거.
+            case EnumItemActionType.Discard: return false; // 버프 제거.
         }
         return false;
     }

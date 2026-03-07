@@ -138,12 +138,8 @@ public class DialoguePublisher
          // 대화 UI 오픈.
          var gui_id = GUIManager.Instance.OpenUI(GUIPage_Dialogue.PARAM.Create());
 
-         // 대화 UI 오픈 대기.
-         await UniTask.WaitUntil(() 
-            => 
-            GUIManager.Instance.IsOpenUI(gui_id) == GUIManager.EnumGUIOpenState.Open, 
-            cancellationToken: _skip_token)
-            .Timeout(TimeSpan.FromSeconds(30));  
+         // 대화 UI 오픈 대기. 
+         await GUIManager.Instance.WaitForOpenUI(gui_id, _skip_token).Timeout(TimeSpan.FromSeconds(30));  
       }
    }
 

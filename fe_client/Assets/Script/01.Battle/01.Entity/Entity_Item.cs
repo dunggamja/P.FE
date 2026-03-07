@@ -47,7 +47,7 @@ namespace Battle
                case EnumItemActionType.Unequip: return IsEnableAction_Item_Unequip(_item);      
                case EnumItemActionType.Consume: return IsEnableAction_Item_Consume(_item);
                case EnumItemActionType.Acquire: return IsEnableAction_Item_Acquire(_item);
-               case EnumItemActionType.Dispose: return IsEnableAction_Item_Dispose(_item);
+               case EnumItemActionType.Discard: return IsEnableAction_Item_Discard(_item);
          }
 
          return false;
@@ -88,8 +88,8 @@ namespace Battle
                }
                break;
 
-               case EnumItemActionType.Dispose:
-               if (ProcessAction_Item_Dispose(_item))
+               case EnumItemActionType.Discard:
+               if (ProcessAction_Item_Discard(_item))
                {
                   return true;
                }
@@ -177,7 +177,7 @@ namespace Battle
          return (Inventory.Count < Inventory.MaxCount);
       }
 
-      bool IsEnableAction_Item_Dispose(Item _item)
+      bool IsEnableAction_Item_Discard(Item _item)
       {
          if (_item == null)
             return false;
@@ -252,7 +252,7 @@ namespace Battle
          return true;
       }
 
-      bool ProcessAction_Item_Dispose(Item _item)
+      bool ProcessAction_Item_Discard(Item _item)
       {
          if (_item == null)
             return false;

@@ -374,6 +374,16 @@ public class GUIManager : SingletonMono<GUIManager>
     }
 
 
+    public async UniTask WaitForOpenUI(Int64 _id, CancellationToken _cancel_token = default)
+    {
+        await
+             // 오픈 상태가 될때까지 대기.
+             UniTask.WaitUntil(() => IsOpenUI(_id) == EnumGUIOpenState.Open, cancellationToken: _cancel_token)
+             // 30초 타임아웃.
+             .Timeout(TimeSpan.FromSeconds(30));  
+    }
+
+
 
     // bool InsertInputGUI(Int64 _id)
     // {
