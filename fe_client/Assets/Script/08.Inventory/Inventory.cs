@@ -14,10 +14,10 @@ public class Inventory
 
     public int  Count    => m_repository_list.Count;
 
-    // 인벤토리 최대갯수.(MEMO:공용인벤토리는 일단 9999로...)
-    public int  MaxCount => (0 < OwnerID) ? Data_Const.UNIT_INVENTORY_MAX : 9999;
+    // 인벤토리 최대갯수.(MEMO:공용인벤토리는 일단 999로...)
+    public int  MaxCount => (0 < OwnerID) ? Data_Const.UNIT_INVENTORY_MAX : 999;
 
-    public bool IsFull   => Count >= MaxCount;
+    public bool IsOverflow   => Count > MaxCount;
 
     public bool SetOwner(IOwner _owner)
     {

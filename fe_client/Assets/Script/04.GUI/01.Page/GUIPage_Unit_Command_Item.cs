@@ -178,10 +178,13 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-
+         // 변수 캐싱.
+         var gui_id     = ID;
+         var ui_mode    = m_mode;
+         var entity_id  = m_entity_id;
          var item_index = CursorItemData.Index;
          var item_id    = CursorItemData.ItemID;
-
+         
          var entity = EntityManager.Instance.GetEntity(m_entity_id);
          if (entity == null)
             return;
@@ -194,8 +197,7 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
          // 모드에 따라 액션 필터링.
          FilterActionByMode(list_action_type.Value);
 
-
-         var entity_id = entity.ID;
+         
 
          GUIManager.Instance.OpenUI(GUIPage_Common_Selection.PARAM.Create(list_action_type.Value, (action_type) => 
          {
@@ -207,33 +209,43 @@ public class GUIPage_Unit_Command_Item : GUIPage, IEventReceiver
             if (item_object == null)
                 return;
 
-            // 일단 자신을 대상으로 사용하는 아이템에 대해서만 
+            
             var target_type = ItemHelper.GetItemTargetType(item_object.Kind);
 
-            // TODO: 소모품 아이템은 일단 자신에게 쓴느 아이템만 구현된 상태.
+            // TODO: 소모품 아이템은 자신에게 쓰는 아이템만 구현된 상태이다.
             if (item_object.ItemType == EnumItemType.Consumable && target_type != EnumTargetType.Owner)
-                return;
+                return;            
 
-            // 굳이 이동관련 처리가 필요없을 것 같아서 수정...
-            // // 커맨드 처리 여부 체크. (사용하면 이동완료 처리가 되버린다.)
-            // var is_move_done = ItemHelper.IsCommandAction(action_type);           
-            // //if (entity.Cell != entity.PathBasePosition)
-            // ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-            // new Command_Move(
-            //     m_entity_id,
-            //     entity.Cell,
-            //     _execute_command: is_move_done,
-            //     _visual_immediate: true,
-            //     _is_plan: is_move_done == false));
+            if (ItemHelper.IsCommandAction(action_type))
+            {
+                // 아이템 사용 Command 
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                new Command_Item(
+                    _owner_id:         m_entity_id,
+                    _target_id:        m_entity_id,
+                    _item_id:          item_id,
+                    _item_action_type: action_type)
+                );
+            }
+            else
+            {
+                // 아이템 사용 처리. (커맨드 처리 없음)
+                entity.ProcessAction(item_object, action_type);
 
-            // 아이템 사용 Command 
-            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-            new Command_Item(
-                _owner_id:         m_entity_id,
-                _target_id:        m_entity_id,
-                _item_id:          item_id,
-                _item_action_type: action_type)
-            );
+                // 아이템 인벤토리 갱신.
+                EventDispatchManager.Instance.UpdateEvent(
+                    ObjectPool<Battle_Entity_InventoryEvent>.Acquire().Set(m_entity_id)
+                    );
+
+                // 버리기 모드인 경우 UI 종료.
+                if (ui_mode == EnumMode.Discard)
+                {
+                    GUIManager.Instance.CloseUI(gui_id);
+                }
+
+                
+            }
+
 
 
          }));

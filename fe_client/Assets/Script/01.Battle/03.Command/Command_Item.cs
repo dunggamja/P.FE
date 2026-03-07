@@ -28,8 +28,9 @@ namespace Battle
       public EnumItemActionType ItemActionType { get; private set; } = EnumItemActionType.None;
 
 
-      private bool m_is_sequence_done  = false;
-      private bool m_is_command_action = false;
+    //   private bool m_is_sequence_done  = false;
+    //   private bool m_is_command_action = false;
+      private UniTask m_task;
       private int  m_item_kind         = 0;
 
       public Command_Item(Int64 _owner_id, Int64 _target_id, Int64 _item_id, EnumItemActionType _item_action_type) : base(_owner_id)
@@ -41,28 +42,25 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            m_is_sequence_done  = false;
+            // m_is_sequence_done  = false;
             m_item_kind         = 0;
 
             // 커맨드를 소모하는 아이템 액션인지 체크.
-            m_is_command_action = ItemHelper.IsCommandAction(ItemActionType);
+            // m_is_command_action = ItemHelper.IsCommandAction(ItemActionType);
             
 
             var owner_entity = Owner;
             if (owner_entity != null)
             {
-                if (m_is_command_action)
-                {
-                    // 모든행동 종료 처리. 
-                    owner_entity.SetAllCommandDone();
+                // 모든행동 종료 처리. 
+                owner_entity.SetAllCommandDone();
 
-                    // 좌표 처리.
-                    Owner.UpdateCellPosition(
-                        Owner.Cell,
-                        (_apply: true, _immediatly: true),
-                        _is_plan: false
-                    );
-                }
+                // 좌표 처리.
+                Owner.UpdateCellPosition(
+                    Owner.Cell,
+                    (_apply: true, _immediatly: true),
+                    _is_plan: false
+                );
 
                 // 아이템 KIND 체크.
                 var item_object = owner_entity.Inventory.GetItem(ItemID);                
@@ -73,13 +71,13 @@ namespace Battle
             }
 
             // 연출 시작.
-            PlaySequence().Forget();
+            m_task = PlaySequence();
         }
 
         protected override bool OnUpdate()
         {
             // 연출이 종료되었는지 체크.
-            return m_is_sequence_done;
+            return m_task.Status != UniTaskStatus.Pending;
         }
 
         protected override void OnExit(bool _is_abort)
@@ -90,33 +88,37 @@ namespace Battle
 
         async UniTask PlaySequence()
         {
-            if (m_is_command_action)
+            // if (m_is_command_action)
+            // {
+            // }
+
+
+            // Battle Scene 시작.
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(true)
+                );    
+
+            
+            // 타겟 HP 갱신.
+            // TODO: HP 갱신이 아닌 다른 아이템들의 경우도 작업을 해야하겠다...
             {
-                // Battle Scene 시작.
+                var target_entity = EntityManager.Instance.GetEntity(Target.MainTargetID);
+                var target_hp     = target_entity?.StatusManager.Status.GetPoint(EnumUnitPoint.HP) ?? 0;
+
                 EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(true)
-                    );    
-
-                
-                // 타겟 HP 갱신.
-                {
-                    var target_entity = EntityManager.Instance.GetEntity(Target.MainTargetID);
-                    var target_hp     = target_entity?.StatusManager.Status.GetPoint(EnumUnitPoint.HP) ?? 0;
-
-                    EventDispatchManager.Instance.UpdateEvent(
-                            ObjectPool<Battle_Entity_HP_UpdateEvent>
-                            .Acquire()
-                            .Set(Target.MainTargetID, target_hp)
-                            );
-                }
-
-                await UniTask.Delay(500); // 연출 시간.
-
-                // Battle Scene 종료.
-                EventDispatchManager.Instance.UpdateEvent(
-                    ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(false)
-                    );    
+                        ObjectPool<Battle_Entity_HP_UpdateEvent>
+                        .Acquire()
+                        .Set(Target.MainTargetID, target_hp)
+                        );
             }
+
+            await UniTask.Delay(500); // 연출 시간.
+
+            // Battle Scene 종료.
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<Battle_Scene_ChangeEvent>.Acquire().Set(false)
+                );    
+            
 
 
             // 아이템 인벤토리 갱신.
@@ -126,7 +128,7 @@ namespace Battle
 
 
             // 
-            m_is_sequence_done = true;
+            // m_is_sequence_done = true;
         }
     }
 }

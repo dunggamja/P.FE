@@ -46,7 +46,7 @@ namespace Battle
                     return;
 
                 // 인벤토리가 꽉찬 경우, 체크합니다.
-                if (e.Inventory.IsFull)
+                if (e.Inventory.IsOverflow)
                     m_full_inventory_entities.Enqueue(e.ID);
             });
 
@@ -84,7 +84,7 @@ namespace Battle
 
             // 인벤토리가 FULL 상태인경우 아이템 버리기 UI를 계속 띄워줍시다.
             var entity = EntityManager.Instance.GetEntity(_entity_id);
-            while (entity != null && entity.Inventory.IsFull)
+            while (entity != null && entity.Inventory.IsOverflow)
             {
                 // 아이템 GUI 오픈. 
                 var gui_id = GUIManager.Instance.OpenUI(
@@ -93,7 +93,10 @@ namespace Battle
                 // 아이템 GUI 오픈 대기.
                 await GUIManager.Instance.WaitForOpenUI(gui_id, CancellationToken.None);
 
+                
+
                 // 아이템 GUI 종료 대기.
+                await GUIManager.Instance.WaitForCloseUI(gui_id, CancellationToken.None);
             }
             
         }

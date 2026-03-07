@@ -383,6 +383,19 @@ public class GUIManager : SingletonMono<GUIManager>
              .Timeout(TimeSpan.FromSeconds(30));  
     }
 
+    public async UniTask WaitForCloseUI(Int64 _id, CancellationToken _cancel_token = default)
+    {
+        // 오픈 상태가 아니면 바로 종료.
+        if (IsOpenUI(_id) == EnumGUIOpenState.None)
+            return;
+
+
+        await
+             // 종료 상태가 될때까지 대기.
+             UniTask.WaitUntil(() => IsOpenUI(_id) == EnumGUIOpenState.None, cancellationToken: _cancel_token);
+             
+    }
+
 
 
     // bool InsertInputGUI(Int64 _id)
