@@ -4340,6 +4340,16 @@
                         "Count": 1
                     }
                 ]
+            },
+            {
+                "m_x": 15,
+                "m_y": 2,
+                "m_attribute_count": [
+                    {
+                        "Attribute": 1,
+                        "Count": 1
+                    }
+                ]
             }
         ],
         "m_attribute_mask_result": [
@@ -8636,6 +8646,11 @@
                 "m_entity_id": 1020,
                 "m_cell_x": 0,
                 "m_cell_y": 7
+            },
+            {
+                "m_entity_id": 1021,
+                "m_cell_x": 15,
+                "m_cell_y": 2
             }
         ]
     }

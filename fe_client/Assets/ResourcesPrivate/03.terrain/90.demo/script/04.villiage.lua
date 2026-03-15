@@ -22,4 +22,57 @@ end
 function demo_script_04.Ship_Turn_5_Start()
 end
 
-function demo_script_04.Villiage_
+function demo_script_04.Villiage_1002_Visit()
+end
+
+function demo_script_04.Villiage_1003_Visit()
+end
+
+function demo_script_04.Villiage_1004_Visit()
+end
+
+function demo_script_04.Villiage_1005_Visit()
+end
+
+function demo_script_04.Villiage_1006_Visit()
+end
+
+function demo_script_04.Villiage_1007_Visit()
+end
+
+function demo_script_04.Villiage_1008_Visit()
+end
+
+function demo_script_04.Villiage_1009_Visit()
+end
+
+function demo_script_04.Villiage_1010_Visit()
+end
+
+
+function demo_script_04.Villiage_1011_Visit()
+end
+
+function demo_script_04.Villiage_1012_Visit()
+end
+
+function demo_script_04.Villiage_1013_Visit()
+end
+
+function demo_script_04.Villiage_1014_Visit()
+end
+
+function demo_script_04.Villiage_1015_Visit()
+end
+
+function demo_script_04.Villiage_1016_Visit()
+end
+
+function demo_script_04.Villiage_1017_Visit()
+end
+
+function demo_script_04.Villiage_1018_Visit()
+end
+
+function demo_script_04.Villiage_1019_Visit()
+end
