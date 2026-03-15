@@ -24,7 +24,7 @@ public static partial class TagHelper
             if (_tag_info.TagType == EnumTagType.MapObject)
             {
                 var map_object = MapObjectManager.Instance.SeekMapObject(_tag_info.TagValue);
-                if (map_object != null)
+                if (map_object != null && map_object.IsEnable)
                     _list.Add(map_object);
             }            
         }

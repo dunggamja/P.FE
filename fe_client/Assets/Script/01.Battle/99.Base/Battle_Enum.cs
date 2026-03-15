@@ -347,12 +347,26 @@ namespace Battle
     public enum EnumUnitCommandType
     {
         None,
+
+        // 이벤트 관련 커맨드.
+        Talk,     // 대화
+        Visit,    // 방문
+        Exit,     // 이탈
+
+        // 기본 커맨드.
         Attack,   // 공격
         Wand,     // 지팡이
-        Skill,    // 스킬
-        Exchange, // 교환
-        Item,     // 아이템
+
+        
+
+        Skill,    // 스킬 <- 스킬은 개발되는대로 종류들을 추가하자.
+
+
+        Exchange, // 교환  <- 아이템 서브 메뉴로 합쳐질예정.
+        Item,     // 아이템 <- 아이템은 장비, 교환, 사용, 정리등으로 세분화 필요.
         Wait,     // 대기.
+
+        MAX,
     }
 
     // public enum EnumScenarioType

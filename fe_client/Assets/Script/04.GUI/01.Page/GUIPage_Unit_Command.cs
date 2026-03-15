@@ -65,6 +65,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
             switch (MenuType)
             {
+                case EnumUnitCommandType.Talk:
+                    table = "localization_base";
+                    key   = "ui_menu_talk";
+                    break;
+                case EnumUnitCommandType.Visit:
+                    table = "localization_base";
+                    key   = "ui_menu_visit";
+                    break;
+                case EnumUnitCommandType.Exit:
+                    table = "localization_base";
+                    key   = "ui_menu_exit";
+                    break;
                 case EnumUnitCommandType.Attack: 
                     table = "localization_base";
                     key   = "ui_menu_attack";                    
@@ -208,54 +220,63 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // TODO: 스킬 목록 추출,
         // 소지한 아이템 목록 추출.
 
-        using var list_weapon   = ListPool<Item>.AcquireWrapper();
-        using var list_wand     = ListPool<Item>.AcquireWrapper();
-        using var list_item     = ListPool<Item>.AcquireWrapper();
+
         // using var list_exchange = ListPool<Item>.AcquireWrapper();
 
 
-
-
-        var enable_exchange = false;
+        Span<bool> enable_commands = stackalloc bool[(int)EnumUnitCommandType.MAX];
+        enable_commands.Fill(false);
+        enable_commands[(int)EnumUnitCommandType.Wait] = true;
 
         if (entity.HasCommandEnable(EnumCommandFlag.Action))
         {
+            // TODO: 대화가 가능한 상태인지 체크.
+            enable_commands[(int)EnumUnitCommandType.Talk]  = false;
+
+            // 방문이 가능한 상태인지 체크.
+            using var list_map_visit = ListPool<MapObject>.AcquireWrapper();
+            MapObjectHelper.Collect_Visit(entity, list_map_visit.Value);
+            enable_commands[(int)EnumUnitCommandType.Visit] = 0 < list_map_visit.Value.Count;
+
+            // 이탈이 가능한 상태인지 체크.
+            using var list_map_exit = ListPool<MapObject>.AcquireWrapper();
+            MapObjectHelper.Collect_Exit(entity, list_map_exit.Value);
+            enable_commands[(int)EnumUnitCommandType.Exit]  = 0 < list_map_exit.Value.Count;
+
+
             // 장착 가능한 무기 목록
+            using var list_weapon   = ListPool<Item>.AcquireWrapper();
             entity.Inventory.CollectItem_Weapon_Available(list_weapon.Value, entity);
+            enable_commands[(int)EnumUnitCommandType.Attack] = 0 < list_weapon.Value.Count;
 
             // 사용가능한 지팡이 목록
+            using var list_wand     = ListPool<Item>.AcquireWrapper();
             entity.Inventory.CollectItem_Wand_Available(list_wand.Value, entity);
+            enable_commands[(int)EnumUnitCommandType.Wand] = 0 < list_wand.Value.Count;
+
+            // TODO: 액티브 스킬 목록 추출.
 
             // 교환 가능한지 체크.
-            enable_exchange = entity.HasCommandEnable(EnumCommandFlag.Exchange);
-
-            // 소지한 아이템 목록 추출
+            enable_commands[(int)EnumUnitCommandType.Exchange] = entity.HasCommandEnable(EnumCommandFlag.Exchange);
+            
+            // 소지한 아이템 목록 추출            
+            using var list_item     = ListPool<Item>.AcquireWrapper();
             entity.Inventory.CollectItem(list_item.Value);
+            enable_commands[(int)EnumUnitCommandType.Item] = 0 < list_item.Value.Count;
         }
 
-        // 메뉴 아이템 목록 초기화.
-        m_menu_item_datas.Clear();
 
+
+
+        // 메뉴 아이템 목록 생성.
         int menu_index = 0;
+        m_menu_item_datas.Clear();
+        for(int i = 0; i < enable_commands.Length; ++i)
+        {
+            if (enable_commands[i])
+                m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, (EnumUnitCommandType)i));
+        }
 
-        // 공격
-        if (0 < list_weapon.Value.Count)    
-            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Attack));
-
-        // 지팡이
-        if (0 < list_wand.Value.Count)      
-            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wand));
-
-        // 교환
-        if (enable_exchange)  
-            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Exchange));
-
-        // 아이템
-        if (0 < list_item.Value.Count)      
-            m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Item));
-
-        // 대기
-        m_menu_item_datas.Add(new MENU_ITEM_DATA(menu_index++, EnumUnitCommandType.Wait));
 
         // 메뉴 아이템 그리기.
         m_grid_menu_root.transform.DestroyAllChildren();
@@ -347,6 +368,14 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         // 선택 메뉴 타입에 따라 처리.        
         switch (SelectedItemData.MenuType)
         {
+            case EnumUnitCommandType.Talk:
+                break;
+            case EnumUnitCommandType.Visit:
+                break;
+            case EnumUnitCommandType.Exit:
+                break;
+
+
             case EnumUnitCommandType.Attack:
             {
                 // 공격 GUI 오픈.

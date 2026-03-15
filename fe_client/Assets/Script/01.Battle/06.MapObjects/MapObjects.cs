@@ -18,10 +18,11 @@ namespace Battle
 
 
       public Int64          ID     { get; private set; }
-      public EnumState      State  { get; private set; }
+      public EnumState      State  { get; private set; } 
       public (int x, int y) Cell   { get; private set; }
 
 
+    
       public bool           IsEnable => State == EnumState.Ready;
 
 
@@ -69,7 +70,7 @@ namespace Battle
       private Dictionary<Int64, MapObject>                   m_repository         = new();
       private Dictionary<(int x, int y), HashSet<MapObject>> m_repository_by_cell = new();
 
-      public void Collect((int x, int y) _cell, List<MapObject> _result)
+      public void Collect_By_Cell((int x, int y) _cell, List<MapObject> _result)
       {
          if (m_repository_by_cell.TryGetValue(_cell, out var map_objects) == false)
             return;
@@ -77,7 +78,14 @@ namespace Battle
          if (map_objects == null || map_objects.Count == 0)
             return;
 
-         _result.AddRange(map_objects);
+         foreach(var e in map_objects)
+         {
+            // 활성화 상태 체크.
+            if (e == null || e.IsEnable == false)
+               continue;
+
+            _result.Add(e);
+         }
       }
 
       public bool AddMapObject(MapObject _map_object)
