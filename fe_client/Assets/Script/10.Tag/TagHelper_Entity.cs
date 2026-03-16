@@ -47,6 +47,27 @@ public static partial class TagHelper
                     _list.Add(entity);
             }
         }
+        else 
+        {
+            // Entity 타입이 아닐 경우, 위치로 처리해봅시다.
+            using var list_position = ListPool<(int x, int y)>.AcquireWrapper();
+            TagHelper.Collect_Position(_tag_info, list_position.Value);
+
+            var terrain_map = TerrainMapManager.Instance.TerrainMap;
+            if (terrain_map != null)
+            {
+                foreach(var (x, y) in list_position.Value)
+                {
+                    var entity_id = terrain_map.EntityManager.GetCellData(x,y);
+                    if (entity_id > 0)
+                    {
+                        var entity = EntityManager.Instance.GetEntity(entity_id);
+                        if (entity != null)
+                            _list.Add(entity);
+                    }
+                }
+            }
+        }
     }
 
 

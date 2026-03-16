@@ -369,10 +369,20 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         switch (SelectedItemData.MenuType)
         {
             case EnumUnitCommandType.Talk:
+            {
+                // TODO: 대화 대상 선택.
+
+            }
                 break;
             case EnumUnitCommandType.Visit:
+            {
+
+            }
                 break;
             case EnumUnitCommandType.Exit:
+            {
+
+            }
                 break;
 
 

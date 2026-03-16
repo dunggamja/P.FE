@@ -89,14 +89,6 @@ public partial class RuntimeScriptManager
 
             return context.Return();
         }));
-
-
-
-
-        // 
-
-
-
     }
 
     void RegisterFunction_Tag()
