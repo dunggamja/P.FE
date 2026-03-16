@@ -5,6 +5,8 @@ using System;
 using Battle;
 using Shapes;
 using R3;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public static class ItemHelper
 {
@@ -353,6 +355,60 @@ public static class ItemHelper
        return _entity.Inventory.GetItem(_item_kind) != null;
     }
     
+
+    public static async UniTask PlaySequence_AcquireItem(Entity _entity, List<Item> _list_item)
+    {
+        if (_entity    == null || _entity.IsDead ||
+            _list_item == null || _list_item.Count == 0)
+          return;
+
+
+        // 아이템 획득 처리 진행중 처리.
+        BattleSystemManager.Instance.BlackBoard.IncreaseValue(EnumBattleBlackBoard.IsInProcess_AcquireItem);
+        
+        // 아이템 획득 처리.
+        foreach(var item in _list_item)
+          ItemHelper.AcquireItem(_entity, item);
+
+
+        // TODO: 나중에 다른 UI로 교체하자. 현재는 대화 UI로 연출 처리.
+        await DialoguePublisher.TryOpenUI(CancellationToken.None);
+
+        // 아이템 획득 팝업.
+        for(int i = 0; i < _list_item.Count; i++)
+        {
+          // 대화 데이터 생성.
+          DIALOGUE_SEQUENCE dialogue_data = new();
+          dialogue_data.SetID(Util.GenerateID());
+          
+          var item = (i < _list_item.Count) ? _list_item[i] : null;
+          if (item != null)
+          {
+            // 아이템 획득 메시지.
+            var item_name      = item.GetLocalizeName();
+            var item_name_text = await LocalizationManager.Instance.GetTextAsync(item_name.Table, item_name.Key);            
+            dialogue_data.SetCloseDialogue(false);
+            dialogue_data.AddDialogueData(new List<DIALOGUE_DATA>()
+            {
+              new DIALOGUE_DATA()
+              {
+                IsActive = true,
+                Position = DIALOGUE_DATA.EnumPosition.Center,
+                Dialogue = item_name_text
+              }
+            });
+          }
+
+          // 대화 재생.
+          await DialoguePublisher.PlayDialogueAsync(dialogue_data, CancellationToken.None);
+        }
+
+        // 대화 UI 종료 처리.
+        DialoguePublisher.CloseUI();
+
+        // 아이템 획득 처리 완료 처리.
+        BattleSystemManager.Instance.BlackBoard.DecreaseValue(EnumBattleBlackBoard.IsInProcess_AcquireItem);
+    }
 
 
     

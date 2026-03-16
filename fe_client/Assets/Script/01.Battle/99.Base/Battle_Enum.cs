@@ -222,6 +222,8 @@ namespace Battle
 
         IsBattleStarted = 1, // [Battle] 전투 시작 여부 (value: true/false)
 
+        IsInProcess_AcquireItem = 10, // [Battle] 아이템 획득 처리 진행중
+
 
         TurnUpdateCount = 100, // [Turn ] Turn Update Count    
         CurrentTurn,           // [Turn ] Turn Number    

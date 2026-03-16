@@ -39,6 +39,26 @@ namespace Battle
             m_repository.SetValue(to_int(_type), _value);            
         }
 
+        public void IncreaseValue(T _type, Int64 _value)
+        {
+            SetValue(_type, GetValue(_type) + _value);
+        }
+
+        public void DecreaseValue(T _type, Int64 _value)
+        {
+            SetValue(_type, GetValue(_type) - _value);
+        }
+
+        public void IncreaseValue(T _type)
+        {
+            IncreaseValue(_type, 1);
+        }
+
+        public void DecreaseValue(T _type)
+        {
+            DecreaseValue(_type, 1);
+        }
+
         public void SetBPValue(T _type, float _value)
         {
             SetValue(_type, (int)(_value * 10000));            
@@ -63,6 +83,8 @@ namespace Battle
         {
             return 0 != (GetValue(_type) & (1L << _bit_index));
         }
+
+        
 
 
         public virtual void Reset()

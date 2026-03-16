@@ -49,6 +49,10 @@ namespace Battle
                 if (CutsceneManager.Instance.IsPlayingCutscene)
                     return true;
 
+                // 아이템 획득 처리중.
+                if (BlackBoard.HasValue(EnumBattleBlackBoard.IsInProcess_AcquireItem))
+                    return true;
+
                 return false;
             }
         }
