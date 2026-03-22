@@ -8,12 +8,22 @@ namespace Battle
     public enum EnumCommandType
     {
         None,
-        Attack,   // 공격
         Move,     // 이동
+        
+
+        Attack,   // 공격
         Wand,     // 지팡이
+
         Exchange, // 아이템 교환
         Item,     // 아이템 사용
+
+        Talk,     // 대화
+        Visit,    // 방문
+        Exit,     // 이탈
+
         Done,     // 대기
+
+
         Abort,    // 취소 (시스템적인 명령어임...)
     }
 

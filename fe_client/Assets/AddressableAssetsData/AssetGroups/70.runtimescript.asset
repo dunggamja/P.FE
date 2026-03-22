@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - runtimescript
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22dde97f57944469387a7f2d344a1757
+    m_Address: runtimescript/item
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - runtimescript
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ac038644343047a98e6c49b868f51ea
     m_Address: runtimescript/tag
     m_ReadOnly: 0

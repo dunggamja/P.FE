@@ -88,7 +88,10 @@ public enum EnumCutscenePlayEvent
 
     OnEntityCreate     = 91, // 엔티티 생성 시 실행할 스크립트. [entity_id]
     OnEntityDead       = 92, // 엔티티 죽음 시 실행할 스크립트. [entity_id]
-    
+
+
+    OnMapObjectVisit   = 201, // 맵 오브젝트 방문 시 실행할 스크립트. [map_object_id]
+    OnMapObjectExit    = 202, // 맵 오브젝트 이탈 시 실행할 스크립트. [map_object_id]
 
     OnEveryUpdate      = 999, // 매 프레임 트리거
 }

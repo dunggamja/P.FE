@@ -116,6 +116,32 @@ public class CutsceneManager : Singleton<CutsceneManager>//, IEventReceiver
       }
     }
 
+    public bool VerifyPlayEvent(CutscenePlayEvent _event)
+    {
+       // 0은 조건 체크 없음을 의미합니다.
+      Span<Int64> list_value1 = stackalloc Int64[2] { _event.Value1, 0 };
+      Span<Int64> list_value2 = stackalloc Int64[2] { _event.Value2, 0 };
+
+      for(int i = 0; i < list_value1.Length; ++i)
+      {
+         for(int k = 0; k < list_value2.Length; ++k)
+         {
+            CutscenePlayEvent temp = CutscenePlayEvent.Create(_event.Event, list_value1[i], list_value2[k]);
+            if (m_repository_by_event.TryGetValue(temp, out var list_cutscene) == false)
+               continue;               
+
+            foreach (var name in list_cutscene)
+            {
+               // 컷씬 재생이 가능한지 체크.
+               if (VerifyPlayCutscene(name))
+                  return true;
+            }            
+         }
+      }
+
+      return false;
+    }
+
 
     
     public void RegisterCutscene(string _cutscene_name, CutsceneSequence _cutscene)

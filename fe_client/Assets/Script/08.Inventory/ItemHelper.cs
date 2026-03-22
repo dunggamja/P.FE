@@ -300,63 +300,112 @@ public static class ItemHelper
     }
 
 
+    public static void AcquireResource(EnumResourceCategory _resource_category, Int32 _value)
+    {
+       if (_resource_category == EnumResourceCategory.None)
+          return;
+
+       GlobalInventoryManager.Instance.IncreaseResource(_resource_category, _value);
+    }
+
+    public static void DecreaseResource(EnumResourceCategory _resource_category, Int32 _value)
+    {
+       if (_resource_category == EnumResourceCategory.None)
+          return;
+
+       GlobalInventoryManager.Instance.DecreaseResource(_resource_category, _value);
+    }
+
+    public static bool VerifyResource(EnumResourceCategory _resource_category, Int32 _value)
+    {
+       if (_resource_category == EnumResourceCategory.None)
+          return false;
+
+       return GlobalInventoryManager.Instance.GetResource(_resource_category) >= _value;
+    }
+
+    public static void AcquireResource(Item _item)
+    {
+       if (_item == null)
+          return;
+
+       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
+       if (resource_category != EnumResourceCategory.None)
+       {
+          GlobalInventoryManager.Instance.IncreaseResource(resource_category, _item.Value);
+       }
+    }
+
+    public static void DecreaseResource(Item _item)
+    {
+       if (_item == null)
+          return;
+
+       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
+       if (resource_category != EnumResourceCategory.None)
+       {
+          GlobalInventoryManager.Instance.DecreaseResource(resource_category, _item.Value);
+       }
+    }
+
+
     // 아이템 획득 로직.
     public static void AcquireItem(Entity _entity, Item _item)
     {
        if (_entity == null || _item == null)
           return;
-        
-       // 자원 형태의 아이템일 경우, 따로 처리합니다.
-       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
-       if (resource_category != EnumResourceCategory.None)
-       {
-          GlobalInventoryManager.Instance.IncreaseResource(resource_category, _item.Value);
-          return;         
-       }
 
-       // 아이템 추가.
-       _entity.Inventory.AddItem(_item);       
+       if (_item.ItemType == EnumItemType.Resource)
+       {
+          // 자원 획득은 따로 처리.
+          ItemHelper.AcquireResource(_item);
+       }
+       else
+       {
+          _entity.Inventory.AddItem(_item);       
+       }
     }
 
     
 
     // 아이템 버리기 로직.
-    public static void DisposeItem(Entity _entity, Item _item)
+    public static void DiscardItem(Entity _entity, Item _item)
     {
        if (_entity == null || _item == null)
           return;
         
-       // 자원 형태의 아이템일 경우, 따로 처리합니다.
-       var resource_category =  ItemHelper.GetResourceCategory(_item.Kind);
+
+       var resource_category  = ItemHelper.GetResourceCategory(_item.Kind);
        if (resource_category != EnumResourceCategory.None)
        {
-          GlobalInventoryManager.Instance.DecreaseResource(resource_category, _item.Value);
-          return;
+          // 자원 획득은 따로 처리.
+          ItemHelper.DecreaseResource(_item);
        }
-
-       // 아이템 제거.
-       _entity.Inventory.RemoveItem(_item.ID);
+       else
+       {
+          _entity.Inventory.RemoveItem(_item.ID);
+       }
     }
 
     // 아이템 버리기 가능 여부 체크.
-    public static bool VerifyItemDispose(Entity _entity, Int32 _item_kind, Int32 _value = 0)
+    public static bool VerifyItemDiscard(Entity _entity, Int32 _item_kind, Int32 _value = 0)
     {
-       if (_entity == null)
-          return false;
-        
-       // 자원 형태의 아이템일 경우, 따로 처리합니다.
-       var resource_category =  ItemHelper.GetResourceCategory(_item_kind);
-       if (resource_category != EnumResourceCategory.None)
-       {
-           var    has_amount = GlobalInventoryManager.Instance.GetResource(resource_category);
-           return has_amount >= _value;
-       }
 
-       return _entity.Inventory.GetItem(_item_kind) != null;
+      var resource_category  = ItemHelper.GetResourceCategory(_item_kind);
+      if (resource_category != EnumResourceCategory.None)
+      {
+        // 자원 획득은 따로 처리.
+        return ItemHelper.VerifyResource(resource_category, _value);
+      }
+      else
+      {
+        return _entity != null && _entity.Inventory.GetItem(_item_kind) != null;
+      }
+
     }
     
 
-    public static async UniTask PlaySequence_AcquireItem(Entity _entity, List<Item> _list_item)
+    public static async UniTask PlaySequence_Item_Change(Entity _entity, List<Item> _list_item, bool _acquire)
     {
         if (_entity    == null || _entity.IsDead ||
             _list_item == null || _list_item.Count == 0)
@@ -366,10 +415,18 @@ public static class ItemHelper
         // 아이템 획득 처리 진행중 처리.
         BattleSystemManager.Instance.BlackBoard.IncreaseValue(EnumBattleBlackBoard.IsInProcess_AcquireItem);
         
-        // 아이템 획득 처리.
+        // 아이템 획득/소모 처리.
         foreach(var item in _list_item)
-          ItemHelper.AcquireItem(_entity, item);
-
+        {
+          if (_acquire)
+          {
+            ItemHelper.AcquireItem(_entity, item);
+          }
+          else
+          {
+            ItemHelper.DiscardItem(_entity, item);
+          }
+        }
 
         // TODO: 나중에 다른 UI로 교체하자. 현재는 대화 UI로 연출 처리.
         await DialoguePublisher.TryOpenUI(CancellationToken.None);
@@ -384,7 +441,7 @@ public static class ItemHelper
           var item = (i < _list_item.Count) ? _list_item[i] : null;
           if (item != null)
           {
-            // 아이템 획득 메시지.
+            // 아이템 획득/소모 메시지.
             var item_name      = item.GetLocalizeName();
             var item_name_text = await LocalizationManager.Instance.GetTextAsync(item_name.Table, item_name.Key);            
             dialogue_data.SetCloseDialogue(false);

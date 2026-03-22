@@ -28,27 +28,40 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         m_lua_state = LuaState.Create();
         m_lua_state.OpenStandardLibraries();
 
-        // Enum 값 등록.
+        // 유닛 관련 Enum 등록.
         RegisterEnum<EnumUnitAttribute>();
         RegisterEnum<EnumUnitStatus>();
+
+
+        // 아이템 관련 Enum 등록.
+        RegisterEnum<EnumItemType>();
         RegisterEnum<EnumWeaponCategory>();
         RegisterEnum<EnumItemConsumeCategory>();
         RegisterEnum<EnumResourceCategory>();
         RegisterEnum<EnumItemAttribute>();
         RegisterEnum<EnumWeaponStatus>();
+
+
+        // 버프 관련 Enum 등록.
         RegisterEnum<EnumBuffStatus>();
         RegisterEnum<EnumBuffTarget>();
         RegisterEnum<EnumBuffContentsType>();
+
+        // 유닛 명령 관련 Enum 등록.
         RegisterEnum<EnumUnitCommandType>();
         RegisterEnum<EnumAIType>();
         RegisterEnum<EnumAIMoveType>();
         RegisterEnum<EnumAIAggressiveType>();
 
+        // 태그 관련 Enum 등록.
         RegisterEnum<EnumTagType>();
         RegisterEnum<EnumTagAttributeType>();        
 
+        // 컷씬 관련 Enum 등록.
         RegisterEnum<EnumCutscenePlayEvent>();
         RegisterEnum<EnumCutsceneLifeTime>();
+
+        // 대화 관련 Enum 등록.
         RegisterEnum<DIALOGUE_DATA.EnumPosition>();
 
         // constants
@@ -177,6 +190,7 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         await Load_Script("runtimescript/tag");    
         await Load_Script("runtimescript/cutscene");
         await Load_Script("runtimescript/dialogue");
+        await Load_Script("runtimescript/item");
 
         // 기본 스크립트 로드 완료.
         SetLuaValue("Load_Default_Script", "IsDone", 1);    

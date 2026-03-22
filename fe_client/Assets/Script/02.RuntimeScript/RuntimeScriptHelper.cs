@@ -170,10 +170,11 @@ public static class RuntimeScriptHelper
         };
     }
 
-    public static void FromLua(LuaTable _table, out List<UNIT_MOVE_DATA> _o)
+    public static void FromLua(LuaTable _table, List<UNIT_MOVE_DATA> _o)
     {
-        _o = new List<UNIT_MOVE_DATA>();
-
+        if (_o == null)
+            return;
+        
         if (_table != null)
         {
             foreach (var e in _table.GetArraySpan())
@@ -187,9 +188,11 @@ public static class RuntimeScriptHelper
         }
     }
 
-    public static void FromLua(LuaTable _table, out List<Int64> _o)
+    public static void FromLua(LuaTable _table, List<Int64> _o)
     {
-        _o = new List<Int64>();
+        if (_o == null)
+            return;
+
         if (_table != null)
         {
             foreach (var e in _table.GetArraySpan())
@@ -218,6 +221,42 @@ public static class RuntimeScriptHelper
             Value        = value,
             IsRepeatable = is_repeatable
         };
+    }
+
+    public static void FromLua(LuaTable _table, out ItemData _o)
+    {
+        if (_table == null)
+        {
+        _o = default(ItemData);
+        return;
+        }
+
+        var kind      = _table.GetLuaValue<Int32>("Kind");
+        var value     = _table.GetLuaValue<Int32>("Value");
+
+        _o = new ItemData()
+        {
+            Kind      = kind,
+            Value     = value,
+        };
+    }
+
+    public static void FromLua(LuaTable _table, List<ItemData> _o)
+    {
+        if (_o == null)
+            return;
+
+        if (_table != null)
+        {
+            foreach (var e in _table.GetArraySpan())
+            {
+                if (e.TryRead<LuaTable>(out var table) == false)
+                    continue;
+
+                FromLua(table, out ItemData data);
+                _o.Add(data);
+            }
+        }
     }
 
 

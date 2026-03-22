@@ -7,6 +7,13 @@ using Shapes;
 using R3;
 
 [Serializable]
+public struct ItemData
+{
+    public Int32 Kind;
+    public Int32 Value;
+}
+
+[Serializable]
 public partial class Item 
 {
     [SerializeField]
@@ -30,6 +37,18 @@ public partial class Item
     public Item()
     { }
 
+    public Item(ItemData _item_data)
+    {
+        m_id        = Util.GenerateID();
+        m_kind      = _item_data.Kind;
+        m_value     = _item_data.Value;
+
+        
+        var sheet_item = DataManager.Instance.ItemSheet.GetStatus(_item_data.Kind);
+        m_count_cur    = (sheet_item != null) ? sheet_item.MAX_COUNT: 0;
+        m_is_drop      = false;
+    }
+
     private Item(Int64 _id, Int32 _kind, Int32 _count_cur, Int32 _value = 0, bool _is_drop = false)
     {
         m_id        = _id;
@@ -37,7 +56,6 @@ public partial class Item
         m_count_cur = _count_cur;
         m_value     = _value;
         m_is_drop   = _is_drop;
-        // m_item_type = _item_type;
     }
 
 

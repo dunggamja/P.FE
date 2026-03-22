@@ -239,4 +239,12 @@ public static class CutsceneBuilder
    }
 #endregion cutscene_life_time
 
+
+#region cutscene_item
+   public static void AddCutscene_Item(TAG_INFO _target, List<ItemData> _items, bool _acquire)
+   {
+      AddCutscene(new Cutscene_Item_Change(Root, _target, _items, _acquire));
+   }
+#endregion cutscene_item
+
 }

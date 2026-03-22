@@ -143,7 +143,7 @@ namespace Battle
           return;
 
         // 아이템 획득 연출 처리.
-        await ItemHelper.PlaySequence_AcquireItem(alive_unit, list_drop_item.Value);
+        await ItemHelper.PlaySequence_Item_Change(alive_unit, list_drop_item.Value, true);
     }
   }
 }

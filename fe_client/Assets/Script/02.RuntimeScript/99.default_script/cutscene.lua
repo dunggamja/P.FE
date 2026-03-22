@@ -35,3 +35,4 @@ end
 function cutscene.LIFE_TIME_BATTLE(is_repeatable)
    return cutscene.LIFE_TIME(EnumCutsceneLifeTime.Battle, 0, is_repeatable);
 end
+

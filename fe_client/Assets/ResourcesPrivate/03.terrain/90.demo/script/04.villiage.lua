@@ -12,6 +12,15 @@ function demo_script_04.Run()
    -- 대화:    (항구가 위험해... 빨리 좀 와달라고...)
    demo_script_04.Ship_Turn_5_Start();
 
+
+   -- 3턴, 마을 진영 시작시 이벤트,
+   -- 커틀러스가 이 마을에 있다는 것을 알려주는 이벤트.
+   demo_script_04.Villiage_1001_Turn_3_Start();
+
+
+   -- 마을 방문 및 커틀러스 획득
+   demo_script_04.Villiage_1001_Visit();
+
 end
 
 
@@ -59,7 +68,7 @@ function demo_script_04.Villiage_1001_Turn_3_Start()
 [[그러다가 할아버지에게 
 무슨 일이 생기면 나는 어떡해!]]),
                dialogue.TOP_SHOW(portrait_child,
-[[흑... 흑...]]),d
+[[흑... 흑...]]),
                dialogue.BOTTOM_SHOW(portrait_grandpa,
 [[알았으니까... 그만 울거라...
 나도 얌전히 마을에 있을 거니까...]]),
@@ -78,8 +87,8 @@ function demo_script_04.Villiage_1001_Visit()
    local portrait_grandpa = dialogue.PORTRAIT("노인", "", "");
 
    CutsceneBuilder.RootBegin("Villiage_1001_Visit");
-      -- 턴3_진영1 시작시 실행
-      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnTurnStart, 3, 1);
+      -- 1001번 맵오브젝트 방문 시 실행.
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnMapObjectVisit, 1002);
 
       -- 전투내에서만 사용되는 컷씬
       CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
@@ -95,17 +104,20 @@ function demo_script_04.Villiage_1001_Visit()
                dialogue.TOP_SHOW(portrait_grandpa,
 [[아니... 그대는 산적이 아니군...]]),               
                dialogue.TOP_SHOW(portrait_grandpa,
-[[이봐 젊은이. 이것은 내가 젋을 때 애용하던
+[[이봐 젊은이. 이것은 내가 젊을 때 애용하던
 커틀러스다. 가벼워서 2번 공격할 수 있는 명검이지]]),
                dialogue.TOP_SHOW(portrait_grandpa,
 [[너희들에게 이 검을 줄테니 나라를 부탁한다.
 여기는 내가 태어나고 자란 조국이야. 
-멸망하는 건 내가 허락치 않을거다]])               
+멸망하는 건 내가 허락치 않을거다]])  
+            }             
          ));
          CutsceneBuilder.DialogueEnd();
 
-         -- 커틀러스 획득 처리.
-
+         -- 커틀러스 획득 처리. 
+         --  맵오브젝트 위치의 유닛에게. (EnumTagType.MapObject, 1001)
+         --  커틀러스 지급 (item.ITEM_DATA(1005)
+         CutsceneBuilder.ItemAcquire(tag.TAG_INFO(EnumTagType.MapObject, 1002), {item.ITEM_DATA(1005)});
 
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();   

@@ -23,7 +23,7 @@ public partial class RuntimeScriptManager
             // 태그 정보.
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
             
-
+            // 대상 유닛들.
             using var list_collect = ListPool<Entity>.AcquireWrapper();
             TagHelper.Collect_Entity(tag_info, list_collect.Value);
 
@@ -41,12 +41,26 @@ public partial class RuntimeScriptManager
         // 유닛 삭제.
         SetLuaValue("EntityManager", "RemoveEntity", new LuaFunction(async (context, ct) =>
         {
+            // 태그 정보.
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+            // 대상 유닛들.
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+            
             return context.Return();
         }));
 
         // 유닛 생성.
         SetLuaValue("EntityManager", "CreateEntity", new LuaFunction(async (context, ct) =>
         {
+            // 태그 정보.
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+            // 대상 유닛들.
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
             return context.Return();
         }));
 
@@ -217,10 +231,11 @@ public partial class RuntimeScriptManager
         // 유닛 이동 컷씬 
         SetLuaValue("CutsceneBuilder", "Unit_Move", new LuaFunction(async (context, ct) =>
         {
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out List<UNIT_MOVE_DATA> unit_move_data);
+            using var list_unit_move_data = ListPool<UNIT_MOVE_DATA>.AcquireWrapper();
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), list_unit_move_data.Value);
             var update_cell_position = context.GetArgument<bool>(1);
 
-            CutsceneBuilder.AddCutscene_Unit_Move(unit_move_data, update_cell_position);
+            CutsceneBuilder.AddCutscene_Unit_Move(list_unit_move_data.Value, update_cell_position);
             return context.Return();
         }));
 
@@ -230,8 +245,10 @@ public partial class RuntimeScriptManager
             var table = context.GetArgument<LuaTable>(0);            
             var show  = context.GetArgument<bool>(1);
 
-            RuntimeScriptHelper.FromLua(table, out List<Int64> list_unit_id);
-            CutsceneBuilder.AddCutscene_Unit_Show(list_unit_id, show);
+            using var list_unit_id = ListPool<Int64>.AcquireWrapper();
+            
+            RuntimeScriptHelper.FromLua(table, list_unit_id.Value);
+            CutsceneBuilder.AddCutscene_Unit_Show(list_unit_id.Value, show);
             return context.Return();
         }));
 
@@ -304,8 +321,8 @@ public partial class RuntimeScriptManager
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_1);
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), out TAG_INFO tag_2);
-            var min_range = context.GetArgument<int>(2);
-            var max_range = context.GetArgument<int>(3);
+            var min_range = context.ArgumentCount > 2 ? context.GetArgument<int>(2) : 0;
+            var max_range = context.ArgumentCount > 3 ? context.GetArgument<int>(3) : 0;
             CutsceneBuilder.AddCondition_Range(tag_1, tag_2, min_range, max_range);
             return context.Return();
         }));
@@ -316,9 +333,9 @@ public partial class RuntimeScriptManager
         // 컷씬 이벤트 추가.
         SetLuaValue("CutsceneBuilder", "PlayEvent", new LuaFunction(async (context, ct) =>
         {
-            var event_type = context.GetArgument<int>(0);
-            var value1     = context.GetArgument<Int64>(1);
-            var value2     = context.GetArgument<Int64>(2);
+            var event_type = context.ArgumentCount > 0 ? (EnumCutscenePlayEvent)context.GetArgument<int>(0) : EnumCutscenePlayEvent.None;
+            var value1     = context.ArgumentCount > 1 ? context.GetArgument<Int64>(1) : 0;
+            var value2     = context.ArgumentCount > 2 ? context.GetArgument<Int64>(2) : 0;
             CutsceneBuilder.AddPlayEvent((EnumCutscenePlayEvent)event_type, value1, value2);
             return context.Return();
         }));
@@ -332,5 +349,90 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 #endregion cutscene_life_time
+
+
+#region cutscene_item
+        SetLuaValue("CutsceneBuilder", "ItemAcquire", new LuaFunction(async (context, ct) =>
+        {
+            // 아이템 획득 처리.
+            using var list_item_data = ListPool<ItemData>.AcquireWrapper();
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), list_item_data.Value);
+
+            CutsceneBuilder.AddCutscene_Item(tag_info, list_item_data.Value, true);
+            return context.Return();
+        }));
+
+        SetLuaValue("CutsceneBuilder", "ItemDiscard", new LuaFunction(async (context, ct) =>
+        {
+            // 아이템 소모 처리.
+            using var list_item_data = ListPool<ItemData>.AcquireWrapper();
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), list_item_data.Value);
+
+            CutsceneBuilder.AddCutscene_Item(tag_info, list_item_data.Value, false);
+            return context.Return();
+        }));
+#endregion cutscene_item
+    }
+
+
+    void RegisterFunction_Item()
+    {
+        // // 아이템 획득
+        // SetLuaValue("ItemBuilder", "AcquireItem", new LuaFunction(async (context, ct) =>
+        // {
+        //     // 태그 정보.
+        //     RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+        //     // 임시 컨테이너.
+        //     using var list_collect   = ListPool<Entity>.AcquireWrapper();
+        //     using var list_item_data = ListPool<ItemData>.AcquireWrapper();
+
+        //     // 대상 유닛.
+        //     TagHelper.Collect_Entity(tag_info, list_collect.Value);
+            
+        //     // 아이템 데이터.
+        //     RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), list_item_data.Value);
+            
+        //     foreach(var e in list_collect.Value)
+        //     {
+        //         foreach(var item_data in list_item_data.Value)
+        //         {
+        //             ItemHelper.AcquireItem(e, new Item(item_data));
+        //         }
+        //     }
+
+        //     return context.Return();
+        // }));
+
+        // // 아이템 소모.
+        // SetLuaValue("ItemBuilder", "DeleteItem", new LuaFunction(async (context, ct) =>
+        // {
+        //     // 태그 정보.
+        //     RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+        //     // 임시 컨테이너.
+        //     using var list_collect   = ListPool<Entity>.AcquireWrapper();
+        //     using var list_item_data = ListPool<ItemData>.AcquireWrapper();
+
+
+        //     // 대상 유닛.
+        //     TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
+        //     // 아이템 데이터.
+        //     RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(1), list_item_data.Value);
+            
+        //     foreach(var e in list_collect.Value)
+        //     {
+        //         foreach(var item_data in list_item_data.Value)
+        //         {
+        //             ItemHelper.DiscardItem(e, new Item(item_data));
+        //         }
+        //     }
+
+
+        //     return context.Return();
+        // }));
     }
 }

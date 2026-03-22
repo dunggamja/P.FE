@@ -27,17 +27,23 @@ namespace Battle
           using var list_map_object = ListPool<MapObject>.AcquireWrapper();
           MapObjectManager.Instance.Collect_By_Cell(_entity.Cell, list_map_object.Value);
 
-          // 맵 오브젝트가 존재하며.. Tag가 조건이 만족되면 방문 가능.
-          // (컷씬은 실행전 조건체크가 불가능하므로... 실행전 조건체크는 Tag로만 가능하다...)
+
+
+
           foreach(var map_object in list_map_object.Value)
           {
-            var verify_tag =
-                TagManager.Instance.IsExistTagRelation(
-                    TAG_INFO.Create(_entity), 
-                    TAG_INFO.Create(map_object), 
-                    EnumTagAttributeType.POSITION_VISIT);
+            // 그냥 컷씬 조건체크로 변경.
+            // var verify_tag =
+            //     TagManager.Instance.IsExistTagRelation(
+            //         TAG_INFO.Create(_entity), 
+            //         TAG_INFO.Create(map_object), 
+            //         EnumTagAttributeType.POSITION_VISIT);
+            // if (verify_tag)
+            //     _list_map_object.Add(map_object);
 
-            if (verify_tag)
+
+            if (CutsceneManager.Instance.VerifyPlayEvent(
+                CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnMapObjectVisit, map_object.ID)))
                 _list_map_object.Add(map_object);
           }
        }
@@ -53,13 +59,15 @@ namespace Battle
 
           foreach(var map_object in list_map_object.Value)
           {
-            var is_enable =
-                TagManager.Instance.IsExistTagRelation(
-                    TAG_INFO.Create(_entity), 
-                    TAG_INFO.Create(map_object), 
-                    EnumTagAttributeType.POSITION_EXIT);
+            // 그냥 컷씬 조건체크로 변경.
+            // var is_enable =
+            //     TagManager.Instance.IsExistTagRelation(
+            //         TAG_INFO.Create(_entity), 
+            //         TAG_INFO.Create(map_object), 
+            //         EnumTagAttributeType.POSITION_EXIT);
 
-            if (is_enable)
+            if (CutsceneManager.Instance.VerifyPlayEvent(
+                CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnMapObjectExit, map_object.ID)))
                 _list_map_object.Add(map_object);
           }
        }

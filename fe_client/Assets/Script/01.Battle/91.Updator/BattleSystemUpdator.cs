@@ -254,11 +254,11 @@ namespace Battle
                 entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement_Mounted, movement_mounted);
 
                 
-                if (0 < movement_mounted)
-                {
-                    // TODO: 임시코드.
-                    entity.BlackBoard.SetValue(EnumEntityBlackBoard.Mounted, true);
-                }
+                // if (0 < movement_mounted)
+                // {
+                //     // TODO: 임시코드.
+                //     entity.BlackBoard.SetValue(EnumEntityBlackBoard.Mounted, true);
+                // }
 
                 // entity.StatusManager.Status.SetStatus(EnumUnitStatus.Movement,    setting_status.MOVEMENT);
 
@@ -317,7 +317,7 @@ namespace Battle
             
             foreach(var e in _map_data.Interactions.m_repository)
             {
-                var map_object = MapObject.Create(MapObject.EnumState.None, e.m_entity_id, e.m_cell_x, e.m_cell_y);
+                var map_object = MapObject.Create(MapObject.EnumState.Ready, e.m_entity_id, e.m_cell_x, e.m_cell_y);
                 MapObjectManager.Instance.AddMapObject(map_object);
             }
         }

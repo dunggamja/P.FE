@@ -376,11 +376,19 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;
             case EnumUnitCommandType.Visit:
             {
+                // 방문 명령 실행.
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                    new Command_Visit(m_entity_id)
+                    );
+
+                // GUI 닫기.
+                GUIManager.Instance.CloseUI(ID);
 
             }
                 break;
             case EnumUnitCommandType.Exit:
             {
+                // 이탈 명령 실행.
 
             }
                 break;
