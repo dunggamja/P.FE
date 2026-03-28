@@ -317,7 +317,10 @@ namespace Battle
             
             foreach(var e in _map_data.Interactions.m_repository)
             {
-                var map_object = MapObject.Create(MapObject.EnumState.Ready, e.m_entity_id, e.m_cell_x, e.m_cell_y);
+                var map_object = MapObject.Create(
+                    MapObject.EnumState.Ready, 
+                    e.m_entity_id, e.m_cell_x, e.m_cell_y);
+                    
                 MapObjectManager.Instance.AddMapObject(map_object);
             }
         }

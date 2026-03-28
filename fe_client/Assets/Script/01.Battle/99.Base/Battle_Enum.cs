@@ -222,7 +222,7 @@ namespace Battle
 
         IsBattleStarted = 1, // [Battle] 전투 시작 여부 (value: true/false)
 
-        IsInProcess_AcquireItem = 10, // [Battle] 아이템 획득 처리 진행중
+        IsInProcess_AcquireItem = 10, // [Battle] 아이템 획득 처리 진행중. 게임 진행을 멈춘다.
 
 
         TurnUpdateCount = 100, // [Turn ] Turn Update Count    

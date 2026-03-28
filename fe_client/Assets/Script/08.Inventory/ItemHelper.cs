@@ -412,6 +412,8 @@ public static class ItemHelper
           return;
 
 
+
+
         // 아이템 획득 처리 진행중 처리.
         BattleSystemManager.Instance.BlackBoard.IncreaseValue(EnumBattleBlackBoard.IsInProcess_AcquireItem);
         
@@ -431,6 +433,18 @@ public static class ItemHelper
         // TODO: 나중에 다른 UI로 교체하자. 현재는 대화 UI로 연출 처리.
         await DialoguePublisher.TryOpenUI(CancellationToken.None);
 
+
+         // 메시지 텍스트.
+         // 아이템 획득/소모 메시지.
+         // ui_item_acquire	{0} 얻었다
+         // ui_item_discard	{0} 잃었다
+         // ui_item_broken	   {0} 부러졌다
+         // ui_item_steal	   {0} 뺏겼다
+         // ui_item_use  	   {0} 사용했다
+         // ui_item_consume	{0} 소모했다
+        var message_key  = (_acquire) ? "ui_item_acquire" : "ui_item_discard";
+        var message_text = await LocalizationManager.Instance.GetTextAsync("localization_base", message_key);
+
         // 아이템 획득 팝업.
         for(int i = 0; i < _list_item.Count; i++)
         {
@@ -441,9 +455,9 @@ public static class ItemHelper
           var item = (i < _list_item.Count) ? _list_item[i] : null;
           if (item != null)
           {
-            // 아이템 획득/소모 메시지.
-            var item_name      = item.GetLocalizeName();
-            var item_name_text = await LocalizationManager.Instance.GetTextAsync(item_name.Table, item_name.Key);            
+            // 아이템 텍스트.
+            var item_text = await item.GetNameTextAsync();                       
+
             dialogue_data.SetCloseDialogue(false);
             dialogue_data.AddDialogueData(new List<DIALOGUE_DATA>()
             {
@@ -451,7 +465,7 @@ public static class ItemHelper
               {
                 IsActive = true,
                 Position = DIALOGUE_DATA.EnumPosition.Center,
-                Dialogue = item_name_text
+                Dialogue = string.Format(message_text, item_text)
               }
             });
           }

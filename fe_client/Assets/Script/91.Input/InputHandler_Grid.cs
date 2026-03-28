@@ -64,7 +64,7 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         CreateTileSelectVFX();
 
         EventDispatchManager.Instance.AttachReceiver(this);
-        Debug.Log("InputHandler_Grid_Select OnStart");
+        //Debug.Log("InputHandler_Grid_Select OnStart");
     }
 
     protected override bool OnUpdate()
@@ -113,7 +113,7 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         // SelectTile_Y      = 0;
 
         EventDispatchManager.Instance.DetachReceiver(this);
-        Debug.Log("InputHandler_Grid_Select OnFinish");
+        //Debug.Log("InputHandler_Grid_Select OnFinish");
     }
 
     protected override void OnPause()
