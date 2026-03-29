@@ -204,6 +204,24 @@ public static class CutsceneBuilder
       AddCondition(new CutsceneCondition_Range(_tag_1, _tag_2, _min_range, _max_range));
    }
 
+   // 트리거 존재 체크
+   public static void AddCondition_Trigger(int _trigger_id, bool _has_trigger)
+   {
+      AddCondition(new CutsceneCondition_Trigger(_trigger_id, _has_trigger));
+   }
+
+   // 글로벌 블랙보드 조건 추가.
+   public static void AddCondition_Blackboard(int _blackboard_key, EnumBlackBoardCompare _compare_type, Int64 _value = 0)
+   {
+      AddCondition(new CutsceneCondition_Blackboard(_blackboard_key, _compare_type, _value));
+   }
+
+   // 명령중인 유닛 조건 추가.
+   public static void AddCondition_CommandEntity(TAG_INFO _tag)
+   {
+      AddCondition(new CutsceneCondition_CommandEntity(_tag));
+   }
+
 #endregion cutscene_condition
 
 

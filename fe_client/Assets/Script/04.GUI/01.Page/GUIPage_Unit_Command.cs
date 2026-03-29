@@ -231,16 +231,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (entity.HasCommandEnable(EnumCommandFlag.Action))
         {
             // TODO: 대화가 가능한 상태인지 체크.
-            enable_commands[(int)EnumUnitCommandType.Talk]  = false;
+            using var list_talk = ListPool<Entity>.AcquireWrapper();
+            CutsceneHelper.Collect_Talk(entity, list_talk.Value);
+            enable_commands[(int)EnumUnitCommandType.Talk]  = 0 < list_talk.Value.Count;
 
             // 방문이 가능한 상태인지 체크.
             using var list_map_visit = ListPool<MapObject>.AcquireWrapper();
-            MapObjectHelper.Collect_Visit(entity, list_map_visit.Value);
+            CutsceneHelper.Collect_Visit(entity, list_map_visit.Value);
             enable_commands[(int)EnumUnitCommandType.Visit] = 0 < list_map_visit.Value.Count;
 
             // 이탈이 가능한 상태인지 체크.
             using var list_map_exit = ListPool<MapObject>.AcquireWrapper();
-            MapObjectHelper.Collect_Exit(entity, list_map_exit.Value);
+            CutsceneHelper.Collect_Exit(entity, list_map_exit.Value);
             enable_commands[(int)EnumUnitCommandType.Exit]  = 0 < list_map_exit.Value.Count;
 
 

@@ -46,6 +46,9 @@ function demo_script_04.Run()
    demo_script_04.Villiage_1019_Visit();
    demo_script_04.Villiage_1020_Visit();
 
+   -- 대화이벤트 등록해보자.
+   demo_script_04.Entity_1_2_Talk();
+
 end
 
 
@@ -704,4 +707,35 @@ end
 
 -- 탈출.
 function demo_script_04.Villiage_1021_Exit()
+end
+
+
+-- 대화이벤트. (제이드_아톨)
+function demo_script_04.Entity_1_2_Talk()
+
+   local portrait_jade   = dialogue.PORTRAIT("제이드", "", "");
+   local portrait_atol   = dialogue.PORTRAIT("아톨", "", "");
+
+   CutsceneBuilder.RootBegin("Entity_1_2_Talk");
+      -- 대화이벤트 등록. 
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnTalkCommand, 2);
+
+      -- 명령중인 유닛 조건 추가.
+      CutsceneBuilder.Condition_CommandEntity(tag.TAG_INFO(EnumTagType.Entity, 1));
+
+      -- 전투내에서만 사용되는 컷씬
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
+
+      CutsceneBuilder.TrackBegin();
+      -- 대화.
+      CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+         {
+            dialogue.TOP_SHOW(portrait_jade,[[넌 뭐하는 놈이니?]]),
+            dialogue.BOTTOM_SHOW(portrait_atol,[[난 아톨이야. 너는 뭔데?]]),
+            dialogue.TOP_SHOW(portrait_jade,[[난 제이드야.]])
+         }             
+      ));
+      CutsceneBuilder.DialogueEnd();
+   CutsceneBuilder.RootEnd();
+
 end

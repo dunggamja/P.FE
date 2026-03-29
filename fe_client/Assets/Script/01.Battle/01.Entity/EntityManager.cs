@@ -48,19 +48,18 @@ namespace Battle
             }
         }
 
-        public List<Entity> Collect(Func<Entity, bool> _callback)
+        public void Collect(List<Entity> _list, Func<Entity, bool> _callback)
         {
-            var list_result = new List<Entity>(10);
-            if (_callback != null)
-            {
-                foreach(var e in m_repository_by_id.Values)
-                {
-                    if (_callback(e))
-                        list_result.Add(e);
-                }
-            }
+            if (_list == null)
+                return;
 
-            return list_result;
+            foreach(var e in m_repository_by_id.Values)
+            {
+                if (_callback != null && _callback(e) == false)
+                    continue;
+
+                _list.Add(e);
+            }
         }
 
 

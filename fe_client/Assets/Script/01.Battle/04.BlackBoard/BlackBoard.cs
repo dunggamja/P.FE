@@ -8,6 +8,19 @@ using UnityEngine;
 
 namespace Battle
 {
+    public enum EnumBlackBoardCompare
+    {
+        Equal,
+        NotEqual,
+        True,
+        False,
+        GreaterThan,
+        LessThan,
+        GreaterThanOrEqual,
+        LessThanOrEqual,
+    }
+
+
     public class BlackBoard<T> where T : unmanaged
     {
         BaseContainer m_repository = new BaseContainer();
@@ -103,6 +116,32 @@ namespace Battle
         public void Load(BlackBoard_IO _snapshot)
         {
             m_repository.Load(_snapshot.Values);
+        }
+
+
+        public bool CompareValue(T _type, EnumBlackBoardCompare _compare_type, Int64 _value)
+        {
+            switch(_compare_type)
+            {
+                case EnumBlackBoardCompare.Equal:
+                    return GetValue(_type) == _value;
+                case EnumBlackBoardCompare.NotEqual:
+                    return GetValue(_type) != _value;
+                case EnumBlackBoardCompare.True:
+                    return HasValue(_type) == true;
+                case EnumBlackBoardCompare.False:
+                    return HasValue(_type) == false;
+                case EnumBlackBoardCompare.GreaterThan:
+                    return GetValue(_type) > _value;
+                case EnumBlackBoardCompare.LessThan:
+                    return GetValue(_type) < _value;
+                case EnumBlackBoardCompare.GreaterThanOrEqual:
+                    return GetValue(_type) >= _value;
+                case EnumBlackBoardCompare.LessThanOrEqual:
+                    return GetValue(_type) <= _value;
+            }
+
+            return false;
         }
     }
 

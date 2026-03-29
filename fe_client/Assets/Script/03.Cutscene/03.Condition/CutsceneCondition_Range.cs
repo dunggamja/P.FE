@@ -32,7 +32,7 @@ public class CutsceneCondition_Range : CutsceneCondition
       TagHelper.Collect_Position(Tag1, list_position_1.Value);
       TagHelper.Collect_Position(Tag2, list_position_2.Value);
 
-      foreach(var (x1, y1) in list_position_1.Value)
+      foreach(var (x1, y1) in list_position_1.Value) 
       {
          foreach(var (x2, y2) in list_position_2.Value)
          {

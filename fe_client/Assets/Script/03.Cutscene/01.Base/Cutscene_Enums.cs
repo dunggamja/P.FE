@@ -93,5 +93,8 @@ public enum EnumCutscenePlayEvent
     OnMapObjectVisit   = 201, // 맵 오브젝트 방문 시 실행할 스크립트. [map_object_id]
     OnMapObjectExit    = 202, // 맵 오브젝트 이탈 시 실행할 스크립트. [map_object_id]
 
+
+    OnTalkCommand      = 211, // 대화 명령 가능 시 실행할 스크립트. [entity_id]
+
     OnEveryUpdate      = 999, // 매 프레임 트리거
 }

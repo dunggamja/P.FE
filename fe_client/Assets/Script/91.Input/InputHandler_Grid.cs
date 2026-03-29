@@ -38,7 +38,18 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
     bool                    IsFinish                  { get; set; } = false;                
     float                   MoveTile_LastTime         { get; set; } = 0f;
     Vector2Int              MoveDirection             { get; set; } = Vector2Int.zero;    
-    Int64                   CommandEntityID           { get; set; } = 0; 
+    Int64                   CommandEntityID           
+    { 
+        get
+        {
+            return BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID);
+        } 
+        
+        set
+        {
+            BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CommandEntityID, value);
+        }
+    } 
     // (int x, int y)          CommandEntityBasePosition { get; set; } = (0, 0);
     Int64                   m_vfx_select  = 0;
 

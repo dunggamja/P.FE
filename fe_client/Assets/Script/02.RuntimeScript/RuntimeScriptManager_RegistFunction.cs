@@ -327,6 +327,33 @@ public partial class RuntimeScriptManager
             return context.Return();
         }));
 
+        // 트리거 존재 체크
+        SetLuaValue("CutsceneBuilder", "Condition_Trigger", new LuaFunction(async (context, ct) =>
+        {
+            var trigger_id  = context.GetArgument<int>(0);
+            var has_trigger = context.GetArgument<bool>(1);
+            CutsceneBuilder.AddCondition_Trigger(trigger_id, has_trigger);
+            return context.Return();
+        }));
+
+        // 글로벌 블랙보드 조건 추가.
+        SetLuaValue("CutsceneBuilder", "Condition_Blackboard", new LuaFunction(async (context, ct) =>
+        {
+            var blackboard_key = context.GetArgument<int>(0);
+            var compare_type   = context.GetArgument<int>(1);
+            var value          = context.ArgumentCount > 2 ? context.GetArgument<Int64>(2) : 0;
+            CutsceneBuilder.AddCondition_Blackboard(blackboard_key, (EnumBlackBoardCompare)compare_type, value);
+            return context.Return();
+        }));
+
+        // 명령중인 유닛 조건 추가.
+        SetLuaValue("CutsceneBuilder", "Condition_CommandEntity", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag);
+            CutsceneBuilder.AddCondition_CommandEntity(tag);
+            return context.Return();
+        }));
+
 #endregion cutscene_condition
 
 #region cutscene_play_event
