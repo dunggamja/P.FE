@@ -56,7 +56,7 @@ function demo_script_03.Enemy_Bully_Turn_1_Start()
       -- 건달들 위치로 카메라 포커싱.
          CutsceneBuilder.VFX_TileSelect_On(0, tag.TAG_INFO(EnumTagType.Entity_Group, 1));   
          CutsceneBuilder.Delay(1.0);
-         CutsceneBuilder.VFX_TileSelect_Off(0);
+
 
       -- 건달들의 대화.
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
@@ -80,6 +80,9 @@ function demo_script_03.Enemy_Bully_Turn_1_Start()
             }
          ));
          CutsceneBuilder.DialogueEnd();
+
+         CutsceneBuilder.VFX_TileSelect_Off(0);
+
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();
 end
@@ -213,7 +216,7 @@ function demo_script_03.Enemy_Thief_Turn_2_Start()
       -- 도적 위치로 카메라 포커싱.
          CutsceneBuilder.VFX_TileSelect_On(0, tag.TAG_INFO(EnumTagType.Entity, 3011));   
          CutsceneBuilder.Delay(1.0);
-         CutsceneBuilder.VFX_TileSelect_Off(0);
+
 
       -- 도적의 대화.
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
@@ -229,6 +232,8 @@ function demo_script_03.Enemy_Thief_Turn_2_Start()
             }
          ));
          CutsceneBuilder.DialogueEnd();
+
+         CutsceneBuilder.VFX_TileSelect_Off(0);
 
          -- 적 AI를 랜덤 이동으로 변경. (배회.)
          CutsceneBuilder.Unit_AIType(tag.TAG_INFO(EnumTagType.Entity, 3011), EnumAIType.Wandering);

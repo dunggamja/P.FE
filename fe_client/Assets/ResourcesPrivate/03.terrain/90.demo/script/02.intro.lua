@@ -119,8 +119,8 @@ function demo_script_02.Run()
          CutsceneBuilder.Delay(1.0);
 
 
-         -- 탈출 위치 표시 및 카메라 포커스 (index:0, 성 위치.)
-         CutsceneBuilder.VFX_TileSelect_On(0, tag.POSITION(16, 2));         
+         -- 탈출 위치 표시, 맵오브젝트 1021 위치.
+         CutsceneBuilder.VFX_TileSelect_On(0, tag.TAG_INFO(EnumTagType.MapObject, 1021));         
          CutsceneBuilder.Delay(1.0);
 
          -- 여기가 탈출 위치임.

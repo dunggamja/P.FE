@@ -75,7 +75,7 @@ function demo_script_04.Ship_4001_Turn_5_Start()
       -- 선박 위치로 카메라 포커싱.
          CutsceneBuilder.VFX_TileSelect_On(0, tag.TAG_INFO(EnumTagType.Entity, 4001));   
          CutsceneBuilder.Delay(1.0);
-         CutsceneBuilder.VFX_TileSelect_Off(0);
+         
 
       -- 선박의 대화.
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
@@ -85,6 +85,9 @@ function demo_script_04.Ship_4001_Turn_5_Start()
             }
          ));
          CutsceneBuilder.DialogueEnd();
+
+         CutsceneBuilder.VFX_TileSelect_Off(0);
+         
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();
 
@@ -109,7 +112,7 @@ function demo_script_04.Villiage_1001_Turn_3_Start()
       -- 마을 위치로 카메라 포커싱
          CutsceneBuilder.VFX_TileSelect_On(0, tag.POSITION(4, 3));   
          CutsceneBuilder.Delay(1.0);
-         CutsceneBuilder.VFX_TileSelect_Off(0);
+
 
       -- 대화.
          CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
@@ -136,6 +139,9 @@ function demo_script_04.Villiage_1001_Turn_3_Start()
             }
          ));
          CutsceneBuilder.DialogueEnd();
+
+         CutsceneBuilder.VFX_TileSelect_Off(0);
+
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();   
 end
@@ -713,7 +719,7 @@ function demo_script_04.Villiage_1021_Exit()
 
    CutsceneBuilder.RootBegin("Villiage_1021_Exit");
       -- 1002번 맵오브젝트 방문 시 실행.
-      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnMapObjectExit, 1002);
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnMapObjectExit, 1021);
 
       -- 탈출 대상. (플레이어 진영)
       CutsceneBuilder.Condition_CommandEntity(tag.TAG_INFO(EnumTagType.Entity_Faction, 1));

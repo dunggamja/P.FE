@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [EventReceiver(
-    typeof(Battle_Scene_ChangeEvent),
+    // typeof(Battle_Scene_ChangeEvent),
     typeof(Battle_Entity_HP_UpdateEvent),
     typeof(WorldObject_ShowEvent)
 )]
@@ -86,9 +86,9 @@ public class HUD_Unit_HP : HUDBase, IEventReceiver
 
         switch (_event)
         {
-            case Battle_Scene_ChangeEvent battle_scene_change_event:
-                onReceiveEvent_Battle_Scene_ChangeEvent(battle_scene_change_event);
-                break;
+            // case Battle_Scene_ChangeEvent battle_scene_change_event:
+            //     onReceiveEvent_Battle_Scene_ChangeEvent(battle_scene_change_event);
+            //     break;
 
             case Battle_Entity_HP_UpdateEvent battle_entity_hp_update_event:
                 OnReceiveEvent_Battle_Entity_HP_UpdateEvent(battle_entity_hp_update_event);
@@ -100,13 +100,13 @@ public class HUD_Unit_HP : HUDBase, IEventReceiver
         }
     }
 
-    void onReceiveEvent_Battle_Scene_ChangeEvent(Battle_Scene_ChangeEvent _event)
-    {
-        if (_event.IsEnter)
-            Hide();
-        else
-            Show();
-    }
+    // void onReceiveEvent_Battle_Scene_ChangeEvent(Battle_Scene_ChangeEvent _event)
+    // {
+    //     if (_event.IsEnter)
+    //         Hide();
+    //     else
+    //         Show();
+    // }
 
     void OnReceiveEvent_Battle_Entity_HP_UpdateEvent(Battle_Entity_HP_UpdateEvent _event)
     {
