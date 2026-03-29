@@ -181,6 +181,11 @@ public abstract class GUIPage : GUIBase
                 .SetLink(gameObject)
                 .SetUpdate(true);
         }
+        else
+        {
+            // hud 의 경우 CanvasGroup 이 없을 수 있음.
+            gameObject.SetActive(true);
+        }
 
     }
 
@@ -210,6 +215,11 @@ public abstract class GUIPage : GUIBase
                 .SetEase(Ease.OutQuad)
                 .SetLink(gameObject)
                 .SetUpdate(true);
+        }
+        else
+        {
+            // hud 의 경우 CanvasGroup 이 없을 수 있음.
+            gameObject.SetActive(false);
         }
     }
 
@@ -300,9 +310,13 @@ public abstract class GUIPage : GUIBase
 
         IsVisible = _visible;
         OnVisibleChanged(_visible);
+        // Debug.Log($"GUIPage: SetVisible {GUIName} {_visible}");
     }
 
-    protected virtual void OnVisibleChanged(bool _visible) { }
+    protected virtual void OnVisibleChanged(bool _visible) 
+    {
+
+    }
 
     
     protected void CloseSelf() => GUIManager.Instance.CloseUI(ID);

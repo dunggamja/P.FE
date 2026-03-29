@@ -10,7 +10,8 @@ using UnityEngine.UI;
 
 [EventReceiver(
     typeof(Battle_Scene_ChangeEvent),
-    typeof(Battle_Entity_HP_UpdateEvent)
+    typeof(Battle_Entity_HP_UpdateEvent),
+    typeof(WorldObject_ShowEvent)
 )]
 public class HUD_Unit_HP : HUDBase, IEventReceiver
 {
@@ -92,6 +93,10 @@ public class HUD_Unit_HP : HUDBase, IEventReceiver
             case Battle_Entity_HP_UpdateEvent battle_entity_hp_update_event:
                 OnReceiveEvent_Battle_Entity_HP_UpdateEvent(battle_entity_hp_update_event);
                 break;
+
+            case WorldObject_ShowEvent world_object_show_event:
+                OnReceiveEvent_WorldObject_ShowEvent(world_object_show_event);
+                break;
         }
     }
 
@@ -107,6 +112,18 @@ public class HUD_Unit_HP : HUDBase, IEventReceiver
     {
         if (_event.EntityID == m_entity_id)
             SetHP(_event.EntityID, _event.HP);
+    }
+
+
+    void OnReceiveEvent_WorldObject_ShowEvent(WorldObject_ShowEvent _event)
+    {
+        if (_event.ID != m_entity_id)
+            return;
+
+        if (_event.Show)
+            Show();
+        else
+            Hide();   
     }
 
 
