@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -127,5 +127,29 @@ namespace Battle
             return false;
         }
 
+        /// 맵에서 이탈 처리.
+        /// TODO: 이탈 관련 연출 처리 필요
+        public void ApplyExit()
+        {
+            // 이미 이탈한 상태인지 체크.
+            if (IsExit)
+                return;
+
+            // 모든 행동 종료 처리.
+            SetAllCommandDone();
+
+            // 좌표 점유 해제.
+            UpdateCellOccupied(false);
+
+            // 이탈 상태 셋팅.
+            BlackBoard.SetValue(EnumEntityBlackBoard.Exited, true);
+
+            // HUD 삭제.
+            DeleteHUD();
+
+            // 안보이게 표시.
+            EventDispatchManager.Instance.UpdateEvent(
+                ObjectPool<WorldObject_ShowEvent>.Acquire().Set(ID, false));
+        }
     }
 }

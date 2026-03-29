@@ -27,6 +27,10 @@ public static class CutsceneHelper
 
       foreach(var e in list_neighbor.Value)
       {
+         // 활성화된 유닛인지 체크합니다.
+         if (e.IsActive == false)
+            continue;
+
          // 대화가능한 대상인지 체크합니다.
          if (CutsceneManager.Instance.VerifyPlayEvent(
              CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnTalkCommand, e.ID)))
@@ -40,7 +44,7 @@ public static class CutsceneHelper
    public static void Collect_Visit(Entity _entity, List<MapObject> _list_map_object)
    {
       if (_entity == null)
-      return;
+         return;
 
       // 유닛이 위치한 좌표의 맵 오브젝트들을 가져옵니다.
       using var list_map_object = ListPool<MapObject>.AcquireWrapper();
@@ -59,7 +63,7 @@ public static class CutsceneHelper
    public static void Collect_Exit(Entity _entity, List<MapObject> _list_map_object)
    {
       if (_entity == null)
-      return;
+         return;
       
       using var list_map_object = ListPool<MapObject>.AcquireWrapper();
       MapObjectManager.Instance.Collect_By_Cell(_entity.Cell, list_map_object.Value);

@@ -299,8 +299,8 @@ namespace Battle
                         if (target_entity == null)
                             continue; 
 
-                        // 죽었으면 타겟팅에서 제외
-                        if (target_entity.IsDead)
+                        // 활성화 상태 체크.
+                        if (target_entity.IsActive == false)
                             continue;     
 
                         // 공격 가능한지 체크.

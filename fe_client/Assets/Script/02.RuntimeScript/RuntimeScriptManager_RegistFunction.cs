@@ -48,21 +48,27 @@ public partial class RuntimeScriptManager
             using var list_collect = ListPool<Entity>.AcquireWrapper();
             TagHelper.Collect_Entity(tag_info, list_collect.Value);
             
-            return context.Return();
-        }));
-
-        // 유닛 생성.
-        SetLuaValue("EntityManager", "CreateEntity", new LuaFunction(async (context, ct) =>
-        {
-            // 태그 정보.
-            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
-
-            // 대상 유닛들.
-            using var list_collect = ListPool<Entity>.AcquireWrapper();
-            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+            // 유닛 삭제 처리.
+            foreach(var e in list_collect.Value)
+            {
+                e.DeleteProcess();
+            }
 
             return context.Return();
         }));
+
+        // // 유닛 생성.
+        // SetLuaValue("EntityManager", "CreateEntity", new LuaFunction(async (context, ct) =>
+        // {
+        //     // 태그 정보.
+        //     RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+        //     // 대상 유닛들.
+        //     using var list_collect = ListPool<Entity>.AcquireWrapper();
+        //     TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
+        //     return context.Return();
+        // }));
 
 
         SetLuaValue("EntityManager", "GetPosition", new LuaFunction(async (context, ct) =>
@@ -258,6 +264,7 @@ public partial class RuntimeScriptManager
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
             var ai_type = context.GetArgument<int>(1);
 
+            // 대상 유닛들 컬렉트.
             using var list_collect = ListPool<Entity>.AcquireWrapper();
             using var list_unit_id = ListPool<Int64>.AcquireWrapper();
             TagHelper.Collect_Entity(tag_info, list_collect.Value);
@@ -270,6 +277,25 @@ public partial class RuntimeScriptManager
             CutsceneBuilder.AddCutscene_Unit_AIType(list_unit_id.Value, (EnumAIType)ai_type);
 
             
+            return context.Return();
+        }));
+
+        // 유닛 맵에서 이탈 처리.
+        SetLuaValue("CutsceneBuilder", "Unit_Exit", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag_info);
+
+            // 대상 유닛들을 컬렉트 합니다.
+            using var list_collect = ListPool<Entity>.AcquireWrapper();
+            using var list_unit_id = ListPool<Int64>.AcquireWrapper();
+            TagHelper.Collect_Entity(tag_info, list_collect.Value);
+
+            foreach(var e in list_collect.Value)
+            {
+                list_unit_id.Value.Add(e.ID);
+            }
+
+            CutsceneBuilder.AddCutscene_Unit_Exit(list_unit_id.Value);
             return context.Return();
         }));
 

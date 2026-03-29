@@ -85,8 +85,8 @@ namespace Battle
             // 현재 행동가능한 유닛중 가장 행동우선순위가 높은 유닛을 찾습니다.
             EntityManager.Instance.Loop(e =>
             {
-                // 기본 체크 1. (진영, 생존 체크)
-                if (e == null || e.IsDead || e.GetFaction() != _faction)
+                // 기본 체크 1. (진영 체크)
+                if (e == null || e.GetFaction() != _faction)
                     return;
 
                 // 기본 체크 2. (행동 가능 체크)
@@ -101,16 +101,17 @@ namespace Battle
             EntityManager.Instance.Loop(e =>
             {
                 // 진영, 생존 체크.
-                if (e == null || e.IsDead || e.GetFaction() != _faction)
-                    return;
-
-                // 행동 가능 체크
-                if (e.IsEnableCommandProgress() == false)
+                if (e == null || e.GetFaction() != _faction)
                     return;
 
                 // 행동 우선순위 체크.
                 if (e.GetCommandPriority() != priority)
                     return;
+                    
+                // 행동 가능 체크
+                if (e.IsEnableCommandProgress() == false)
+                    return;
+
 
                 list_entity.Value.Add(e);
             });

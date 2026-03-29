@@ -56,12 +56,16 @@ namespace Battle
         public int     ClassKind   => StatusManager.Status.ClassKIND;
 
 
+        // 활성화 상태의 유닛 - 죽거나, 이탈한 유닛은 제외.
+        public bool    IsActive    => !IsDead && !IsExit;
+
+
         public bool    IsDead      => StatusManager.Status.GetPoint(EnumUnitPoint.HP) <= 0;
         
         
         // 맵에서 사라진 상태.
-        public bool    IsOffMap    => BlackBoard.HasValue(EnumEntityBlackBoard.Exited)    // 이탈 (자발적)
-                                   || BlackBoard.HasValue(EnumEntityBlackBoard.Vanished); // 사라짐 (이벤트)
+        public bool    IsExit      => BlackBoard.HasValue(EnumEntityBlackBoard.Exited);
+                                //    || BlackBoard.HasValue(EnumEntityBlackBoard.Vanished); // 사라짐 (이벤트)
 
         public string  AssetName  { get; private set; } = string.Empty;
 

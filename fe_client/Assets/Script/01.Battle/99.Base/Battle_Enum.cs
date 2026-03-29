@@ -184,8 +184,8 @@ namespace Battle
         
         Mounted,           // 탑승 상태. (기마, 비병)
 
-        Exited,    // (자발적으로) 맵에서 이탈한 상태.
-        Vanished,  // (이벤트 등으로) 맵에서 사라진 상태.
+        Exited,            // 맵에서 이탈한 상태.
+        // Vanished,          // (이벤트 등으로) 맵에서 사라진 상태.
 
 
 

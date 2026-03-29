@@ -102,5 +102,35 @@ namespace Battle
         }
     }
 
+    public class Command_Exit : Command
+    {
+        public override EnumCommandType CommandType => EnumCommandType.Exit;
+
+        public Command_Exit(Int64 _owner_id) : base(_owner_id)
+        {
+        }
+
+        protected override void OnEnter()
+        {
+        }
+
+        protected override bool OnUpdate()
+        {
+            return true;
+        }
+
+        protected override void OnExit(bool _is_abort)
+        {
+            if (_is_abort)
+                return;
+
+            if (Owner == null)
+                return;
+          
+            // 맵에서 이탈 처리.
+            Owner.ApplyExit();
+        }
+    }
+
 }
 

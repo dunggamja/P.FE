@@ -56,7 +56,7 @@ namespace Battle
             if (_attacker == null || _target == null)
                 return true;
 
-            if (_attacker.IsDead || _target.IsDead)
+            if (_attacker.IsActive == false || _target.IsActive == false)
                 return true;
 
             // 태그 체크. (포커싱 또는 포커싱 무시)
@@ -78,7 +78,7 @@ namespace Battle
             if (_attacker == null || _target == null)
                 return false;
 
-            if (_attacker.IsDead || _target.IsDead)
+            if (_attacker.IsActive == false || _target.IsActive == false)
                 return false;
 
             return TagManager.Instance.IsExistTagRelation(_attacker, _target,  EnumTagAttributeType.TARGET_FOCUS);

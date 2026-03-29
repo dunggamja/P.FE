@@ -407,8 +407,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 break;
             case EnumUnitCommandType.Exit:
             {
-                // 이탈 명령 실행.
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                    new Command_Exit(m_entity_id));
 
+                GUIManager.Instance.CloseUI(ID);
             }
                 break;
 

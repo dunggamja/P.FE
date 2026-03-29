@@ -157,6 +157,12 @@ public static class CutsceneBuilder
       AddCutscene(new Cutscene_Unit_AIType(Root, _unit_id, _ai_type));      
    }
 
+   // 유닛 맵에서 이탈 처리.
+   public static void AddCutscene_Unit_Exit(List<Int64> _unit_id)
+   {
+      AddCutscene(new Cutscene_Unit_Exit(Root, _unit_id));      
+   }
+
    // Delay 컷씬 추가.
    public static void AddCutscene_Delay(float _wait_time)
    {

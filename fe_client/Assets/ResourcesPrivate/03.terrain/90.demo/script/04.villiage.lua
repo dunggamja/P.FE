@@ -16,6 +16,9 @@ function demo_script_04.Run()
    -- 탈출 이벤트 등록
    demo_script_04.Villiage_1021_Exit();
 
+   -- 탈출시 대사 추가.
+
+
    -- 3턴, 마을 진영 시작시 이벤트,
    -- 커틀러스가 이 마을에 있다는 것을 알려주는 이벤트.
    demo_script_04.Villiage_1001_Turn_3_Start();
@@ -705,8 +708,26 @@ function demo_script_04.Villiage_1020_Visit()
 end
 
 
--- 탈출.
+-- 탈출 목표 셋팅.
 function demo_script_04.Villiage_1021_Exit()
+
+   CutsceneBuilder.RootBegin("Villiage_1021_Exit");
+      -- 1002번 맵오브젝트 방문 시 실행.
+      CutsceneBuilder.PlayEvent(EnumCutscenePlayEvent.OnMapObjectExit, 1002);
+
+      -- 탈출 대상. (플레이어 진영)
+      CutsceneBuilder.Condition_CommandEntity(tag.TAG_INFO(EnumTagType.Entity_Faction, 1));
+
+      -- 전투내에서만 사용되는 컷씬 - 반복 가능.
+      CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(true));
+
+      -- 탈출을 위한 플래그 역할만 있을뿐. 실제 탈출 처리는 게임로직으로 처리됨.
+
+      -- CutsceneBuilder.TrackBegin();
+      --    -- 탈출 처리. (맵오브젝트 1021 위치에 있는 유닛)
+      --    CutsceneBuilder.Unit_Exit(tag.TAG_INFO(EnumTagType.MapObject, 1002));
+      -- CutsceneBuilder.TrackEnd();
+   CutsceneBuilder.RootEnd();   
 end
 
 

@@ -407,7 +407,7 @@ public static class ItemHelper
 
     public static async UniTask PlaySequence_Item_Change(Entity _entity, List<Item> _list_item, bool _acquire)
     {
-        if (_entity    == null || _entity.IsDead ||
+        if (_entity    == null || _entity.IsActive == false ||
             _list_item == null || _list_item.Count == 0)
           return;
 

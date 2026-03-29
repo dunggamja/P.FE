@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,9 +115,10 @@ namespace Battle
 
         public EnumCommandProgressState GetCommandProgressState()
         {
-            // 죽었음.
-            if (IsDead)
+            // 활성화 상태 체크.
+            if (IsActive == false)
                 return EnumCommandProgressState.Invalid;
+
 
             // 실행 가능한 명령이 1개도 없으면 완료 처리.
             if (HasCommandEnable() == false)
