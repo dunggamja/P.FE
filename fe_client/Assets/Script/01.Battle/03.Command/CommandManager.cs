@@ -137,12 +137,20 @@ namespace Battle
             if (command == null)
                 return;
 
+            // 명령 진행 중인 엔티티 ID 설정.
+            BattleSystemManager.Instance.BlackBoard.SetValue(
+                EnumBattleBlackBoard.CommandEntityID_Progress, m_owner_id);
+
 
             // 명령 진행.
             if (command.Update() == EnumState.Finished)
             {
                 // command 완료되면 pop 처리.
                 PopCommand();
+
+                // 명령 진행 중인 엔티티 ID 초기화.
+                BattleSystemManager.Instance.BlackBoard.SetValue(
+                    EnumBattleBlackBoard.CommandEntityID_Progress, 0);
             }
 
             // 이벤트 발생.

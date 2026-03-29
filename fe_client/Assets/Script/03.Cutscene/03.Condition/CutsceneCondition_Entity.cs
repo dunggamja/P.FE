@@ -28,8 +28,10 @@ public class CutsceneCondition_CommandEntity : CutsceneCondition
    public override bool Verify(CutsceneSequence _sequence)
    {
       // 현재 명령중인 유닛ID
-      var command_entity_id = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID);
-      if (command_entity_id == 0)
+      var command_entity_id_input    = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID_Input);
+      var command_entity_id_progress = BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID_Progress);
+
+      if (command_entity_id_input == 0 && command_entity_id_progress == 0)
          return false;
 
       // 태그 대상.
@@ -38,7 +40,7 @@ public class CutsceneCondition_CommandEntity : CutsceneCondition
 
       foreach(var e in list_entity.Value)
       {
-         if (e.ID == command_entity_id)
+         if (e.ID == command_entity_id_input || e.ID == command_entity_id_progress)
          {
             return true;
          }

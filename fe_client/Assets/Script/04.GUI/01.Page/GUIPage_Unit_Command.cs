@@ -372,7 +372,24 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             case EnumUnitCommandType.Talk:
             {
-                // TODO: 대화 대상 선택.
+                using var list_talk_id = ListPool<Int64>.AcquireWrapper();
+                {
+                    var       entity    = EntityManager.Instance.GetEntity(m_entity_id);
+                    using var list_talk = ListPool<Entity>.AcquireWrapper();
+                    CutsceneHelper.Collect_Talk(entity, list_talk.Value);
+                    foreach(var e in list_talk.Value)
+                        list_talk_id.Value.Add(e.ID);
+                }
+
+                GUIManager.Instance.OpenUI(
+                    GUIPage_Unit_Select_Target.PARAM.Create(
+                        m_entity_id,
+                        list_talk_id.Value,
+                        (target_id) =>
+                        {
+                            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                                new Command_Talk(m_entity_id, target_id));
+                        }));
 
             }
                 break;

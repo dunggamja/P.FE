@@ -660,17 +660,17 @@ function demo_script_04.Villiage_1019_Visit()
       CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
 
       CutsceneBuilder.TrackBegin();
-      -- 대화.
-      CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
-         {
-            dialogue.TOP_SHOW(portrait_villiage,
-[[돈 받고 꺼져]])
-         }             
-      ));
-      CutsceneBuilder.DialogueEnd();
+         -- 대화.
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.TOP_SHOW(portrait_villiage,
+   [[돈 받고 꺼져]])
+            }             
+         ));
+         CutsceneBuilder.DialogueEnd();
 
-      -- 골드 지급 (1000골드)
-      CutsceneBuilder.ItemAcquire(tag.TAG_INFO(EnumTagType.MapObject, 1019), {item.ITEM_DATA(1, 1000)});
+         -- 골드 지급 (1000골드)
+         CutsceneBuilder.ItemAcquire(tag.TAG_INFO(EnumTagType.MapObject, 1019), {item.ITEM_DATA(1, 1000)});
 
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();   
@@ -689,16 +689,16 @@ function demo_script_04.Villiage_1020_Visit()
 
       CutsceneBuilder.TrackBegin();    
       -- 대화.
-      CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
-         {
-            dialogue.TOP_SHOW(portrait_villiage,
-[[돈 받고 꺼져]])
-         }             
-      ));
-      CutsceneBuilder.DialogueEnd();
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.TOP_SHOW(portrait_villiage,
+   [[돈 받고 꺼져]])
+            }             
+         ));
+         CutsceneBuilder.DialogueEnd();
 
-      -- 골드 지급 (1000골드)
-      CutsceneBuilder.ItemAcquire(tag.TAG_INFO(EnumTagType.MapObject, 1020), {item.ITEM_DATA(1, 1000)});
+         -- 골드 지급 (1000골드)
+         CutsceneBuilder.ItemAcquire(tag.TAG_INFO(EnumTagType.MapObject, 1020), {item.ITEM_DATA(1, 1000)});
 
       CutsceneBuilder.TrackEnd();
    CutsceneBuilder.RootEnd();   
@@ -727,15 +727,18 @@ function demo_script_04.Entity_1_2_Talk()
       CutsceneBuilder.LifeTime(cutscene.LIFE_TIME_BATTLE(false));
 
       CutsceneBuilder.TrackBegin();
-      -- 대화.
-      CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
-         {
-            dialogue.TOP_SHOW(portrait_jade,[[넌 뭐하는 놈이니?]]),
-            dialogue.BOTTOM_SHOW(portrait_atol,[[난 아톨이야. 너는 뭔데?]]),
-            dialogue.TOP_SHOW(portrait_jade,[[난 제이드야.]])
-         }             
-      ));
-      CutsceneBuilder.DialogueEnd();
+         -- 대화.
+         CutsceneBuilder.Dialogue(dialogue.SEQUENCE(
+            {
+               dialogue.TOP_SHOW(portrait_jade,[[넌 뭐하는 놈이니?]]),
+               dialogue.BOTTOM_SHOW(portrait_atol,[[난 아톨이야. 너는 뭔데?]]),
+               dialogue.TOP_SHOW(portrait_jade,[[난 제이드야.]])
+            }             
+         ));
+         CutsceneBuilder.DialogueEnd();
+
+      CutsceneBuilder.TrackEnd();
+
    CutsceneBuilder.RootEnd();
 
 end

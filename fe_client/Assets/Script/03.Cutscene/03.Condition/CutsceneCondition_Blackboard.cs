@@ -23,6 +23,6 @@ public class  CutsceneCondition_Blackboard : CutsceneCondition
 
     public override bool Verify(CutsceneSequence _sequence)
     {
-       return BattleSystemManager.Instance.BlackBoard.CompareValue(EnumBattleBlackBoard.CommandEntityID, CompareType, Value);
+       return BattleSystemManager.Instance.BlackBoard.CompareValue(EnumBattleBlackBoard.CommandEntityID_Input, CompareType, Value);
     }
 }

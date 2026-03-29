@@ -37,17 +37,24 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
          
     bool                    IsFinish                  { get; set; } = false;                
     float                   MoveTile_LastTime         { get; set; } = 0f;
-    Vector2Int              MoveDirection             { get; set; } = Vector2Int.zero;    
-    Int64                   CommandEntityID           
+    Vector2Int              MoveDirection             { get; set; } = Vector2Int.zero; 
+
+    Int64                   m_command_entity_id       = 0;   
+    Int64                   CommandEntityID           //{ get; set; } = 0;     
     { 
         get
         {
-            return BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID);
+            return m_command_entity_id;
+            // return BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.CommandEntityID);
         } 
         
         set
         {
-            BattleSystemManager.Instance.BlackBoard.SetValue(EnumBattleBlackBoard.CommandEntityID, value);
+            m_command_entity_id = value;
+
+            // 명령 입력 중인 엔티티 ID 설정.
+            BattleSystemManager.Instance.BlackBoard.SetValue(
+                EnumBattleBlackBoard.CommandEntityID_Input, value);
         }
     } 
     // (int x, int y)          CommandEntityBasePosition { get; set; } = (0, 0);

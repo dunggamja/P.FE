@@ -54,7 +54,52 @@ namespace Battle
                }
             }
         }
+    }
 
+    public class Command_Talk : Command
+    {
+        public override EnumCommandType CommandType => EnumCommandType.Talk;
+
+        public Int64          TargetID { get; private set; } = 0;
+        
+        public Command_Talk(Int64 _owner_id, Int64 _target_id) : base(_owner_id)
+        {
+            TargetID = _target_id;
+        }
+
+        protected override void OnEnter()
+        {
+            if (Owner != null)
+            {
+                Owner.UpdateCellPosition(
+                    Owner.Cell,
+                    (_apply: true, _immediatly: true),
+                    _is_plan: false
+                );
+            }
+        }
+        
+        
+        protected override bool OnUpdate()
+        {
+            CutsceneManager.Instance.OnPlayEvent(
+                CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnTalkCommand, TargetID)
+            );
+
+            return true;
+        }
+
+        protected override void OnExit(bool _is_abort)
+        {
+            if (_is_abort)
+                return;
+
+            if (Owner != null)
+            {
+                // 대화하면 행동 종료처리.
+                Owner.SetAllCommandDone();
+            }
+        }
     }
 
 }
