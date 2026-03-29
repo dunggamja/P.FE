@@ -36,6 +36,13 @@ MonoBehaviour:
     - gui
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 710ae57d031f74040b3606eadf95dfb1
+    m_Address: gui/page/unit_select_target
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - gui
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 977b03f65f56f4807b758a4f795ead49
     m_Address: gui/page/unit_command_item
     m_ReadOnly: 0

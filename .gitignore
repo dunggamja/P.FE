@@ -53,3 +53,10 @@ fe_client/Assets/XLua.meta
 /fe_client/Assets/XLua
 fe_client/.cursorrules
 fe_client/Wingman.csproj
+fe_client/Pinwheel.PolarisAPI.csproj
+fe_client/Pinwheel.Polaris.Runtime.csproj
+fe_client/Pinwheel.Polaris.Editor.csproj
+fe_client/Assets/Scenes/SampleScene.unity
+fe_client/Assets/Scenes/SampleScene.unity
+/fe_client/Assets/_Demo
+fe_client/Assets/_Demo.meta
