@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +51,10 @@ namespace Battle
 
                 // 아이템 획득 처리중.
                 if (BlackBoard.HasValue(EnumBattleBlackBoard.IsInProcess_AcquireItem))
+                    return true;
+
+                // 승리/패배 확정 후 결과 연출·GUI 동안 전투 정지.
+                if (BlackBoard.GetValue(EnumBattleBlackBoard.BattleResult) != (int)EnumBattleResult.None)
                     return true;
 
                 return false;

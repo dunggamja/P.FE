@@ -43,11 +43,12 @@ public class CutsceneCondition_Combat_Unit : CutsceneCondition
 
 public class CutsceneCondition_Combat_Unit_Dead : CutsceneCondition
 {
-    public TAG_INFO UnitTag { get; private set; } = TAG_INFO.Create(EnumTagType.None, 0);
+    public TAG_INFO UnitTag  { get; private set; } = TAG_INFO.Create(EnumTagType.None, 0);
+    // public bool     CheckAll { get; private set; } = false;
 
     public CutsceneCondition_Combat_Unit_Dead(TAG_INFO _unit_tag)
     {
-        UnitTag = _unit_tag;
+        UnitTag  = _unit_tag;
     }
 
     public override bool Verify(CutsceneSequence _sequence)
@@ -61,7 +62,10 @@ public class CutsceneCondition_Combat_Unit_Dead : CutsceneCondition
         using var list_unit = ListPool<Entity>.AcquireWrapper();        
         TagHelper.Collect_Entity(UnitTag, list_unit.Value);
 
-        // 죽은 유닛 체크.
+        // 죽은 유닛 체크.       
+        
+
+
         foreach(var e in list_unit.Value)
         {
             if (e.ID == attacker_id || e.ID == defender_id)

@@ -70,6 +70,9 @@ public enum EnumCutscenePlayEvent
     OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) []
     OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) []
 
+    OnBattleVictory    = 43, // 승리 확정 직후 연출용. CutsceneBuilder.PlayEvent 등록 []
+    OnBattleDefeat     = 44, // 패배 확정 직후 연출용. []
+
     OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트. [turn_number, faction_id]
     OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number, faction_id]
     

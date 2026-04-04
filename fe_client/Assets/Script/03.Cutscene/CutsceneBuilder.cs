@@ -198,7 +198,7 @@ public static class CutsceneBuilder
       AddCondition(new CutsceneCondition_Combat_Unit(_unit_tag));
    }
 
-   // 공격 또는 방어유닛에 대상 유닛이 죽었는지 체크합니다.
+   // 전투에서 대상 유닛이 죽었는지 체크합니다.
    public static void AddCondition_Combat_Unit_Dead(TAG_INFO _unit_tag)
    {
       AddCondition(new CutsceneCondition_Combat_Unit_Dead(_unit_tag));

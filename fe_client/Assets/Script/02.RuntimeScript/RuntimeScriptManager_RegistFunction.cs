@@ -338,6 +338,8 @@ public partial class RuntimeScriptManager
         SetLuaValue("CutsceneBuilder", "Condition_Combat_Unit_Dead", new LuaFunction(async (context, ct) =>
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO unit_tag);
+            
+            // 대상 유닛이 죽었는지 체크합니다.
             CutsceneBuilder.AddCondition_Combat_Unit_Dead(unit_tag);
             return context.Return();
         }));
@@ -428,6 +430,20 @@ public partial class RuntimeScriptManager
         }));
 #endregion cutscene_item
     }
+
+    // void RegisterFunction_BattleFlow()
+    // {
+    //     SetLuaValue("BattleFlow", "RequestVictory", new LuaFunction(async (context, ct) =>
+    //     {
+    //         // RuntimeScriptManager.BattleOutcomeFlow.RequestVictory();
+    //         return context.Return();
+    //     }));
+    //     SetLuaValue("BattleFlow", "RequestDefeat", new LuaFunction(async (context, ct) =>
+    //     {
+    //         // RuntimeScriptManager.BattleOutcomeFlow.RequestDefeat();
+    //         return context.Return();
+    //     }));
+    // }
 
 
     void RegisterFunction_Item()
