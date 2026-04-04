@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Battle
 {
 
-    public class BattleSystemUpdator : SingletonMono<BattleSystemUpdator>
+    public class BattleSystemUpdator : MonoUpdator// : SingletonMono<BattleSystemUpdator>
     {
 
         public bool IsInitialized { get; private set; } = false;

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TAG_ROOT
   - Battle_Terrain
+  - Scene_Core
   layers:
   - Default
   - TransparentFX

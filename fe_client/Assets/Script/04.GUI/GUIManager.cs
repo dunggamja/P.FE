@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 
@@ -36,27 +37,34 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
 
-    AsyncOperationTracker              m_async_operation_tracker = new();
+    AsyncOperationTracker       m_async_operation_tracker = new();
 
 
-    public Camera HUDCamera 
-        => (m_canvas_root_hud) ? m_canvas_root_hud.worldCamera : null;
+
+    public Camera HUDCamera => m_canvas_root_hud.worldCamera;
 
 
 
        
     private void Awake()
     {
-        var main_camera = Camera.main;
-        if (main_camera == null)
-        {
-            Debug.LogError("UIManager: Main Camera is not found.");
-        }
-        else
-        {
-            // HUD 카메라 설정. (추후 필요시 추가)
-            m_canvas_root_hud.worldCamera = main_camera;            
-        }
+        // 씬 로드시 처리해야할 작업.
+        SceneManager.sceneLoaded += OnSceneLoaded;        
+    }
+
+
+    void OnSceneLoaded(Scene _scene, LoadSceneMode _mode)
+    {
+        // HUD 카메라 바인딩.
+        BindHUDCamera();
+    }
+
+
+    void BindHUDCamera()
+    {
+        var scene_object_binder       = SceneObjectBinder.Find();
+        m_canvas_root_hud.worldCamera = (scene_object_binder) ?
+                                         scene_object_binder.SceneCamera : null;
     }
 
 
@@ -352,6 +360,7 @@ public class GUIManager : SingletonMono<GUIManager>
 
 
 
+    // TODO: GUI풀링 처리를 위한 함수....
     void ReturnToPool(GUIPage _gui_object)
     {
         if (_gui_object == null)
