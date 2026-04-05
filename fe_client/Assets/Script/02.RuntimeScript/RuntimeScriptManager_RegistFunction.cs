@@ -148,6 +148,13 @@ public partial class RuntimeScriptManager
             CutsceneBuilder.TrackEnd();
             return context.Return();
         }));
+
+        SetLuaValue("CutsceneBuilder", "Decorator_Not", new LuaFunction(async (context, ct) =>
+        {
+            CutsceneBuilder.Decorator_Not();
+            return context.Return();
+        }));
+
 #endregion base
 
 #region cutscene_action
@@ -379,6 +386,15 @@ public partial class RuntimeScriptManager
         {
             RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag);
             CutsceneBuilder.AddCondition_CommandEntity(tag);
+            return context.Return();
+        }));
+
+        // 태그 대상 유닛의 생존/이탈/활성 등 엔티티 상태 조건.
+        SetLuaValue("CutsceneBuilder", "Condition_Entity", new LuaFunction(async (context, ct) =>
+        {
+            RuntimeScriptHelper.FromLua(context.GetArgument<LuaTable>(0), out TAG_INFO tag);
+            var entity_condition = (EnumEntityCondition)context.GetArgument<int>(1);
+            CutsceneBuilder.AddCondition_Entity(tag, entity_condition);
             return context.Return();
         }));
 

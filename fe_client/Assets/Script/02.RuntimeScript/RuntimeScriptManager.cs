@@ -60,6 +60,8 @@ public partial class RuntimeScriptManager : Singleton<RuntimeScriptManager>
         // 컷씬 관련 Enum 등록.
         RegisterEnum<EnumCutscenePlayEvent>();
         RegisterEnum<EnumCutsceneLifeTime>();
+        RegisterEnum<EnumBattleResult>();
+        RegisterEnum<EnumEntityCondition>();
 
         // 대화 관련 Enum 등록.
         RegisterEnum<DIALOGUE_DATA.EnumPosition>();

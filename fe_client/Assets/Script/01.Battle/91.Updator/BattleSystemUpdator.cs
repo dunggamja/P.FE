@@ -13,8 +13,14 @@ using UnityEngine;
 namespace Battle
 {
 
+    // 전투씬에 붙어있는 오브젝트이다. 전투씬이 종료되면 이 오브젝트도 삭제된다.
     public class BattleSystemUpdator : MonoUpdator// : SingletonMono<BattleSystemUpdator>
     {
+        public string MapFileName            { get; private set; } = "demo/map_file";
+        public string MapSettingFileName     { get; private set; } = "demo/map_setting";
+        public string FactionSettingFileName { get; private set; } = "demo/map_faction_setting";
+
+
 
         public bool IsInitialized { get; private set; } = false;
 
@@ -40,6 +46,7 @@ namespace Battle
             // m_lua_state.OpenStandardLibraries();
                     
             // 게임 데이터 초기화.
+            // TODO: 전투를 처음부터 플레이하는 경우와, LOAD 하는 경우에 따른 로직을 분리해야 한다.
             Initialize_GameData().Forget();
         }
 
@@ -53,6 +60,18 @@ namespace Battle
                 return;
 
             BattleSystemManager.Instance.Update();
+        }
+
+        protected override void OnRelease(bool _is_shutdown)
+        {
+            // BattleSystemManager 초기화 처리.
+            if (!_is_shutdown)
+            {
+                BattleSystemManager.Instance.Release();
+            }
+
+
+            base.OnRelease(_is_shutdown);
         }
 
         // // Start is called before the first frame update
@@ -83,7 +102,7 @@ namespace Battle
             Util.SetRandomSeed((int)System.DateTime.Now.Ticks);
 
             // 맵 파일 로드.
-            var (map_file, map_setting, faction_setting) = await Load_Map_File(AssetName.DEMO_MAP_FILE);
+            var (map_file, map_setting, faction_setting) = await Load_Map_File(MapFileName);
             if  (map_file == null || map_setting == null || faction_setting == null)
             {
                 Debug.LogError("Failed to load map file");
@@ -91,6 +110,8 @@ namespace Battle
             }
 
             map_setting.Initialize();
+
+            
 
 
             // 지형 맵 셋팅.
@@ -110,13 +131,14 @@ namespace Battle
             await Test_BattleSystem_Setup_Script(map_setting);   
     
 
-
             IsInitialized = true;
 
 
             // 전투 처음 시작이라면. 인트로 컷씬을 재생합니다.
-            // if (BattleSystemManager.Instance.BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleStarted) == false)
             CutsceneManager.Instance.OnPlayEvent(CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnBattleStart));            
+            
+
+            // if (BattleSystemManager.Instance.BlackBoard.HsValue(EnumBattleBlackBoard.IsBattleStarted) == false)
         }
 
 
@@ -130,14 +152,14 @@ namespace Battle
             if (map_data == null || map_data.Terrain == null)
                 return (null, null, null);
 
-            var map_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_setting>(AssetName.DEMO_MAP_SETTING);
+            var map_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_setting>(MapSettingFileName);
             if (map_setting == null)
             {
                 Debug.LogError("Failed to load map setting");
                 return (null, null, null);
             }
 
-            var faction_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_faction_setting>(AssetName.DEMO_MAP_FACTION_SETTING);
+            var faction_setting = await AssetManager.Instance.LoadAssetAsync<sheet_map_faction_setting>(FactionSettingFileName);
             if (faction_setting == null)
             {
                 Debug.LogError("Failed to load faction setting");
@@ -341,70 +363,6 @@ namespace Battle
             }
         }
 
-        // [ContextMenu("TestCode_Dialogue")]
-        // void TestCode_Dialogue()
-        // {
-        //     var dialogue_sequence = new DIALOGUE_SEQUENCE();
-        //     dialogue_sequence.SetID(1);
-        //     dialogue_sequence.AddDialogueData(new List<DIALOGUE_DATA>
-        //     {
-        //         new DIALOGUE_DATA()
-        //         {
-        //             IsActive = true,
-        //             Position = DIALOGUE_DATA.EnumPosition.Center,
-        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "John Doe" },
-        //             Dialogue = "Hello, World!",
-        //         }
-        //     });
-        //     var dialogue_sequence2 = new DIALOGUE_SEQUENCE();
-        //     dialogue_sequence2.SetID(2);
-        //     dialogue_sequence2.AddDialogueData(new List<DIALOGUE_DATA>
-        //     {
-        //         new DIALOGUE_DATA()
-        //         {
-        //             IsActive = true,
-        //             Position = DIALOGUE_DATA.EnumPosition.Bottom,
-        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "Jane Doe" },
-        //             Dialogue = "Hello, World!2",
-        //         }
-        //     });
-
-        //     var dialogue_sequence3 = new DIALOGUE_SEQUENCE();
-        //     dialogue_sequence3.SetID(3);
-        //     dialogue_sequence3.AddDialogueData(new List<DIALOGUE_DATA>
-        //     {
-        //         new DIALOGUE_DATA()
-        //         {
-        //             IsActive = true,
-        //             Position = DIALOGUE_DATA.EnumPosition.Center,
-        //             Portrait = new DIALOGUE_PORTRAIT() { Name = "Doey Doe" },
-        //             Dialogue = "Hello, World!3",
-        //         }
-        //     });
-
-        //     var dialogue_sequence4 = new DIALOGUE_SEQUENCE();
-        //     dialogue_sequence4.SetID(4);
-        //     dialogue_sequence4.SetCloseDialogue(true);
-
-        //     CutsceneBuilder.RootBegin("Dialogue");
-        //     CutsceneTrack track = new CutsceneTrack();
-        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, true, (1, 1)));
-        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence));
-        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence2));
-
-        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, true, (2, 2)));
-        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence3));
-        //     // track.AddCutscene(new Cutscene_Dialogue(CutsceneBuilder.Root, dialogue_sequence4));
-        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 0, false));
-        //     // track.AddCutscene(new Cutscene_VFX_TileSelect(CutsceneBuilder.Root, 1, false));
-
-
-        //     CutsceneBuilder.Root.AddTrack(track);
-
-        //     CutsceneBuilder.RootEnd();
-
-        //     CutsceneManager.Instance.RequestPlayCutscene("Dialogue");
-        // }
 
     }
 }

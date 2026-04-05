@@ -56,7 +56,7 @@ namespace Battle
         protected override bool OnUpdate(IBattleSystemParam _param)
         {
             // 처리해야 할 entity_ID
-            if (m_full_inventory_entities.Count > 0)
+            if (m_full_inventory_entities.Count > 0 && m_task.Status != UniTaskStatus.Pending)
             {
                 m_task = Process_DiscardItem(m_full_inventory_entities.Dequeue());
             }
@@ -68,8 +68,6 @@ namespace Battle
 
             // 처리할 entity_ID가 없으면 종료.
             return  (m_full_inventory_entities.Count == 0);
-            
-            
         }
 
         protected override void OnExit(IBattleSystemParam _param)
@@ -98,7 +96,6 @@ namespace Battle
                 // 아이템 GUI 종료 대기.
                 await GUIManager.Instance.WaitForCloseUI(gui_id, CancellationToken.None);
             }
-            
         }
 
     }

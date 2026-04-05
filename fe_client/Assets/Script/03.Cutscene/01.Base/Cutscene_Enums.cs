@@ -57,47 +57,59 @@ public enum EnumCutscenePlayEvent
 {
     None = 0,
 
+
+    // 챕터, 거점 등 관련 컷씬은 1~999번대로 지정.
+
     OnVerifyCondition  = 1, // 챕터 등장 조건 검사 시 실행할 스크립트. [kind]
 
     OnChapterStart     = 11, // 챕터 시작 시 실행할 스크립트. (시나리오 연출 등) []
     OnChapterEnd       = 12, // 챕터 종료 시 실행할 스크립트. (시나리오 연출 등) []
 
-    OnMapSetting       = 21, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅) []
 
-    OnArrangementStart = 31, // 배치 시작 시 실행할 스크립트. []
-    OnArrangementEnd   = 32, // 배치 종료 시 실행할 스크립트. []
 
-    OnBattleStart      = 41, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) []
-    OnBattleEnd        = 42, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) []
+    // 전투 관련 컷씬은 1000번대로 지정.
 
-    OnBattleVictory    = 43, // 승리 확정 직후 연출용. CutsceneBuilder.PlayEvent 등록 []
-    OnBattleDefeat     = 44, // 패배 확정 직후 연출용. []
+    OnBattleMapSetting       = 1021, // 맵 설정 시 실행할 스크립트.  (승패조건, 기본 태그 셋팅) []
 
-    OnTurnStart        = 51, // 턴 시작 시 실행할 스크립트. [turn_number, faction_id]
-    OnTurnEnd          = 52, // 턴 종료 시 실행할 스크립트. [turn_number, faction_id]
+    OnBattleArrangementStart = 1031, // 배치 시작 시 실행할 스크립트. []
+    OnBattleArrangementEnd   = 1032, // 배치 종료 시 실행할 스크립트. []
+
+    OnBattleStart            = 1041, // 전투 시작 시 실행할 스크립트. (시나리오 연출 등) []
+    OnBattleEnd              = 1042, // 전투 종료 시 실행할 스크립트. (시나리오 연출 등) []
+      
+    OnBattleVictory          = 1043, // 승리 확정 직후 연출용. CutsceneBuilder.PlayEvent 등록 []
+    OnBattleDefeat           = 1044, // 패배 확정 직후 연출용. []
+      
+    OnTurnStart              = 1051, // 턴 시작 시 실행할 스크립트. [turn_number, faction_id]
+    OnTurnEnd                = 1052, // 턴 종료 시 실행할 스크립트. [turn_number, faction_id]
     
 
 
-    OnCombatStart          = 61, // 전투 시작 시 실행할 스크립트. [attacker, defender]    
-    OnCombatEnd            = 62, // 전투 종료 시 실행할 스크립트. [attacker, defender]
-    OnCombatDirectionStart = 63, // 전투 연출 시작 시 실행할 스크립트 [attacker, defender]
-    OnCombatDirectionEnd   = 64, // 전투 연출 종료 시 실행할 스크립트 [attacker, defender]
+    OnCombatStart            = 1061, // 전투 시작 시 실행할 스크립트. [attacker, defender]    
+    OnCombatEnd              = 1062, // 전투 종료 시 실행할 스크립트. [attacker, defender]
+    OnCombatDirectionStart   = 1063, // 전투 연출 시작 시 실행할 스크립트 [attacker, defender]
+    OnCombatDirectionEnd     = 1064, // 전투 연출 종료 시 실행할 스크립트 [attacker, defender]
 
 
-    OnTileSelect       = 71, // 타일 선택 시 실행할 스크립트. [x, y]
+    OnTileSelect             = 1071, // 타일 선택 시 실행할 스크립트. [x, y]
+      
+    OnCommandStart           = 1081, // 명령 시작 시 실행할 스크립트. [id]
+    OnCommandEnd             = 1082, // 명령 종료 시 실행할 스크립트. [id]
+      
+    OnEntityCreate           = 1091, // 엔티티 생성 시 실행할 스크립트. [entity_id]
+    OnEntityDead             = 1092, // 엔티티 죽음 시 실행할 스크립트. [entity_id]
 
-    OnCommandStart     = 81, // 명령 시작 시 실행할 스크립트. [id]
-    OnCommandEnd       = 82, // 명령 종료 시 실행할 스크립트. [id]
+    OnMapObjectVisit         = 1201, // 맵 오브젝트 방문 시 실행할 스크립트. [map_object_id]
+    OnMapObjectExit          = 1202, // 맵 오브젝트 이탈 시 실행할 스크립트. [map_object_id]            
 
-    OnEntityCreate     = 91, // 엔티티 생성 시 실행할 스크립트. [entity_id]
-    OnEntityDead       = 92, // 엔티티 죽음 시 실행할 스크립트. [entity_id]
-
-
-    OnMapObjectVisit   = 201, // 맵 오브젝트 방문 시 실행할 스크립트. [map_object_id]
-    OnMapObjectExit    = 202, // 맵 오브젝트 이탈 시 실행할 스크립트. [map_object_id]
+    OnTalkCommand            = 1211, // 대화 명령 가능 시 실행할 스크립트. [entity_id]      
 
 
-    OnTalkCommand      = 211, // 대화 명령 가능 시 실행할 스크립트. [entity_id]
+    OnCheckVictory           = 1301, // 승리 체크.
+    OnCheckDefeat            = 1302, // 패배 체크.
+    OnVictory                = 1303, // 승리 시 실행할 스크립트.
+    OnDefeat                 = 1304, // 패배 시 실행할 스크립트.
 
-    OnEveryUpdate      = 999, // 매 프레임 트리거
+
+    OnBattleUpdate           = 1999, // 매 프레임 트리거
 }

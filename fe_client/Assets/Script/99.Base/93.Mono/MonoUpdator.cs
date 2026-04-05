@@ -6,51 +6,7 @@ using UnityEngine;
 
 public abstract class MonoUpdator : MonoBehaviour 
 {
-   //  static T    m_instance;
-   //  static bool m_shutdown = false;
-    //static Object m_lock;
-
-   //  protected static string Name => "@Singleton_" + typeof(T).ToString();
-    
-   //  public static T Instance
-   //  {
-   //      get
-   //      {
-   //          if (m_shutdown)
-   //          {
-   //              return null;
-   //          }
-
-   //          //lock(m_lock)
-   //          {
-   //              if (m_instance == null)
-   //              {
-   //                  m_instance = FindFirstObjectByType<T>();
-
-   //                  if (m_instance == null)
-   //                  {
-   //                      var new_object  = new GameObject();
-   //                      new_object.name = Name;
-   //                      m_instance      = new_object.AddComponent<T>();
-
-   //                      DontDestroyOnLoad(new_object);
-   //                  }
-   //              }
-   //          }
-
-   //          return m_instance;
-   //      }
-   //  }
-
-   //  public static void DestroySingleton()
-   //  {        
-   //      if (m_instance)
-   //      {
-   //          GameObject.Destroy(m_instance.gameObject);
-   //          m_instance = null;
-   //      }
-   //  }
-
+   
     private   float                 MIN_UPDATE_INTERVAL = 1f/120f;
     protected virtual float         LoopInterval        => 0f;
     private CancellationTokenSource LoopCancelToken     = null;

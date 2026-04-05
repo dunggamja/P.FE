@@ -34,13 +34,17 @@ namespace Battle
         private Dictionary<int, EnumCommanderType> m_faction_commander      = new ();
         private HashSet<(int, int)>                m_faction_alliance       = new ();
 
-        private HashSet<int>                       m_pause_reasons          = new();
-        
-        
-        public CommandQueueHandler           CommandHandler { get; private set; } = new();
+        // private HashSet<int>                       m_pause_reasons          = new();
 
+        // // 승리/패배 조건. (일단 CutsceneCondition 으로 처리...;)
+        // private List<CutsceneCondition>            m_conditions_victory = new();
+        // private List<CutsceneCondition>            m_conditions_defeat  = new();
         
+        
+        public CommandQueueHandler           CommandHandler { get; private set; } = new();        
         public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
+
+
         public bool                          IsPause 
         {
             get
@@ -53,21 +57,13 @@ namespace Battle
                 if (BlackBoard.HasValue(EnumBattleBlackBoard.IsInProcess_AcquireItem))
                     return true;
 
-                // 승리/패배 확정 후 결과 연출·GUI 동안 전투 정지.
-                if (BlackBoard.GetValue(EnumBattleBlackBoard.BattleResult) != (int)EnumBattleResult.None)
+                // 전투가 종료되었을 경우.
+                if (BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleFinished))
                     return true;
 
                 return false;
             }
         }
-
-        // public void SetPause(int _reason, bool _is_pause)
-        // {
-        //     if (_is_pause)
-        //         m_pause_reasons.Add(_reason);
-        //     else
-        //         m_pause_reasons.Remove(_reason);
-        // }
 
 
         protected override void Init()
@@ -85,6 +81,9 @@ namespace Battle
             m_update_system.Add(new BattleSystem_Command_Progress(CommandHandler));
             // 인벤토리 정리
             m_update_system.Add(new BattleSystem_Inventory());
+            // 승리 패배 검사 처리.
+            m_update_system.Add(new BattleSystem_Result());
+
 
 
 
@@ -121,29 +120,37 @@ namespace Battle
         bool OnUpdate()
         {
             // Update 정지 처리.
-            if (IsPause)
-                return false;            
-
-            // 전투 시작 처리.
-            BlackBoard.SetValue(EnumBattleBlackBoard.IsBattleStarted, true);
-
-            // 시스템을 순차적으로 실행해야 한다.
-            for(; m_system_index < m_update_system.Count; ++m_system_index)
+            if (IsPause == false)
             {
-                // 진해중인 시스템이 있다면 다음 프레임에 이어서..
-                if (m_update_system[m_system_index].Update(Param) == EnumState.Progress)
-                    break;
-           } 
+                // 전투 시작 처리.
+                BlackBoard.SetValue(EnumBattleBlackBoard.IsBattleStarted, true);
 
-            // 다시 처음부터.
-            if (m_system_index >= m_update_system.Count)
-            {
-                m_system_index  = 0;
+                // 시스템을 순차적으로 실행해야 한다.
+                for(; m_system_index < m_update_system.Count; ++m_system_index)
+                {
+                    // 진해중인 시스템이 있다면 다음 프레임에 이어서..
+                    if (m_update_system[m_system_index].Update(Param) == EnumState.Progress)
+                        break;
+                } 
+                
+                
+                // LOOP 처리.
+                if (m_system_index >= m_update_system.Count)
+                {
+                    m_system_index  = 0;
+                }
             }
 
+            
 
-            // 종료 타이밍은 변수를 따로 둬야할듯.
-            return false;
+
+
+
+            // 전투 종료 여부 체크.
+            return BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleFinished);
+
+            // 종료 여부는... IsBattleFinished 값을 체크하도록 한다.
+            // return BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleFinished);
         }
 
 
@@ -184,42 +191,7 @@ namespace Battle
             return null;
         }
 
-        // public T GetSystem<T>() where T : BattleSystem
-        // {
-        //     foreach(var e in m_update_system)
-        //     {
-        //         if (e is T system)
-        //             return system;
-        //     }
-
-        //     Debug.LogError($"Can't Find System, {typeof(T).ToString()} in SystemManager[{GetType().ToString()}]");
-        //     return null;
-        // }
-
-
-
-        // private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
-        // {
-        //     var system = GetSystem(_system_type) as BattleSystem;
-        //     if (system != null)
-        //         return system.Update(_param);
-
-        //     return EnumState.None;
-        // }
-
-        // private EnumState GetSystemState(EnumSystem _system_type)
-        // {
-        //     var system = GetSystem(_system_type);
-        //     if (system != null)
-        //         return system.State;
-
-        //     return EnumState.None;
-        // }
-
-        // private bool IsSystemFinished(EnumSystem _system_type)
-        // {
-        //     return GetSystemState(_system_type) == EnumState.Finished;
-        // }
+       
 
 
         public EnumCommanderType GetFactionCommanderType(int _faction)
@@ -265,26 +237,19 @@ namespace Battle
             return IsAlly(_faction_1, _faction_2) == false;
         }
 
-        // public void PushCommand(Command _command)
+        // public EnumBattleResult Calculate_BattleResult()
         // {
-        //     CommandHandler.PushCommand(_command);
-        // }   
+        //     foreach(var condition in m_conditions_victory)
+        //     {
+        //         // TODO: 음.. condition을 역시 따로 기능을 빼야할지도... null이 들어가니까 어색하군.
+        //         if (condition.Verify(null))
+        //             return EnumBattleResult.Victory;
+        //     }
 
-        // public Command PopCommand()
-        // {
-        //     if (CommandHandler.Count == 0)
-        //         return null;
 
-        //     return CommandHandler.PopCommand();
+        //     return EnumBattleResult.None;
         // }
 
-        // public Command PeekCommand()
-        // {
-        //     if (CommandHandler.Count == 0)
-        //         return null;
-
-        //     return CommandHandler.PeekCommand();
-        // }
 
 
         public BattleSystemManager_IO Save()
@@ -345,3 +310,42 @@ namespace Battle
     public List<(int, int)>     FactionAlliance  { get; set; } = null;
     }
 }
+
+
+
+ // public T GetSystem<T>() where T : BattleSystem
+        // {
+        //     foreach(var e in m_update_system)
+        //     {
+        //         if (e is T system)
+        //             return system;
+        //     }
+
+        //     Debug.LogError($"Can't Find System, {typeof(T).ToString()} in SystemManager[{GetType().ToString()}]");
+        //     return null;
+        // }
+
+
+
+        // private EnumState UpdateSystem(EnumSystem _system_type, IBattleSystemParam _param)
+        // {
+        //     var system = GetSystem(_system_type) as BattleSystem;
+        //     if (system != null)
+        //         return system.Update(_param);
+
+        //     return EnumState.None;
+        // }
+
+        // private EnumState GetSystemState(EnumSystem _system_type)
+        // {
+        //     var system = GetSystem(_system_type);
+        //     if (system != null)
+        //         return system.State;
+
+        //     return EnumState.None;
+        // }
+
+        // private bool IsSystemFinished(EnumSystem _system_type)
+        // {
+        //     return GetSystemState(_system_type) == EnumState.Finished;
+        // }

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using Battle;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,14 +27,9 @@ public class GUIPage_Battle_Result : GUIPage
             IsVictory = _is_victory;
         }
 
-        public static PARAM CreateVictory()
+        public static PARAM Create(EnumBattleResult _result)
         {
-            return new PARAM(true);
-        }
-
-        public static PARAM CreateDefeat()
-        {
-            return new PARAM(false);
+            return new PARAM(_result == EnumBattleResult.Victory);
         }
     }
 
@@ -47,7 +43,7 @@ public class GUIPage_Battle_Result : GUIPage
         var p = _param as PARAM;
         if (p == null)
         {
-            Debug.LogError("GUIPage_Battle_Outcome: invalid param");
+            Debug.LogError("GUIPage_Battle_Result: invalid param");
             return;
         }
 
@@ -80,6 +76,11 @@ public class GUIPage_Battle_Result : GUIPage
     }
 
     protected override void OnPostProcess_Close()
+    {
+    }
+
+    /// <summary>나중에 입력을 켜도, 포커스를 잃었다고 결과 UI를 숨기지 않음.</summary>
+    protected override void OnInputFocusChanged(bool _focused)
     {
     }
 }

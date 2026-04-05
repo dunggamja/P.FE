@@ -9,9 +9,12 @@ using System.Threading;
 
 public static class CutsceneBuilder
 {
-   public static CutsceneSequence Root  { get; private set; } = null;
-   public static CutsceneTrack    Track { get; private set; } = null;
-   public static string           Name  { get; private set; } = string.Empty;
+   public static CutsceneSequence  Root               { get; private set; } = null;
+   public static CutsceneTrack     Track              { get; private set; } = null;
+
+   public static CutsceneCondition_Decorator 
+                                   ConditionDecorator { get; private set; } = null;
+   public static string            Name               { get; private set; } = string.Empty;
    // public static CutsceneSequence BuildCutscene(string _cutscene_name)
    // {
    //    return new CutsceneSequence();
@@ -94,6 +97,22 @@ public static class CutsceneBuilder
       Track = null;
    }
 
+   private static void Decorator(CutsceneCondition_Decorator _decorator)
+   {
+      if (ConditionDecorator != null)
+      {
+         Debug.LogError("CutsceneBuilder: Decorated condition already created.");         
+      }
+
+      ConditionDecorator = _decorator;
+   }
+
+
+   public static void Decorator_Not()
+   {
+      Decorator(new CutsceneCondition_Decorator_Not());
+   }
+
 
 
 
@@ -107,6 +126,7 @@ public static class CutsceneBuilder
          Debug.LogError("CutsceneBuilder: Track not created.");
          return;
       }
+
 
       Track.AddCutscene(_cutscene);
    }
@@ -188,7 +208,24 @@ public static class CutsceneBuilder
          return;
       }
 
+      // 데코레이터가 있을경우 처리.
+      if (ConditionDecorator != null)
+      {
+          ConditionDecorator.SetCondition(_condition);
+
+          _condition         = ConditionDecorator;
+          ConditionDecorator = null;
+      }
+
+
+
+
       Root.AddCondition(_condition);
+   }
+
+   private static void DecorateCondition()
+   {
+
    }
    
 
@@ -227,6 +264,14 @@ public static class CutsceneBuilder
    {
       AddCondition(new CutsceneCondition_CommandEntity(_tag));
    }
+
+   // 유닛 조건 추가.
+   public static void AddCondition_Entity(TAG_INFO _tag, EnumEntityCondition _condition)
+   {
+      AddCondition(new CutsceneCondition_Entity_Condition(_tag, _condition));
+   }
+
+   
 
 #endregion cutscene_condition
 

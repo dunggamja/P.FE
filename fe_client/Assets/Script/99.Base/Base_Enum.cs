@@ -18,6 +18,7 @@ public enum EnumSystem
     BattleSystem_Decision_Making,     // (전투필드),  유닛들 의사결정.
     BattleSystem_Command_Progress,    // (전투필드),  유닛들 명령 처리.
     BattleSystem_Inventory,           // (전투필드), 인벤토리 정리.
+    BattleSystem_Result,              // (전투필드), 전투 승패 결과 처리.
     // BattleSystem_Navigation,  // (전투필드), 유닛들 이동 처리
 }
 

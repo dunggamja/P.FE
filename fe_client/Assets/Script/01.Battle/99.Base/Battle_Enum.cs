@@ -228,12 +228,16 @@ namespace Battle
     {
         None = 0,
 
-        IsBattleStarted          = 1, // [Battle] 전투 시작 여부 (value: true/false)
-        CommandEntityID_Input    = 2, // [Battle] 명령중인 Entity ID (입력)
-        CommandEntityID_Progress = 3, // [Battle] 명령중인 Entity ID (진행중)
+        IsBattleStarted  = 1, // [Battle] 전투 시작 여부 (value: true/false)
+        IsBattleFinished = 2, // [Battle] 전투 종료 여부 (value: true/false)
+        Battle_Result    = 3, // [Battle] 전투 승패 상태. (0: None, 1: Victory, 2: Defeat)
 
-        IsInProcess_AcquireItem = 10, // [Battle] 아이템 획득 처리 진행중. 게임 진행을 멈춘다.        
-        BattleResult            = 11, // [Battle] 전투 승패 상태. 승패가 결정되면 게임 진행을 멈춘다.? 
+
+        CommandEntityID_Input    = 10, // [Battle] 명령중인 Entity ID (입력)
+        CommandEntityID_Progress = 11, // [Battle] 명령중인 Entity ID (진행중)
+
+        IsInProcess_AcquireItem = 20, // [Battle] 아이템 획득 처리 진행중. 게임 진행을 멈춘다.        
+        
 
         TurnUpdateCount = 100, // [Turn ] Turn Update Count    
         CurrentTurn,           // [Turn ] Turn Number    
