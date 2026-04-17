@@ -148,9 +148,6 @@ namespace Battle
 
             // 전투 종료 여부 체크.
             return BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleFinished);
-
-            // 종료 여부는... IsBattleFinished 값을 체크하도록 한다.
-            // return BlackBoard.HasValue(EnumBattleBlackBoard.IsBattleFinished);
         }
 
 

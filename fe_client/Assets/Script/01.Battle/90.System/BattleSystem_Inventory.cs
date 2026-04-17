@@ -36,7 +36,7 @@ namespace Battle
 
             EntityManager.Instance.Loop(e =>
             {
-                if (e == null || e.Inventory == null)
+                if (e == null || e.Inventory == null || e.IsActive == false)
                     return;
 
                 // 플레이어 캐릭터만 체크합니다.

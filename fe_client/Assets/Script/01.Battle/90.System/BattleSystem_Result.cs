@@ -37,30 +37,23 @@ namespace Battle
             // 승리/패배 조건 체크.
             var battle_result  = (EnumBattleResult)BattleSystemManager.Instance.BlackBoard.GetValue(EnumBattleBlackBoard.Battle_Result);
             if (battle_result == EnumBattleResult.None && m_task.Status != UniTaskStatus.Pending)
-            {                
+            {           
+                // 패배 체크.
                 if (CutsceneManager.Instance.VerifyPlayEvent(
                     CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnCheckDefeat)))
                 {
-                    // 패배 
                     battle_result = EnumBattleResult.Defeat;
-
-                    // 이벤트 발생
-                    CutsceneManager.Instance.OnPlayEvent(
-                        CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnDefeat));
                 }
+                // 승리 체크.
                 else if (CutsceneManager.Instance.VerifyPlayEvent(
-                          CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnCheckVictory)))
+                         CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnCheckVictory)))
                 {
-                    // 승리 
                     battle_result = EnumBattleResult.Victory;
-
-                    // 이벤트 발생
-                    CutsceneManager.Instance.OnPlayEvent(
-                        CutscenePlayEvent.Create(EnumCutscenePlayEvent.OnVictory));
                 }
 
-                // 승리/패배 처리.
-                m_task = Process_Result(battle_result);
+                // 승리 / 패배 처리.
+                if (battle_result != EnumBattleResult.None)
+                    m_task = Process_Result(battle_result);
             }
             
 
@@ -111,9 +104,7 @@ namespace Battle
 
 
             // 승리/패배 이벤트 컷씬 연출이 완료될때까지 대기.
-            await UniTask.WaitUntil(()=> CutsceneManager.Instance.IsPlayingCutscene == false);
-
-            
+            await UniTask.WaitUntil(()=> CutsceneManager.Instance.IsPlayingCutscene == false);            
 
 
             // 승리 패배 GUI 표시.
