@@ -37,10 +37,7 @@ namespace Battle
        {
          if (Owner != null)
          {
-            Owner.UpdateCellPosition(
-                Position,
-                (_apply: true, _immediatly: true),
-                _is_plan: false);
+            Owner.UpdateCellOccupied(true);
          }
 
          // 무기 장착.
@@ -69,9 +66,9 @@ namespace Battle
 
             if (Owner != null)
             {
-                // Owner.SetCommandDone(EnumCommandFlag.Action);
+                Owner.SetCommandDone(EnumCommandFlag.Action);
                 // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
-                Owner.SetAllCommandDone();
+                // Owner.SetAllCommandDone();
             }
         }
     }

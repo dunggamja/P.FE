@@ -37,11 +37,7 @@ namespace Battle
                 Owner.SetAllCommandDone();
 
                 // 좌표 처리.
-                Owner.UpdateCellPosition(
-                    Owner.Cell,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false
-                );
+                Owner.UpdateCellOccupied(true);
             }
         }
 

@@ -358,8 +358,8 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
                                 (
                                     m_entity_id,
                                     m_target_id,
-                                    m_weapon_id,
-                                    entity.Cell                        
+                                    m_weapon_id
+                                    // entity.Cell                        
                                 ));
         }
 
@@ -443,6 +443,6 @@ public class GUIPage_Unit_Command_Attack_Preview : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        GUIManager.Instance.CloseUI(ID);
+        CloseSelf();
     }
 }

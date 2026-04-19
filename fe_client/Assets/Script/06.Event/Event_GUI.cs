@@ -103,3 +103,38 @@ public class GUI_Menu_CancelEvent : IEventParam
         GUI_ID = 0;
     }
 }
+
+/// Grid 유닛 제어 이벤트.
+public class GUI_Unit_Command_Event : IEventParam
+{
+    public enum EnumEvent
+    {
+        None,
+        Move,   // 행동 메뉴 이동.
+        Cancel, // 행동 메뉴 취소.
+    }
+
+
+    public EnumEventProcessTiming EventProcessTiming => EnumEventProcessTiming.OnNextUpdate;
+
+    
+    public EnumEvent              Event     { get; private set; } = EnumEvent.None;
+
+    public void Release()
+    { 
+        ObjectPool<GUI_Unit_Command_Event>.Return(this);
+    }
+
+    public void Reset()
+    {
+        // EntityID = 0;
+        Event = EnumEvent.None;
+    }
+
+    public GUI_Unit_Command_Event Set(EnumEvent _event)
+    {
+        // EntityID = _entity_id;
+        Event = _event;
+        return this;
+    }
+}

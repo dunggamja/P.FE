@@ -29,6 +29,13 @@ namespace Battle
             Cell_Occupied = _is_occupy;
             HasZOC_Last   = PathHasZOC;
 
+            // 선택 셀 기준 위치 갱신.
+            if (_is_occupy)
+            {
+                PathBasePosition = Cell;
+                // Debug.Log($"PathBasePosition: {ID}, {Cell}");
+            }
+
 
             // Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
 
@@ -46,7 +53,7 @@ namespace Battle
         public void UpdateCellPosition(
             (int x, int y)                  _cell,
             (bool _apply, bool _immediatly) _visual_update,
-            bool                            _is_plan)
+            bool                            _is_plan = false)
         {
             // 기존 셀.            
             Cell_Prev = Cell;
@@ -66,11 +73,6 @@ namespace Battle
             {
                 // 선택 셀 점유 셋팅.
                 UpdateCellOccupied(true);
-
-                // 선택 셀 기준 위치.
-                PathBasePosition = Cell;
-
-                // Debug.Log($"PathBasePosition: {ID}, {Cell}");
             }
 
             // 선택 셀 위치.

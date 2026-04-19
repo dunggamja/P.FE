@@ -187,11 +187,14 @@ namespace Battle
 
         CommandOwner = 1,  // [명령] 소유자
         CommandFlag,       // [명령] 명령 (0 : 이동, 1 : 공격)
+
         Faction,           // [명령] 진영
         CommandPriority,   // [명령] 명령 우선순위.
-        
-        Mounted,           // 탑승 상태. (기마, 비병)
+        // CommandMoving,     // [명령] 이동 중인 상태.
 
+
+        
+        Mounted = 100,     // 탑승 상태. (기마, 비병)
         Exited,            // 맵에서 이탈한 상태.
         // Vanished,          // (이벤트 등으로) 맵에서 사라진 상태.
 
@@ -233,8 +236,9 @@ namespace Battle
         Battle_Result    = 3, // [Battle] 전투 승패 상태. (0: None, 1: Victory, 2: Defeat)
 
 
-        CommandEntityID_Input    = 10, // [Battle] 명령중인 Entity ID (입력)
-        CommandEntityID_Progress = 11, // [Battle] 명령중인 Entity ID (진행중)
+        CommandEntityID_Input     = 10, // [Battle] 명령중인 Entity ID (입력)
+        CommandEntityID_Progress  = 11, // [Battle] 명령중인 Entity ID (진행중)
+        // Grid_MovePicking_EntityID = 12, // [Battle] 이동 타일 피킹 중인 엔티티 ID. 0이면 비활성.
 
         IsInProcess_AcquireItem = 20, // [Battle] 아이템 획득 처리 진행중. 게임 진행을 멈춘다.        
         
@@ -362,25 +366,24 @@ namespace Battle
 
     public enum EnumUnitCommandType
     {
-        None,
+        None = 0,
 
         // 이벤트 관련 커맨드.
-        Talk,     // 대화
-        Visit,    // 방문
-        Exit,     // 이탈
+        Talk   = 1, // 대화
+        Visit  = 2, // 방문
+        Exit   = 3, // 이탈
+
+        Move   = 4, // 이동 (타일 피킹)
 
         // 기본 커맨드.
-        Attack,   // 공격
-        Wand,     // 지팡이
+        Attack = 5, // 공격
+        Wand   = 6, // 지팡이
 
-        
+        Skill    = 7, // 스킬 <- 스킬은 개발되는대로 종류들을 추가하자.
 
-        Skill,    // 스킬 <- 스킬은 개발되는대로 종류들을 추가하자.
-
-
-        Exchange, // 교환  <- 아이템 서브 메뉴로 합쳐질예정.
-        Item,     // 아이템 <- 아이템은 장비, 교환, 사용, 정리등으로 세분화 필요.
-        Wait,     // 대기.
+        Exchange = 8, // 교환  <- 아이템 서브 메뉴로 합쳐질예정.
+        Item     = 9, // 아이템 <- 아이템은 장비, 교환, 사용, 정리등으로 세분화 필요.
+        Wait     = 10, // 대기.
 
         MAX,
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using R3;
@@ -76,6 +76,10 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                 case EnumUnitCommandType.Exit:
                     table = "localization_base";
                     key   = "ui_menu_exit";
+                    break;
+                case EnumUnitCommandType.Move:
+                    table = "localization_base";
+                    key   = "ui_menu_move";
                     break;
                 case EnumUnitCommandType.Attack: 
                     table = "localization_base";
@@ -226,7 +230,21 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
 
         Span<bool> enable_commands = stackalloc bool[(int)EnumUnitCommandType.MAX];
         enable_commands.Fill(false);
+
+        // 대기는 항상 가능.
         enable_commands[(int)EnumUnitCommandType.Wait] = true;
+
+
+        {
+            var is_moveable = entity.HasCommandEnable(EnumCommandFlag.Move);
+
+            // 이동 가능한 상태인지 체크. (이동 명령 가능)
+            enable_commands[(int)EnumUnitCommandType.Move] = entity.HasCommandEnable(EnumCommandFlag.Move);
+
+
+            // var is_moving   = entity.BlackBoard.HasValue(EnumEntityBlackBoard.CommandMoving) == false;
+            // && entity.BlackBoard.HasValue(EnumEntityBlackBoard.CommandMoving) == false;
+        }
 
         if (entity.HasCommandEnable(EnumCommandFlag.Action))
         {
@@ -327,11 +345,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         }
     }
 
-    // // 선택 인덱스 설정
-    // public void SetSelectedIndex(int index)
-    // {
-    //     m_selected_index_subject.OnNext(index);
-    // }
+
 
     
     // 메뉴 이동 이벤트.
@@ -372,6 +386,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             case EnumUnitCommandType.Talk:
             {
+                // 대화 가능한 타겟 목록 추출.
                 using var list_talk_id = ListPool<Int64>.AcquireWrapper();
                 {
                     var       entity    = EntityManager.Instance.GetEntity(m_entity_id);
@@ -381,18 +396,21 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                         list_talk_id.Value.Add(e.ID);
                 }
 
+                // 타겟 선택 UI 오픈.
                 GUIManager.Instance.OpenUI(
                     GUIPage_Unit_Select_Target.PARAM.Create(
                         m_entity_id,
                         list_talk_id.Value,
+
+                        // 대화 명령 처리.
                         (target_id) =>
                         {
                             ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                                 new Command_Talk(m_entity_id, target_id));
                         }));
-
             }
-                break;
+            break;
+
             case EnumUnitCommandType.Visit:
             {
                 // 방문 명령 실행.
@@ -401,19 +419,30 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     );
 
                 // GUI 닫기.
-                GUIManager.Instance.CloseUI(ID);
-
+                CloseSelf();
             }
-                break;
+            break;
+
             case EnumUnitCommandType.Exit:
             {
+                // 이탈 명령 실행.
                 ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
                     new Command_Exit(m_entity_id));
 
-                GUIManager.Instance.CloseUI(ID);
+                CloseSelf();
             }
-                break;
+            break;
 
+            case EnumUnitCommandType.Move:
+            {
+                // // 이동 모드로 변경.
+                EventDispatchManager.Instance.UpdateEvent(
+                     ObjectPool<GUI_Unit_Command_Event>.Acquire()
+                     .Set(GUI_Unit_Command_Event.EnumEvent.Move));
+
+                CloseSelf();
+            }
+            break;
 
             case EnumUnitCommandType.Attack:
             {
@@ -422,7 +451,8 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, EnumUnitCommandType.Attack)
                     );
             }
-                break;
+            break;
+
             case EnumUnitCommandType.Wand:
             {
                 // 지팡이 GUI 오픈.
@@ -430,28 +460,33 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     GUIPage_Unit_Command_Attack.PARAM.Create(m_entity_id, EnumUnitCommandType.Wand)
                     );
             }
-                break;
+            break;
+
             case EnumUnitCommandType.Wait:   
             {
                 // 대기 명령 추가.
-                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-                    new Command_Done(m_entity_id)
-                    );
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL)
+                    .PushCommand(new Command_Done(m_entity_id));
 
                 // GUI 닫기.
-                GUIManager.Instance.CloseUI(ID);
+                CloseSelf();
             }             
-                break;
+            break;
+
+
             case EnumUnitCommandType.Skill:
-                break;
+            break;
+
+
             case EnumUnitCommandType.Item:
             {
                 // 아이템 GUI 오픈.
                 GUIManager.Instance.OpenUI(
-                    GUIPage_Unit_Command_Item.PARAM.Create(GUIPage_Unit_Command_Item.EnumMode.None, m_entity_id)
-                    );
+                    GUIPage_Unit_Command_Item.PARAM
+                        .Create(GUIPage_Unit_Command_Item.EnumMode.None, m_entity_id));
             }
-                break;  
+            break;  
+
             case EnumUnitCommandType.Exchange:
             {
                 // 교환 GUI 오픈.
@@ -459,7 +494,7 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     GUIPage_Unit_Command_Exchange.PARAM.Create(m_entity_id)
                     );
             }
-                break;              
+            break;              
         }
 
         
@@ -471,13 +506,18 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             return;
 
         var entity = EntityManager.Instance.GetEntity(m_entity_id);
-        if (entity != null && entity.HasCommandEnable(EnumCommandFlag.Move) == false)
+        if (entity != null && entity.HasAnyCommandDone_Without(EnumCommandFlag.Move))
         {
-            // 이동이 불가능할 경우 취소로 UI를 닫을수 없음.            
+            // 이동을 제외하고 명령을 1개라도 진행했을 경우 UI 닫기 불가능.
             return;
         }
 
-        GUIManager.Instance.CloseUI(ID);
+        // 커맨드 메뉴 취소 이벤트
+        EventDispatchManager.Instance.UpdateEvent(
+            ObjectPool<GUI_Unit_Command_Event>.Acquire()
+            .Set(GUI_Unit_Command_Event.EnumEvent.Cancel));
+
+        CloseSelf();
     }
 
     protected override void OnVisibleChanged(bool _visible)
@@ -502,6 +542,11 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         int draw_flag = 0;
         switch (SelectedItemData.MenuType)
         {
+            case EnumUnitCommandType.Move:
+                foreach(var e in Util.CachedEnumValues<Battle.MoveRange.EnumDrawFlag>())
+                    draw_flag |= (int)e;
+                break;
+
             case EnumUnitCommandType.Attack:
                 draw_flag = (int)Battle.MoveRange.EnumDrawFlag.AttackRange;
                 break;

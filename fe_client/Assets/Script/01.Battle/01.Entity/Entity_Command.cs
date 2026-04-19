@@ -36,9 +36,13 @@ namespace Battle
         //             top_score_type = ai_type;
         //         }
         //     }
-
         //     return (top_score_type, top_score);
         // }
+
+
+        
+
+        
 
         public bool HasCommandEnable()
         {
@@ -53,15 +57,23 @@ namespace Battle
             // return BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag);
         }
 
-        public bool HasCommandDone()
+        public bool HasAnyCommandDone()
         {
-            // 완료한 명령이 1개라도 있는지 체크.
+            // 커맨드를 한개라도 진행했는지 체크.
+            return BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag) != -1;
+        }
+
+        public bool HasAnyCommandDone_Without(EnumCommandFlag _command_flag)
+        {
+            // 매개변수로 받은 커맨드를 제외하고, 한개라도 진행했는지 체크.
             foreach(var e in Util.CachedEnumValues<EnumCommandFlag>())
             {
+                if (e == _command_flag)
+                    continue;
+
                 if (HasCommandEnable(e) == false)
-                    return true;                
+                    return true;
             }
-            
             return false;
         }
 
@@ -106,11 +118,6 @@ namespace Battle
             // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
 
-        public bool IsAnyCommandDone()
-        {
-            // 커맨드를 한개라도 진행했는지 체크.
-            return BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag) != -1;
-        }
 
 
         public EnumCommandProgressState GetCommandProgressState()
@@ -125,7 +132,7 @@ namespace Battle
                 return EnumCommandProgressState.Done;
 
             // 실행한 명령이 1개라도 있으면, 명령을 진행중인 상태. <- 재이동시에는 이걸 어떻게 한다... 
-            if (HasCommandDone())
+            if (HasAnyCommandDone())
                 return EnumCommandProgressState.Progress;
 
             // 실행한 명령이 1개도 없으면 명령 대기중인 상태.
@@ -157,31 +164,21 @@ namespace Battle
         // {
         //     if (IsEnableCommandProgress() == false)
         //         return EnumCommandPriority.None;
-
         //     if (GetCommandProgressState() == EnumCommandProgressState.Progress)
         //         return EnumCommandPriority.Critical;
-
         //     // TODO: �ൿ �켱����...;
         //     return EnumCommandPriority.Normal;
         // }
-        
-
-
         // public bool ShouldSetCommandDone()
         // {
         //     // ���� ���� �ൿ�� ������ �Ϸ�ó�� �� �ʿ� ����.
         //     if (!BlackBoard.HasValue(EnumEntityBlackBoard.CommandFlag))            
         //         return false;
-
         //     // �̹� �Ϸ� ���¸� �Ϸ�ó�� �� �ʿ� ����.  
         //     if (HasCommandFlag(EnumCommandFlag.Done))
         //         return false;
-            
-
         //     return true;
         // }
-
-        
     }
 }
 

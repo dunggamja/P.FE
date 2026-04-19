@@ -72,6 +72,11 @@ namespace Battle
             // IsAbort = false;
         }
 
+        public bool IsEmpty()
+        {
+            return m_command_queue.Count == 0;
+        }
+
         
 
         public bool PushCommand(Command _command)

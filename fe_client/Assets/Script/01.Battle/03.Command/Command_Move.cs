@@ -12,29 +12,21 @@ namespace Battle
         public override bool            IsAbortable => true;
 
 
-        // List<PathNode>  m_path_node       = new ();
-        // int             m_path_node_index = 0;
         (int x, int y)        m_cell_to          = (0, 0); 
-        // EnumCellPositionEvent m_cell_event       = EnumCellPositionEvent.Enter;
         bool                  m_visual_immediate = false;
-        bool                  m_execute_command  = false;
         bool                  m_is_plan          = false;
-        bool                  m_move_success = false;
+        bool                  m_move_success     = false;
 
 
 
         public Command_Move(
           Int64                 _owner_id
         , (int x, int y)        _cell_to
-        // , EnumCellPositionEvent _cell_event
-        , bool                  _execute_command
-        , bool                  _visual_immediate = false
-        , bool                  _is_plan          = false)
+        , bool                  _visual_immediate = false  // 즉시 이동 여부.
+        , bool                  _is_plan          = false) // 실제 이동 점유 처리 여부.
             : base(_owner_id)
         {
             m_cell_to          = _cell_to;
-            // m_cell_event       = _cell_event;
-            m_execute_command  = _execute_command;
             m_visual_immediate = _visual_immediate;
             m_is_plan          = _is_plan;
             m_move_success     = false;
@@ -105,8 +97,6 @@ namespace Battle
 
             if (Owner != null)
             {
-                // Owner.PathVehicle.Position
-                
                 // 좌표 이동 처리.
                 if (m_move_success)
                 {
@@ -118,9 +108,10 @@ namespace Battle
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
+                
                 // 행동 플래그 처리.
-                if (m_execute_command)
-                    Owner.SetCommandDone(EnumCommandFlag.Move);
+                // if (m_execute_command)
+                Owner.SetCommandDone(EnumCommandFlag.Move);
             }
 
             // 카메라 이동 처리.

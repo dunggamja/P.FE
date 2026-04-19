@@ -51,13 +51,6 @@ namespace Battle
 
       protected override void OnEnter()
       {
-         // if (Owner != null)
-         // {
-         //    Owner.UpdateCellPosition(
-         //        Position,
-         //        (_apply: true, _immediatly: true),
-         //        _is_plan: false);
-         // }
       }
 
       protected override bool OnUpdate()

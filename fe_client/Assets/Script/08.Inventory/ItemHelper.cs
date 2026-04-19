@@ -411,9 +411,6 @@ public static class ItemHelper
             _list_item == null || _list_item.Count == 0)
           return;
 
-
-
-
         // 아이템 획득 처리 진행중 처리.
         BattleSystemManager.Instance.BlackBoard.IncreaseValue(EnumBattleBlackBoard.IsInProcess_AcquireItem);
         

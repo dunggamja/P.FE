@@ -724,8 +724,9 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
         switch (m_ui_state)
         {
            case EnumUIState.SelectTarget:
-               GUIManager.Instance.CloseUI(ID);
+               CloseSelf();
                break;
+
            case EnumUIState.ExchangeItem:
            {
                if (0 <= SelectIndex_Actor || 0 <= SelectIndex_Target)
@@ -735,21 +736,23 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
                }
                else
                {
-                  // 교환 명령 플래그를 셋팅할 것인지 체크.
-                  var is_flag_command_done = IsFlagCommandDone();
-                  // 교환 명령 처리.
-                  ProcessExchangeCommand(is_flag_command_done);
+                  // 아이템이 변경되었는지 체크.
+                  var is_item_exchanged = IsItemExchanged();
+
+                  // 실제 아이템 교환은 안되었어도, 인벤토리 정리를 위한 처리.
+                  ProcessExchangeCommand(is_item_exchanged);
 
                   // 교환 명령 플래그에 따라 UI 처리.
-                  if (is_flag_command_done)
+                  if (is_item_exchanged)
                   {
                      // 교환 명령을 실행한 경우 UI 종료.                     
-                     GUIManager.Instance.CloseUI(ID);
+                     CloseSelf();
                   }
                   else
                   {
                      // 명령을 실행한 것이 아니면 타겟 선택 상태로 이동.
                      m_ui_state = EnumUIState.SelectTarget;
+
                      UpdateUI_CursorAndSelect();
                   }
                }            
@@ -759,7 +762,8 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
     }
 
 
-    bool IsFlagCommandDone()
+    // 아이템 교환이 발생했는지 체크.
+    bool IsItemExchanged()
     {
         var entity_actor  = EntityManager.Instance.GetEntity(m_entity_id);
         var entity_target = EntityManager.Instance.GetEntity(ExchangeTargetID);
@@ -828,19 +832,16 @@ public class GUIPage_Unit_Command_Exchange : GUIPage, IEventReceiver
                list_target_items.Value.Add(e.ItemObject);
          }
 
-         // 이동 Command도 추가.
-         
-         {
-            ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-               new Command_Move(
-                  m_entity_id,
-                  entity.Cell,
-                  _execute_command: _execute_command,
-                  _visual_immediate: true,
-                  _is_plan: _execute_command == false));
-         }
-
-         
+         // // 이동 Command도 추가.         
+         // {
+         //    ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+         //       new Command_Move(
+         //          m_entity_id,
+         //          entity.Cell,
+         //          _execute_command: _execute_command,
+         //          _visual_immediate: true,
+         //          _is_plan: _execute_command == false));
+         // }
 
          // 교환 Command 실행.
          ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(

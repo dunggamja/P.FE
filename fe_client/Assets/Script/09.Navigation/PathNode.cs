@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
@@ -101,6 +101,32 @@ public class PathNodeManager //: IPathNodeManager
     // const float     m_arrive_angle   = Mathf.PI * (5f / 180f);
 
     public bool IsEmpty() => m_list_path_node.Count == 0;
+
+    /// <summary>대기 중인 경로 노드를 순서대로 복사합니다(큐는 변경하지 않음).</summary>
+    public void CopyRemainingPathNodes(List<PathNode> _out)
+    {
+        if (_out == null)
+            return;
+
+        _out.Clear();
+        foreach (var node in m_list_path_node)
+            _out.Add(node);
+    }
+
+    /// <summary>대기 경로의 마지막 칸(도착 예정 셀)을 반환합니다.</summary>
+    public bool TryGetQueuedPathDestinationCell(out (int x, int y) _cell)
+    {
+        _cell = default;
+        if (m_list_path_node.Count == 0)
+            return false;
+
+        PathNode last = PathNode.Empty;
+        foreach (var node in m_list_path_node)
+            last = node;
+
+        _cell = last.GetPosition().PositionToCell();
+        return true;
+    }
 
     public void Update(IPathOwner _owner)
     {

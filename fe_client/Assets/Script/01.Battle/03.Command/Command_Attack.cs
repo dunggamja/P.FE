@@ -25,19 +25,20 @@ namespace Battle
     {
         public ITarget        Target   { get; private set; }
         public Int64          WeaponID { get; private set; } 
-        public (int x, int y) Position { get; private set; } 
+        // public (int x, int y) Position { get; private set; } 
 
         public override EnumCommandType CommandType => EnumCommandType.Attack;
 
         
 
 
-        public Command_Attack(Int64 _owner_id, Int64 _target_id, Int64 _weapon_id, (int x, int y) _position)
+        public Command_Attack(Int64 _owner_id, Int64 _target_id, Int64 _weapon_id)
+        //, (int x, int y) _position)
             : base(_owner_id)
         {
             Target   = new Target_Command_Attack(_target_id);
             WeaponID = _weapon_id;
-            Position = _position;
+            // Position = _position;
         }
 
 
@@ -46,10 +47,7 @@ namespace Battle
             if (Owner != null)
             {
                 // 공격 유닛 위치 셋팅.
-                Owner.UpdateCellPosition(
-                    Position,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false);
+                Owner.UpdateCellOccupied(true);
 
                 // 무기 장착.
                 Owner.ProcessAction(Owner.Inventory.GetItem(WeaponID), EnumItemActionType.Equip);
@@ -85,7 +83,7 @@ namespace Battle
 
             if (Owner != null)
             {
-                // Owner.SetCommandDone(EnumCommandFlag.Action);
+                Owner.SetCommandDone(EnumCommandFlag.Action);
                 // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
                 // Owner.SetAllCommandDone();
             }

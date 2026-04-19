@@ -6,11 +6,12 @@ public static class AssetName
 {
     public const string TEST_PREFAB      = "local_base/test";
     public const string TILE_HIGHLIGHT   = "vfx/tile_highlight";
-    public const string TILE_SELECTION   = "vfx/tile_selection";
+    public const string TILE_SELECTION   = "vfx/tile_selection";    // 타일 선택.
 
-    public const string TILE_EFFECT_BLUE  = "vfx/tile_effect_blue";
-    public const string TILE_EFFECT_RED   = "vfx/tile_effect_red";
-    public const string TILE_EFFECT_GREEN = "vfx/tile_effect_green";
+    public const string TILE_EFFECT_PATH  = "vfx/tile_effect_path"; // 이동 경로.
+    public const string TILE_EFFECT_BLUE  = "vfx/tile_effect_blue"; // 이동 범위 표시.
+    public const string TILE_EFFECT_RED   = "vfx/tile_effect_red";  // 공격 범위 표시.
+    public const string TILE_EFFECT_GREEN = "vfx/tile_effect_green"; // 지팡이 범위 표시.
     public const string TILE_EFFECT       = "vfx/tile_effect";
 
 
@@ -19,10 +20,6 @@ public static class AssetName
     public const string SHEET_UNIT       = "sheet/unit";
     public const string SHEET_BUFF       = "sheet/buff";
 
-    // demo용 코드...
-    // // public const string DEMO_MAP_FILE            = "demo/map_file";
-    // public const string DEMO_MAP_SETTING         = "demo/map_setting";
-    // public const string DEMO_MAP_FACTION_SETTING = "demo/map_faction_setting";
 }
 
 public static class Data_Const

@@ -191,10 +191,8 @@ namespace Battle
                     new Command_Move
                     (
                         _entity_id,
-                        _damage_score.Position,
-                        // _cell_event: EnumCellPositionEvent.Move,
-                        _execute_command: true
-                        //, _is_immediate: true // 즉시 이동.    
+                        _damage_score.Position
+                        // _execute_command: true
                     ));
                     
             m_command_queue_handler.PushCommand(
@@ -203,8 +201,8 @@ namespace Battle
                     (
                         _entity_id,
                         _damage_score.TargetID,
-                        _damage_score.WeaponID,
-                        _damage_score.Position
+                        _damage_score.WeaponID
+                        // _damage_score.Position
                     ));
 
             // 행동 종료 명령.
@@ -221,10 +219,8 @@ namespace Battle
             // 이동 명령
             m_command_queue_handler.PushCommand(new Command_Move(
                 _entity_id, 
-                _move_score.Position,
-                _execute_command: true,
-                _visual_immediate: false,
-                _is_plan: false
+                _move_score.Position
+                // _execute_command: true
             ));
 
             // 행동 종료 명령.

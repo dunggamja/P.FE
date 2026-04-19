@@ -18,6 +18,7 @@ namespace Battle
         {
             // 카메라 이동 처리.
             // Update_CameraPositionEvent();
+            Owner.UpdateCellOccupied(true);
         }
 
         protected override bool OnUpdate()
@@ -37,11 +38,7 @@ namespace Battle
                 Owner.SetAllCommandDone();
 
                 // 좌표 처리.
-                Owner.UpdateCellPosition(
-                    Owner.Cell,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false
-                );
+                Owner.UpdateCellOccupied(true);
 
 
                // 맵 오브젝트 방문 처리.
@@ -71,11 +68,7 @@ namespace Battle
         {
             if (Owner != null)
             {
-                Owner.UpdateCellPosition(
-                    Owner.Cell,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false
-                );
+                Owner.UpdateCellOccupied(true);
             }
         }
         
@@ -112,6 +105,7 @@ namespace Battle
 
         protected override void OnEnter()
         {
+            Owner.UpdateCellOccupied(true);
         }
 
         protected override bool OnUpdate()
