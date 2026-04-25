@@ -4,49 +4,87 @@ using Battle;
 using UnityEngine;
 
 /// <summary>이동 예정 경로 타일 VFX.</summary>
-public static class VFXHelper_Path
+public class VFXHelper_Path
 {
-    public static void ReleaseTilePathVfx(ref List<Int64> _vfx_ids)
+    public List<Int64>    VFXList   { get; private set; } = new ();
+
+    public List<PathNode> PathNodes { get; private set; } = new ();
+
+    public void Clear()
     {
-        if (_vfx_ids == null || _vfx_ids.Count == 0)
-            return;
-
-        foreach (var id in _vfx_ids)
-            VFXManager.Instance.ReserveReleaseVFX(id);
-
-        _vfx_ids.Clear();
+        ReleaseTilePathVfx();
+        PathNodes.Clear();
     }
 
-    public static void ApplyTilePathVfx(ref List<Int64> _vfx_ids, List<PathNode> _path_nodes)
+    void ReleaseTilePathVfx()
     {
-        ReleaseTilePathVfx(ref _vfx_ids);
-        if (_path_nodes == null || _path_nodes.Count == 0)
+        foreach (var id in VFXList)
+            VFXManager.Instance.ReserveReleaseVFX(id);
+
+        VFXList.Clear();
+    }
+
+
+    bool IsEqualPathNodes(List<PathNode> _path_nodes)
+    {
+        var prev_count = PathNodes.Count;
+        var new_count  = _path_nodes?.Count ?? 0;
+
+        if (prev_count != new_count)
+            return false;
+
+
+        if (_path_nodes != null)
+        {
+            for (int i = 0; i < PathNodes.Count; i++)
+                if (PathNodes[i].Equals(_path_nodes[i]) == false)
+                    return false;
+        }
+
+        return true;
+    }
+
+    bool UpdatePathNodes(List<PathNode> _path_nodes)
+    {
+        if (IsEqualPathNodes(_path_nodes))
+            return false;
+
+        PathNodes.Clear();
+
+        if (_path_nodes != null)
+            PathNodes.AddRange(_path_nodes);
+
+        return true;
+    }
+
+
+
+    public void DrawPath(List<PathNode> _path_nodes)
+    {
+        if (UpdatePathNodes(_path_nodes) == false)
             return;
 
-        if (_vfx_ids == null)
-            _vfx_ids = new List<Int64>();
+        ReleaseTilePathVfx();
 
-        (int x, int y)? prev = null;
-        foreach (var node in _path_nodes)
+        foreach (var node in PathNodes)
         {
+            // 유효한 위치가 아니면 제외.
             if (node.IsValidPosition() == false)
                 continue;
 
-            var cell = node.GetPosition().PositionToCell();
-            if (prev.HasValue && prev.Value.x == cell.x && prev.Value.y == cell.y)
-                continue;
+            // 셀로 변환후 다시 포지션으로 변환.
+            var cell_position = node.GetPosition().PositionToCell().CellToPosition();
 
-            prev = cell;
-
+            // VFX 생성.
             var vfx_id = VFXManager.Instance.CreateVFXAsync(
                 ObjectPool<VFXShape.Param>.Acquire()
                     .SetVFXRoot_Default()
                     .SetVFXName(AssetName.TILE_EFFECT_PATH)
-                    .SetPosition(cell.CellToPosition())
+                    .SetPosition(cell_position)
                     .SetSnapToTerrain(true, Constants.BATTLE_VFX_SNAP_OFFSET_TILE)
             );
 
-            _vfx_ids.Add(vfx_id);
+            VFXList.Add(vfx_id);
         }
     }
 }

@@ -320,5 +320,8 @@ namespace Battle.MoveRange
       VFXList.Clear();
     }
 
+
+    
+
   }
 }

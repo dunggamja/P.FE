@@ -43,6 +43,7 @@ namespace Battle
         
         public CommandQueueHandler           CommandHandler { get; private set; } = new();        
         public MoveRange.VFXHelper_DrawRange DrawRange      { get; private set; } = new();
+        // public VFXHelper_Path                DrawPath       { get; private set; } = new();
 
 
         public bool                          IsPause 
@@ -104,6 +105,7 @@ namespace Battle
             CommandHandler.Clear();
             
             DrawRange.Clear();
+            // DrawPath.Clear();
         }
 
         public void SetData(IBattleSystemParam _param)
@@ -292,6 +294,7 @@ namespace Battle
             if (_is_plan == false)
             {
                 DrawRange.Clear();
+                // DrawPath.Clear();
             }
         }
     }

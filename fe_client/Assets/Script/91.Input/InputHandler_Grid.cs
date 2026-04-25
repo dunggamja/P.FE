@@ -67,14 +67,16 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         }
     } 
 
+    // 이동할 타일을 선택중인 상태.
+    public bool    IsSelectMoveTile => CommandEntityID > 0;
 
+    VFXHelper_Path DrawPath { get; set; } = new();
     
+    Int64 m_vfx_select  = 0;
 
 
-    
-    Int64                   m_vfx_select  = 0;
 
-    List<Int64>             m_vfx_paths   = new();
+    // List<Int64>             m_vfx_paths   = new();
 
 
 
@@ -115,6 +117,9 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         // 이동 범위 그리기.
         Update_DrawMoveRange();
 
+        // 이동 경로 그리기.
+        Update_DrawMovePath();
+
         // 
         // if (GUIManager.Instance.GetInputFocusGUI() > 0)
         // {
@@ -146,7 +151,7 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         // m_wantReopenCommandMenuAfterMove = false;
         // m_reopenMenuAfterMoveEntityId    = 0;
 
-        VFXHelper_Path.ReleaseTilePathVfx(ref m_vfx_paths);
+        // VFXHelper_Path.ReleaseTilePathVfx(ref m_vfx_paths);
 
         EventDispatchManager.Instance.DetachReceiver(this);
         //Debug.Log("InputHandler_Grid_Select OnFinish");
@@ -156,6 +161,9 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
     {
         // 선택 효과 해제.
         ReleaseTileSelectVFX();
+
+        // 이동 경로 해제.
+        DrawPath.Clear();
     }
 
     protected override void OnResume()
@@ -296,8 +304,6 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         {
             // 유닛 이동 명령.
             MoveCommandEntity(SelectCursor, _is_immediate: false);
-
-            // TODO: 이동 명령 완료 후 행동 메뉴 UI 오픈.
         }
 
     }
@@ -409,6 +415,48 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         }
     }
 
+    void Update_DrawMovePath()
+    {
+        // 이동 타일을 선택중인 상황이 아닐 경우는 경로를 그리지 않는다.
+        if (IsSelectMoveTile == false || CommandEntityID == 0)
+        {
+            DrawPath.Clear();
+            return;            
+        }
+
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+        if (terrain_map == null)
+            return;
+
+        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+        if (entity == null)
+            return;
+
+        // 시작/도착 셀.
+        var start_cell = entity.PathBasePosition;        
+        var end_cell   = SelectCursor;
+
+
+        // 길찾기 진행.
+        using var path_nodes = ListPool<PathNode>.AcquireWrapper();
+
+        // entity PathNodeManager에서 경로를 찾는게 나을지도...;;
+        // entity.PathNodeManager.CreatePath(start_cell.CellToPosition(), end_cell.CellToPosition(), entity);
+
+        
+        // entity.PathNodeManager.CreatePath() 와 동일한 로직으로 작동해야 한다.
+        var path_find_result = PathAlgorithm.PathFind(terrain_map, entity, 
+                               start_cell, end_cell, 
+                               _option: PathAlgorithm.PathFindOption.Create()
+                               .SetMoveLimitRange(entity.PathMoveRange, entity.PathBasePosition),
+                               _path_nodes: path_nodes.Value);
+
+        if (path_find_result.result)
+        {
+            DrawPath.DrawPath(path_nodes.Value);
+        }
+    }
+
     private void MoveSelcectCursor(int _x, int _y)
     {
         var terrain_map = TerrainMapManager.Instance.TerrainMap;
@@ -424,30 +472,8 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
 
 
         VFXHelper.UpdateTileSelectVFX(m_vfx_select, SelectCursor);
-   
 
     }
-
-    // private bool SetMoveMode(bool _new_move_mode)
-    // {
-    //     var entity = EntityManager.Instance.GetEntity(CommandEntityID);
-    //     if (entity == null)
-    //         return false;
-
-    //     // 좌표 점유 여부를 기준으로 이동 모드였는지 판단합니다.
-    //     var prev_move_mode = !entity.Cell_Occupied;
-    //     if (prev_move_mode == _new_move_mode)
-    //         return false;
-
-    //     // 원래 위치로 이동.
-    //     Process_CommandEntity_ReturnToBasePosition();
-
-    //     // 셀 점유 상태 갱신.
-    //     entity.UpdateCellOccupied(!_new_move_mode);        
-
-    //     // 이동 모드 변경.
-    //     return true;
-    // }
 
     // 명령 엔티티 이동
     private void MoveCommandEntity(

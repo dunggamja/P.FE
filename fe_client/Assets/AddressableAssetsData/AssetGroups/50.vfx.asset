@@ -43,6 +43,13 @@ MonoBehaviour:
     - prefab
     - vfx
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99b5a3fe7797c4c61b5ef50e380b8bd5
+    m_Address: vfx/tile_effect_path
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - vfx
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f79889ec7c4684d07b9e202cc5eea8af
     m_Address: vfx/tile_effect_blue
     m_ReadOnly: 0
