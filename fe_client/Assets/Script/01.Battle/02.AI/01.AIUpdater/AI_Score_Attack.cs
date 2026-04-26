@@ -257,7 +257,7 @@ namespace Battle
             owner_inventory.CollectItem_Weapon_Available(list_weapon.Value, _entity);
 
             // 공격 가능한 타겟 목록.
-            using var list_collect_target = ListPool<(Int64 target_id, int attack_pos_x, int attack_pos_y)>.AcquireWrapper();
+            using var list_collect_target = ListPool<CollectTargetVisitor.TargetInfo>.AcquireWrapper();
 
             // 공격 대상이 될 수 있는 타겟 갯수.
             int target_count = 0;
@@ -293,9 +293,9 @@ namespace Battle
                         range_max);
 
                     // 타겟 순회.
-                    foreach((var target_id, var attack_pos_x, var attack_pos_y) in list_collect_target.Value)
+                    foreach(var target_info in list_collect_target.Value)
                     {
-                        var target_entity = EntityManager.Instance.GetEntity(target_id);
+                        var target_entity = EntityManager.Instance.GetEntity(target_info.id);
                         if (target_entity == null)
                             continue; 
 
@@ -310,11 +310,7 @@ namespace Battle
                         // 점수 계산 결과값 초기화.
                         current_score.Value.Reset();
             
-                        Score_Calculate(
-                            current_score.Value,
-                            _entity,
-                            target_entity,
-                            (attack_pos_x, attack_pos_y));
+                        Score_Calculate(current_score.Value, _entity,target_info);
 
                         // 점수 계산.
                         var calculate_score = current_score.Value.CalculateScore();
@@ -344,23 +340,26 @@ namespace Battle
         }
 
 
-        private void Score_Calculate(Result _score, Entity _owner, Entity _target, (int x, int y) _attack_position)
+        private void Score_Calculate(Result _score, Entity _owner, CollectTargetVisitor.TargetInfo _target_info)
         {
-            if (_owner == null || _target == null)
+            var target = EntityManager.Instance.GetEntity(_target_info.id);
+
+
+            if (_owner == null || target == null)
                 return;
 
 
             // 전투 결과 스코어
             _score.Reset();
-            _score.Setup(_target.ID, _owner.StatusManager.Weapon.ItemID);           
+            _score.Setup(target.ID, _owner.StatusManager.Weapon.ItemID);           
             
 
             var result = CombatHelper.Run_Plan(
                 _attacker_id: _owner.ID, 
-                _target_id:   _target.ID, 
+                _target_id:   target.ID, 
                 _weapon_id:   _owner.StatusManager.Weapon.ItemID,
                 _command_type: EnumUnitCommandType.Attack,
-                _attack_position: _attack_position);
+                _attack_position: _target_info.attack_position);
 
             if (result == null)
                 return;
@@ -380,7 +379,7 @@ namespace Battle
             var target_kill        = result.Defender.HP_After <= 0 && 0 < damage_dealt;
 
             // 포커싱 대상이 있다면 점수 셋팅.
-            var focus_score        =  AIHelper.Verify_Target_Focus(_owner, _target) ? 1f : 0f;
+            var focus_score        =  AIHelper.Verify_Target_Focus(_owner, target) ? 1f : 0f;
 
 
             // TODO: 뭔가 포커싱 주변 유닛에 대해서 가산점을 주려고 했던거 같은데... 뭔가 이런거는 상황에 따라 다를수 있다. 주석처리해보자.
@@ -433,7 +432,7 @@ namespace Battle
             _score.SetScore(Result.EnumScoreType.Kill, target_kill ? 1f : 0f);
 
             // 공격 위치 셋팅.
-            _score.SetAttackPosition(_attack_position.x, _attack_position.y);
+            _score.SetAttackPosition(_target_info.attack_position.x, _target_info.attack_position.y);
 
 
             // // 이동거리 점수 셋팅.
@@ -453,6 +452,14 @@ namespace Battle
 
         class CollectTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
         {
+            public struct TargetInfo
+            {
+                public Int64          id;
+                public (int x, int y) attack_position;
+                public int            attack_move_distance;
+            }
+
+
             public TerrainMap     TerrainMap     { get; set; }  
             public IPathOwner     Visitor        { get; set; }  
             public (int x, int y) Position       { get; set; }  
@@ -464,10 +471,10 @@ namespace Battle
             public int            WeaponRangeMin { get; set; }
             public int            WeaponRangeMax { get; set; }
 
-            List<(Int64 id, int attack_pos_x, int attack_pos_y)> CollectTargets { get; set;} = new();
-            HashSet<(int x, int y)>                              VisitList      { get; set; } = new();
+            List<TargetInfo>         CollectTargets { get; set;} = new();
+            HashSet<(int x, int y)>  VisitList      { get; set; } = new();
 
-            public List<(Int64 id, int attack_pos_x, int attack_pos_y)> GetCollectTargets()
+            public List<TargetInfo> GetCollectTargets()
             {
                 return CollectTargets;
             }
@@ -517,8 +524,14 @@ namespace Battle
                         var entity_id = TerrainMap.EntityManager.GetCellData(x, y);
                         if (entity_id > 0)
                         {
-                            CollectTargets.Add((entity_id, _node.x, _node.y));
-                            // result = true;
+                            var target_info = new TargetInfo
+                            {
+                                id                   = entity_id,
+                                attack_position      = (_node.x, _node.y),
+                                attack_move_distance = MoveDistance
+                            };
+
+                            CollectTargets.Add(target_info);
                         }
                     }
                 }
@@ -530,7 +543,7 @@ namespace Battle
 
         static void
             CollectTarget(
-            List<(Int64 target_id, int attack_pos_x, int atatck_pos_y)> _collect_targets,
+            List<CollectTargetVisitor.TargetInfo> _collect_targets,
             TerrainMap _terrain_map, 
             IPathOwner _path_owner, 
             int        _x, 

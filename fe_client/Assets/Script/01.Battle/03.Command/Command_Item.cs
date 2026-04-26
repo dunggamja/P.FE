@@ -56,7 +56,7 @@ namespace Battle
                 owner_entity.SetAllCommandDone();
 
                 // 좌표 처리.
-                owner_entity.UpdateCellOccupied(true);
+                owner_entity.UpdatePathBasePosition();
 
                 // 아이템 KIND 체크.
                 var item_object = owner_entity.Inventory.GetItem(ItemID);                
@@ -78,7 +78,6 @@ namespace Battle
 
         protected override void OnExit(bool _is_abort)
         {
-            Owner.SetAllCommandDone();
         }
 
 

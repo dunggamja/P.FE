@@ -195,7 +195,13 @@ namespace Battle
 
         
         Mounted = 100,     // 탑승 상태. (기마, 비병)
-        Exited,            // 맵에서 이탈한 상태.
+
+        MovedDistance_Turn, // 이번 턴에 이동한 거리. (행동종료시 초기화)
+        MovedDistance_Action, // 방금 이동한 거리.     (공격행동시 초기화)
+
+
+
+        Exited = 200,      // 맵에서 이탈한 상태.
         // Vanished,          // (이벤트 등으로) 맵에서 사라진 상태.
 
 
@@ -236,8 +242,8 @@ namespace Battle
         Battle_Result    = 3, // [Battle] 전투 승패 상태. (0: None, 1: Victory, 2: Defeat)
 
 
-        CommandEntityID_Input     = 10, // [Battle] 명령중인 Entity ID (입력)
-        CommandEntityID_Progress  = 11, // [Battle] 명령중인 Entity ID (진행중)
+        CommandEntityID_Input     = 10, // [Battle] 명령중인 Entity ID (유저 입력진행중)
+        CommandEntityID_Progress  = 11, // [Battle] 명령중인 Entity ID (Command Progress)
         // Grid_MovePicking_EntityID = 12, // [Battle] 이동 타일 피킹 중인 엔티티 ID. 0이면 비활성.
 
         IsInProcess_AcquireItem = 20, // [Battle] 아이템 획득 처리 진행중. 게임 진행을 멈춘다.        

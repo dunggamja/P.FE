@@ -46,8 +46,7 @@ namespace Battle
         {
             if (Owner != null)
             {
-                // 공격 유닛 위치 셋팅.
-                Owner.UpdateCellOccupied(true);
+                
 
                 // 무기 장착.
                 Owner.ProcessAction(Owner.Inventory.GetItem(WeaponID), EnumItemActionType.Equip);
@@ -84,6 +83,13 @@ namespace Battle
             if (Owner != null)
             {
                 Owner.SetCommandDone(EnumCommandFlag.Action);
+
+                // 좌표 처리.
+                Owner.UpdatePathBasePosition();
+
+
+                // 아직 이동을 더 할 수 있다면... 재행동 처리.
+                Owner.TryCommand_MoveAgain(true);
                 // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
                 // Owner.SetAllCommandDone();
             }

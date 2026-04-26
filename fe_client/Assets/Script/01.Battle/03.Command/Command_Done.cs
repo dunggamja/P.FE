@@ -37,7 +37,7 @@ namespace Battle
                 Owner.SetAllCommandDone();
 
                 // 좌표 처리.
-                Owner.UpdateCellOccupied(true);
+                Owner.UpdatePathBasePosition();
             }
         }
 

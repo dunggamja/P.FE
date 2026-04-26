@@ -235,17 +235,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         enable_commands[(int)EnumUnitCommandType.Wait] = true;
 
 
+        // 이동 가능한 상태인지 체크. (이동 명령 가능)
         {
-            var is_moveable = entity.HasCommandEnable(EnumCommandFlag.Move);
-
-            // 이동 가능한 상태인지 체크. (이동 명령 가능)
-            enable_commands[(int)EnumUnitCommandType.Move] = entity.HasCommandEnable(EnumCommandFlag.Move);
-
-
-            // var is_moving   = entity.BlackBoard.HasValue(EnumEntityBlackBoard.CommandMoving) == false;
-            // && entity.BlackBoard.HasValue(EnumEntityBlackBoard.CommandMoving) == false;
+            var is_moveable = entity.HasCommandEnable(EnumCommandFlag.Move) && entity.PathMoveRange > 0;
+            enable_commands[(int)EnumUnitCommandType.Move] = is_moveable;
         }
 
+        // 액션이 가능한 상태인지 체크. (공격, 지팡이, 교환, 아이템 사용)
         if (entity.HasCommandEnable(EnumCommandFlag.Action))
         {
             // TODO: 대화가 가능한 상태인지 체크.
@@ -505,12 +501,13 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         if (_event == null || _event.GUI_ID != ID)
             return;
 
-        var entity = EntityManager.Instance.GetEntity(m_entity_id);
-        if (entity != null && entity.HasAnyCommandDone_Without(EnumCommandFlag.Move))
-        {
-            // 이동을 제외하고 명령을 1개라도 진행했을 경우 UI 닫기 불가능.
-            return;
-        }
+        // var entity = EntityManager.Instance.GetEntity(m_entity_id);
+        // if (entity != null && entity.HasAnyCommandDone_Without(EnumCommandFlag.Move))
+        // {
+        //     // 이동을 제외하고 명령을 1개라도 진행했을 경우 UI 닫기 불가능.
+        //     // 이동은 컨트롤 과정에서 임시로 들어가는 경우가 있어서 허용...
+        //     return;
+        // }
 
         // 커맨드 메뉴 취소 이벤트
         EventDispatchManager.Instance.UpdateEvent(

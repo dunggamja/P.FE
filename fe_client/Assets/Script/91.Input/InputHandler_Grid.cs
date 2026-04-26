@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Battle;
 using Cysharp.Threading.Tasks;
@@ -72,12 +73,7 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
 
     VFXHelper_Path DrawPath { get; set; } = new();
     
-    Int64 m_vfx_select  = 0;
-
-
-
-    // List<Int64>             m_vfx_paths   = new();
-
+    Int64          m_vfx_select = 0;
 
 
     public InputHandler_Grid_Select(InputHandlerContext _context) 
@@ -389,19 +385,42 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         // 이동 범위 엔티티 ID.
         Int64 draw_entity_id = CommandEntityID > 0 ? CommandEntityID : tile_entity_id;
 
-
-        // FixedObject는 이동범위를 그리지 않는다. 
+        
         var entity = EntityManager.Instance.GetEntity(draw_entity_id);
         if (entity == null)
             draw_entity_id = 0;
 
 
+        var draw_flag = (int)Battle.MoveRange.EnumDrawFlag.MoveRange 
+                      | (int)Battle.MoveRange.EnumDrawFlag.AttackRange
+                      | (int)Battle.MoveRange.EnumDrawFlag.WandRange
+                      | (int)Battle.MoveRange.EnumDrawFlag.VisitOccupyCell;
+
+        // 현재 선택중인 유닛의 범위 표시의 경우. 가능한 것들만 표시해줍시다.
+        if (CommandEntityID > 0 && CommandEntityID == draw_entity_id)
+        {
+            if (entity != null)
+            {
+                if (entity.HasCommandEnable(EnumCommandFlag.Move) == false)
+                    draw_flag &= ~(int)Battle.MoveRange.EnumDrawFlag.MoveRange;
+
+                if (entity.HasCommandEnable(EnumCommandFlag.Action) == false)
+                {
+                    draw_flag &= ~(int)Battle.MoveRange.EnumDrawFlag.AttackRange;
+                    draw_flag &= ~(int)Battle.MoveRange.EnumDrawFlag.WandRange;
+                    draw_flag &= ~(int)Battle.MoveRange.EnumDrawFlag.ExchangeRange;
+                }
+
+                if (entity.HasCommandEnable(EnumCommandFlag.Exchange) == false)
+                    draw_flag &= ~(int)Battle.MoveRange.EnumDrawFlag.ExchangeRange;
+            }                         
+        }
+
+        
+
+
         BattleSystemManager.Instance.DrawRange.DrawRange(
-            _draw_flag: 
-                  (int)Battle.MoveRange.EnumDrawFlag.MoveRange 
-                | (int)Battle.MoveRange.EnumDrawFlag.AttackRange
-                | (int)Battle.MoveRange.EnumDrawFlag.WandRange
-                | (int)Battle.MoveRange.EnumDrawFlag.VisitOccupyCell,
+            _draw_flag: draw_flag,
 
             _entityID:    
                 draw_entity_id,
@@ -424,37 +443,49 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
             return;            
         }
 
-        var terrain_map = TerrainMapManager.Instance.TerrainMap;
-        if (terrain_map == null)
-            return;
-
-        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
-        if (entity == null)
-            return;
-
-        // 시작/도착 셀.
-        var start_cell = entity.PathBasePosition;        
-        var end_cell   = SelectCursor;
-
-
+        // 도착 셀. 
+        var end_cell = SelectCursor;       
+        
         // 길찾기 진행.
         using var path_nodes = ListPool<PathNode>.AcquireWrapper();
-
-        // entity PathNodeManager에서 경로를 찾는게 나을지도...;;
-        // entity.PathNodeManager.CreatePath(start_cell.CellToPosition(), end_cell.CellToPosition(), entity);
-
-        
-        // entity.PathNodeManager.CreatePath() 와 동일한 로직으로 작동해야 한다.
-        var path_find_result = PathAlgorithm.PathFind(terrain_map, entity, 
-                               start_cell, end_cell, 
-                               _option: PathAlgorithm.PathFindOption.Create()
-                               .SetMoveLimitRange(entity.PathMoveRange, entity.PathBasePosition),
-                               _path_nodes: path_nodes.Value);
-
-        if (path_find_result.result)
+        if (PathFind(CommandEntityID, end_cell, true, path_nodes.Value))
         {
             DrawPath.DrawPath(path_nodes.Value);
         }
+    }
+
+    bool PathFind(
+        Int64          _entity_id, 
+        (int x, int y) _cell_to, 
+        bool           _ignore_occupancy = false, 
+        List<PathNode> _path_nodes = null)
+    {
+        var terrain_map = TerrainMapManager.Instance.TerrainMap;
+        if (terrain_map == null)
+            return false;
+
+        var entity = EntityManager.Instance.GetEntity(_entity_id);
+        if (entity == null)
+            return false;
+
+
+        var path_find_option = PathAlgorithm.PathFindOption.Create()
+                        // 이동 가능한 범위를 벗어나지 않기위해 (범위,위치) 셋팅
+                        .SetMoveLimitRange(entity.PathMoveRange, entity.PathBasePosition);
+
+        // 목표지점이 점유되어있는지 체크하지 않음.
+        if (_ignore_occupancy)
+            path_find_option.SetIgnoreOccupancy();
+
+
+        // entity.PathNodeManager.CreatePath() 와 거의 동일한 로직으로 작동
+        return PathAlgorithm.PathFind(terrain_map, entity, 
+                entity.PathBasePosition, _cell_to, 
+
+                _option: path_find_option,
+
+
+                _path_nodes: _path_nodes).result;
     }
 
     private void MoveSelcectCursor(int _x, int _y)
@@ -483,19 +514,10 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         if (CommandEntityID == 0)
             return;
 
-        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
-        if (entity == null)
+        
+        // 이동 가능한지 체크.
+        if (PathFind(CommandEntityID, _cell, _ignore_occupancy: false) == false)
             return;
-
-
-        //// 기존에 예약된 명령들 취소 (진행중인 것은 냅둔다.)
-        //ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
-        //     new Command_Abort
-        //     (
-        //         CommandEntityID,
-        //         _is_pending_only: true
-        //     )
-        //);
 
         // 이동 명령 예약.
         ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
@@ -504,8 +526,8 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
                 CommandEntityID,
                 _cell,
 
-                _visual_immediate: _is_immediate, // 즉시 이동.
-                _is_plan:          true           // 실제 이동 점유 처리 여부.
+                _visual_immediate: _is_immediate // 즉시 이동.
+                // _is_plan:          true           // 실제 이동 점유 처리 여부.
                 // _execute_command:  true,          // 명령 실행 여부. 
             )
         );
@@ -547,17 +569,29 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         }
     }
 
+    bool CheckCommandEntityIsInCommandProgress()
+    {
+        if (CommandEntityID == 0)
+            return false;
+
+        var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+        if (entity == null)
+            return false;
+
+
+        return entity.GetCommandProgressState() == EnumCommandProgressState.Progress;        
+    }
+
     void DeselectCommandEntity()
     {
         if (CommandEntityID > 0)
         {
-
-            var entity = EntityManager.Instance.GetEntity(CommandEntityID);
-            if (entity != null && entity.IsActive)
-            {
-                // 셀 점유 상태 셋팅.
-                entity.UpdateCellOccupied(true);  
-            }
+            // var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+            // if (entity != null && entity.IsActive)
+            // {
+            //     // 셀 점유 상태 셋팅.
+            //     entity.UpdateCellOccupied(true);  
+            // }
 
 
             CommandEntityID = 0;
@@ -584,28 +618,26 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         var entity = EntityManager.Instance.GetEntity(CommandEntityID);
         if (entity != null)
         {
-            // 이동을 진행했는지 체크.
-            if (entity.HasCommandEnable(EnumCommandFlag.Move) == false)
-            {
-                // 좌표 점유 여부.
-                var is_plan = (entity.Cell_Occupied == false);
+            // 이미 원래 위치에 있으면 처리하지 않는다.
+            if (entity.PathBasePosition == entity.Cell)
+                return false;
 
-                // 위치 상태 원상 복구.
-                entity.UpdateCellPosition(
-                    entity.PathBasePosition,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: is_plan);
+            // 좌표 점유 여부.
+            var occupy_cell = (entity.Cell_Occupied == false);
 
-                // 이동 가능한 상태로 셋팅.
-                entity.SetCommandEnable(EnumCommandFlag.Move);
+            // 위치 상태 원상 복구.
+            entity.UpdateCellPosition(
+                entity.PathBasePosition,
+                (_apply: true, _immediatly: true));
+                // _is_plan: occupy_cell);
 
-                // 커서 좌표도 이동.
-                MoveSelcectCursor(entity.PathBasePosition.x, entity.PathBasePosition.y);
-                
-                return true;
-            }
+            // 이동 가능한 상태로 셋팅.
+            entity.TryCommand_MoveAgain(false);
 
-            return false;
+            // 커서 좌표도 이동.
+            MoveSelcectCursor(entity.PathBasePosition.x, entity.PathBasePosition.y);
+            
+            return true;
         }
         else
         {
@@ -681,15 +713,15 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
         {
             case GUI_Unit_Command_Event.EnumEvent.Move:
             {
-                if (CommandEntityID > 0)
-                {
-                    // 이동을 위해 셀 점유 상태 해제.
-                    var entity = EntityManager.Instance.GetEntity(CommandEntityID);
-                    if (entity != null)
-                    {
-                        entity.UpdateCellOccupied(false); 
-                    }
-                }
+                // if (CommandEntityID > 0)
+                // {
+                //     // // 이동을 위해 셀 점유 상태 해제.
+                //     // var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+                //     // if (entity != null)
+                //     // {
+                //     //     entity.UpdateCellOccupied(false); 
+                //     // }
+                // }
             }
             break;
 
@@ -699,18 +731,23 @@ public class InputHandler_Grid_Select : InputHandler, IEventReceiver
             {
                 if (CommandEntityID > 0)
                 {
-                    if (Process_CommandEntity_ReturnToBasePosition())
+                    var entity = EntityManager.Instance.GetEntity(CommandEntityID);
+                    if (entity != null)
                     {
-                        // 위치가 다를 경우 원래 위치로 롤백.
-                    }
-                    else
-                    {
-                        // 위치가 동일할 경우 선택 취소.
-                        DeselectCommandEntity();
+                        var is_moved_entity = entity.PathBasePosition != entity.Cell;
+                        if (is_moved_entity)
+                        {
+                            // 위치가 다를 경우 원래 위치로 롤백.
+                            Process_CommandEntity_ReturnToBasePosition();
+                        }
+                        else
+                        {
+                            // 위치가 동일할 경우 선택 취소. (이미 행동을 진행하고 있었다면 취소 불가)
+                            if (CheckCommandEntityIsInCommandProgress() == false)
+                                DeselectCommandEntity();
+                        }
                     }
                 }
-
-
             }                
             break;
         }

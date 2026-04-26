@@ -18,7 +18,7 @@ namespace Battle
         {
             // 카메라 이동 처리.
             // Update_CameraPositionEvent();
-            Owner.UpdateCellOccupied(true);
+            // Owner.UpdateCellOccupied(true);
         }
 
         protected override bool OnUpdate()
@@ -38,7 +38,7 @@ namespace Battle
                 Owner.SetAllCommandDone();
 
                 // 좌표 처리.
-                Owner.UpdateCellOccupied(true);
+                Owner.UpdatePathBasePosition();
 
 
                // 맵 오브젝트 방문 처리.
@@ -66,10 +66,10 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            if (Owner != null)
-            {
-                Owner.UpdateCellOccupied(true);
-            }
+            // if (Owner != null)
+            // {
+            //     Owner.UpdateCellOccupied(true);
+            // }
         }
         
         
@@ -91,6 +91,7 @@ namespace Battle
             {
                 // 대화하면 행동 종료처리.
                 Owner.SetAllCommandDone();
+                Owner.UpdatePathBasePosition();
             }
         }
     }
@@ -105,7 +106,7 @@ namespace Battle
 
         protected override void OnEnter()
         {
-            Owner.UpdateCellOccupied(true);
+            // Owner.UpdateCellOccupied(true);
         }
 
         protected override bool OnUpdate()
@@ -120,6 +121,9 @@ namespace Battle
 
             if (Owner == null)
                 return;
+
+            // 좌표 처리.
+            Owner.UpdatePathBasePosition();
           
             // 맵에서 이탈 처리.
             Owner.ApplyExit();

@@ -99,6 +99,9 @@ namespace Battle
             if (ExecuteCommand)
             {
                owner_entity.SetCommandDone(EnumCommandFlag.Exchange);
+
+               // 좌표 처리.
+               owner_entity.UpdatePathBasePosition();
             }
          }
       }

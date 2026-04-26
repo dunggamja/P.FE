@@ -44,9 +44,23 @@ namespace Battle
         // 비병이 탑승중일 경우 ZOC 체크를 하지 않습니다.
         public bool                 PathHasZOC      => (PathMounted == false) || (PathMountedType != EnumUnitMountedType.Flyer);
         public int                  PathZOCFaction  => GetFaction();
-        public int                  PathMoveRange   => (PathMounted) 
-                ? StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement_Mounted)
-                : StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+        public int                  PathMoveRange  
+        {
+            get
+            {
+                // 이동 거리. (탑승 상태 / 내림 상태)
+                var move_range = (PathMounted) 
+                               ? StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement_Mounted)
+                               : StatusManager.GetBuffedUnitStatus(EnumUnitStatus.Movement);
+
+                // 이번턴에 이동한 거리만큼 감소.
+                move_range -= (int)BlackBoard.GetValue(EnumEntityBlackBoard.MovedDistance_Turn);
+
+
+                return Mathf.Max(0, move_range);
+            }
+        }
+       
                 
         public AIManager            AIManager       { get; }
         public AIDataManager        AIDataManager   { get; }

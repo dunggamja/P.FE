@@ -438,7 +438,7 @@ namespace Battle
                         PathAlgorithm.PathFindOption.Create()
 
                         // 길막을 무시하고 일단 길을 찾습니다.
-                        .SetAllowApproximate()
+                        .SetIgnoreOccupancy()
                         // .SetGoalRange(5)
                         ,
 

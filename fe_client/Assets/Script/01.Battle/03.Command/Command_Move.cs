@@ -18,18 +18,21 @@ namespace Battle
         bool                  m_move_success     = false;
 
 
+        // List<(int x, int y)>  m_visited_cell_list = new();
+
 
         public Command_Move(
           Int64                 _owner_id
         , (int x, int y)        _cell_to
-        , bool                  _visual_immediate = false  // 즉시 이동 여부.
-        , bool                  _is_plan          = false) // 실제 이동 점유 처리 여부.
+        , bool                  _visual_immediate = false)  // 즉시 이동 여부.
+        // , bool                  _is_plan          = false) // 실제 이동 점유 처리 여부.
             : base(_owner_id)
         {
             m_cell_to          = _cell_to;
             m_visual_immediate = _visual_immediate;
-            m_is_plan          = _is_plan;
             m_move_success     = false;
+            // m_is_plan          = _is_plan;
+            // m_visited_cell_list.Clear();
         }
         
 
@@ -60,6 +63,9 @@ namespace Battle
                             m_cell_to.CellToPosition(), 
                             Owner);
             }
+
+
+            // m_visited_cell_list.Clear();
         }
 
         protected override bool OnUpdate()
@@ -69,8 +75,6 @@ namespace Battle
 
             // 유닛 이동 처리.
             Owner.UpdatePathBehavior(Constants.BATTLE_SYSTEM_UPDATE_INTERVAL);
-
-            //Debug.Log($"Command_Move, OnUpdate, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
 
             // 카메라 이동 처리.
             // Update_CameraPositionEvent();
@@ -100,10 +104,16 @@ namespace Battle
                 // 좌표 이동 처리.
                 if (m_move_success)
                 {
+                    // 이동한 거리 처리.
+                    var moved_distance = Owner.PathNodeManager.GetArrivedPathDistance();
+
+                    // Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, MovedDistance:{moved_distance}");
+                    Owner.BlackBoard.IncreaseValue(EnumEntityBlackBoard.MovedDistance_Action, moved_distance);
+
                     Owner.UpdateCellPosition(
                           m_cell_to
-                        , (_apply: true, _immediatly: m_visual_immediate)
-                        , m_is_plan);
+                        , (_apply: true, _immediatly: m_visual_immediate));
+                        // , m_is_plan);
                 }
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");

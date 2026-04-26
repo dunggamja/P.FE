@@ -8,6 +8,11 @@ namespace Battle
     public partial class Entity 
     {
 
+        public void UpdatePathBasePosition()
+        {
+            PathBasePosition = Cell;
+        }
+
         public void UpdateCellOccupied(bool _is_occupy)
         {
             // // 점유상태가 동일하면 이벤트 발생하지 않음.
@@ -29,15 +34,15 @@ namespace Battle
             Cell_Occupied = _is_occupy;
             HasZOC_Last   = PathHasZOC;
 
-            // 선택 셀 기준 위치 갱신.
-            if (_is_occupy)
-            {
-                PathBasePosition = Cell;
-                // Debug.Log($"PathBasePosition: {ID}, {Cell}");
-            }
+            // // 선택 셀 기준 위치 갱신.
+            // if (_is_occupy)
+            // {
+            //     PathBasePosition = Cell;
+            //     // Debug.Log($"PathBasePosition: {ID}, {Cell}");
+            // }
 
 
-            // Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
+            Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
 
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<Battle_Cell_OccupyEvent>.Acquire().Set(
@@ -52,14 +57,14 @@ namespace Battle
         
         public void UpdateCellPosition(
             (int x, int y)                  _cell,
-            (bool _apply, bool _immediatly) _visual_update,
-            bool                            _is_plan = false)
+            (bool _apply, bool _immediatly) _visual_update)
+            // ,            bool                            _is_plan = false)
         {
             // 기존 셀.            
             Cell_Prev = Cell;
 
 
-            if (_is_plan == false)
+            // if (_is_plan == false)
             {
                 // 선택 셀 점유 해제.
                 UpdateCellOccupied(false);
@@ -69,7 +74,7 @@ namespace Battle
             Cell        = _cell;
 
             // 
-            if (_is_plan == false)
+            // if (_is_plan == false)
             {
                 // 선택 셀 점유 셋팅.
                 UpdateCellOccupied(true);

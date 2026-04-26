@@ -51,7 +51,7 @@ public static partial class PathAlgorithm
             return this;
         }
 
-        public PathFindOption SetAllowApproximate()
+        public PathFindOption SetIgnoreOccupancy()
         {
             IgnoreOccupancy = true;
             return this;

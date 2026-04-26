@@ -59,6 +59,7 @@ namespace Battle
                 case EnumCommanderType.Player:           
                 {
                     // TODO: 플레이어 명령 유형.
+                    // 그 혼란상태 이럴때는 여기도 AI 처리가 되어야 한다.
                 }     
                 break;
             }
@@ -80,7 +81,8 @@ namespace Battle
 
 
             // 행동 우선순위에 대한 값.
-            var priority = int.MinValue;
+
+            var best_priority = (is_progress: 0, priority: int.MinValue);
 
             // 현재 행동가능한 유닛중 가장 행동우선순위가 높은 유닛을 찾습니다.
             EntityManager.Instance.Loop(e =>
@@ -93,7 +95,14 @@ namespace Battle
                 if (e.IsEnableCommandProgress() == false)
                     return;
 
-                priority = Mathf.Max(priority, e.GetCommandPriority());
+                // 행동 진행 상태 체크.
+                var cur_priority = e.GetCommandPriorityForCompare();
+
+                if ((best_priority.is_progress < cur_priority.is_progress)
+                ||  (best_priority.is_progress == cur_priority.is_progress && best_priority.priority < cur_priority.priority))
+                {
+                    best_priority = cur_priority;
+                }
             });
 
             // 행동 우선순위가 일치하는 유닛 목록을 찾습니다.
@@ -105,7 +114,7 @@ namespace Battle
                     return;
 
                 // 행동 우선순위 체크.
-                if (e.GetCommandPriority() != priority)
+                if (e.GetCommandPriorityForCompare() != best_priority)
                     return;
                     
                 // 행동 가능 체크

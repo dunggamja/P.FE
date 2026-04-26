@@ -74,8 +74,8 @@ namespace Battle
                 // 공격자 위치 업데이트.
                 attacker.UpdateCellPosition(
                     _cell:          _attack_position,
-                    _visual_update: (_apply: false, _immediatly: false),
-                    _is_plan:       false);
+                    _visual_update: (_apply: false, _immediatly: false));
+                    // , _is_plan:       false);
 
                 // 공격자와 타겟 데미지 저장. (공격자, 타겟, 데미지)
                 {

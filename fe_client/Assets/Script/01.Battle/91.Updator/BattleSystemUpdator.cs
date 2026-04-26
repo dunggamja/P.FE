@@ -299,7 +299,12 @@ namespace Battle
                 entity.Equip_Weapon_Auto();           
 
                 // 위치 셋팅.
-                entity.UpdateCellPosition((e.m_cell_x, e.m_cell_y), (_apply: true, _immediatly: true), _is_plan: false);
+                entity.UpdateCellPosition(
+                    (e.m_cell_x, e.m_cell_y), 
+                    (_apply: true, _immediatly: true));
+                
+                // 좌표 처리.
+                entity.UpdatePathBasePosition();
 
                 // 유닛 에셋 셋팅.
                 // entity.SetAssetName(setting_asset.ASSET_KEY);

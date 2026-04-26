@@ -35,11 +35,6 @@ namespace Battle
 
        protected override void OnEnter()
        {
-         if (Owner != null)
-         {
-            Owner.UpdateCellOccupied(true);
-         }
-
          // 무기 장착.
          Owner.ProcessAction(Owner.Inventory.GetItem(WeaponID), EnumItemActionType.Equip);
 
@@ -66,7 +61,11 @@ namespace Battle
 
             if (Owner != null)
             {
-                Owner.SetCommandDone(EnumCommandFlag.Action);
+                Owner.SetCommandDone(EnumCommandFlag.Action);     
+                // 좌표 처리.
+                Owner.UpdatePathBasePosition();
+                
+                Owner.TryCommand_MoveAgain(true);            
                 // TODO: 모든행동 종료 처리... 기병같은 경우 재이동 기능 구현 필요. 
                 // Owner.SetAllCommandDone();
             }

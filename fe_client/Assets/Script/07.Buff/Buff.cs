@@ -74,6 +74,15 @@ public enum EnumBuffOption
     COUNT
 }
 
+// 버프 조건을 단순히 enum으로 할지 따로 클래스를 만들지는 고민해보자.
+// public enum EnumBuffCondition
+// {
+//     MountedOnly   = 1 << 0, // 탑승상태에서만 적용.
+//     UnmountedOnly = 1 << 1, // 탑승상태가 아닐때만 적용.
+//     FemaleOnly    = 1 << 2, // 여성만 적용.
+//     MaleOnly      = 1 << 3, // 남성만 적용.
+// }
+
 
 public struct BuffTarget : IEqualityComparer<BuffTarget>, IEquatable<BuffTarget>
 {
@@ -141,6 +150,7 @@ public struct BuffTarget : IEqualityComparer<BuffTarget>, IEquatable<BuffTarget>
 }
 
 
+
 public struct BuffValue
 {
     public float Multiply;
@@ -167,51 +177,72 @@ public struct BuffValue
 
 public struct BuffOption
 {
+    const int INVALID_VALUE = -1;
+
     // 
-    int[] Values;
+    unsafe fixed int Values[(int)EnumBuffOption.COUNT];
 
 
-    public readonly static BuffOption Empty = new BuffOption
+    public static BuffOption Empty 
     {
-        // -1은 사용하지 않는 옵션이라는 뜻.
-        Values = new int[(int)EnumBuffOption.COUNT] { -1, -1, -1 }
-    };
+        get
+        {
+            var buff_option = new BuffOption();
+            buff_option.Initialize();
+
+            return buff_option;
+        }        
+    }
+
+    void Initialize()
+    {
+        // 초기화 처리. 
+        for (int i = 0; i < (int)EnumBuffOption.COUNT; i++)
+        {
+            SetValue((EnumBuffOption)i, INVALID_VALUE);
+        }
+    }
 
 
     public bool SetValue(EnumBuffOption _option, int _value)
     {
-        if (Values == null)
-            return false;
-
+        
         var index = (int)_option;
-        if (index < 0 || Values.Length <= index)
+        if (index < 0 || (int)EnumBuffOption.COUNT <= index)
             return false;
 
         // 초기화 말고는 음수 셋팅을 막아두자.
         if (_value < 0)
             return false;
 
-        Values[index] = _value;
+        unsafe
+        {
+            Values[index] = _value;
+        }
+
         return true;
     }
 
     public int GetValue(EnumBuffOption _option)
     {
-        if (Values == null)
-            return 0;
-
         var index = (int)_option;
-        if (index < 0 || Values.Length <= index)
+        if (index < 0 || (int)EnumBuffOption.COUNT <= index)
             return 0;
 
-        return Values[index];
+
+        unsafe
+        {
+            return Values[index];
+        }
     }
 
-    public bool HasValue(EnumBuffOption _option) => 0 < GetValue(_option);
-    public bool HasToVerify(EnumBuffOption _option) => -1 < GetValue(_option);
+    public bool HasValue(EnumBuffOption _option)    => 0 < GetValue(_option);
+    public bool HasToVerify(EnumBuffOption _option) => INVALID_VALUE < GetValue(_option);
 
     public void IncreaseValue(EnumBuffOption _option) => SetValue(_option, GetValue(_option) + 1);
     public void DecreaseValue(EnumBuffOption _option) => SetValue(_option, GetValue(_option) - 1);
+
+
 
 
     public bool IsExpired()
@@ -255,6 +286,8 @@ public struct Buff
     public BuffValue            Value;
     public BuffOption           Option;
     public EnumBuffContentsType ContentsType;
+
+    // public Int64                Condition;
     // public List<ICondition>     Conditions;    
            
 
@@ -264,7 +297,8 @@ public struct Buff
         Target       = BuffTarget.Empty,
         Value        = BuffValue.Empty,
         Option       = BuffOption.Empty,
-        ContentsType = EnumBuffContentsType.None
+        ContentsType = EnumBuffContentsType.None,
+        // Condition    = 0,
         // Conditions   = null,
     };
 
@@ -431,15 +465,7 @@ public class BuffMananger //: IBuff
         return result;
     }
 
-
-        
-
-
     // #region IBuff Interface
-
-
-
-
 
     public BuffValue Collect_Combat(
         EnumSituationType _situation,
@@ -476,11 +502,6 @@ public class BuffMananger //: IBuff
             _list_buff_id.AddRange(list_buff_id);
         }
     }
-
-
-    
-
-
 
     // #endregion IBuff Interface
 

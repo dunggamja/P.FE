@@ -100,6 +100,34 @@ namespace Battle
         }
 
 
+        public void ProcessMovedDistance(bool _accumulate_move_distance)
+        {
+            if (_accumulate_move_distance)
+            {
+                // 이번 행동시 이동한 거리.
+                var moved_distance = BlackBoard.GetValue(EnumEntityBlackBoard.MovedDistance_Action);
+
+                // 이번턴에 이동한 거리에 누적.
+                BlackBoard.IncreaseValue(EnumEntityBlackBoard.MovedDistance_Turn, moved_distance);
+            }
+
+            // 이번 행동시 이동한 거리 초기화.
+            BlackBoard.SetValue(EnumEntityBlackBoard.MovedDistance_Action, 0);
+
+        }
+
+        public void TryCommand_MoveAgain(bool _accumulate_move_distance)
+        {
+            ProcessMovedDistance(_accumulate_move_distance);
+
+            // 이동 가능한지 체크.
+            if (PathMoveRange > 0)
+            {
+                SetCommandEnable(EnumCommandFlag.Move);
+            }
+        }
+
+
         public void SetAllCommandEnable()
         {            
             // 모든 커맨드 실행 가능 처리. (모든 비트를 1로 설정)
@@ -114,6 +142,10 @@ namespace Battle
             // 모든 커맨드 완료 처리.
             BlackBoard.SetValue(EnumEntityBlackBoard.CommandFlag, 0);
 
+
+            // 행동 종료시 초기화하는 변수.
+            BlackBoard.SetValue(EnumEntityBlackBoard.MovedDistance_Turn, 0);
+            BlackBoard.SetValue(EnumEntityBlackBoard.MovedDistance_Action, 0);
             // var bit_value =BlackBoard.GetValue(EnumEntityBlackBoard.CommandFlag);
             // Debug.Log($"SetCommandEnable:  {ID}, {Convert.ToString(bit_value, 2).PadLeft(32, '0')}");
         }
@@ -131,7 +163,7 @@ namespace Battle
             if (HasCommandEnable() == false)
                 return EnumCommandProgressState.Done;
 
-            // 실행한 명령이 1개라도 있으면, 명령을 진행중인 상태. <- 재이동시에는 이걸 어떻게 한다... 
+            // 실행한 명령이 1개라도 있으면, 명령을 진행중인 상태.
             if (HasAnyCommandDone())
                 return EnumCommandProgressState.Progress;
 
@@ -147,6 +179,15 @@ namespace Battle
                 return true;
 
             return false;
+        }
+
+        public (int is_progress, int priority) GetCommandPriorityForCompare()
+        {
+            return (
+                // 행동 진행상태.
+                (GetCommandProgressState() == EnumCommandProgressState.Progress) ? 1 : 0
+                // 행동 우선순위.
+                , GetCommandPriority());
         }
 
         public int GetCommandPriority()

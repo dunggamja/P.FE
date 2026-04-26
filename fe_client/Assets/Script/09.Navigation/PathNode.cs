@@ -102,6 +102,36 @@ public class PathNodeManager //: IPathNodeManager
 
     public bool IsEmpty() => m_list_path_node.Count == 0;
 
+
+    // 도착한 경로 노드 목록을 반환합니다.
+    public List<PathNode> GetArrivedPathNodes()
+    {
+        return m_list_arrived_node;
+    }
+
+    // 도착한 경로까지의 거리를 반환합니다.
+    public int GetArrivedPathDistance() 
+    {
+        if (m_list_arrived_node.Count == 0)
+            return 0;
+
+
+        int count     = 0;
+        var prev_cell = m_list_arrived_node[0].GetPosition().PositionToCell();
+
+        foreach (var node in m_list_arrived_node)
+        {
+            var cur_cell = node.GetPosition().PositionToCell();
+            if (cur_cell != prev_cell)
+            {
+                count    += PathAlgorithm.Distance(prev_cell, cur_cell);
+                prev_cell = cur_cell;
+            }
+        }
+
+        return count;
+    }
+
     /// <summary>대기 중인 경로 노드를 순서대로 복사합니다(큐는 변경하지 않음).</summary>
     public void CopyRemainingPathNodes(List<PathNode> _out)
     {

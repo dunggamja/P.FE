@@ -98,8 +98,11 @@ public class Cutscene_Unit_Move : Cutscene
 
                 unit.UpdateCellPosition(
                     unit_move_data.EndPosition,
-                    (_apply: true, _immediatly: true),
-                    _is_plan: false);                
+                    (_apply: true, _immediatly: true));
+                    // _is_plan: false);       
+
+
+                unit.UpdatePathBasePosition();         
             }
             
 
