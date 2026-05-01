@@ -19,6 +19,9 @@ namespace Battle
 
        // 랜덤으로 이동.
        Random,
+
+       //  Hit&Run: 공격 후 피해량이 적을 것으로 예상되는 지점으로 이동.
+       HitAndRun,
     }
 
 
@@ -58,6 +61,23 @@ namespace Battle
       }
 
 
+      public bool ApplyHigherScore(Result _o)
+      {
+          if (_o == null)
+          return false;
+
+          // 점수가 동일하거나 낮으면 패스.
+          if (_o.CalculateScore() <= CalculateScore())
+          return false;
+      
+          // 점수가 더 좋으면 교체.
+          CopyFrom(_o);
+          return true;
+      }
+
+      
+
+
       public void Reset()
       {
           Position = (0, 0);
@@ -81,8 +101,6 @@ namespace Battle
           m_score[index] = Mathf.Clamp01(_score_value);                
       }
 
-
-
       public float CalculateScore(Func<EnumScoreType, float, float> _func_score_multiplier = null)
       {
           if (_func_score_multiplier == null)
@@ -105,15 +123,11 @@ namespace Battle
 
           // 점수는 0.0 ~ 1.0으로 제한.
           return Mathf.Clamp01(score_total / score_max);
-      }
-
-
-      
-
-      
+      }      
     }
 
 
+    // 타겟과의 거리를 계산.
     class DistanceFromTargetVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
     {
       public TerrainMap     TerrainMap     { get; set; }  
@@ -139,9 +153,9 @@ namespace Battle
         return -1;
       }
 
-      public float CalcScore(int _x, int _y)
+      public float CalcScore(IPathOwner _visitor, TerrainMap _terrain_map, (int x, int y) _position)
       {
-        var     move_cost = GetMoveCostFromTarget(_x, _y);
+        var     move_cost = GetMoveCostFromTarget(_position.x, _position.y);
         return (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
       }
 
@@ -162,6 +176,7 @@ namespace Battle
     }
 
 
+    // 위치에 대한 점수를 계산.
     class PositionVisitor : PathAlgorithm.IFloodFillVisitor, IPoolObject
     {
       public TerrainMap     TerrainMap     { get; set; }  
@@ -171,11 +186,13 @@ namespace Battle
       public bool           VisitOnlyEmptyCell => true;
       public bool           IsStop()           => false;
 
+      public delegate float FuncCalcScore(IPathOwner _visitor, TerrainMap _terrain_map, (int x, int y) _position);
+
 
       
       public Result                BestResult            { get; set; } = new();
       // public Func<int, int, int>   GetMoveCostFromTarget { get; set; } = null;
-      public Func<int, int, float> CalcScore             { get; set; } = null;
+      public FuncCalcScore         CalcScore             { get; set; } = null;
       
       
       // public (int x, int y) BestPosition      { get; set; } = (0, 0);
@@ -205,14 +222,13 @@ namespace Battle
          // 타겟과 가까울수록 높은 점수.
          //var move_cost  = GetMoveCostFromTarget?.Invoke(_node.x, _node.y) ?? -1;         
          //  var move_score = (move_cost >= 0) ? 1f / (1f + move_cost) : 0f;
-         var move_score = CalcScore?.Invoke(_node.x, _node.y) ?? 0f;
+         var move_score = CalcScore?.Invoke(Visitor, TerrainMap, (_node.x, _node.y)) ?? 0f;
 
          // 타겟과의 거리에 대한 점수 셋팅.
          temp_result.Value.SetScore(Result.EnumScoreType.Goal, move_score);
 
          // 점수가 더 좋다면 교체.
-         if (BestResult.CalculateScore() < temp_result.Value.CalculateScore())
-             BestResult.CopyFrom(temp_result.Value);
+         BestResult.ApplyHigherScore(temp_result.Value);
       }
     }
 
@@ -248,6 +264,9 @@ namespace Battle
 
         case EnumBehavior.Random:
           return Process_Random(_param);
+
+        case EnumBehavior.HitAndRun:
+          return Process_HitAndRun(_param);
       }
 
       return false;
@@ -320,8 +339,9 @@ namespace Battle
           PathAlgorithm.FloodFill(visit_position.Value);
 
           // 점수 셋팅.
-          entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visit_position.Value.BestResult);
-          entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
+          var ai_blackboard = entity.AIManager.AIBlackBoard;
+          if (ai_blackboard.Score_Move.ApplyHigherScore(visit_position.Value.BestResult))
+              ai_blackboard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
         }
 
         return true;
@@ -494,17 +514,120 @@ namespace Battle
       visit_position.Value.MoveDistance          = entity.PathMoveRange;
 
       // 점수 계산 공식. (랜덤 점수입니다.)
-      visit_position.Value.CalcScore = (x, y) => Util.Random01();
+      visit_position.Value.CalcScore = (_, _, _position) => Util.Random01();
       
       // 빈 좌표 탐색.
       PathAlgorithm.FloodFill(visit_position.Value);
 
       // 점수 셋팅.
-      entity.AIManager.AIBlackBoard.Score_Move.CopyFrom(visit_position.Value.BestResult);
-      entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
+      var ai_blackboard = entity.AIManager.AIBlackBoard;
+      if (ai_blackboard.Score_Move.ApplyHigherScore(visit_position.Value.BestResult))
+          ai_blackboard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
   
       return true;
     }
+
+
+    bool Process_HitAndRun(IAIDataManager _owner)
+    {
+      if (_owner == null)
+        return false;
+
+      var entity = EntityManager.Instance.GetEntity(_owner.ID);
+      if (entity == null)
+        return false;
+
+      // 1. 안전도. 공격 위협에서 안전한 위치를 찾아봅시다. [적용]
+      // 2. 자리 비우기. 공격했던 자리를 비우는 것을 우선합니다. [일단 미적용]
+      // 3. 복귀. 원래 위치해 있던 곳으로 복귀합니다. [일단 미적용]
+      {
+        using var visit_position  = ObjectPool<PositionVisitor>.AcquireWrapper();
+        
+        visit_position.Value.TerrainMap            = entity.PathNodeManager.TerrainMap;
+        visit_position.Value.Visitor               = entity;
+        visit_position.Value.Position              = entity.Cell;
+        visit_position.Value.MoveDistance          = entity.PathMoveRange;
+
+        // 점수 계산 공식. (안전도)
+        visit_position.Value.CalcScore = CalcScore_SafePosition;
+        
+        // 빈 좌표 탐색.
+        PathAlgorithm.FloodFill(visit_position.Value);
+
+        // 점수 셋팅.
+        var ai_blackboard = entity.AIManager.AIBlackBoard;
+        if (ai_blackboard.Score_Move.ApplyHigherScore(visit_position.Value.BestResult))
+        {
+            ai_blackboard.SetBPValue(EnumAIBlackBoard.Score_Move, visit_position.Value.BestResult.CalculateScore());
+
+            // Debug.Log($"SafePosition From: {entity.ID}, {entity.Cell.x}, {entity.Cell.y}");
+            // Debug.Log($"SafePosition To: {visit_position.Value.BestResult.Position.x}, {visit_position.Value.BestResult.Position.y}");            
+            // Debug.Log($"SafePosition Score: {visit_position.Value.BestResult.CalculateScore()}");
+        }
+      }
+
+      return true;
+    }
+
+    float CalcScore_SafePosition(IPathOwner _visitor, TerrainMap _terrain_map, (int x, int y) _position)
+    {
+      var entity = _visitor as Entity;
+      if (entity == null)
+        return 0f;
+
+
+      // 10명정도에게 얻어 맞으면 최고로 위험한 위치라고 가정하자.
+      var max_threat_score = 10f;
+
+      // 
+      var threat_score     = 0f;
+      var entity_faction   = entity.GetFaction();
+
+      // 위협 후보들 필터링.      
+      using var list_threaten = ListPool<Int64>.AcquireWrapper();
+      SpacePartitionManager.Instance.Query_Threaten(
+         list_threaten.Value, 
+         _position, 
+         (_faction) => BattleSystemManager.Instance.IsEnemy(entity_faction, _faction));
+
+
+      foreach(var e in list_threaten.Value)
+      {
+        var enemy = EntityManager.Instance.GetEntity(e);
+        if (enemy == null)
+          continue;
+
+        // 적과의 거리 체크.
+        var distance    = PathAlgorithm.Distance(_position, enemy.Cell);
+
+        // 적의 사정거리 체크.
+        var enemy_range = enemy.PathMoveRange + enemy.GetWeaponRange().max;
+
+        // 적의 사정거리보다 내가 멀리있다면 패스.
+        if (enemy_range < distance)
+          continue;
+
+        // 거리에 대한 점수.
+        var distance_score = (float)distance / (enemy_range + 1);
+        
+        // 거리가 가까우면 위협 점수를 높게 줍시다.
+        threat_score += 1f - Mathf.Clamp01(distance_score);
+      }
+
+
+
+      // 안전점수 = 1f - (위협점수/최대 위협점수)
+      var safe_score = 1f - (Mathf.Clamp(threat_score, 0f, max_threat_score) / max_threat_score);
+
+      // Debug.Log($"SafePosition, Cell: {_position.x}, {_position.y}, Score: {safe_score}");
+
+      return Mathf.Clamp01(safe_score);
+    }
+
+
+
+
+
 
     private bool Verify_Enemy(Entity _entity, Entity _target) 
     {

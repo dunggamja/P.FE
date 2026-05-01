@@ -15,7 +15,7 @@ namespace Battle
 
 
 
-   [EventReceiver(typeof(Battle_Cell_OccupyEvent))]
+  [EventReceiver(typeof(Battle_Cell_OccupyEvent))]
   public class SpacePartitionManager : Singleton<SpacePartitionManager>, IEventReceiver
   {
      
@@ -136,12 +136,21 @@ namespace Battle
         EntityPosition.Query_Center(_results, _center, _range, _filter);
      }
 
-    //  public void Query_Threaten(
-    //     List<Int64>                _results,
-    //     AABB                       _box,
-    //     SpacePartition.QueryFilter _filter = null)
-    //  {
-    //     EntityPosition.RangeAABB(_results, _box, _filter);
-    //  }
+
+     public void Query_Threaten(
+      List<Int64>     _results,
+      (int x, int y)  _position,
+      Func<int, bool> _verify_faction = null)
+     {
+
+       foreach((var faction, var tree) in FactionThreaten)
+       {
+          // 진영 체크.
+          if (_verify_faction != null && _verify_faction(faction) == false)
+            continue;
+
+          tree.QueryPosition(new Vector2(_position.x, _position.y), ref _results);
+       }      
+     }
   }
 }

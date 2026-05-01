@@ -11,6 +11,21 @@ namespace Battle
         public AI_Score_Attack.Result Score_Attack { get; private set; } = new();
         public AI_Score_Move.Result   Score_Move   { get; private set; } = new();
         public AI_Score_Wand.Result   Score_Wand   { get; private set; } = new();
+        // public AI_Score_Done.Result   Score_Done   { get; private set; } = new();
+
+        public void ResetScore()
+        {
+            Score_Attack.Reset();
+            Score_Move.Reset();
+            Score_Wand.Reset();
+            // Score_Done.Reset();
+
+
+            for (int i = (int)EnumAIBlackBoard.Score_Begin; i < (int)EnumAIBlackBoard.Score_End; ++i)
+            {
+                SetValue((EnumAIBlackBoard)i, 0);
+            }
+        }
 
 
         public override void Reset()
@@ -19,12 +34,20 @@ namespace Battle
             Score_Attack.Reset();
             Score_Move.Reset();
             Score_Wand.Reset();
+            // Score_Done.Reset();
         }
 
         public (EnumAIBlackBoard type, float score) GetBestScore()
         {
             var top_score_type = EnumAIBlackBoard.None;
             var top_score      = 0f;
+
+
+            // SetBPValue(EnumAIBlackBoard.Score_Attack, Score_Attack.CalculateScore());
+            // SetBPValue(EnumAIBlackBoard.Score_Move,   Score_Move.CalculateScore());
+            // SetBPValue(EnumAIBlackBoard.Score_Done,   Score_Done.CalculateScore());
+            // // SetBPValue(EnumAIBlackBoard.Score_Wand, 0f);//Score_Wand.CalculateScore());
+
 
             for(int i = (int)EnumAIBlackBoard.Score_Begin; i < (int)EnumAIBlackBoard.Score_End; ++i)
             {
@@ -38,6 +61,7 @@ namespace Battle
 
             return (top_score_type, top_score);
         }
+
     }
 
 
@@ -76,10 +100,7 @@ namespace Battle
                     continue;
 
                 // AI 블랙보드 점수 초기화.
-                for (int i = (int)EnumAIBlackBoard.Score_Begin; i < (int)EnumAIBlackBoard.Score_End; ++i)
-                {
-                    AIBlackBoard.SetValue((EnumAIBlackBoard)i, 0);
-                }
+                AIBlackBoard.ResetScore();
 
                 // AI 업데이트.
                 list_updater.ForEach(e => e.Update(_param));
@@ -102,13 +123,11 @@ namespace Battle
             // AI 블랙보드 초기화.
             AIBlackBoard.Reset();
 
-            // 대기 : 다른 행동들 모두 할거 없을때 처리.
-            AddAIUpdater(999, new AI_Score_Done());
 
-            // TODO: 도발 등 상태이상에 걸린 경우에 대한 행동로직 추가해야할듯 
-            // AddAIUpdater(-30, // 수면 )
-            // AddAIUpdate(-20,  // 도발 )
-            // AddAIUpdaer(-10,  // 혼란 )
+            // 대기, 공격후 재이동, 그 외 상태이상.
+            SetAIUpdater_Common();
+
+            
 
 
             switch(_ai_type)
@@ -119,6 +138,9 @@ namespace Battle
                     AddAIUpdater(1, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
                     // 가까운 적을 향해 이동. 
                     AddAIUpdater(2, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
+
+                    // // 공격 후 재이동. (아군과 가까운위치로 이동합니다.)
+                    // AddAIUpdater(2, new AI_Score_Move(AI_Score_Move.EnumBehavior.HitAndRun));
 
                     break;
                 case EnumAIType.Attack_Target:
@@ -131,6 +153,9 @@ namespace Battle
                     AddAIUpdater(4, new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
                     // 가까운 적을 향해 이동. (타겟이 없을 경우 동작)
                     AddAIUpdater(5, new AI_Score_Move(AI_Score_Move.EnumBehavior.Closest_Enemy));
+
+                    // // 공격 후 재이동. (아군과 가까운위치로 이동합니다.)
+                    // AddAIUpdater(6, new AI_Score_Move(AI_Score_Move.EnumBehavior.HitAndRun));
                     break;
 
 
@@ -154,7 +179,7 @@ namespace Battle
                 // 경계
                 case EnumAIType.Alert:
                     // 1. 공격 가능한 적이 있으면 공격.
-                    AddAIUpdater(2,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
+                    AddAIUpdater(1,   new AI_Score_Attack(AI_Score_Attack.EnumBehavior.Normal));
                     // 2. 적 사정거리 내에 있을경우 도망친다.
                     //AddAIUpdater(EnumAIPriority.Secondary, new AI_Score_Move());
                     break;
@@ -171,11 +196,6 @@ namespace Battle
 
             }
         }
-
-
-
-
-
 
 
         private void AddAIUpdater(int _priority, AI_Score_Base _ai_updater)
@@ -203,6 +223,30 @@ namespace Battle
             }
 
             return null;
+        }
+
+
+        void SetAIUpdater_Common()
+        {
+            // 대기 : 다른 행동들 모두 할거 없을때 처리.
+            AddAIUpdater(999, new AI_Score_Done());
+
+            // 공격 후 재이동: 안전한 위치로 이동.
+            AddAIUpdater(-1, 
+                new AI_Score_Move(AI_Score_Move.EnumBehavior.HitAndRun)                    
+                    // 이동이 가능하고, 액션은 불가능한 상황.
+                    .AddCondition(
+                        new AI_Condition_Command(EnumCommandFlag.Move, true))
+                    .AddCondition(
+                        new AI_Condition_Command(EnumCommandFlag.Action, false)));
+
+
+
+            // TODO: 도발 등 상태이상에 걸린 경우에 대한 행동로직 추가해야할듯 
+            // AddAIUpdater(-30, // 수면 )
+            // AddAIUpdate(-20,  // 도발 )
+            // AddAIUpdaer(-10,  // 혼란 )
+
         }
     }
 

@@ -24,7 +24,7 @@ namespace Battle
       public bool Intersects(AABB o) 
       {
         return !((max.x < o.min.x || o.max.x < min.x) ||
-                (max.y < o.min.y || o.max.y < min.y));
+                 (max.y < o.min.y || o.max.y < min.y));
       }
 
       public float Perimeter() 

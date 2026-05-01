@@ -215,7 +215,7 @@ namespace Battle
                     ));
 
             // 행동 종료 명령.
-            m_command_queue_handler.PushCommand(new Command_Done(_entity_id));
+            // m_command_queue_handler.PushCommand(new Command_Done(_entity_id));
         }
 
         void PushCommand_Done(Int64 _entity_id)

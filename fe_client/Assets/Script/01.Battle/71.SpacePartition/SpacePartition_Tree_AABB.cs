@@ -37,6 +37,14 @@ namespace Battle
     Node                    m_root     = null;
     Dictionary<Int64, Node> m_node_map = new(20);
 
+    public void QueryPosition(Vector2 _position, ref List<Int64> _results)
+    {
+      var box = new AABB();
+      box.SetMinMax(_position, _position);
+      
+      QueryAABB(box, ref _results);
+    }
+
     public void QueryAABB(AABB _query_box, ref List<Int64> _results) 
     {
       if (m_root == null) 

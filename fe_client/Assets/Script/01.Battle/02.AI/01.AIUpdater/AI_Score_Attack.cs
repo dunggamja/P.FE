@@ -28,13 +28,13 @@ namespace Battle
                 switch(_type)         
                 {
                     // 타겟 우선순위.
-                    case EnumScoreType.TargetPriority:   return 2f;
+                    case EnumScoreType.TargetPriority:   return _score * 2f;
                     // 죽일 수 있는지 체크.
-                    case EnumScoreType.Kill:             return 1f;
+                    case EnumScoreType.Kill:             return _score * 1f;
                     // 입힐 수 있는 데미지 양
-                    case EnumScoreType.DamageRate_Dealt: return 1f;
+                    case EnumScoreType.DamageRate_Dealt: return _score * 1f;
                     // 내가 받는 데미지 양
-                    case EnumScoreType.DamageRate_Taken: return -0.5f;                    
+                    case EnumScoreType.DamageRate_Taken: return _score * -0.5f;                    
                 }
 
                 return 0f;
@@ -82,6 +82,18 @@ namespace Battle
                 WeaponID = _o.WeaponID;
                 Position = _o.Position;
                 Array.Copy(_o.m_score, m_score, m_score.Length);
+            }
+
+            public bool ApplyHigherScore(Result _o)
+            {
+                if (_o == null)
+                    return false;
+
+                if (_o.CalculateScore() <= CalculateScore())
+                    return false;
+
+                CopyFrom(_o);
+                return true;
             }
 
 
@@ -312,16 +324,11 @@ namespace Battle
             
                         Score_Calculate(current_score.Value, _entity,target_info);
 
-                        // 점수 계산.
-                        var calculate_score = current_score.Value.CalculateScore();
 
-                        // 점수 비교.
-                        if (_entity.AIManager.AIBlackBoard.GetBPValueAsFloat(EnumAIBlackBoard.Score_Attack) <= calculate_score)
-                        {
-                            // 높은 점수 셋팅.
-                            _entity.AIManager.AIBlackBoard.Score_Attack.CopyFrom(current_score.Value);                            
-                            _entity.AIManager.AIBlackBoard.SetBPValue(EnumAIBlackBoard.Score_Attack, calculate_score); 
-                        }
+                        // 높은 점수 셋팅.
+                        var ai_blackboard = _entity.AIManager.AIBlackBoard;
+                        if (ai_blackboard.Score_Attack.ApplyHigherScore(current_score.Value))
+                            ai_blackboard.SetBPValue(EnumAIBlackBoard.Score_Attack, current_score.Value.CalculateScore());
 
                         // 타겟 갯수 증가.
                         ++target_count;
