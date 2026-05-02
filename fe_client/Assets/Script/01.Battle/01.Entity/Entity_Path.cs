@@ -151,5 +151,15 @@ namespace Battle
             EventDispatchManager.Instance.UpdateEvent(
                 ObjectPool<WorldObject_ShowEvent>.Acquire().Set(ID, false));
         }
+
+
+        public void UpdatePathMounted(bool _mounted)
+        {
+            // 탑승 상태 갱신.
+            BlackBoard.SetValue(EnumEntityBlackBoard.Mounted, _mounted);
+
+            // 점유 상태 갱신.
+            UpdateCellOccupied(true);
+        }
     }
 }

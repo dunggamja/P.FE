@@ -116,12 +116,16 @@ namespace Battle
 
         }
 
-        public void TryCommand_MoveAgain(bool _accumulate_move_distance)
+        public void TryCommand_MoveAgain(bool _is_command_done)
         {
-            ProcessMovedDistance(_accumulate_move_distance);
+            // 이동 거리 처리.        
+            ProcessMovedDistance(_is_command_done);
 
-            // 이동 가능한지 체크.
-            if (PathMoveRange > 0)
+            // 재이동 가능한지 체크. 
+            // - 이동 명령 취소의 경우.
+            // - 탑승 상태이고, 이동 거리가 남아있는 경우.
+            var is_moveable = (_is_command_done == false) || (PathMounted && PathMoveRange > 0);
+            if (is_moveable)
             {
                 SetCommandEnable(EnumCommandFlag.Move);
             }

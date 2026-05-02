@@ -9,6 +9,7 @@ namespace Battle
     {
         None,
         Move,     // 이동
+        Mount,    // 타기 / 내리기
         
 
         Attack,   // 공격

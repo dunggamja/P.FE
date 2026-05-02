@@ -130,5 +130,41 @@ namespace Battle
         }
     }
 
+    public class Command_Mount : Command
+    {
+        public override EnumCommandType CommandType => EnumCommandType.Mount;
+
+        public bool     Mount { get; private set; } = false;
+        
+        public Command_Mount(Int64 _owner_id, bool _mount) : base(_owner_id)
+        {
+            Mount = _mount;
+        }
+
+        protected override void OnEnter()       
+        {
+        }
+
+        protected override bool OnUpdate()
+        {
+            return true;
+        }
+
+        protected override void OnExit(bool _is_abort)
+        {
+            if (_is_abort)
+                return;
+
+            if (Owner == null)
+                return;
+
+            Owner.UpdatePathMounted(Mount);
+        }
+
+
+        
+        
+    }
+
 }
 

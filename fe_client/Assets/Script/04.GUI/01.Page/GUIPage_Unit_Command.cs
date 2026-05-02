@@ -81,6 +81,14 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
                     table = "localization_base";
                     key   = "ui_menu_move";
                     break;
+                case EnumUnitCommandType.Mount:
+                    table = "localization_base";
+                    key   = "ui_menu_item_mount";
+                    break;
+                case EnumUnitCommandType.Dismount:
+                    table = "localization_base";
+                    key   = "ui_menu_item_dismount";
+                    break;
                 case EnumUnitCommandType.Attack: 
                     table = "localization_base";
                     key   = "ui_menu_attack";                    
@@ -239,6 +247,16 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
         {
             var is_moveable = entity.HasCommandEnable(EnumCommandFlag.Move) && entity.PathMoveRange > 0;
             enable_commands[(int)EnumUnitCommandType.Move] = is_moveable;
+        }
+
+        // 탑승상태인지 체크.
+        if (entity.PathMountedType != EnumUnitMountedType.None)
+        {
+            // 이동 & 행동을 하기 전에 탑승상태를 바꿀수 있다.
+            var is_actionable = entity.HasCommandEnable(EnumCommandFlag.Action) && entity.HasCommandEnable(EnumCommandFlag.Move);
+
+            enable_commands[(int)EnumUnitCommandType.Mount]    = is_actionable && entity.PathMounted == false;
+            enable_commands[(int)EnumUnitCommandType.Dismount] = is_actionable && entity.PathMounted == true;
         }
 
         // 액션이 가능한 상태인지 체크. (공격, 지팡이, 교환, 아이템 사용)
@@ -440,6 +458,22 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
             }
             break;
 
+            case EnumUnitCommandType.Mount:
+            {
+                // 탑승 명령 실행.
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                    new Command_Mount(m_entity_id, true));
+            }
+            break;
+
+            case EnumUnitCommandType.Dismount:
+            {
+                // 내리기 명령 실행.
+                ServiceLocator<CommandQueueHandler>.Get(ServiceLocator.GLOBAL).PushCommand(
+                    new Command_Mount(m_entity_id, false));
+            }
+            break;
+
             case EnumUnitCommandType.Attack:
             {
                 // 공격 GUI 오픈.
@@ -566,6 +600,9 @@ public class GUIPage_Unit_Command : GUIPage, IEventReceiver
     void OnReceiveEvent_Battle_CommandEvent(Battle_Command_Event _event)
     {
         if (_event == null || _event.EntityID != m_entity_id)
+            return;
+
+        if (IsVisible == false)
             return;
 
         UpdateMenuItems();
