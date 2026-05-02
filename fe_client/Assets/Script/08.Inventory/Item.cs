@@ -56,6 +56,9 @@ public partial class Item
         m_count_cur = _count_cur;
         m_value     = _value;
         m_is_drop   = _is_drop;
+
+        //if (m_is_drop)
+        //    Debug.Log($"Item Drop: {_id}, {_kind}, {_count_cur}, {_value}, {_is_drop}");
     }
 
 
@@ -162,6 +165,7 @@ public partial class Item
             Kind      = Kind,
             Count     = CurCount,
             Value     = Value,
+            IsDrop    = IsDrop,
             // ItemType  = (int)ItemType,
         };
     }
@@ -172,6 +176,7 @@ public partial class Item
         m_kind      = _snapshot.Kind;
         m_count_cur = _snapshot.Count;
         m_value     = _snapshot.Value;
+        m_is_drop   = _snapshot.IsDrop;
         // m_item_type = (EnumItemType)_snapshot.ItemType;
     }
 }
@@ -182,6 +187,7 @@ public class Item_IO
     public Int32        Kind      { get; set; } = 0;
     public Int32        Count     { get; set; } = 0;
     public Int32        Value     { get; set; } = 0;
+    public bool         IsDrop    { get; set; } = false;
     // public Int32        ItemType  { get; set; } = 0;
     // public Int32        MaxCount  { get; set; } = 0;
 

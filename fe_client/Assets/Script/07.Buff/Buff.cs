@@ -197,9 +197,12 @@ public struct BuffOption
     void Initialize()
     {
         // 초기화 처리. 
-        for (int i = 0; i < (int)EnumBuffOption.COUNT; i++)
+        unsafe
         {
-            SetValue((EnumBuffOption)i, INVALID_VALUE);
+            for (int i = 0; i < (int)EnumBuffOption.COUNT; i++)
+            {
+                Values[i] = INVALID_VALUE;
+            }
         }
     }
 

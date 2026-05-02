@@ -18,17 +18,15 @@ function demo_script_04.Run()
 
    -- 탈출시 대사 추가.
 
-
    -- 3턴, 마을 진영 시작시 이벤트,
    -- 커틀러스가 이 마을에 있다는 것을 알려주는 이벤트.
    demo_script_04.Villiage_1001_Turn_3_Start();
 
 
    -- 마을 방문 및 커틀러스 획득
-   demo_script_04.Villiage_1001_Visit();
+   demo_script_04.Villiage_1001_Visit(); 
 
-   -- 마을방문 이벤트 등록
-   demo_script_04.Villiage_1001_Visit();
+   -- 그 외 마을방문 이벤트 등록
    demo_script_04.Villiage_1002_Visit();
    demo_script_04.Villiage_1003_Visit();
    demo_script_04.Villiage_1004_Visit();
