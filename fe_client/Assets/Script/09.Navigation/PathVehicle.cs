@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +25,7 @@ public abstract class PathVehicle
 
     protected abstract (Vector3 velocity, Quaternion torque) Steering(IPathOwner _owner);
 
-    // TODO: velocity, max_speed ¸¦ setup ÇÒ ÀÏÀÌ ÀÖÀ»±î....
+    // TODO: velocity, max_speed ï¿½ï¿½ setup ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½....
     public void Setup(
         Vector3 _position, 
         Vector3 _position_prev, 

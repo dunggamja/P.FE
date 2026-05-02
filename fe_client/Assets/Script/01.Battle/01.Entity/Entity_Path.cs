@@ -34,14 +34,6 @@ namespace Battle
             Cell_Occupied = _is_occupy;
             HasZOC_Last   = PathHasZOC;
 
-            // // 선택 셀 기준 위치 갱신.
-            // if (_is_occupy)
-            // {
-            //     PathBasePosition = Cell;
-            //     // Debug.Log($"PathBasePosition: {ID}, {Cell}");
-            // }
-
-
             // Debug.Log($"UpdateCellOccupied: {ID}, {Cell}, {_is_occupy}");
 
             EventDispatchManager.Instance.UpdateEvent(
@@ -84,6 +76,7 @@ namespace Battle
             var position_cur  = Cell.CellToPosition();
             var position_prev = PathVehicle.Position;
 
+            // PathVehicle 갱신.
             PathVehicle.Setup(position_cur, position_prev);
 
             // visual 선택 효과 생성.
@@ -122,9 +115,9 @@ namespace Battle
 
         public bool PathIgnoreZOC(int _faction)
         {
-            // 비병은 ZOC 체크를 하지 않습니다.
-            // TODO: 아니면 비병용 ZOC 레이어를 나누는 것도 방법이 될수도...;;
-            if (PathMounted == true && PathMountedType == EnumUnitMountedType.Flyer)
+            // 현재는 비병이 ZOC 체크를 하지 않기 위해서 사용.
+            // TODO: 아니면 비병용 ZOC 레이어를 나누는 것이 좋을수도 있을듯...
+            if (PathHasZOC == false)
                 return true;            
 
             // 아군인 경우 제외.

@@ -83,47 +83,79 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 116
-    m_Localized: Empty
+    m_Localized: "\uD0C0\uB2E4"
     m_Metadata:
       m_Items: []
   - m_Id: 117
-    m_Localized: Turn {0}
+    m_Localized: "\uB0B4\uB9AC\uB2E4"
     m_Metadata:
       m_Items: []
   - m_Id: 118
-    m_Localized: "\uC608"
+    m_Localized: Empty
     m_Metadata:
       m_Items: []
   - m_Id: 119
-    m_Localized: "\uC544\uB2C8\uC624"
+    m_Localized: Turn {0}
     m_Metadata:
       m_Items: []
   - m_Id: 120
-    m_Localized: "\uCDE8\uC18C"
+    m_Localized: "\uC608"
     m_Metadata:
       m_Items: []
   - m_Id: 121
-    m_Localized: "{0} \uC5BB\uC5C8\uB2E4"
+    m_Localized: "\uC544\uB2C8\uC624"
     m_Metadata:
       m_Items: []
   - m_Id: 122
-    m_Localized: "{0} \uC783\uC5C8\uB2E4"
+    m_Localized: "\uCDE8\uC18C"
     m_Metadata:
       m_Items: []
   - m_Id: 123
-    m_Localized: "{0} \uBD80\uB7EC\uC84C\uB2E4"
+    m_Localized: "{0} \uC5BB\uC5C8\uB2E4"
     m_Metadata:
       m_Items: []
   - m_Id: 124
-    m_Localized: "{0} \uBE8F\uACBC\uB2E4"
+    m_Localized: "{0} \uC783\uC5C8\uB2E4"
     m_Metadata:
       m_Items: []
   - m_Id: 125
-    m_Localized: "{0} \uC0AC\uC6A9\uD588\uB2E4"
+    m_Localized: "{0} \uBD80\uB7EC\uC84C\uB2E4"
     m_Metadata:
       m_Items: []
   - m_Id: 126
+    m_Localized: "{0} \uBE8F\uACBC\uB2E4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127
+    m_Localized: "{0} \uC0AC\uC6A9\uD588\uB2E4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 128
     m_Localized: "{0} \uC18C\uBAA8\uD588\uB2E4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 129
+    m_Localized: "\uD3C9\uC9C0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 130
+    m_Localized: "\uC232"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131
+    m_Localized: "\uAC70\uCE5C\uB545"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 132
+    m_Localized: "\uC554\uBCBD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133
+    m_Localized: "\uBB3C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134
+    m_Localized: "\uC5EC\uC6B8"
     m_Metadata:
       m_Items: []
   references:

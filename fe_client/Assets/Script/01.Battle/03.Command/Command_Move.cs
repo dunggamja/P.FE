@@ -14,8 +14,8 @@ namespace Battle
 
         (int x, int y)        m_cell_to          = (0, 0); 
         bool                  m_visual_immediate = false;
-        bool                  m_is_plan          = false;
         bool                  m_move_success     = false;
+        // bool                  m_is_plan          = false;
 
 
         // List<(int x, int y)>  m_visited_cell_list = new();
@@ -49,19 +49,24 @@ namespace Battle
                 return;
             }
 
-            // 즉시 이동여부에 따라서 길찾기 여부 결정.
-            if (m_visual_immediate)
+            
+            if (Owner.Cell != m_cell_to)
             {
-                // 경로 생성 안함.
-                Owner.PathNodeManager.ClearPath(); 
-            }
-            else
-            {
-                // 길찾기 시도.
-                m_move_success = Owner.PathNodeManager.CreatePath(
-                            Owner.PathVehicle.Position, 
+                // 즉시 이동여부에 따라서 길찾기 여부 결정.
+                if (m_visual_immediate)
+                {
+                    // 경로 생성 안함.
+                    Owner.PathNodeManager.ClearPath(); 
+                    m_move_success = true;
+                }
+                else
+                {
+                    // 길찾기 시도.
+                    m_move_success = Owner.PathNodeManager.CreatePath(
+                            Owner.Cell.CellToPosition(),   // Owner.PathVehicle.Position,                             
                             m_cell_to.CellToPosition(), 
                             Owner);
+                }
             }
 
 
@@ -114,6 +119,10 @@ namespace Battle
                           m_cell_to
                         , (_apply: true, _immediatly: m_visual_immediate));
                         // , m_is_plan);
+
+
+                    
+                    Owner.SetCommandDone(EnumCommandFlag.Move);
                 }
 
                 //Debug.Log($"Command_Move, OnExit, ID:{OwnerID}, Position:{Owner.PathVehicle.Position}");
@@ -121,7 +130,6 @@ namespace Battle
                 
                 // 행동 플래그 처리.
                 // if (m_execute_command)
-                Owner.SetCommandDone(EnumCommandFlag.Move);
             }
 
             // 카메라 이동 처리.

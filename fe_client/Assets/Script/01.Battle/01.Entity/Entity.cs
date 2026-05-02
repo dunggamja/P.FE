@@ -38,7 +38,8 @@ namespace Battle
             }
         }
 
-        public EnumUnitMountedType  PathMountedType => DataManager.Instance.UnitSheet.GetClassMountedType(ClassKind);
+        public EnumUnitMountedType  PathMountedType => DataManager.Instance.UnitSheet.GetClassMountedType(ClassKind);                 
+
         public bool                 PathMounted     => BlackBoard.HasValue(EnumEntityBlackBoard.Mounted);
 
         // 비병이 탑승중일 경우 ZOC 체크를 하지 않습니다.

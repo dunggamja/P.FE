@@ -117,7 +117,7 @@ public static partial class PathAlgorithm
 
         try
         {
-            // A* 검색. 검색 결과가 null 이면 검색 실패.
+            // A* 검색. 
             if (AStar(list_node, _terrain_map, _path_owner, _from_cell, _to_cell, _option))
             {
                 if (_path_nodes != null)
@@ -181,6 +181,10 @@ public static partial class PathAlgorithm
 
         if (_terrain_map == null)
             return false;
+
+        // 출발지와 목적지가 동일하면 즉시 종료.
+        if (_start_cell == _goal_cell)
+            return true;
 
 
         // 목표지점 체크 로직.
